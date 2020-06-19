@@ -61,10 +61,12 @@ if __name__ == "__main__":
         speaker = get_speaker(args.speaker)
         np = len(args.parameters)
         action = args.action.lower()
+        # Mute, Unmute ##############################################
         if action == "mute":
             speaker.mute = True
         elif action == "unmute":
             speaker.mute = False
+        # Play, Pause, Stop #########################################
         elif action == "stop":
             speaker.stop()
         elif action == "pause":
@@ -74,6 +76,7 @@ if __name__ == "__main__":
                 pass
         elif action == "play":
             speaker.play()
+        # Volume ####################################################
         elif action == "volume":
             if np == 0:
                 print(speaker.volume)
@@ -87,12 +90,14 @@ if __name__ == "__main__":
             else:
                 print("Error: Too many parameters")
                 exit(1)
+        # Play Favourite ############################################
         elif action == "favourite" or action == "favorite":
             if np != 1:
                 print("Error: Playing favourite requires one parameter")
                 exit(1)
             else:
                 play_sonos_favourite(speaker, args.parameters[0])
+        # Play URI ##################################################
         elif action == "uri" or action == "play_uri":
             if np != 1:
                 print("Error: Playing URI requires one parameter")
@@ -100,6 +105,20 @@ if __name__ == "__main__":
             else:
                 print(args.parameters[0])
                 speaker.play_uri(args.parameters[0])
+        # Sleep Timer ###############################################
+        elif action == "sleep" or action == "sleep_timer":
+            if np == 0:
+                st = speaker.get_sleep_timer()
+                if st:
+                    print(st, "seconds remaining")
+                else:
+                    print("No sleep timer set")
+            elif np == 1:
+                speaker.set_sleep_timer(int(args.parameters[0]))
+            else:
+                print("Error: Too many parameters")
+                exit(1)
+        # Invalid Action ############################################
         else:
             print("Error: Action '{}' is not defined.".format(action))
             exit(1)
