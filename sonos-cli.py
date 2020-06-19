@@ -1,7 +1,10 @@
 import soco
 import argparse
+from os import _exit  # Use os._exit() to avoid the catch-all 'except'
+import pprint
 
 
+# Use lower case
 speaker_table = {
     "kitchen": "192.168.0.30",
     "rear reception": "192.168.0.33",
@@ -14,11 +17,16 @@ speaker_table = {
 }
 
 
+def error_and_exit(msg):
+    print("Error:", msg)
+    _exit(1)
+
+
 def get_speaker(speaker_name):
     speaker_ip = speaker_table.get(speaker_name.lower())
     if not speaker_ip:
         print("Error: speaker name '{}' not recognised.".format(speaker_name))
-        exit(1)
+        _exit(1)
     return soco.SoCo(speaker_ip)
 
 
@@ -79,29 +87,25 @@ if __name__ == "__main__":
         # Volume ####################################################
         elif action == "volume":
             if np == 0:
-                print(speaker.volume)
+                print("Volume is", speaker.volume)
             elif np == 1:
                 volume = int(args.parameters[0])
                 if 0 <= volume <= 100:
                     speaker.volume = volume
                 else:
-                    print("Error: Volume parameter must be from 0 to 100")
-                    exit(1)
+                    error_and_exit("Volume parameter must be from 0 to 100")
             else:
-                print("Error: Too many parameters")
-                exit(1)
+                error_and_exit("Volume takes 0 or 1 parameter")
         # Play Favourite ############################################
         elif action == "favourite" or action == "favorite":
             if np != 1:
-                print("Error: Playing favourite requires one parameter")
-                exit(1)
+                error_and_exit("Playing favourite requires one parameter")
             else:
                 play_sonos_favourite(speaker, args.parameters[0])
         # Play URI ##################################################
         elif action == "uri" or action == "play_uri":
             if np != 1:
-                print("Error: Playing URI requires one parameter")
-                exit(1)
+                error_and_exit("Playing URI requires one parameter")
             else:
                 print(args.parameters[0])
                 speaker.play_uri(args.parameters[0])
@@ -116,14 +120,25 @@ if __name__ == "__main__":
             elif np == 1:
                 speaker.set_sleep_timer(int(args.parameters[0]))
             else:
-                print("Error: Too many parameters")
-                exit(1)
+                error_and_exit("Too many parameters")
+        # Info ######################################################
+        elif action == "info":
+            pp = pprint.PrettyPrinter(2)
+            info = speaker.get_speaker_info()
+            pp.pprint(info)
+        # Grouping ##################################################
+        elif action == "group":
+            if np ==1:
+                speaker2 = get_speaker(args.parameters[0])
+                speaker.join(speaker2)
+            else:
+                error_and_exit("One parameter (the speaker to group with) required")
+        elif action == "ungroup":
+            speaker.unjoin()
         # Invalid Action ############################################
         else:
-            print("Error: Action '{}' is not defined.".format(action))
-            exit(1)
+            error_and_exit("Action '{}' is not defined.".format(action))
     except:
-        print("Error: Exception.")
-        exit(1)
+        error_and_exit("Exception.")
 
     exit(0)
