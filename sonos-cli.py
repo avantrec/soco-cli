@@ -1,7 +1,9 @@
+#!/usr/bin/env python
 import soco
 import argparse
 from os import _exit  # Use os._exit() to avoid the catch-all 'except'
 import pprint
+import ipaddress
 
 
 # Use lower case
@@ -16,17 +18,31 @@ speaker_table = {
     "test": "192.168.0.42",
 }
 
+# URI Directory
+uri_table = {
+    "World Service": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/llnw/bbc_world_service.m3u8",
+}
 
 def error_and_exit(msg):
     print("Error:", msg)
     _exit(1)
 
 
+def is_ip_address(name):
+    try:
+        ipaddress.IPv4Network(name)
+        return True
+    except ValueError:
+        return False
+
+
 def get_speaker(speaker_name):
-    speaker_ip = speaker_table.get(speaker_name.lower())
-    if not speaker_ip:
-        print("Error: speaker name '{}' not recognised.".format(speaker_name))
-        _exit(1)
+    if is_ip_address(speaker_name):
+        speaker_ip = speaker_name
+    else:
+        speaker_ip = speaker_table.get(speaker_name.lower())
+        if not speaker_ip:
+            error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
     return soco.SoCo(speaker_ip)
 
 
@@ -49,7 +65,7 @@ if __name__ == "__main__":
         description="Control Sonos speakers",
     )
     # Set up arguments
-    parser.add_argument("speaker", help="The name of the speaker")
+    parser.add_argument("speaker", help="The name or IP address of the speaker")
     parser.add_argument("action", help="The action to perform")
     parser.add_argument(
         "parameters", nargs="*", help="Parameter(s) required by the action"
@@ -81,13 +97,14 @@ if __name__ == "__main__":
             try:
                 speaker.pause()
             except:
+                # Ignore errors here
                 pass
         elif action == "play":
             speaker.play()
         # Volume ####################################################
         elif action == "volume":
             if np == 0:
-                print("Volume is", speaker.volume)
+                print("Volume:", speaker.volume)
             elif np == 1:
                 volume = int(args.parameters[0])
                 if 0 <= volume <= 100:
@@ -99,7 +116,7 @@ if __name__ == "__main__":
         # Play Favourite ############################################
         elif action == "favourite" or action == "favorite":
             if np != 1:
-                error_and_exit("Playing favourite requires one parameter")
+                error_and_exit("Playing a favourite requires one parameter")
             else:
                 play_sonos_favourite(speaker, args.parameters[0])
         # Play URI ##################################################
@@ -107,14 +124,13 @@ if __name__ == "__main__":
             if np != 1:
                 error_and_exit("Playing URI requires one parameter")
             else:
-                print(args.parameters[0])
                 speaker.play_uri(args.parameters[0])
         # Sleep Timer ###############################################
         elif action == "sleep" or action == "sleep_timer":
             if np == 0:
                 st = speaker.get_sleep_timer()
                 if st:
-                    print(st, "seconds remaining")
+                    print("Sleep timer:", st, "seconds remaining")
                 else:
                     print("No sleep timer set")
             elif np == 1:
@@ -126,19 +142,34 @@ if __name__ == "__main__":
             pp = pprint.PrettyPrinter(2)
             info = speaker.get_speaker_info()
             pp.pprint(info)
-        # Grouping ##################################################
-        elif action == "group":
-            if np ==1:
+        # Grouping and pairing ######################################
+        elif action == "group" or action == "group_with":
+            if np == 1:
                 speaker2 = get_speaker(args.parameters[0])
                 speaker.join(speaker2)
             else:
                 error_and_exit("One parameter (the speaker to group with) required")
         elif action == "ungroup":
-            speaker.unjoin()
+            if np == 0:
+                speaker.unjoin()
+            else:
+                error_and_exit("No parameters required for 'ungroup' action")
+        # Stereo pairing is pending release of SoCo 0.20
+        # elif action == "pair":
+        #     if np == 1:
+        #         right_speaker = get_speaker(args.parameters[0])
+        #         speaker.create_stereo_pair(right_speaker)
+        #     else:
+        #         error_and_exit("One parameter (the right hand speaker) required")
+        # elif action == "unpair":
+        #     if np == 0:
+        #         speaker.separate_stereo_pair()
+        #     else:
+        #         error_and_exit("No parameters required for 'unpair' action")
         # Invalid Action ############################################
         else:
             error_and_exit("Action '{}' is not defined.".format(action))
-    except:
-        error_and_exit("Exception.")
+    except BaseException as e:
+        error_and_exit("Exception: {}".format(str(e)))
 
     exit(0)
