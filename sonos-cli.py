@@ -10,7 +10,7 @@ speaker_table = {
     "bedroom 2": "192.168.0.38",
     "move": "192.168.0.41",
     "study": "192.168.0.39",
-    "test": "42",
+    "test": "192.168.0.42",
 }
 
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     parser.add_argument("speaker", help="The name of the speaker")
     parser.add_argument("action", help="The action to perform")
     parser.add_argument(
-        "parameters", nargs="*", help="Parameters required by the action"
+        "parameters", nargs="*", help="Parameter(s) required by the action"
     )
 
     # parser.add_argument("Parameters", action="store", nargs=*)
@@ -56,38 +56,55 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Process the actions
-    speaker = get_speaker(args.speaker)
-    np = len(args.parameters)
-    if args.action == "mute":
-        speaker.mute = True
-    elif args.action == "unmute":
-        speaker.mute = False
-    elif args.action == "stop":
-        speaker.stop()
-    elif args.action == "pause":
-        speaker.pause()
-    elif args.action == "play":
-        speaker.play()
-    elif args.action == "volume":
-        if np == 0:
-            print(speaker.volume)
-            exit(0)
-        if np > 1:
-            print("Error: Too many parameters")
-            exit(1)
-        volume = int(args.parameters[0])
-        if 0 <= volume <= 100:
-            speaker.volume = volume
+    # Wrap everything in a try/except to catch all SoCo (etc.) errors
+    try:
+        speaker = get_speaker(args.speaker)
+        np = len(args.parameters)
+        action = args.action.lower()
+        if action == "mute":
+            speaker.mute = True
+        elif action == "unmute":
+            speaker.mute = False
+        elif action == "stop":
+            speaker.stop()
+        elif action == "pause":
+            try:
+                speaker.pause()
+            except:
+                pass
+        elif action == "play":
+            speaker.play()
+        elif action == "volume":
+            if np == 0:
+                print(speaker.volume)
+            elif np == 1:
+                volume = int(args.parameters[0])
+                if 0 <= volume <= 100:
+                    speaker.volume = volume
+                else:
+                    print("Error: Volume parameter must be from 0 to 100")
+                    exit(1)
+            else:
+                print("Error: Too many parameters")
+                exit(1)
+        elif action == "favourite" or action == "favorite":
+            if np != 1:
+                print("Error: Playing favourite requires one parameter")
+                exit(1)
+            else:
+                play_sonos_favourite(speaker, args.parameters[0])
+        elif action == "uri" or action == "play_uri":
+            if np != 1:
+                print("Error: Playing URI requires one parameter")
+                exit(1)
+            else:
+                print(args.parameters[0])
+                speaker.play_uri(args.parameters[0])
         else:
-            print("Error: Volume parameter must be from 0 to 100")
+            print("Error: Action '{}' is not defined.".format(action))
             exit(1)
-    elif args.action == "favourite" or args.action == "favorite":
-        if np != 1:
-            print("Error: Playing favourite requires one parameter")
-            exit(1)
-        else:
-            play_sonos_favourite(speaker, args.parameters[0])
-    else:
-        print("Error: Action '{}' is not defined.".format(args.action))
+    except:
+        print("Error: Exception.")
         exit(1)
+
     exit(0)
