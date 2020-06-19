@@ -1,13 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import soco
 import argparse
-from os import _exit  # Use os._exit() to avoid the catch-all 'except'
-import pprint
+import os  # Use os._exit() to avoid the catch-all 'except'
 import ipaddress
 
 
 # Use lower case
-speaker_table = {
+speakers = {
     "kitchen": "192.168.0.30",
     "rear reception": "192.168.0.33",
     "front reception": "192.168.0.35",
@@ -18,14 +17,18 @@ speaker_table = {
     "test": "192.168.0.42",
 }
 
-# URI Directory
-uri_table = {
-    "World Service": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/llnw/bbc_world_service.m3u8",
+
+# Directory for locally-defined streams
+# Use lower case
+streams = {
+    "bbc world service": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/llnw/bbc_world_service.m3u8",
+#   "radio paradise": "https://stream.radioparadise.com/flac)",
 }
+
 
 def error_and_exit(msg):
     print("Error:", msg)
-    _exit(1)
+    os._exit(1)
 
 
 def is_ip_address(name):
@@ -40,10 +43,16 @@ def get_speaker(speaker_name):
     if is_ip_address(speaker_name):
         speaker_ip = speaker_name
     else:
-        speaker_ip = speaker_table.get(speaker_name.lower())
+        speaker_ip = speakers.get(speaker_name.lower())
         if not speaker_ip:
             error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
     return soco.SoCo(speaker_ip)
+
+
+def print_speaker_info(speaker):
+    info = speaker.get_speaker_info()
+    for item in sorted(info):
+        print("  {} = {}".format(item, info[item]))
 
 
 def play_sonos_favourite(speaker, favourite):
@@ -94,11 +103,7 @@ if __name__ == "__main__":
         elif action == "stop":
             speaker.stop()
         elif action == "pause":
-            try:
-                speaker.pause()
-            except:
-                # Ignore errors here
-                pass
+            speaker.pause()
         elif action == "play":
             speaker.play()
         # Volume ####################################################
@@ -125,6 +130,16 @@ if __name__ == "__main__":
                 error_and_exit("Playing URI requires one parameter")
             else:
                 speaker.play_uri(args.parameters[0])
+        # Play locally defined stream ###############################
+        elif action == "stream" or action == "play_stream":
+            if np != 1:
+                error_and_exit("Playing URI requires one parameter")
+            else:
+                stream = streams.get(args.parameters[0].lower())
+                if stream:
+                    speaker.play_uri(stream)
+                else:
+                    error_and_exit("Stream not found")
         # Sleep Timer ###############################################
         elif action == "sleep" or action == "sleep_timer":
             if np == 0:
@@ -139,9 +154,13 @@ if __name__ == "__main__":
                 error_and_exit("Too many parameters")
         # Info ######################################################
         elif action == "info":
-            pp = pprint.PrettyPrinter(2)
-            info = speaker.get_speaker_info()
-            pp.pprint(info)
+            print_speaker_info(speaker)
+        # Reindex ###################################################
+        elif action == "reindex":
+            if np == 0:
+                speaker.music_library.start_library_update()
+            else:
+                error_and_exit("No parameters required for the 'reindex' action")
         # Grouping and pairing ######################################
         elif action == "group" or action == "group_with":
             if np == 1:
@@ -171,5 +190,4 @@ if __name__ == "__main__":
             error_and_exit("Action '{}' is not defined.".format(action))
     except BaseException as e:
         error_and_exit("Exception: {}".format(str(e)))
-
     exit(0)
