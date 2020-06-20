@@ -40,9 +40,7 @@ for ip_net in find_my_ipv4_networks():
             ip_searched_list.append(ip_addr)
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.settimeout(0.2)
-            endpoint = (str(ip_addr), 1400)
-            check = s.connect_ex(endpoint)
-            if check == 0:
+            if s.connect_ex((str(ip_addr), 1400)) == 0:
                 speaker = soco.SoCo(str(ip_addr))
                 info = speaker.get_speaker_info()
                 print("Found", info["zone_name"], "at", str(ip_addr))
