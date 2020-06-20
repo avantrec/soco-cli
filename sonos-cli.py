@@ -5,10 +5,11 @@ import os  # Use os._exit() to avoid the catch-all 'except'
 import ipaddress
 
 
+# Include only the group coordinator for paired systems
 # Use lower case
 speakers = {
     "kitchen": "192.168.0.30",
-    "rear reception": "192.168.0.33",
+    "rear reception": "192.168.0.32",
     "front reception": "192.168.0.35",
     "bedroom": "192.168.0.36",
     "bedroom 2": "192.168.0.38",
@@ -31,9 +32,9 @@ def error_and_exit(msg):
     os._exit(1)
 
 
-def is_ip_address(name):
+def is_ip_address(speaker_name):
     try:
-        ipaddress.IPv4Network(name)
+        ipaddress.IPv4Network(speaker_name)
         return True
     except ValueError:
         return False
@@ -51,6 +52,17 @@ def get_speaker(speaker_name):
 
 def print_speaker_info(speaker):
     info = speaker.get_speaker_info()
+    info["volume"] = speaker.volume
+    info["mute"] = speaker.mute
+    info["state"] = speaker.get_current_transport_info()["current_transport_state"]
+    info["title"] = speaker.get_current_track_info()["title"]
+    info["player_name"] = speaker.player_name
+    info["ip_address"] = speaker.ip_address
+    if len(speaker.group.members) == 1:
+        grouped = "No"
+    else:
+        grouped = "Yes"
+    info["grouped_or_paired"] = grouped
     for item in sorted(info):
         print("  {} = {}".format(item, info[item]))
 
@@ -74,10 +86,10 @@ if __name__ == "__main__":
         description="Control Sonos speakers",
     )
     # Set up arguments
-    parser.add_argument("speaker", help="The name or IP address of the speaker")
+    parser.add_argument("speaker", help="The name or IP address of the speaker (Zone/Room)")
     parser.add_argument("action", help="The action to perform")
     parser.add_argument(
-        "parameters", nargs="*", help="Parameter(s) required by the action"
+        "parameters", nargs="*", help="Parameter(s), if required by the action"
     )
 
     # parser.add_argument("Parameters", action="store", nargs=*)
