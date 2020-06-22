@@ -58,11 +58,10 @@ def print_speaker_info(speaker):
     info["title"] = speaker.get_current_track_info()["title"]
     info["player_name"] = speaker.player_name
     info["ip_address"] = speaker.ip_address
-    if len(speaker.group.members) == 1:
-        grouped = "No"
-    else:
-        grouped = "Yes"
-    info["grouped_or_paired"] = grouped
+    info["household_id"] = speaker.household_id
+    info["status_light"] = speaker.status_light
+    info["is_coordinator"] = speaker.is_coordinator
+    info["grouped_or_paired"] = False if len(speaker.group.members) == 1 else True
     for item in sorted(info):
         print("  {} = {}".format(item, info[item]))
 
