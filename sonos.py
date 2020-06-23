@@ -23,7 +23,7 @@ speakers = {
 # Use lower case
 streams = {
     "bbc world service": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/llnw/bbc_world_service.m3u8",
-#   "radio paradise": "https://stream.radioparadise.com/flac)",
+    #   "radio paradise": "https://stream.radioparadise.com/flac)",
 }
 
 
@@ -40,14 +40,20 @@ def is_ip_address(speaker_name):
         return False
 
 
-def get_speaker(speaker_name):
-    if is_ip_address(speaker_name):
-        speaker_ip = speaker_name
-    else:
-        speaker_ip = speakers.get(speaker_name.lower())
-        if not speaker_ip:
-            error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
-    return soco.SoCo(speaker_ip)
+def get_speaker(speaker_name, use_local_database):
+    try:
+        if is_ip_address(speaker_name):
+            return soco.SoCo(speaker_name)
+        else:
+            if use_local_database:
+                speaker_ip = speakers.get(speaker_name.lower())
+                if not speaker_ip:
+                    error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
+                return soco.SoCo(speaker_ip)
+            else:
+                return soco.discovery.by_name(speaker_name)
+    except BaseException as e:
+        error_and_exit("Exception: {}".format(str(e)))
 
 
 def print_speaker_info(speaker):
@@ -62,6 +68,15 @@ def print_speaker_info(speaker):
     info["status_light"] = speaker.status_light
     info["is_coordinator"] = speaker.is_coordinator
     info["grouped_or_paired"] = False if len(speaker.group.members) == 1 else True
+    info["loudness"] = speaker.loudness
+    info["treble"] = speaker.treble
+    info["bass"] = speaker.bass
+    info["cross_fade"] = speaker.cross_fade
+    info["balance"] = speaker.balance
+    info["night_mode"] = speaker.night_mode
+    info["is_soundbar"] = speaker.is_soundbar
+    info["is_playing_line_in"] = speaker.is_playing_line_in
+    info["is_coordinator"] = speaker.is_coordinator
     for item in sorted(info):
         print("  {} = {}".format(item, info[item]))
 
@@ -85,16 +100,20 @@ if __name__ == "__main__":
         description="Control Sonos speakers",
     )
     # Set up arguments
-    parser.add_argument("speaker", help="The name or IP address of the speaker (Zone/Room)")
+    parser.add_argument(
+        "speaker", help="The name or IP address of the speaker (Zone/Room)"
+    )
     parser.add_argument("action", help="The action to perform")
     parser.add_argument(
         "parameters", nargs="*", help="Parameter(s), if required by the action"
     )
-
-    # parser.add_argument("Parameters", action="store", nargs=*)
-    # parser.add_argument("--mute", "-m", action="store_true", help="Mute the speaker")
-    # parser.add_argument("--volume", "-V", type=int, action="store", help="Set the volume of the speaker")
-    # parser.add_argument("--favourite", "-F", type=str, action="store", help="Play a Sonos favourite")
+    parser.add_argument(
+        "--use_local_speaker_database",
+        "-l",
+        action="store_true",
+        default=False,
+        help="Use the local speaker database instead of SoCo discovery",
+    )
 
     # Parse the command line
     args = parser.parse_args()
@@ -102,7 +121,9 @@ if __name__ == "__main__":
     # Process the actions
     # Wrap everything in a try/except to catch all SoCo (etc.) errors
     try:
-        speaker = get_speaker(args.speaker)
+        speaker = get_speaker(args.speaker, args.use_local_speaker_database)
+        if not speaker:
+            error_and_exit("Speaker not found")
         np = len(args.parameters)
         action = args.action.lower()
         # Mute, Unmute ##############################################

@@ -18,7 +18,7 @@ def is_ipv4_address(ip_address):
 
 
 def find_my_ipv4_networks():
-    """Return a list of unique IPv4 networks to which this node is attached"""
+    """Return a list of unique IPv4 networks to which this node is attached."""
     ipv4_net_list = []
     adapters = ifaddr.get_adapters()
     for adapter in adapters:
