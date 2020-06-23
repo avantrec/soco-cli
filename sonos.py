@@ -77,6 +77,7 @@ def print_speaker_info(speaker):
     info["is_soundbar"] = speaker.is_soundbar
     info["is_playing_line_in"] = speaker.is_playing_line_in
     info["is_coordinator"] = speaker.is_coordinator
+    info["is_visible"] = speaker.is_visible
     for item in sorted(info):
         print("  {} = {}".format(item, info[item]))
 
@@ -121,6 +122,7 @@ if __name__ == "__main__":
     # Process the actions
     # Wrap everything in a try/except to catch all SoCo (etc.) errors
     try:
+
         speaker = get_speaker(args.speaker, args.use_local_speaker_database)
         if not speaker:
             error_and_exit("Speaker not found")
@@ -193,6 +195,20 @@ if __name__ == "__main__":
                 speaker.music_library.start_library_update()
             else:
                 error_and_exit("No parameters required for the 'reindex' action")
+        # Loudness ##################################################
+        elif action == "loudness":
+            if np == 0:
+                print("Loudness:", speaker.loudness)
+            elif np == 1:
+                v = (args.parameters[0]).lower()
+                if v == "true":
+                    speaker.loudness = True
+                elif v == "false":
+                    speaker.loudness = False
+                else:
+                    error_and_exit("Loudness setting takes parameter 'T/true' or 'F/false'")
+            else:
+                error_and_exit("Zero or one parameter(s) required for the 'loudness' action")
         # Grouping and pairing ######################################
         elif action == "group" or action == "group_with":
             if np == 1:
