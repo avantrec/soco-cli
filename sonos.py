@@ -96,9 +96,9 @@ def play_sonos_favourite(speaker, favourite):
 if __name__ == "__main__":
     # Create the argument parser
     parser = argparse.ArgumentParser(
-        prog="sonos-cli",
+        prog="sonos",
         usage="%(prog)s speaker action",
-        description="Control Sonos speakers",
+        description="Command line utility for controlling Sonos speakers",
     )
     # Set up arguments
     parser.add_argument(
@@ -130,16 +130,36 @@ if __name__ == "__main__":
         action = args.action.lower()
         # Mute, Unmute ##############################################
         if action == "mute":
-            speaker.mute = True
+            if np == 0:
+                speaker.mute = True
+            else:
+                error_and_exit("Action 'mute' requires no parameters")
         elif action == "unmute":
-            speaker.mute = False
+            if np == 0:
+                speaker.mute = False
+            else:
+                error_and_exit("Action 'unmute' requires no parameters")
+        elif action == "is_muted":
+            if np == 0:
+                print("Muted:", speaker.mute)
+            else:
+                error_and_exit("Action 'is_muted' requires no parameters")
         # Play, Pause, Stop #########################################
         elif action == "stop":
-            speaker.stop()
+            if np == 0:
+                speaker.stop()
+            else:
+                error_and_exit("Action 'stop' requires no parameters")
         elif action == "pause":
-            speaker.pause()
+            if np == 0:
+                speaker.pause()
+            else:
+                error_and_exit("Action 'pause' requires no parameters")
         elif action == "play":
-            speaker.play()
+            if np == 0:
+                speaker.play()
+            else:
+                error_and_exit("Action 'play' requires no parameters")
         # Volume ####################################################
         elif action == "volume":
             if np == 0:
@@ -152,6 +172,42 @@ if __name__ == "__main__":
                     error_and_exit("Volume parameter must be from 0 to 100")
             else:
                 error_and_exit("Volume takes 0 or 1 parameter")
+        # Bass ######################################################
+        elif action == "bass":
+            if np == 0:
+                print("Bass:", speaker.bass)
+            elif np == 1:
+                bass = int(args.parameters[0])
+                if -10 <= bass <= 10:
+                    speaker.bass = bass
+                else:
+                    error_and_exit("Bass parameter must be from -10 to 10")
+            else:
+                error_and_exit("Bass takes 0 or 1 parameter")
+        # Treble ####################################################
+        elif action == "treble":
+            if np == 0:
+                print("Treble:", speaker.treble)
+            elif np == 1:
+                treble = int(args.parameters[0])
+                if -10 <= treble <= 10:
+                    speaker.treble = treble
+                else:
+                    error_and_exit("Treble parameter must be from -10 to 10")
+            else:
+                error_and_exit("Treble takes 0 or 1 parameter")
+        # Balance ###################################################
+        elif action == "balance":
+            if np == 0:
+                print("Balance:", speaker.balance)
+            elif np == 2:
+                balance = int(args.parameters[0]), int(args.parameters[1])
+                if 0 <= balance[0] <= 100 and 0 <= balance[1] <= 100:
+                    speaker.balance = balance
+                else:
+                    error_and_exit("Balance parameters (L R) must be from 0 to 100")
+            else:
+                error_and_exit("Balance takes 0 or 2 parameters")
         # Play Favourite ############################################
         elif action == "favourite" or action == "favorite":
             if np != 1:
@@ -185,7 +241,7 @@ if __name__ == "__main__":
             elif np == 1:
                 speaker.set_sleep_timer(int(args.parameters[0]))
             else:
-                error_and_exit("Too many parameters")
+                error_and_exit("Action 'sleep' requires one parameter (sleep time in seconds)")
         # Info ######################################################
         elif action == "info":
             print_speaker_info(speaker)

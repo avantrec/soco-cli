@@ -7,6 +7,8 @@ import socket
 import soco
 import ifaddr
 import threading
+import argparse
+import pprint
 
 
 def is_ipv4_address(ip_address):
@@ -51,8 +53,8 @@ def get_sonos_device_data(ip_addr, soco_timeout):
         # sonos_devices is a list of four-tuples:
         #   (IP, Household ID, Zone Name, Is Coordinator?)
         return (
-            str(ip_addr),
             speaker.household_id,
+            str(ip_addr),
             info["zone_name"],
             speaker.is_coordinator,
         )
@@ -95,8 +97,23 @@ def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=(2, 2)):
 
 
 if __name__ == "__main__":
-    # Populate IP list to search
-    print(list_sonos_devices())
-    # print(households)
-    # print()
-    # print(speakers)
+    # Create the argument parser
+    parser = argparse.ArgumentParser(
+        prog="sonos-discover",
+        usage="%(prog)s",
+        description="Discover all Sonos speakers on the local network(s).",
+    )
+    parser.add_argument(
+        "--threads",
+        "-t",
+        required=False,
+        type=int,
+        default=256,
+        help="Number of threads to use when probing the network (default = 256)",
+    )
+
+    # Parse the command line
+    args = parser.parse_args()
+
+    pp = pprint.PrettyPrinter()
+    pp.pprint(list_sonos_devices(threads=args.threads))
