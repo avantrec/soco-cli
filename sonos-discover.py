@@ -49,9 +49,6 @@ def probe_ip_and_port(ip, port, timeout):
 def get_sonos_device_data(ip_addr, soco_timeout):
     try:
         speaker = soco.SoCo(str(ip_addr))
-        info = speaker.get_speaker_info(
-            refresh=True, timeout=(soco_timeout, soco_timeout)
-        )
         info = speaker.get_speaker_info(refresh=True, timeout=soco_timeout)
         # sonos_devices is a list of four-tuples:
         #   (Household ID, IP, Zone Name, Is Coordinator?)
@@ -75,7 +72,7 @@ def scan_for_sonos_worker(ip_list, socket_timeout, soco_timeout, sonos_devices):
                 sonos_devices.append(device)
 
 
-def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=(1, 1)):
+def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=1):
     """Returns a list of ..."""
     ip_list = []
     # Set up the list of IPs to search
