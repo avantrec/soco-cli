@@ -51,7 +51,7 @@ def get_sonos_device_data(ip_addr, soco_timeout):
         speaker = soco.SoCo(str(ip_addr))
         info = speaker.get_speaker_info(refresh=True, timeout=soco_timeout)
         # sonos_devices is a list of four-tuples:
-        #   (IP, Household ID, Zone Name, Is Coordinator?)
+        #   (Household ID, IP, Zone Name, Is Coordinator?)
         return (
             speaker.household_id,
             str(ip_addr),
@@ -72,7 +72,7 @@ def scan_for_sonos_worker(ip_list, socket_timeout, soco_timeout, sonos_devices):
                 sonos_devices.append(device)
 
 
-def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=(2, 2)):
+def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=(1, 1)):
     """Returns a list of ..."""
     ip_list = []
     # Set up the list of IPs to search
@@ -83,6 +83,8 @@ def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=(2, 2)):
     thread_list = []
     sonos_devices = []
     # Create parallel threads to scan the IP range
+    if threads > len(ip_list):
+        threads = len(ip_list)
     for _ in range(threads):
         thread = threading.Thread(
             target=scan_for_sonos_worker,
@@ -111,9 +113,33 @@ if __name__ == "__main__":
         default=256,
         help="Number of threads to use when probing the network (default = 256)",
     )
-
+    parser.add_argument(
+        "--network_timeout",
+        "-n",
+        required=False,
+        type=float,
+        default=1,
+        help="Network timeouts (float, seconds) to use when probing the network (default = 1s)",
+    )
     # Parse the command line
     args = parser.parse_args()
+    # Parameter validation
+    if not 1 <= args.threads <= 1024:
+        print(
+            "Error: value of 'threads' parameter should be an integer between 1 and 1024"
+        )
+        exit(1)
+    if not 0 <= args.network_timeout <= 60:
+        print(
+            "Error: value of 'network_timeout' parameter should be a float between 0 and 60"
+        )
+        exit(1)
 
     pp = pprint.PrettyPrinter()
-    pp.pprint(list_sonos_devices(threads=args.threads))
+    pp.pprint(
+        list_sonos_devices(
+            threads=args.threads,
+            socket_timeout=args.network_timeout,
+            soco_timeout=args.network_timeout,
+        )
+    )

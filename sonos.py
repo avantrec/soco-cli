@@ -5,8 +5,8 @@ import os  # Use os._exit() to avoid the catch-all 'except'
 import ipaddress
 
 
-# Include only the group coordinator for paired systems
-# Use lower case
+# Include only the group coordinator for paired/bonded systems
+# Use lower case for case-insensitive mapping
 speakers = {
     "kitchen": "192.168.0.30",
     "rear reception": "192.168.0.32",
@@ -32,7 +32,7 @@ def error_and_exit(msg):
     os._exit(1)
 
 
-def is_ip_address(speaker_name):
+def is_ipv4_address(speaker_name):
     try:
         ipaddress.IPv4Network(speaker_name)
         return True
@@ -42,7 +42,7 @@ def is_ip_address(speaker_name):
 
 def get_speaker(speaker_name, use_local_database):
     try:
-        if is_ip_address(speaker_name):
+        if is_ipv4_address(speaker_name):
             return soco.SoCo(speaker_name)
         else:
             if use_local_database:
@@ -71,12 +71,13 @@ def print_speaker_info(speaker):
     info["loudness"] = speaker.loudness
     info["treble"] = speaker.treble
     info["bass"] = speaker.bass
-    info["cross_fade"] = speaker.cross_fade
+    info["is_coordinator"] = speaker.is_coordinator
+    if speaker.is_coordinator:
+        info["cross_fade"] = speaker.cross_fade
     info["balance"] = speaker.balance
     info["night_mode"] = speaker.night_mode
     info["is_soundbar"] = speaker.is_soundbar
     info["is_playing_line_in"] = speaker.is_playing_line_in
-    info["is_coordinator"] = speaker.is_coordinator
     info["is_visible"] = speaker.is_visible
     for item in sorted(info):
         print("  {} = {}".format(item, info[item]))
@@ -102,12 +103,14 @@ if __name__ == "__main__":
     )
     # Set up arguments
     parser.add_argument(
-        "speaker", help="The name or IP address of the speaker (Zone/Room)"
+        "speaker", help="The name (Sonos Room/Zone) or IP address of the speaker"
     )
     parser.add_argument("action", help="The action to perform")
+    # A variable number of arguments depending on the action
     parser.add_argument(
         "parameters", nargs="*", help="Parameter(s), if required by the action"
     )
+    # Optional arguments
     parser.add_argument(
         "--use_local_speaker_database",
         "-l",
@@ -121,29 +124,29 @@ if __name__ == "__main__":
 
     # Process the actions
     # Wrap everything in a try/except to catch all SoCo (etc.) errors
+    # ToDo: improve so there's a single action pattern and a single function to interpret it
     try:
-
         speaker = get_speaker(args.speaker, args.use_local_speaker_database)
         if not speaker:
             error_and_exit("Speaker not found")
         np = len(args.parameters)
         action = args.action.lower()
-        # Mute, Unmute ##############################################
+        # Mute ######################################################
         if action == "mute":
             if np == 0:
-                speaker.mute = True
+                print("Mute:", speaker.mute)
+            elif np == 1:
+                mute = (args.parameters[0]).lower()
+                if mute == "true":
+                    speaker.mute = True
+                elif mute == "false":
+                    speaker.mute = False
+                else:
+                    error_and_exit("Mute setting takes parameter 'T/true' or 'F/false'")
             else:
-                error_and_exit("Action 'mute' requires no parameters")
-        elif action == "unmute":
-            if np == 0:
-                speaker.mute = False
-            else:
-                error_and_exit("Action 'unmute' requires no parameters")
-        elif action == "is_muted":
-            if np == 0:
-                print("Muted:", speaker.mute)
-            else:
-                error_and_exit("Action 'is_muted' requires no parameters")
+                error_and_exit(
+                    "Zero or one parameter(s) required for the 'mute' action"
+                )
         # Play, Pause, Stop #########################################
         elif action == "stop":
             if np == 0:
@@ -205,7 +208,7 @@ if __name__ == "__main__":
                 if 0 <= balance[0] <= 100 and 0 <= balance[1] <= 100:
                     speaker.balance = balance
                 else:
-                    error_and_exit("Balance parameters (L R) must be from 0 to 100")
+                    error_and_exit("Balance parameters 'Left Right' must be from 0 to 100")
             else:
                 error_and_exit("Balance takes 0 or 2 parameters")
         # Play Favourite ############################################
@@ -241,7 +244,9 @@ if __name__ == "__main__":
             elif np == 1:
                 speaker.set_sleep_timer(int(args.parameters[0]))
             else:
-                error_and_exit("Action 'sleep' requires one parameter (sleep time in seconds)")
+                error_and_exit(
+                    "Action 'sleep' requires one parameter (sleep time in seconds)"
+                )
         # Info ######################################################
         elif action == "info":
             print_speaker_info(speaker)
@@ -262,13 +267,37 @@ if __name__ == "__main__":
                 elif v == "false":
                     speaker.loudness = False
                 else:
-                    error_and_exit("Loudness setting takes parameter 'T/true' or 'F/false'")
+                    error_and_exit(
+                        "Loudness setting takes parameter 'T/true' or 'F/false'"
+                    )
             else:
-                error_and_exit("Zero or one parameter(s) required for the 'loudness' action")
+                error_and_exit(
+                    "Zero or one parameter(s) required for the 'loudness' action"
+                )
+        # Cross Fade ################################################
+        elif action == "cross_fade":
+            if np == 0:
+                print("Cross Fade:", speaker.cross_fade)
+            elif np == 1:
+                v = (args.parameters[0]).lower()
+                if v == "true":
+                    speaker.cross_fade = True
+                elif v == "false":
+                    speaker.cross_fade = False
+                else:
+                    error_and_exit(
+                        "Cross Fade setting takes parameter 'T/true' or 'F/false'"
+                    )
+            else:
+                error_and_exit(
+                    "Zero or one parameter(s) required for the 'cross_fade' action"
+                )
         # Grouping and pairing ######################################
-        elif action == "group" or action == "group_with":
+        elif action == "group":
             if np == 1:
-                speaker2 = get_speaker(args.parameters[0])
+                speaker2 = get_speaker(
+                    args.parameters[0], args.use_local_speaker_database
+                )
                 speaker.join(speaker2)
             else:
                 error_and_exit("One parameter (the speaker to group with) required")
@@ -277,21 +306,21 @@ if __name__ == "__main__":
                 speaker.unjoin()
             else:
                 error_and_exit("No parameters required for 'ungroup' action")
-        # Stereo pairing is pending release of SoCo 0.20
-        # elif action == "pair":
-        #     if np == 1:
-        #         right_speaker = get_speaker(args.parameters[0])
-        #         speaker.create_stereo_pair(right_speaker)
-        #     else:
-        #         error_and_exit("One parameter (the right hand speaker) required")
-        # elif action == "unpair":
-        #     if np == 0:
-        #         speaker.separate_stereo_pair()
-        #     else:
-        #         error_and_exit("No parameters required for 'unpair' action")
+        # Stereo pairing (requires SoCo >= 0.20) ####################
+        elif action == "pair":
+            if np == 1:
+                right_speaker = get_speaker(args.parameters[0], args.use_local_speaker_database)
+                speaker.create_stereo_pair(right_speaker)
+            else:
+                error_and_exit("One parameter (the right hand speaker) required")
+        elif action == "unpair":
+            if np == 0:
+                speaker.separate_stereo_pair()
+            else:
+                error_and_exit("No parameters required for 'unpair' action")
         # Invalid Action ############################################
         else:
             error_and_exit("Action '{}' is not defined.".format(action))
-    except BaseException as e:
+    except Exception as e:
         error_and_exit("Exception: {}".format(str(e)))
     exit(0)
