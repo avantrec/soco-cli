@@ -95,7 +95,7 @@ def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=1):
     for _ in range(threads):
         thread = threading.Thread(
             target=list_sonos_devices_worker,
-            args=(ip_list, socket_timeout, soco_timeout, sonos_devices),
+            args=(ip_list, socket_timeout, (soco_timeout, soco_timeout), sonos_devices),
         )
         thread_list.append(thread)
         thread.start()
@@ -151,9 +151,8 @@ if __name__ == "__main__":
     households = {}
     for device in devices:
         if device[0] not in households:
-            households[device[0]] = [(device[2], device[1], device[3])]
-        else:
-            households[device[0]].append((device[2], device[1], device[3]))
+            households[device[0]] = []
+        households[device[0]].append((device[2], device[1], device[3]))
 
     pp = pprint.PrettyPrinter()
     pp.pprint(households)
