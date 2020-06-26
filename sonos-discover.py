@@ -38,6 +38,7 @@ def find_my_ipv4_networks():
 
 
 def probe_ip_and_port(ip, port, timeout):
+    """Determine if a port is open"""
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(timeout)
     if s.connect_ex((ip, port)) == 0:
@@ -47,10 +48,11 @@ def probe_ip_and_port(ip, port, timeout):
 
 
 def get_sonos_device_data(ip_addr, soco_timeout):
+    """Pull data from a Sonos device"""
     try:
         speaker = soco.SoCo(str(ip_addr))
         info = speaker.get_speaker_info(refresh=True, timeout=soco_timeout)
-        # sonos_devices is a list of four-tuples:
+        # Return a four-tuple:
         #   (Household ID, IP, Zone Name, Is Coordinator?)
         return (
             speaker.household_id,
@@ -63,7 +65,10 @@ def get_sonos_device_data(ip_addr, soco_timeout):
         return None
 
 
-def scan_for_sonos_worker(ip_list, socket_timeout, soco_timeout, sonos_devices):
+def list_sonos_devices_worker(ip_list, socket_timeout, soco_timeout, sonos_devices):
+    """Worker thread to pull IP addresses off a list, test if port 1400 is open,
+    then pull down the Sonos device data.
+    """
     while len(ip_list) > 0:
         ip_addr = ip_list.pop(0)
         if probe_ip_and_port(str(ip_addr), 1400, socket_timeout):
@@ -73,7 +78,7 @@ def scan_for_sonos_worker(ip_list, socket_timeout, soco_timeout, sonos_devices):
 
 
 def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=1):
-    """Returns a list of ..."""
+    """Returns a list of Sonos devices on the local network(s)"""
     ip_list = []
     # Set up the list of IPs to search
     for network in find_my_ipv4_networks():
@@ -82,14 +87,14 @@ def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=1):
     # Start threads to check IPs for Sonos devices
     thread_list = []
     sonos_devices = []
-    # Disable SoCo caching to prevent problems with multiple households
+    # Disable SoCo caching to prevent problems caused by multiple households
     soco.core.zone_group_state_shared_cache.enabled = False
     # Create parallel threads to scan the IP range
     if threads > len(ip_list):
         threads = len(ip_list)
     for _ in range(threads):
         thread = threading.Thread(
-            target=scan_for_sonos_worker,
+            target=list_sonos_devices_worker,
             args=(ip_list, socket_timeout, soco_timeout, sonos_devices),
         )
         thread_list.append(thread)
