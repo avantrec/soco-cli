@@ -82,6 +82,8 @@ def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=1):
     # Start threads to check IPs for Sonos devices
     thread_list = []
     sonos_devices = []
+    # Disable SoCo caching to prevent problems with multiple households
+    soco.core.zone_group_state_shared_cache.enabled = False
     # Create parallel threads to scan the IP range
     if threads > len(ip_list):
         threads = len(ip_list)
@@ -135,11 +137,18 @@ if __name__ == "__main__":
         )
         exit(1)
 
-    pp = pprint.PrettyPrinter()
-    pp.pprint(
-        list_sonos_devices(
-            threads=args.threads,
-            socket_timeout=args.network_timeout,
-            soco_timeout=args.network_timeout,
-        )
+    devices = list_sonos_devices(
+        threads=args.threads,
+        socket_timeout=args.network_timeout,
+        soco_timeout=args.network_timeout,
     )
+
+    households = {}
+    for device in devices:
+        if device[0] not in households:
+            households[device[0]] = [(device[2], device[1], device[3])]
+        else:
+            households[device[0]].append((device[2], device[1], device[3]))
+
+    pp = pprint.PrettyPrinter()
+    pp.pprint(households)
