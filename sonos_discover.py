@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Find all Sonos speakers on your local network(s)
+# Find all Sonos speakers on your local network(s) by searching all local IPv4 addresses
 
 import ipaddress
 import socket
@@ -13,10 +13,10 @@ from collections import namedtuple
 
 # Type for holding speaker details
 SonosDevice = namedtuple(
-    "Device", ["household_id", "ip_address", "speaker_name", "is_coordinator"]
+    "SonosDevice", ["household_id", "ip_address", "speaker_name", "is_coordinator"]
 )
 
-# Cache of sonos discovery results
+# Global cache of sonos discovery results
 sonos_devices = []
 
 
@@ -76,7 +76,7 @@ def get_sonos_device_data(ip_addr, soco_timeout):
 
 def list_sonos_devices_worker(ip_list, socket_timeout, soco_timeout, sonos_devices):
     """Worker thread to pull IP addresses off a list, test if port 1400 is open,
-    then pull down the Sonos device data.
+    and if so pull down the Sonos device data. Return when the list is empty.
     """
     while len(ip_list) > 0:
         ip_addr = ip_list.pop(0)
@@ -93,8 +93,8 @@ def list_sonos_devices(threads=256, socket_timeout=2, soco_timeout=2, refresh=Fa
         # Use the cache
         return sonos_devices
     # Probe the network
-    ip_list = []
     # Set up the list of IPs to search
+    ip_list = []
     for network in find_my_ipv4_networks():
         for ip_addr in network:
             ip_list.append(ip_addr)
