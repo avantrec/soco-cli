@@ -3,6 +3,7 @@ import soco
 import argparse
 import os  # Use os._exit() to avoid the catch-all 'except'
 import ipaddress
+import sonos_discover
 
 
 # Include only the group coordinator for paired/bonded systems
@@ -45,8 +46,13 @@ def get_speaker(speaker_name, use_local_database):
         if is_ipv4_address(speaker_name):
             return soco.SoCo(speaker_name)
         else:
+            devices = sonos_discover.list_sonos_devices()
             if use_local_database:
-                speaker_ip = speakers.get(speaker_name.lower())
+                devices = sonos_discover.list_sonos_devices()
+                speaker_ip = None
+                for device in devices:
+                    if device[2].lower() == speaker_name.lower():
+                        speaker_ip = device[1]
                 if not speaker_ip:
                     error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
                 return soco.SoCo(speaker_ip)

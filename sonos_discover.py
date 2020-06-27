@@ -9,6 +9,15 @@ import ifaddr
 import threading
 import argparse
 import pprint
+from collections import namedtuple
+
+# Type for holding speaker details
+SonosDevice = namedtuple(
+    "Device", ["household_id", "ip_address", "speaker_name", "is_coordinator"]
+)
+
+# Cache of sonos discovery results
+sonos_devices = []
 
 
 def is_ipv4_address(ip_address):
@@ -48,19 +57,19 @@ def probe_ip_and_port(ip, port, timeout):
 
 
 def get_sonos_device_data(ip_addr, soco_timeout):
-    """Pull data from a Sonos device"""
+    """Interrogate a Sonos device"""
     try:
         speaker = soco.SoCo(str(ip_addr))
         info = speaker.get_speaker_info(refresh=True, timeout=soco_timeout)
-        # Return a four-tuple:
+        # Return a four-namedtuple:
         #   (Household ID, IP, Zone Name, Is Coordinator?)
-        return (
+        return SonosDevice(
             speaker.household_id,
             str(ip_addr),
             info["zone_name"],
             speaker.is_coordinator,
         )
-    except BaseException as e:
+    except Exception as e:
         # Probably not a Sonos device
         return None
 
@@ -77,8 +86,13 @@ def list_sonos_devices_worker(ip_list, socket_timeout, soco_timeout, sonos_devic
                 sonos_devices.append(device)
 
 
-def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=1):
-    """Returns a list of Sonos devices on the local network(s)"""
+def list_sonos_devices(threads=256, socket_timeout=2, soco_timeout=2, refresh=False):
+    """Returns a list of Sonos devices on the local network(s). """
+    global sonos_devices  # Cache for results
+    if len(sonos_devices) != 0 and refresh is False:
+        # Use the cache
+        return sonos_devices
+    # Probe the network
     ip_list = []
     # Set up the list of IPs to search
     for network in find_my_ipv4_networks():
@@ -105,6 +119,38 @@ def list_sonos_devices(threads=256, socket_timeout=1, soco_timeout=1):
     return sonos_devices
 
 
+def discover_named_speaker_ip(speaker_name, household=None):
+    """Find the IP address of a coordinator speaker. Optionally specify a household ID"""
+    devices = list_sonos_devices()
+    for device in devices:
+        # Only return the speaker IP if the speaker is a Coordinator
+        if device.speaker_name == speaker_name and device.is_coordinator is True:
+            if household is None or device.household_id == household:
+                return device.ip_address
+    return None
+
+
+def discover_any_speaker_ip(household=None):
+    """Return the IP address of any coordinator speaker. Optionally specify a household ID"""
+    devices = list_sonos_devices()
+    for device in devices:
+        if device.is_coordinator and (
+            device.household_id == household or household is None
+        ):
+            return device.ip_address
+    return None
+
+
+def discover_households():
+    """Return a list of household IDs found."""
+    devices = list_sonos_devices()
+    households = []
+    for device in devices:
+        if device.household_id not in households:
+            households.append(device.household_id)
+    return households
+
+
 if __name__ == "__main__":
     # Create the argument parser
     parser = argparse.ArgumentParser(
@@ -125,8 +171,8 @@ if __name__ == "__main__":
         "-n",
         required=False,
         type=float,
-        default=1,
-        help="Network timeouts (float, seconds) to use when probing the network (default = 1s)",
+        default=3.0,
+        help="Network timeouts (float, seconds) to use when probing the network (default = 3.0s)",
     )
     # Parse the command line
     args = parser.parse_args()
