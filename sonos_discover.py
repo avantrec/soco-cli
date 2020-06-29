@@ -13,11 +13,13 @@ from collections import namedtuple
 
 # Type for holding speaker details
 SonosDevice = namedtuple(
-    "SonosDevice", ["household_id", "ip_address", "speaker_name", "is_coordinator"]
+    "SonosDevice",
+    ["household_id", "ip_address", "speaker_name", "is_coordinator", "is_visible"],
+    rename=False,
 )
 
 # Global cache of sonos discovery results
-sonos_devices = []
+sonos_devices_cache = []
 
 
 def is_ipv4_address(ip_address):
@@ -28,7 +30,7 @@ def is_ipv4_address(ip_address):
         return False
 
 
-def find_my_ipv4_networks():
+def find_ipv4_networks():
     """Return a list of unique IPv4 networks to which this node is attached."""
     ipv4_net_list = []
     adapters = ifaddr.get_adapters()
@@ -46,7 +48,7 @@ def find_my_ipv4_networks():
     return ipv4_net_list
 
 
-def probe_ip_and_port(ip, port, timeout):
+def check_ip_and_port(ip, port, timeout):
     """Determine if a port is open"""
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(timeout)
@@ -61,13 +63,12 @@ def get_sonos_device_data(ip_addr, soco_timeout):
     try:
         speaker = soco.SoCo(str(ip_addr))
         info = speaker.get_speaker_info(refresh=True, timeout=soco_timeout)
-        # Return a four-namedtuple:
-        #   (Household ID, IP, Zone Name, Is Coordinator?)
         return SonosDevice(
             speaker.household_id,
             str(ip_addr),
             info["zone_name"],
             speaker.is_coordinator,
+            speaker.is_visible,
         )
     except Exception as e:
         # Probably not a Sonos device
@@ -80,7 +81,7 @@ def list_sonos_devices_worker(ip_list, socket_timeout, soco_timeout, sonos_devic
     """
     while len(ip_list) > 0:
         ip_addr = ip_list.pop(0)
-        if probe_ip_and_port(str(ip_addr), 1400, socket_timeout):
+        if check_ip_and_port(str(ip_addr), 1400, socket_timeout):
             device = get_sonos_device_data(ip_addr, soco_timeout)
             if device:
                 sonos_devices.append(device)
@@ -88,14 +89,14 @@ def list_sonos_devices_worker(ip_list, socket_timeout, soco_timeout, sonos_devic
 
 def list_sonos_devices(threads=256, socket_timeout=2, soco_timeout=2, refresh=False):
     """Returns a list of Sonos devices on the local network(s). """
-    global sonos_devices  # Cache for results
-    if len(sonos_devices) != 0 and refresh is False:
+    global sonos_devices_cache  # Cache for results
+    if len(sonos_devices_cache) != 0 and refresh is False:
         # Use the cache
-        return sonos_devices
+        return sonos_devices_cache
     # Probe the network
     # Set up the list of IPs to search
     ip_list = []
-    for network in find_my_ipv4_networks():
+    for network in find_ipv4_networks():
         for ip_addr in network:
             ip_list.append(ip_addr)
     # Start threads to check IPs for Sonos devices
@@ -116,6 +117,7 @@ def list_sonos_devices(threads=256, socket_timeout=2, soco_timeout=2, refresh=Fa
     # Wait for all threads to finish before returning
     for thread in thread_list:
         thread.join()
+    sonos_devices_cache = sonos_devices
     return sonos_devices
 
 
@@ -123,8 +125,8 @@ def discover_named_speaker_ip(speaker_name, household=None):
     """Find the IP address of a coordinator speaker. Optionally specify a household ID"""
     devices = list_sonos_devices()
     for device in devices:
-        # Only return the speaker IP if the speaker is a Coordinator
-        if device.speaker_name == speaker_name and device.is_coordinator is True:
+        # Only return the speaker IP if the speaker is visible
+        if device.speaker_name == speaker_name and device.is_visible:
             if household is None or device.household_id == household:
                 return device.ip_address
     return None
@@ -132,8 +134,8 @@ def discover_named_speaker_ip(speaker_name, household=None):
 
 def discover_any_speaker_ip(household=None):
     """Return the IP address of any coordinator speaker. Optionally specify a household ID"""
-    devices = list_sonos_devices()
-    for device in devices:
+    _devices = list_sonos_devices()
+    for device in _devices:
         if device.is_coordinator and (
             device.household_id == household or household is None
         ):
@@ -196,9 +198,16 @@ if __name__ == "__main__":
 
     households = {}
     for device in devices:
-        if device[0] not in households:
-            households[device[0]] = []
-        households[device[0]].append((device[2], device[1], device[3]))
+        if device.household_id not in households:
+            households[device.household_id] = []
+        households[device.household_id].append(
+            (
+                device.speaker_name,
+                device.ip_address,
+                device.is_coordinator,
+                device.is_visible,
+            )
+        )
 
-    pp = pprint.PrettyPrinter()
+    pp = pprint.PrettyPrinter(width=100)
     pp.pprint(households)
