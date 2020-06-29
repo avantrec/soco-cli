@@ -8,7 +8,7 @@ import sonos_discover
 
 # Include only the group coordinator for paired/bonded systems
 # Use lower case for case-insensitive mapping
-speakers = {
+speakers_cache = {
     "kitchen": "192.168.0.30",
     "rear reception": "192.168.0.32",
     "front reception": "192.168.0.35",
@@ -45,19 +45,22 @@ def get_speaker(speaker_name, use_local_database):
     try:
         if is_ipv4_address(speaker_name):
             return soco.SoCo(speaker_name)
-        else:
+        elif use_local_database:
+            if speakers_cache:
+                speaker_ip = speakers_cache.get(speaker_name.lower())
+                if speaker_ip:
+                    return soco.SoCo(speaker_ip)
+            # No cache or not found in the cache; fall through
             devices = sonos_discover.list_sonos_devices()
-            if use_local_database:
-                devices = sonos_discover.list_sonos_devices()
-                speaker_ip = None
-                for device in devices:
-                    if device[2].lower() == speaker_name.lower():
-                        speaker_ip = device[1]
-                if not speaker_ip:
-                    error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
-                return soco.SoCo(speaker_ip)
-            else:
-                return soco.discovery.by_name(speaker_name)
+            speaker_ip = None
+            for device in devices:
+                if device[2].lower() == speaker_name.lower():
+                    speaker_ip = device[1]
+            if not speaker_ip:
+                error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
+            return soco.SoCo(speaker_ip)
+        else:
+            return soco.discovery.by_name(speaker_name)
     except BaseException as e:
         error_and_exit("Exception: {}".format(str(e)))
 
@@ -314,12 +317,16 @@ if __name__ == "__main__":
                 error_and_exit("No parameters required for 'ungroup' action")
         # Stereo pairing (requires SoCo >= 0.20) ####################
         elif action == "pair":
+            if float(soco.__version__) <= 0.19:
+                error_and_exit("Pairing operations require SoCo v0.20 or greater")
             if np == 1:
                 right_speaker = get_speaker(args.parameters[0], args.use_local_speaker_database)
                 speaker.create_stereo_pair(right_speaker)
             else:
                 error_and_exit("One parameter (the right hand speaker) required")
         elif action == "unpair":
+            if float(soco.__version__) <= 0.19:
+                error_and_exit("Pairing operations require SoCo v0.20 or greater")
             if np == 0:
                 speaker.separate_stereo_pair()
             else:
