@@ -315,7 +315,7 @@ if __name__ == "__main__":
                 speaker.unjoin()
             else:
                 error_and_exit("No parameters required for 'ungroup' action")
-        # Stereo pairing (requires SoCo >= 0.20) ####################
+        # Stereo pairing ############################################
         elif action == "pair":
             if float(soco.__version__) <= 0.19:
                 error_and_exit("Pairing operations require SoCo v0.20 or greater")
