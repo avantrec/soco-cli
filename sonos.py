@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import soco
 import argparse
-import os  # Use os._exit() to avoid the catch-all 'except'
+import os
+import sys
 import ipaddress
 import sonos_discover
+import pprint
 
 
 # Include only the group coordinator for paired/bonded systems
@@ -21,7 +23,9 @@ speakers_cache = {
 
 
 def error_and_exit(msg):
-    print("Error:", msg)
+    # Print to stderror
+    print("Error:", msg, file=sys.stderr)
+    # Use os._exit() to avoid the catch-all 'except'
     os._exit(1)
 
 
@@ -124,6 +128,8 @@ if __name__ == "__main__":
         help="Use the local speaker database instead of SoCo discovery",
     )
 
+    pp = pprint.PrettyPrinter(width=100)
+
     # Parse the command line
     args = parser.parse_args()
 
@@ -139,7 +145,7 @@ if __name__ == "__main__":
         # Mute ######################################################
         if action == "mute":
             if np == 0:
-                print("Mute:", speaker.mute)
+                print(speaker.mute)
             elif np == 1:
                 mute = (args.parameters[0]).lower()
                 if mute == "true":
@@ -147,12 +153,12 @@ if __name__ == "__main__":
                 elif mute == "false":
                     speaker.mute = False
                 else:
-                    error_and_exit("Mute setting takes parameter 'T/true' or 'F/false'")
+                    error_and_exit("Action 'mute' takes parameter 'T/true' or 'F/false'")
             else:
                 error_and_exit(
-                    "Zero or one parameter(s) required for the 'mute' action"
+                    "Action 'mute' requires 0 or 1 parameter(s)"
                 )
-        # Play, Pause, Stop #########################################
+        # Playback controls #########################################
         elif action == "stop":
             if np == 0:
                 speaker.stop()
@@ -168,10 +174,40 @@ if __name__ == "__main__":
                 speaker.play()
             else:
                 error_and_exit("Action 'play' requires no parameters")
+        elif action == "next":
+            if np == 0:
+                speaker.next()
+            else:
+                error_and_exit("Action 'next' requires no parameters")
+        elif action == "previous":
+            if np == 0:
+                speaker.previous()
+            else:
+                error_and_exit("Action 'previous' requires no parameters")
+        elif action == "seek":
+            if np == 1:
+                speaker.seek(args.parameters[0])
+            else:
+                error_and_exit("Action 'seek' requires 1 parameter (seek point using HH:MM:SS)")
+        elif action == "play_mode":
+            if np == 0:
+                print(speaker.play_mode)
+            else:
+                error_and_exit("Action 'play_mode' requires no parameters")
+        elif action == "playback":
+            if np == 0:
+                pp.pprint(speaker.get_current_transport_info())
+            else:
+                error_and_exit("Action 'playback' requires no parameters")
+        elif action == "track":
+            if np == 0:
+                pp.pprint(speaker.get_current_track_info())
+            else:
+                error_and_exit("Action 'track' requires no parameters")
         # Volume ####################################################
         elif action == "volume":
             if np == 0:
-                print("Volume:", speaker.volume)
+                print(speaker.volume)
             elif np == 1:
                 volume = int(args.parameters[0])
                 if 0 <= volume <= 100:
@@ -179,11 +215,20 @@ if __name__ == "__main__":
                 else:
                     error_and_exit("Volume parameter must be from 0 to 100")
             else:
-                error_and_exit("Volume takes 0 or 1 parameter")
+                error_and_exit("Action 'volume' takes 0 or 1 parameter(s)")
+        elif action == "ramp" or action == "ramp_to_volume":
+            if np == 1:
+                volume = int(args.parameters[0])
+                if 0 <= volume <= 100:
+                    speaker.ramp_to_volume(volume)
+                else:
+                    error_and_exit("Ramp to volume parameter must be from 0 to 100")
+            else:
+                error_and_exit("Action 'ramp' requires 1 parameter")
         # Bass ######################################################
         elif action == "bass":
             if np == 0:
-                print("Bass:", speaker.bass)
+                print(speaker.bass)
             elif np == 1:
                 bass = int(args.parameters[0])
                 if -10 <= bass <= 10:
@@ -191,11 +236,11 @@ if __name__ == "__main__":
                 else:
                     error_and_exit("Bass parameter must be from -10 to 10")
             else:
-                error_and_exit("Bass takes 0 or 1 parameter")
+                error_and_exit("Action 'bass' takes 0 or 1 parameter(s)")
         # Treble ####################################################
         elif action == "treble":
             if np == 0:
-                print("Treble:", speaker.treble)
+                print(speaker.treble)
             elif np == 1:
                 treble = int(args.parameters[0])
                 if -10 <= treble <= 10:
@@ -203,11 +248,11 @@ if __name__ == "__main__":
                 else:
                     error_and_exit("Treble parameter must be from -10 to 10")
             else:
-                error_and_exit("Treble takes 0 or 1 parameter")
+                error_and_exit("Action 'treble' takes 0 or 1 parameter(s)")
         # Balance ###################################################
         elif action == "balance":
             if np == 0:
-                print("Balance:", speaker.balance)
+                print(speaker.balance)
             elif np == 2:
                 balance = int(args.parameters[0]), int(args.parameters[1])
                 if 0 <= balance[0] <= 100 and 0 <= balance[1] <= 100:
@@ -217,17 +262,17 @@ if __name__ == "__main__":
                         "Balance parameters 'Left Right' must be from 0 to 100"
                     )
             else:
-                error_and_exit("Balance takes 0 or 2 parameters")
+                error_and_exit("Action 'balance' takes 0 or 2 parameters")
         # Play Favourite ############################################
         elif action == "favourite" or action == "favorite":
             if np != 1:
-                error_and_exit("Playing a favourite requires one parameter")
+                error_and_exit("Action 'favourite' requires 1 parameter")
             else:
                 play_sonos_favourite(speaker, args.parameters[0])
         # Play URI ##################################################
         elif action == "uri" or action == "play_uri":
             if not (np == 1 or np == 2):
-                error_and_exit("Playing URI requires one or two parameters")
+                error_and_exit("Action 'uri' requires 1 or 2 parameter(s)")
             else:
                 force_radio = (
                     True if args.parameters[0][:4].lower() == "http" else False
@@ -245,14 +290,14 @@ if __name__ == "__main__":
             if np == 0:
                 st = speaker.get_sleep_timer()
                 if st:
-                    print("Sleep timer:", st, "seconds remaining")
+                    print(st)
                 else:
-                    print("No sleep timer set")
+                    print(0)
             elif np == 1:
                 speaker.set_sleep_timer(int(args.parameters[0]))
             else:
                 error_and_exit(
-                    "Action 'sleep' requires one parameter (sleep time in seconds)"
+                    "Action 'sleep' requires 0 or 1 parameters (sleep time in seconds)"
                 )
         # Info ######################################################
         elif action == "info":
@@ -262,11 +307,11 @@ if __name__ == "__main__":
             if np == 0:
                 speaker.music_library.start_library_update()
             else:
-                error_and_exit("No parameters required for the 'reindex' action")
+                error_and_exit("Action 'reindex' requires no parameters")
         # Loudness ##################################################
         elif action == "loudness":
             if np == 0:
-                print("Loudness:", speaker.loudness)
+                print(speaker.loudness)
             elif np == 1:
                 v = (args.parameters[0]).lower()
                 if v == "true":
@@ -275,16 +320,16 @@ if __name__ == "__main__":
                     speaker.loudness = False
                 else:
                     error_and_exit(
-                        "Loudness setting takes parameter 'T/true' or 'F/false'"
+                        "Action 'loudness' with a parameter requires 'T/true' or 'F/false'"
                     )
             else:
                 error_and_exit(
-                    "Zero or one parameter(s) required for the 'loudness' action"
+                    "Action 'loudness' requires 0 or 1 parameter ('T/true' or 'F/false')"
                 )
         # Cross Fade ################################################
         elif action == "cross_fade":
             if np == 0:
-                print("Cross Fade:", speaker.cross_fade)
+                print(speaker.cross_fade)
             elif np == 1:
                 v = (args.parameters[0]).lower()
                 if v == "true":
@@ -293,11 +338,11 @@ if __name__ == "__main__":
                     speaker.cross_fade = False
                 else:
                     error_and_exit(
-                        "Cross Fade setting takes parameter 'T/true' or 'F/false'"
+                        "Action 'cross_fade' with a parameter requires 'T/true' or 'F/false'"
                     )
             else:
                 error_and_exit(
-                    "Zero or one parameter(s) required for the 'cross_fade' action"
+                    "Action 'cross_fade' requires 0 or 1 parameter ('T/true' or 'F/false')"
                 )
         # Grouping and pairing ######################################
         elif action == "group":
@@ -307,12 +352,12 @@ if __name__ == "__main__":
                 )
                 speaker.join(speaker2)
             else:
-                error_and_exit("One parameter (the speaker to group with) required")
+                error_and_exit("Action 'group' requires 1 parameter (the speaker to group with")
         elif action == "ungroup":
             if np == 0:
                 speaker.unjoin()
             else:
-                error_and_exit("No parameters required for 'ungroup' action")
+                error_and_exit("Action 'ungroup' requires no parameters")
         # Stereo pairing ############################################
         elif action == "pair":
             if float(soco.__version__) <= 0.19:
@@ -323,14 +368,14 @@ if __name__ == "__main__":
                 )
                 speaker.create_stereo_pair(right_speaker)
             else:
-                error_and_exit("One parameter (the right hand speaker) required")
+                error_and_exit("Action 'pair' requires 1 parameter (the right hand speaker)")
         elif action == "unpair":
             if float(soco.__version__) <= 0.19:
                 error_and_exit("Pairing operations require SoCo v0.20 or greater")
             if np == 0:
                 speaker.separate_stereo_pair()
             else:
-                error_and_exit("No parameters required for 'unpair' action")
+                error_and_exit("Action 'unpair' requires no parameters")
         # Invalid Action ############################################
         else:
             error_and_exit("Action '{}' is not defined.".format(action))
