@@ -46,7 +46,8 @@ def get_speaker(speaker_name, use_local_database):
                 speaker_ip = speakers_cache.get(speaker_name.lower())
                 if speaker_ip:
                     return soco.SoCo(speaker_ip)
-            # No cache or not found in the cache; fall through
+            # No cache or not found in the cache; fall through to
+            # full discovery
             devices = sonos_discover.list_sonos_devices()
             speaker_ip = None
             for device in devices:
@@ -93,15 +94,28 @@ def print_speaker_info(speaker):
 def play_sonos_favourite(speaker, favourite):
     fs = speaker.music_library.get_sonos_favorites()
     for f in fs:
+        # Loose match
         if favourite.lower() in f.title.lower():
             uri = f.get_uri()
             metadata = f.resource_meta_data
+            # play_uri works for some favourites
             try:
                 speaker.play_uri(uri=uri, meta=metadata)
                 return
             except Exception as e:
-                error_and_exit(str(e))
-    error_and_exit("Favourite not found")
+                # error_and_exit(str(e))
+                e1 = e
+                pass
+            # Other favourites have to be added to the queue, then played
+            try:
+                speaker.clear_queue()
+                index = speaker.add_to_queue(f)
+                speaker.play_from_queue(0)
+                return
+            except Exception as e2:
+                error_and_exit("{}, {}".format(str(e1), str(e2)))
+                return
+    error_and_exit("Favourite '{}' not found".format(favourite))
 
 
 if __name__ == "__main__":
@@ -207,11 +221,22 @@ if __name__ == "__main__":
                 error_and_exit(
                     "Action 'seek' requires 1 parameter (seek point using HH:MM:SS)"
                 )
-        elif action == "play_mode":
+        elif action == "play_mode" or action == "mode":
             if np == 0:
                 print(speaker.play_mode)
+            elif np == 1:
+                if args.parameters[0].lower() in [
+                    "normal",
+                    "repeat_all",
+                    "repeat_one",
+                    "shuffle",
+                    "shuffle_no_repeat",
+                ]:
+                    speaker.play_mode = args.parameters[0]
+                else:
+                    error_and_exit("Invalid play mode '{}'".format(args.parameters[0]))
             else:
-                error_and_exit("Action 'play_mode' requires no parameters")
+                error_and_exit("Action 'mode/play_mode' requires 0 or 1 parameeter(s)")
         elif action == "playback":
             if np == 0:
                 pp.pprint(speaker.get_current_transport_info())
@@ -227,12 +252,14 @@ if __name__ == "__main__":
             if np == 0:
                 print(speaker.is_playing_line_in)
             elif np == 1 or np == 2:
-                if (args.parameters[0].lower() == "on"):
+                if args.parameters[0].lower() == "on":
                     if np == 1:
                         speaker.switch_to_line_in()
                     elif np == 2:
-                        line_in_source = get_speaker(args.parameters[1], args.use_local_speaker_database)
-                        # The speaker lookup will error out if not found
+                        line_in_source = get_speaker(
+                            args.parameters[1], args.use_local_speaker_database
+                        )
+                        # The speaker lookup above will error out if not found
                         speaker.switch_to_line_in(line_in_source)
                 else:
                     error_and_exit("Action 'line_in' first parameter must be 'on'")
@@ -285,7 +312,9 @@ if __name__ == "__main__":
                 if -100 <= volume <= 100:
                     speaker.group.volume += volume
                 else:
-                    error_and_exit("Group Relative Volume parameter must be from -100 to 100")
+                    error_and_exit(
+                        "Group Relative Volume parameter must be from -100 to 100"
+                    )
             else:
                 error_and_exit("Action 'group_relative_volume' takes 1 parameter")
         # Bass ######################################################
@@ -450,7 +479,7 @@ if __name__ == "__main__":
             if np == 0:
                 for group in speaker.all_groups:
                     if group.coordinator.is_visible:
-                        print("[{}] : ".format(group.short_label),end="")
+                        print("[{}] : ".format(group.short_label), end="")
                         for member in group.members:
                             print(
                                 "{} ({}) ".format(
