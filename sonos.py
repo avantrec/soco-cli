@@ -225,13 +225,16 @@ if __name__ == "__main__":
                 play_sonos_favourite(speaker, args.parameters[0])
         # Play URI ##################################################
         elif action == "uri" or action == "play_uri":
-            if np != 1:
-                error_and_exit("Playing URI requires one parameter")
+            if not (np == 1 or np == 2):
+                error_and_exit("Playing URI requires one or two parameters")
             else:
                 force_radio = (
                     True if args.parameters[0][:4].lower() == "http" else False
                 )
-                speaker.play_uri(args.parameters[0], force_radio=force_radio)
+                if np == 2:
+                    speaker.play_uri(args.parameters[0], title=args.parameters[1], force_radio=force_radio)
+                else:
+                    speaker.play_uri(args.parameters[0], force_radio=force_radio)
         # Sleep Timer ###############################################
         elif action == "sleep" or action == "sleep_timer":
             if np == 0:
