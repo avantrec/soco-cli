@@ -6,6 +6,7 @@ import sys
 import ipaddress
 import sonos_discover
 import pprint
+import pickle
 
 
 # Include only the group coordinator for paired/bonded systems
@@ -20,6 +21,37 @@ speakers_cache = {
     "study": "192.168.0.39",
     "test": "192.168.0.42",
 }
+
+
+class SpeakerList:
+    """This class handles a cache of speakers"""
+    def __init__(self):
+        self.config_path = os.path.expanduser("~") + "/.sonos-cli"
+        if not os.path.exists(self.config_path):
+            os.mkdir(self.config_path)
+        self.pickle_file = self.config_path + "/speakers.pickle"
+        self.speakers = None
+
+    def save(self):
+        if self.speakers:
+            pickle.dump(self.speakers, open(self.pickle_file, "wb"))
+            return True
+        else:
+            return False
+
+    def load(self):
+        if (os.path.exists(self.pickle_file)):
+            self.speakers = pickle.load(open(self.pickle_file, "rb"))
+            return True
+        else:
+            return False
+
+    def refresh(self):
+        self.speakers = sonos_discover.list_sonos_devices()
+
+
+# Globally available speaker list
+spl = SpeakerList()
 
 
 def error_and_exit(msg):
@@ -110,7 +142,7 @@ def play_sonos_favourite(speaker, favourite):
             try:
                 speaker.clear_queue()
                 index = speaker.add_to_queue(f)
-                speaker.play_from_queue(0)
+                speaker.play_from_queue(index=0, start=True)
                 return
             except Exception as e2:
                 error_and_exit("{}, {}".format(str(e1), str(e2)))
@@ -143,6 +175,11 @@ if __name__ == "__main__":
         help="Use the local speaker database instead of SoCo discovery",
     )
 
+    # Set up the speaker list
+    if not spl.load():
+        spl.refresh()
+        spl.save()
+
     pp = pprint.PrettyPrinter(width=100)
 
     # Parse the command line
@@ -160,32 +197,30 @@ if __name__ == "__main__":
         # Mute ######################################################
         if action == "mute":
             if np == 0:
-                print(speaker.mute)
+                state = "on" if speaker.mute else "off"
+                print(state)
             elif np == 1:
                 mute = (args.parameters[0]).lower()
-                if mute == "true":
+                if mute == "on":
                     speaker.mute = True
-                elif mute == "false":
+                elif mute == "off":
                     speaker.mute = False
                 else:
-                    error_and_exit(
-                        "Action 'mute' takes parameter 'T/true' or 'F/false'"
-                    )
+                    error_and_exit("Action 'mute' takes parameter 'on' or 'off'")
             else:
                 error_and_exit("Action 'mute' requires 0 or 1 parameter(s)")
         elif action == "group_mute":
             if np == 0:
-                print(speaker.group.mute)
+                state = "on" if speaker.group.mute else "off"
+                print(state)
             elif np == 1:
                 mute = (args.parameters[0]).lower()
-                if mute == "true":
+                if mute == "on":
                     speaker.group.mute = True
-                elif mute == "false":
+                elif mute == "off":
                     speaker.group.mute = False
                 else:
-                    error_and_exit(
-                        "Action 'group_mute' takes parameter 'T/true' or 'F/false'"
-                    )
+                    error_and_exit("Action 'group_mute' takes parameter 'on' or 'off'")
             else:
                 error_and_exit("Action 'group_mute' requires 0 or 1 parameter(s)")
         # Playback controls #########################################
@@ -221,7 +256,7 @@ if __name__ == "__main__":
                 error_and_exit(
                     "Action 'seek' requires 1 parameter (seek point using HH:MM:SS)"
                 )
-        elif action == "play_mode" or action == "mode":
+        elif action in ["play_mode", "mode"]:
             if np == 0:
                 print(speaker.play_mode)
             elif np == 1:
@@ -250,7 +285,8 @@ if __name__ == "__main__":
         # Line-In ###################################################
         elif action == "line_in":
             if np == 0:
-                print(speaker.is_playing_line_in)
+                state = "on" if speaker.is_playing_line_in else "off"
+                print(state)
             elif np == 1 or np == 2:
                 if args.parameters[0].lower() == "on":
                     if np == 1:
@@ -286,7 +322,7 @@ if __name__ == "__main__":
                     error_and_exit("Relative Volume parameter must be from -100 to 100")
             else:
                 error_and_exit("Action 'relative_volume' takes 1 parameter")
-        elif action == "ramp" or action == "ramp_to_volume":
+        elif action in ["ramp", "ramp_to_volume"]:
             if np == 1:
                 volume = int(args.parameters[0])
                 if 0 <= volume <= 100:
@@ -362,7 +398,7 @@ if __name__ == "__main__":
             else:
                 play_sonos_favourite(speaker, args.parameters[0])
         # Play URI ##################################################
-        elif action == "uri" or action == "play_uri":
+        elif action in ["uri", "play_uri"]:
             if not (np == 1 or np == 2):
                 error_and_exit("Action 'uri/play_uri' requires 1 or 2 parameter(s)")
             else:
@@ -378,7 +414,7 @@ if __name__ == "__main__":
                 else:
                     speaker.play_uri(args.parameters[0], force_radio=force_radio)
         # Sleep Timer ###############################################
-        elif action == "sleep" or action == "sleep_timer":
+        elif action in ["sleep", "sleep_timer"]:
             if np == 0:
                 st = speaker.get_sleep_timer()
                 if st:
@@ -403,56 +439,59 @@ if __name__ == "__main__":
         # Loudness ##################################################
         elif action == "loudness":
             if np == 0:
-                print(speaker.loudness)
+                state = "on" if speaker.loudness else "off"
+                print(state)
             elif np == 1:
                 v = (args.parameters[0]).lower()
-                if v == "true":
+                if v == "on":
                     speaker.loudness = True
-                elif v == "false":
+                elif v == "off":
                     speaker.loudness = False
                 else:
                     error_and_exit(
-                        "Action 'loudness' with a parameter requires 'T/true' or 'F/false'"
+                        "Action 'loudness' with a parameter requires 'on' or 'off'"
                     )
             else:
                 error_and_exit(
-                    "Action 'loudness' requires 0 or 1 parameter ('T/true' or 'F/false')"
+                    "Action 'loudness' requires 0 or 1 parameter ('on' or 'off')"
                 )
         # Cross Fade ################################################
         elif action == "cross_fade":
             if np == 0:
-                print(speaker.cross_fade)
+                state = "on" if speaker.cross_fade else "off"
+                print(state)
             elif np == 1:
                 v = (args.parameters[0]).lower()
-                if v == "true":
+                if v == "on":
                     speaker.cross_fade = True
-                elif v == "false":
+                elif v == "off":
                     speaker.cross_fade = False
                 else:
                     error_and_exit(
-                        "Action 'cross_fade' with a parameter requires 'T/true' or 'F/false'"
+                        "Action 'cross_fade' with a parameter requires 'on' or 'off'"
                     )
             else:
                 error_and_exit(
-                    "Action 'cross_fade' requires 0 or 1 parameter ('T/true' or 'F/false')"
+                    "Action 'cross_fade' requires 0 or 1 parameter ('on' or 'off')"
                 )
         # Status Light ##############################################
-        elif action == "status_light":
+        elif action in ["status_light", "light"]:
             if np == 0:
-                print(speaker.status_light)
+                state = "on" if speaker.status_light else "off"
+                print(state)
             elif np == 1:
                 v = (args.parameters[0]).lower()
-                if v == "true":
+                if v == "on":
                     speaker.status_light = True
-                elif v == "false":
+                elif v == "off":
                     speaker.status_light = False
                 else:
                     error_and_exit(
-                        "Action 'status_light' with a parameter requires 'T/true' or 'F/false'"
+                        "Action 'status_light' with a parameter requires 'on' or 'off'"
                     )
             else:
                 error_and_exit(
-                    "Action 'status_light' requires 0 or 1 parameter ('T/true' or 'F/false')"
+                    "Action 'status_light' requires 0 or 1 parameter ('on' or 'off')"
                 )
         # Grouping ##################################################
         elif action == "group":
