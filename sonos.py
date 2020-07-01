@@ -53,33 +53,35 @@ def get_speaker(speaker_name, use_local_database):
             return soco.SoCo(speaker_ip)
         else:
             return soco.discovery.by_name(speaker_name)
-    except BaseException as e:
+    except Exception as e:
         error_and_exit("Exception: {}".format(str(e)))
 
 
 def print_speaker_info(speaker):
     info = speaker.get_speaker_info()
-    info["volume"] = speaker.volume
-    info["mute"] = speaker.mute
-    info["state"] = speaker.get_current_transport_info()["current_transport_state"]
-    info["title"] = speaker.get_current_track_info()["title"]
-    info["player_name"] = speaker.player_name
-    info["ip_address"] = speaker.ip_address
-    info["household_id"] = speaker.household_id
-    info["status_light"] = speaker.status_light
-    info["is_coordinator"] = speaker.is_coordinator
-    info["grouped_or_paired"] = False if len(speaker.group.members) == 1 else True
-    info["loudness"] = speaker.loudness
-    info["treble"] = speaker.treble
-    info["bass"] = speaker.bass
-    info["is_coordinator"] = speaker.is_coordinator
-    if speaker.is_coordinator:
-        info["cross_fade"] = speaker.cross_fade
-    info["balance"] = speaker.balance
-    info["night_mode"] = speaker.night_mode
-    info["is_soundbar"] = speaker.is_soundbar
-    info["is_playing_line_in"] = speaker.is_playing_line_in
-    info["is_visible"] = speaker.is_visible
+    model = info["model_name"].lower()
+    if not ("boost" in model or "bridge" in model):
+        info["volume"] = speaker.volume
+        info["mute"] = speaker.mute
+        info["state"] = speaker.get_current_transport_info()["current_transport_state"]
+        info["title"] = speaker.get_current_track_info()["title"]
+        info["player_name"] = speaker.player_name
+        info["ip_address"] = speaker.ip_address
+        info["household_id"] = speaker.household_id
+        info["status_light"] = speaker.status_light
+        info["is_coordinator"] = speaker.is_coordinator
+        info["grouped_or_paired"] = False if len(speaker.group.members) == 1 else True
+        info["loudness"] = speaker.loudness
+        info["treble"] = speaker.treble
+        info["bass"] = speaker.bass
+        info["is_coordinator"] = speaker.is_coordinator
+        if speaker.is_coordinator:
+            info["cross_fade"] = speaker.cross_fade
+        info["balance"] = speaker.balance
+        info["night_mode"] = speaker.night_mode
+        info["is_soundbar"] = speaker.is_soundbar
+        info["is_playing_line_in"] = speaker.is_playing_line_in
+        info["is_visible"] = speaker.is_visible
     for item in sorted(info):
         print("  {} = {}".format(item, info[item]))
 
@@ -96,7 +98,6 @@ def play_sonos_favourite(speaker, favourite):
             except Exception as e:
                 error_and_exit(str(e))
     error_and_exit("Favourite not found")
-
 
 if __name__ == "__main__":
     # Create the argument parser
@@ -232,7 +233,11 @@ if __name__ == "__main__":
                     True if args.parameters[0][:4].lower() == "http" else False
                 )
                 if np == 2:
-                    speaker.play_uri(args.parameters[0], title=args.parameters[1], force_radio=force_radio)
+                    speaker.play_uri(
+                        args.parameters[0],
+                        title=args.parameters[1],
+                        force_radio=force_radio,
+                    )
                 else:
                     speaker.play_uri(args.parameters[0], force_radio=force_radio)
         # Sleep Timer ###############################################
