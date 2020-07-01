@@ -103,6 +103,7 @@ def play_sonos_favourite(speaker, favourite):
                 error_and_exit(str(e))
     error_and_exit("Favourite not found")
 
+
 if __name__ == "__main__":
     # Create the argument parser
     parser = argparse.ArgumentParser(
@@ -153,11 +154,11 @@ if __name__ == "__main__":
                 elif mute == "false":
                     speaker.mute = False
                 else:
-                    error_and_exit("Action 'mute' takes parameter 'T/true' or 'F/false'")
+                    error_and_exit(
+                        "Action 'mute' takes parameter 'T/true' or 'F/false'"
+                    )
             else:
-                error_and_exit(
-                    "Action 'mute' requires 0 or 1 parameter(s)"
-                )
+                error_and_exit("Action 'mute' requires 0 or 1 parameter(s)")
         # Playback controls #########################################
         elif action == "stop":
             if np == 0:
@@ -188,7 +189,9 @@ if __name__ == "__main__":
             if np == 1:
                 speaker.seek(args.parameters[0])
             else:
-                error_and_exit("Action 'seek' requires 1 parameter (seek point using HH:MM:SS)")
+                error_and_exit(
+                    "Action 'seek' requires 1 parameter (seek point using HH:MM:SS)"
+                )
         elif action == "play_mode":
             if np == 0:
                 print(speaker.play_mode)
@@ -204,6 +207,22 @@ if __name__ == "__main__":
                 pp.pprint(speaker.get_current_track_info())
             else:
                 error_and_exit("Action 'track' requires no parameters")
+        # Line-In ###################################################
+        elif action == "line_in":
+            if np == 0:
+                print(speaker.is_playing_line_in)
+            elif np == 1 or np == 2:
+                if (args.parameters[0].lower() == "on"):
+                    if np == 1:
+                        speaker.switch_to_line_in()
+                    elif np == 2:
+                        line_in_source = get_speaker(args.parameters[1], args.use_local_speaker_database)
+                        # The speaker lookup will error out if not found
+                        speaker.switch_to_line_in(line_in_source)
+                else:
+                    error_and_exit("Action 'line_in' first parameter must be 'on'")
+            else:
+                error_and_exit("Action 'line_in' takes 0, 1, or 2 parameter(s)")
         # Volume ####################################################
         elif action == "volume":
             if np == 0:
@@ -344,7 +363,25 @@ if __name__ == "__main__":
                 error_and_exit(
                     "Action 'cross_fade' requires 0 or 1 parameter ('T/true' or 'F/false')"
                 )
-        # Grouping and pairing ######################################
+        # Status Light ##############################################
+        elif action == "status_light":
+            if np == 0:
+                print(speaker.status_light)
+            elif np == 1:
+                v = (args.parameters[0]).lower()
+                if v == "true":
+                    speaker.status_light = True
+                elif v == "false":
+                    speaker.status_light = False
+                else:
+                    error_and_exit(
+                        "Action 'status_light' with a parameter requires 'T/true' or 'F/false'"
+                    )
+            else:
+                error_and_exit(
+                    "Action 'status_light' requires 0 or 1 parameter ('T/true' or 'F/false')"
+                )
+        # Grouping ##################################################
         elif action == "group":
             if np == 1:
                 speaker2 = get_speaker(
@@ -352,12 +389,46 @@ if __name__ == "__main__":
                 )
                 speaker.join(speaker2)
             else:
-                error_and_exit("Action 'group' requires 1 parameter (the speaker to group with")
+                error_and_exit(
+                    "Action 'group' requires 1 parameter (the speaker to group with"
+                )
         elif action == "ungroup":
             if np == 0:
                 speaker.unjoin()
             else:
                 error_and_exit("Action 'ungroup' requires no parameters")
+        elif action == "party" or action == "party_mode":
+            if np == 0:
+                speaker.partymode()
+            else:
+                error_and_exit("Action 'party' takes 0 parameters")
+        elif action == "groups":
+            if np == 0:
+                for group in speaker.all_groups:
+                    print(
+                        "{} ({}): ".format(
+                            group.coordinator.player_name, group.coordinator.ip_address
+                        ),
+                        end="",
+                    )
+                    for member in group.members:
+                        if member is not group.coordinator:
+                            print(
+                                "{} ({}) ".format(
+                                    member.player_name, member.ip_address
+                                ),
+                                end="",
+                            )
+                    print()
+            else:
+                error_and_exit("Action 'groups' requires no parameters")
+        elif action == "rooms" or action == "all_rooms" or action == "visible_rooms":
+            if np == 0:
+                zones = speaker.all_zones if "all" in action else speaker.visible_zones
+                for zone in zones:
+                    print("{} ({})".format(zone.player_name, zone.ip_address))
+            else:
+                error_and_exit("'Room' actions require no parameters")
         # Stereo pairing ############################################
         elif action == "pair":
             if float(soco.__version__) <= 0.19:
@@ -368,7 +439,9 @@ if __name__ == "__main__":
                 )
                 speaker.create_stereo_pair(right_speaker)
             else:
-                error_and_exit("Action 'pair' requires 1 parameter (the right hand speaker)")
+                error_and_exit(
+                    "Action 'pair' requires 1 parameter (the right hand speaker)"
+                )
         elif action == "unpair":
             if float(soco.__version__) <= 0.19:
                 error_and_exit("Pairing operations require SoCo v0.20 or greater")
