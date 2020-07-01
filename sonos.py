@@ -235,15 +235,44 @@ if __name__ == "__main__":
                     error_and_exit("Volume parameter must be from 0 to 100")
             else:
                 error_and_exit("Action 'volume' takes 0 or 1 parameter(s)")
+        elif action == "relative_volume":
+            if np == 1:
+                volume = int(args.parameters[0])
+                if -100 <= volume <= 100:
+                    speaker.volume += volume
+                else:
+                    error_and_exit("Relative Volume parameter must be from -100 to 100")
+            else:
+                error_and_exit("Action 'relative_volume' takes 1 parameter")
         elif action == "ramp" or action == "ramp_to_volume":
             if np == 1:
                 volume = int(args.parameters[0])
                 if 0 <= volume <= 100:
-                    speaker.ramp_to_volume(volume)
+                    print(speaker.ramp_to_volume(volume))
                 else:
                     error_and_exit("Ramp to volume parameter must be from 0 to 100")
             else:
                 error_and_exit("Action 'ramp' requires 1 parameter")
+        elif action == "group_volume":
+            if np == 0:
+                print(speaker.group.volume)
+            elif np == 1:
+                volume = int(args.parameters[0])
+                if 0 <= volume <= 100:
+                    speaker.group.volume = volume
+                else:
+                    error_and_exit("Group Volume parameter must be from 0 to 100")
+            else:
+                error_and_exit("Action 'group_volume' takes 0 or 1 parameter(s)")
+        elif action == "group_relative_volume":
+            if np == 1:
+                volume = int(args.parameters[0])
+                if -100 <= volume <= 100:
+                    speaker.group.volume += volume
+                else:
+                    error_and_exit("Group Relative Volume parameter must be from -100 to 100")
+            else:
+                error_and_exit("Action 'group_relative_volume' takes 1 parameter")
         # Bass ######################################################
         elif action == "bass":
             if np == 0:
