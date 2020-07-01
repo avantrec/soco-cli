@@ -159,6 +159,21 @@ if __name__ == "__main__":
                     )
             else:
                 error_and_exit("Action 'mute' requires 0 or 1 parameter(s)")
+        elif action == "group_mute":
+            if np == 0:
+                print(speaker.group.mute)
+            elif np == 1:
+                mute = (args.parameters[0]).lower()
+                if mute == "true":
+                    speaker.group.mute = True
+                elif mute == "false":
+                    speaker.group.mute = False
+                else:
+                    error_and_exit(
+                        "Action 'group_mute' takes parameter 'T/true' or 'F/false'"
+                    )
+            else:
+                error_and_exit("Action 'group_mute' requires 0 or 1 parameter(s)")
         # Playback controls #########################################
         elif action == "stop":
             if np == 0:
@@ -250,9 +265,9 @@ if __name__ == "__main__":
                 if 0 <= volume <= 100:
                     print(speaker.ramp_to_volume(volume))
                 else:
-                    error_and_exit("Ramp to volume parameter must be from 0 to 100")
+                    error_and_exit("Ramp parameter must be from 0 to 100")
             else:
-                error_and_exit("Action 'ramp' requires 1 parameter")
+                error_and_exit("Action 'ramp/ramp_to_volume' requires 1 parameter")
         elif action == "group_volume":
             if np == 0:
                 print(speaker.group.volume)
@@ -314,13 +329,13 @@ if __name__ == "__main__":
         # Play Favourite ############################################
         elif action == "favourite" or action == "favorite":
             if np != 1:
-                error_and_exit("Action 'favourite' requires 1 parameter")
+                error_and_exit("Action 'favourite/favorite' requires 1 parameter")
             else:
                 play_sonos_favourite(speaker, args.parameters[0])
         # Play URI ##################################################
         elif action == "uri" or action == "play_uri":
             if not (np == 1 or np == 2):
-                error_and_exit("Action 'uri' requires 1 or 2 parameter(s)")
+                error_and_exit("Action 'uri/play_uri' requires 1 or 2 parameter(s)")
             else:
                 force_radio = (
                     True if args.parameters[0][:4].lower() == "http" else False
@@ -345,7 +360,7 @@ if __name__ == "__main__":
                 speaker.set_sleep_timer(int(args.parameters[0]))
             else:
                 error_and_exit(
-                    "Action 'sleep' requires 0 or 1 parameters (sleep time in seconds)"
+                    "Action 'sleep/sleep_timer' requires 0 or 1 parameters (sleep time in seconds)"
                 )
         # Info ######################################################
         elif action == "info":
@@ -430,25 +445,20 @@ if __name__ == "__main__":
             if np == 0:
                 speaker.partymode()
             else:
-                error_and_exit("Action 'party' takes 0 parameters")
+                error_and_exit("Action 'party/party_mode' takes 0 parameters")
         elif action == "groups":
             if np == 0:
                 for group in speaker.all_groups:
-                    print(
-                        "{} ({}): ".format(
-                            group.coordinator.player_name, group.coordinator.ip_address
-                        ),
-                        end="",
-                    )
-                    for member in group.members:
-                        if member is not group.coordinator:
+                    if group.coordinator.is_visible:
+                        print("[{}] : ".format(group.short_label),end="")
+                        for member in group.members:
                             print(
                                 "{} ({}) ".format(
                                     member.player_name, member.ip_address
                                 ),
                                 end="",
                             )
-                    print()
+                        print()
             else:
                 error_and_exit("Action 'groups' requires no parameters")
         elif action == "rooms" or action == "all_rooms" or action == "visible_rooms":
