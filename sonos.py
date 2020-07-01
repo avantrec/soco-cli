@@ -20,14 +20,6 @@ speakers_cache = {
 }
 
 
-# Directory for locally-defined streams
-# Use lower case
-streams = {
-    "bbc world service": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/llnw/bbc_world_service.m3u8",
-    #   "radio paradise": "https://stream.radioparadise.com/flac)",
-}
-
-
 def error_and_exit(msg):
     print("Error:", msg)
     os._exit(1)
@@ -95,12 +87,15 @@ def print_speaker_info(speaker):
 def play_sonos_favourite(speaker, favourite):
     fs = speaker.music_library.get_sonos_favorites()
     for f in fs:
-        if favourite in f.title:
-            reference = f.reference
-            resource = reference.resources[0]
-            uri = resource.uri
-            speaker.play_uri(uri)
-    exit(0)
+        if favourite.lower() in f.title.lower():
+            uri = f.get_uri()
+            metadata = f.resource_meta_data
+            try:
+                speaker.play_uri(uri=uri, meta=metadata)
+                return
+            except Exception as e:
+                error_and_exit(str(e))
+    error_and_exit("Favourite not found")
 
 
 if __name__ == "__main__":
@@ -217,7 +212,9 @@ if __name__ == "__main__":
                 if 0 <= balance[0] <= 100 and 0 <= balance[1] <= 100:
                     speaker.balance = balance
                 else:
-                    error_and_exit("Balance parameters 'Left Right' must be from 0 to 100")
+                    error_and_exit(
+                        "Balance parameters 'Left Right' must be from 0 to 100"
+                    )
             else:
                 error_and_exit("Balance takes 0 or 2 parameters")
         # Play Favourite ############################################
@@ -231,17 +228,10 @@ if __name__ == "__main__":
             if np != 1:
                 error_and_exit("Playing URI requires one parameter")
             else:
-                speaker.play_uri(args.parameters[0])
-        # Play locally defined stream ###############################
-        elif action == "stream" or action == "play_stream":
-            if np != 1:
-                error_and_exit("Playing URI requires one parameter")
-            else:
-                stream = streams.get(args.parameters[0].lower())
-                if stream:
-                    speaker.play_uri(stream)
-                else:
-                    error_and_exit("Stream not found")
+                force_radio = (
+                    True if args.parameters[0][:4].lower() == "http" else False
+                )
+                speaker.play_uri(args.parameters[0], force_radio=force_radio)
         # Sleep Timer ###############################################
         elif action == "sleep" or action == "sleep_timer":
             if np == 0:
@@ -320,7 +310,9 @@ if __name__ == "__main__":
             if float(soco.__version__) <= 0.19:
                 error_and_exit("Pairing operations require SoCo v0.20 or greater")
             if np == 1:
-                right_speaker = get_speaker(args.parameters[0], args.use_local_speaker_database)
+                right_speaker = get_speaker(
+                    args.parameters[0], args.use_local_speaker_database
+                )
                 speaker.create_stereo_pair(right_speaker)
             else:
                 error_and_exit("One parameter (the right hand speaker) required")
