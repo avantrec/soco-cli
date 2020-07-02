@@ -13,7 +13,7 @@ class SpeakerList:
     """This class handles a cache of speaker information, stored as
     a pickle file under the user's home directory"""
     def __init__(self):
-        self.config_path = os.path.expanduser("~") + "/.sonos-cli"
+        self.config_path = os.path.expanduser("~") + "/.soco-cli"
         if not os.path.exists(self.config_path):
             os.mkdir(self.config_path)
         self.pickle_file = self.config_path + "/speakers.pickle"
