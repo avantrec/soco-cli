@@ -1,13 +1,20 @@
 import setuptools
+import io
+import re
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+src = io.open('soco_cli/__init__.py', encoding='utf-8').read()
+metadata = dict(re.findall("__([a-z]+)__ = \"([^\"]+)\"", src))
+docstrings = re.findall('"""(.*?)"""', src, re.MULTILINE | re.DOTALL)
+
 REQUIREMENTS = list(open("requirements.txt"))
+VERSION = metadata['version']
 
 setuptools.setup(
     name="soco-cli",
-    version="0.0.1",
+    version=VERSION,
     author="Avantrec Ltd",
     author_email="soco_cli@avantrec.com",
     description="Sonos command line utility, based on SoCo",

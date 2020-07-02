@@ -67,7 +67,7 @@ def get_speaker(
                 if speaker:
                     return speaker
                 else:
-                    error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
+                    error_and_exit("Speaker '{}' not found.".format(speaker_name))
         else:
             speaker_list = SpeakerList()
             if not speaker_list.load() or refresh_local_speaker_list:
@@ -76,7 +76,7 @@ def get_speaker(
             for speaker in speaker_list.speakers:
                 if speaker.speaker_name.lower() == speaker_name.lower():
                     return soco.SoCo(speaker.ip_address)
-            error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
+            error_and_exit("Speaker '{}' not found.".format(speaker_name))
     except Exception as e:
         error_and_exit("Exception: {}".format(str(e)))
 
@@ -322,7 +322,7 @@ def main():
                     error_and_exit("Ramp parameter must be from 0 to 100")
             else:
                 error_and_exit("Action 'ramp/ramp_to_volume' requires 1 parameter")
-        elif action == "group_volume":
+        elif action in ["group_volume", "group_vol"]:
             if np == 0:
                 print(speaker.group.volume)
             elif np == 1:
@@ -333,7 +333,7 @@ def main():
                     error_and_exit("Group Volume parameter must be from 0 to 100")
             else:
                 error_and_exit("Action 'group_volume' takes 0 or 1 parameter(s)")
-        elif action == "group_relative_volume":
+        elif action in ["group_relative_volume", "group_rel_vol"]:
             if np == 1:
                 volume = int(args.parameters[0])
                 if -100 <= volume <= 100:
@@ -500,7 +500,7 @@ def main():
                 speaker.unjoin()
             else:
                 error_and_exit("Action 'ungroup' requires no parameters")
-        elif action == "party" or action == "party_mode":
+        elif action in ["party", "party_mode"]:
             if np == 0:
                 speaker.partymode()
             else:
