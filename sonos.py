@@ -36,7 +36,7 @@ class SpeakerList:
             return False
 
     def refresh(self):
-        self.speakers = sonos_discover.list_sonos_devices()
+        self.speakers = sonos_discover.list_sonos_devices(socket_timeout=5)
 
 
 def error_and_exit(msg):
