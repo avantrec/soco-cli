@@ -2,3 +2,7 @@
 .idea
 /deploy.sh
 __pycache__/
+/build/
+/dist/
+/soco_cli.egg-info/
+*.pyc

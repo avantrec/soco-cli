@@ -4,9 +4,9 @@ import argparse
 import os
 import sys
 import ipaddress
-import sonos_discover
 import pprint
 import pickle
+from soco_cli import sonos_discover
 
 
 class SpeakerList:
@@ -137,7 +137,7 @@ def play_sonos_favourite(speaker, favourite):
     error_and_exit("Favourite '{}' not found".format(favourite))
 
 
-if __name__ == "__main__":
+def main():
     # Create the argument parser
     parser = argparse.ArgumentParser(
         prog="sonos",
@@ -553,3 +553,7 @@ if __name__ == "__main__":
     except Exception as e:
         error_and_exit("Exception: {}".format(str(e)))
     exit(0)
+
+
+if __name__ == "__main__":
+    main()

@@ -153,7 +153,7 @@ def discover_households():
     return households
 
 
-if __name__ == "__main__":
+def main():
     # Create the argument parser
     parser = argparse.ArgumentParser(
         prog="sonos-discover",
@@ -211,3 +211,7 @@ if __name__ == "__main__":
 
     pp = pprint.PrettyPrinter(width=100)
     pp.pprint(households)
+
+
+if __name__ == "__main__":
+    main()

@@ -9,7 +9,7 @@ setuptools.setup(
     name="soco-cli",
     version="0.0.1",
     author="Avantrec Ltd",
-    author_email="soco-cli@avantrec.com",
+    author_email="soco_cli@avantrec.com",
     description="Sonos command line utility, based on SoCo",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -22,5 +22,10 @@ setuptools.setup(
     ],
     python_requires=">=3.5",
     install_requires=REQUIREMENTS,
-    entry_points={"console_scripts": ["sonos = soco_cli.sonos:main"]},
+    entry_points={
+        "console_scripts": [
+            "sonos=soco_cli.sonos:main",
+            "sonos-discover=soco_cli.sonos_discover:main",
+        ]
+    },
 )
