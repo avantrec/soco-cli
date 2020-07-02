@@ -24,7 +24,7 @@ speakers_cache = {
 
 
 class SpeakerList:
-    """This class handles a cache of speakers"""
+    """This class handles a cache of speaker information"""
     def __init__(self):
         self.config_path = os.path.expanduser("~") + "/.sonos-cli"
         if not os.path.exists(self.config_path):
@@ -73,7 +73,11 @@ def get_speaker(speaker_name, use_local_database):
     try:
         if is_ipv4_address(speaker_name):
             return soco.SoCo(speaker_name)
-        elif use_local_database:
+        try:
+            return soco.discovery.by_name(speaker_name)
+        except:
+            pass
+        if use_local_database:
             if speakers_cache:
                 speaker_ip = speakers_cache.get(speaker_name.lower())
                 if speaker_ip:
