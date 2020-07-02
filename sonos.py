@@ -9,20 +9,6 @@ import pprint
 import pickle
 
 
-# Include only the group coordinator for paired/bonded systems
-# Use lower case for case-insensitive mapping
-speakers_cache = {
-    "kitchen": "192.168.0.30",
-    "rear reception": "192.168.0.32",
-    "front reception": "192.168.0.35",
-    "bedroom": "192.168.0.36",
-    "bedroom 2": "192.168.0.38",
-    "move": "192.168.0.41",
-    "study": "192.168.0.39",
-    "test": "192.168.0.42",
-}
-
-
 class SpeakerList:
     """This class handles a cache of speaker information"""
     def __init__(self):
@@ -40,18 +26,17 @@ class SpeakerList:
             return False
 
     def load(self):
-        if (os.path.exists(self.pickle_file)):
-            self.speakers = pickle.load(open(self.pickle_file, "rb"))
+        if os.path.exists(self.pickle_file):
+            try:
+                self.speakers = pickle.load(open(self.pickle_file, "rb"))
+            except:
+                return False
             return True
         else:
             return False
 
     def refresh(self):
         self.speakers = sonos_discover.list_sonos_devices()
-
-
-# Globally available speaker list
-spl = SpeakerList()
 
 
 def error_and_exit(msg):
@@ -69,31 +54,28 @@ def is_ipv4_address(speaker_name):
         return False
 
 
-def get_speaker(speaker_name, use_local_database):
+def get_speaker(
+    speaker_name, use_local_speaker_list=False, refresh_local_speaker_list=False
+):
     try:
-        if is_ipv4_address(speaker_name):
-            return soco.SoCo(speaker_name)
-        try:
-            return soco.discovery.by_name(speaker_name)
-        except:
-            pass
-        if use_local_database:
-            if speakers_cache:
-                speaker_ip = speakers_cache.get(speaker_name.lower())
-                if speaker_ip:
-                    return soco.SoCo(speaker_ip)
-            # No cache or not found in the cache; fall through to
-            # full discovery
-            devices = sonos_discover.list_sonos_devices()
-            speaker_ip = None
-            for device in devices:
-                if device[2].lower() == speaker_name.lower():
-                    speaker_ip = device[1]
-            if not speaker_ip:
-                error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
-            return soco.SoCo(speaker_ip)
+        if not use_local_speaker_list:
+            if is_ipv4_address(speaker_name):
+                return soco.SoCo(speaker_name)
+            else:
+                speaker = soco.discovery.by_name(speaker_name)
+                if speaker:
+                    return speaker
+                else:
+                    error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
         else:
-            return soco.discovery.by_name(speaker_name)
+            speaker_list = SpeakerList()
+            if not speaker_list.load() or refresh_local_speaker_list:
+                speaker_list.refresh()
+                speaker_list.save()
+            for speaker in speaker_list.speakers:
+                if speaker[2].lower() == speaker_name.lower():
+                    return soco.SoCo(speaker[1])
+            error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
     except Exception as e:
         error_and_exit("Exception: {}".format(str(e)))
 
@@ -172,17 +154,19 @@ if __name__ == "__main__":
     )
     # Optional arguments
     parser.add_argument(
-        "--use_local_speaker_database",
+        "--use_local_speaker_list",
         "-l",
         action="store_true",
         default=False,
-        help="Use the local speaker database instead of SoCo discovery",
+        help="Use the local speaker list instead of SoCo discovery",
     )
-
-    # Set up the speaker list
-    if not spl.load():
-        spl.refresh()
-        spl.save()
+    parser.add_argument(
+        "--refresh_local_speaker_list",
+        "-r",
+        action="store_true",
+        default=False,
+        help="Refresh the local speaker list",
+    )
 
     pp = pprint.PrettyPrinter(width=100)
 
@@ -193,7 +177,9 @@ if __name__ == "__main__":
     # Wrap everything in a try/except to catch all SoCo (etc.) errors
     # ToDo: improve so there's a single action pattern and a single function to interpret it
     try:
-        speaker = get_speaker(args.speaker, args.use_local_speaker_database)
+        speaker = get_speaker(
+            args.speaker, args.use_local_speaker_list, args.refresh_local_speaker_list
+        )
         if not speaker:
             error_and_exit("Speaker not found")
         np = len(args.parameters)
