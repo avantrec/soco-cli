@@ -10,7 +10,8 @@ import pickle
 
 
 class SpeakerList:
-    """This class handles a cache of speaker information"""
+    """This class handles a cache of speaker information, stored as
+    a pickle file under the user's home directory"""
     def __init__(self):
         self.config_path = os.path.expanduser("~") + "/.sonos-cli"
         if not os.path.exists(self.config_path):
@@ -73,8 +74,8 @@ def get_speaker(
                 speaker_list.refresh()
                 speaker_list.save()
             for speaker in speaker_list.speakers:
-                if speaker[2].lower() == speaker_name.lower():
-                    return soco.SoCo(speaker[1])
+                if speaker.speaker_name.lower() == speaker_name.lower():
+                    return soco.SoCo(speaker.ip_address)
             error_and_exit("Speaker '{}' not recognised.".format(speaker_name))
     except Exception as e:
         error_and_exit("Exception: {}".format(str(e)))
@@ -283,7 +284,7 @@ if __name__ == "__main__":
                         speaker.switch_to_line_in()
                     elif np == 2:
                         line_in_source = get_speaker(
-                            args.parameters[1], args.use_local_speaker_database
+                            args.parameters[1], args.use_local_speaker_list
                         )
                         # The speaker lookup above will error out if not found
                         speaker.switch_to_line_in(line_in_source)
@@ -292,7 +293,7 @@ if __name__ == "__main__":
             else:
                 error_and_exit("Action 'line_in' takes 0, 1, or 2 parameter(s)")
         # Volume ####################################################
-        elif action == "volume":
+        elif action in ["volume", "vol"]:
             if np == 0:
                 print(speaker.volume)
             elif np == 1:
@@ -303,7 +304,7 @@ if __name__ == "__main__":
                     error_and_exit("Volume parameter must be from 0 to 100")
             else:
                 error_and_exit("Action 'volume' takes 0 or 1 parameter(s)")
-        elif action == "relative_volume":
+        elif action in ["relative_volume", "rel_vol"]:
             if np == 1:
                 volume = int(args.parameters[0])
                 if -100 <= volume <= 100:
@@ -382,9 +383,9 @@ if __name__ == "__main__":
             else:
                 error_and_exit("Action 'balance' takes 0 or 2 parameters")
         # Play Favourite ############################################
-        elif action == "favourite" or action == "favorite":
+        elif action in ["favourite", "favorite", "fav"]:
             if np != 1:
-                error_and_exit("Action 'favourite/favorite' requires 1 parameter")
+                error_and_exit("Action 'favourite/favorite/fav' requires 1 parameter")
             else:
                 play_sonos_favourite(speaker, args.parameters[0])
         # Play URI ##################################################
@@ -487,7 +488,7 @@ if __name__ == "__main__":
         elif action == "group":
             if np == 1:
                 speaker2 = get_speaker(
-                    args.parameters[0], args.use_local_speaker_database
+                    args.parameters[0], args.use_local_speaker_list
                 )
                 speaker.join(speaker2)
             else:
@@ -532,7 +533,7 @@ if __name__ == "__main__":
                 error_and_exit("Pairing operations require SoCo v0.20 or greater")
             if np == 1:
                 right_speaker = get_speaker(
-                    args.parameters[0], args.use_local_speaker_database
+                    args.parameters[0], args.use_local_speaker_list
                 )
                 speaker.create_stereo_pair(right_speaker)
             else:
