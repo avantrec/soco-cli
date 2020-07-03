@@ -7,5 +7,8 @@ clean:
 install: build
 	pip install -U -e .
 
-uninstall: build
+uninstall:
 	pip uninstall -y soco_cli
+
+black: setup.py soco_cli/*.py
+	black setup.py soco_cli/*.py

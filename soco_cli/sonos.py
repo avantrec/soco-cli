@@ -57,26 +57,34 @@ def is_ipv4_address(speaker_name):
 
 
 def get_speaker(
-    speaker_name, use_local_speaker_list=False, refresh_local_speaker_list=False
+    speaker_name,
+    use_local_speaker_list=False,
+    refresh_local_speaker_list=False,
+    require_coordinator=True,
 ):
     try:
+        if is_ipv4_address(speaker_name):
+            return soco.SoCo(speaker_name)
         if not use_local_speaker_list:
-            if is_ipv4_address(speaker_name):
-                return soco.SoCo(speaker_name)
+            # Use standard SoCo lookup
+            speaker = soco.discovery.by_name(speaker_name)
+            if speaker:
+                return speaker
             else:
-                speaker = soco.discovery.by_name(speaker_name)
-                if speaker:
-                    return speaker
-                else:
-                    error_and_exit("Speaker '{}' not found.".format(speaker_name))
+                error_and_exit("Speaker '{}' not found.".format(speaker_name))
         else:
+            # Use local discovery and cached speaker list if it exists
             speaker_list = SpeakerList()
             if not speaker_list.load() or refresh_local_speaker_list:
                 speaker_list.refresh()
                 speaker_list.save()
             for speaker in speaker_list.speakers:
                 if speaker.speaker_name.lower() == speaker_name.lower():
-                    return soco.SoCo(speaker.ip_address)
+                    if require_coordinator:
+                        if speaker.is_coordinator:
+                            return soco.SoCo(speaker.ip_address)
+                    else:
+                        return soco.SoCo(speaker.ip_address)
             error_and_exit("Speaker '{}' not found.".format(speaker_name))
     except Exception as e:
         error_and_exit("Exception: {}".format(str(e)))
@@ -271,7 +279,9 @@ def main():
                 error_and_exit("Action 'playback' requires no parameters")
         elif action == "track":
             if np == 0:
-                pp.pprint(speaker.get_current_track_info())
+                track_info = speaker.get_current_track_info()
+                track_info.pop("metadata", None)
+                pp.pprint(track_info)
             else:
                 error_and_exit("Action 'track' requires no parameters")
         # Line-In ###################################################
