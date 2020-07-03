@@ -81,7 +81,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
 - **`play`**: Start playback.
 - **`playback`**: Returns the current playback state for the speaker.
-- **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of ``NORMAL, ``REPEAT_ONE, `REPEAT_ALL`, `SHUFFLE` or `SHUFFLE_NO_REPEAT`.
+- **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE` or `SHUFFLE_NO_REPEAT`.
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
 - **`play_uri <uri> <title>` (also `uri`)**: Plays the audio object given by the `<uri>` parameter (e.g., a radio stream URL). `<title>` is optional, and if present will be used for the title of the audio stream.
 - **`previous` (or `prev`)**: Move to the previous track (if applicable for the audio source).
