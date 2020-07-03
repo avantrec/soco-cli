@@ -15,7 +15,7 @@ install: build
 uninstall:
 	pip uninstall -y soco_cli
 
-black: setup.py soco_cli/*.py
+black: $(SRC)
 	black setup.py soco_cli/*.py
 
 pypi_upload: clean build
