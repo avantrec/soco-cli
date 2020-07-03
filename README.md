@@ -4,13 +4,13 @@
 
 ## Overview
 
-Soco CLI is a command line wrapper for the popular Python SoCo library [1], used to develop control programs for Sonos systems. Soco CLI is written entirely in Python and is portable across platforms.
+Soco CLI is a command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. Soco CLI is written entirely in Python and is portable across platforms.
 
 A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc.
 
 Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, `cron` jobs, etc.
 
-If you experience any issues with discovering speakers, please take a look at the [Alternative Discovery](#alternative-discovery) section below.
+If you experience any issues with finding speakers, please take a look at the [Alternative Discovery](#alternative-discovery) section below.
 
 ## Supported Environments
 
@@ -19,7 +19,7 @@ If you experience any issues with discovering speakers, please take a look at th
 
 ## Installation
 
-Install from PyPi [2] using **`pip install soco-cli`**.
+Install from PyPi using **`pip install soco-cli`**.
 
 ## User Guide
 
@@ -99,15 +99,17 @@ If an error is encountered, a short error message will be printed to `stderr`, a
 
 ## Alternative Discovery
 
-Sonos CLI depends on the speaker discovery mechanisms in SoCo (unless one knows and uses the speaker IP addresses directly). This should work for most people, but there are issues (related to multicast forwarding) on some networks that can prevent Soco from finding speakers. There is also an issue if there is more than one Sonos system ('Household') on the same network, as would be the case with a 'split' S1/S2 Sonos system: SoCo discovery will pick one of the systems, and your required speaker may not be in that system.
+Sonos CLI depends on the speaker discovery mechanisms in SoCo (unless one knows and uses the speaker IP addresses directly). This should work for most people, but there are issues (related to multicast forwarding) on some networks that can prevent Soco from finding speakers. There is also an issue if there is more than one Sonos system ('Household') on the same network, as would be the case if there is a 'split' S1/S2 Sonos system: SoCo discovery will pick one of the systems, and your required speaker may not be in that system.
 
 To overcome these issues, Soco CLI provides an alternative discovery mechanism that scans the network for Sonos devices without depending on multicast, and which works with multiple systems on the same network. This mechanism scans your local network(s) for Sonos devices and caches the results for use in subsequent `sonos` calls. You can see the results of a network scan by using the `sonos-discovery` utility.
+
+### Usage
 
 To use this discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. The results of the discovery scan are stored in `<your_home_directory>/.soco-cli/` for use with future invocations of the `sonos` command.
 
 **Example**: **`sonos -l "living room" volume 50`** uses the local speaker database to look up the "living room speaker".
 
-If your speakers subsequently change (e.g., they are renamed or their IP addresses change), you can force a refresh of the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option.
+If your speakers subsequently change (e.g., they are renamed or their IP addresses change, or you add/remove speakers), you can force a refresh of the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option.
 
 **Example**: **`sonos -lr "living room" volume 50`** will refresh the discovery cache before executing the `sonos` command.
 
@@ -115,8 +117,7 @@ If your speakers subsequently change (e.g., they are renamed or their IP address
 
 ## Resources
 
-[1] https://github.com/SoCo/SoCo \
-[2] https://pypi.org/project/soco-cli
+[1] https://github.com/SoCo/SoCo
 
 ## Acknowledgments
 
