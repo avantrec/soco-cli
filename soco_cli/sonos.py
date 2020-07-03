@@ -146,6 +146,18 @@ def play_sonos_favourite(speaker, favourite):
     error_and_exit("Favourite '{}' not found".format(favourite))
 
 
+def pause_all(speaker):
+    zones = speaker.all_zones
+    for zone in zones:
+        if zone.is_visible:
+            try:
+                zone.pause()
+            except:
+                # Ignore errors here; don't want to halt on
+                # a failed pause (e.g., if speaker isn't playing)
+                pass
+
+
 def main():
     # Create the argument parser
     parser = argparse.ArgumentParser(
@@ -234,6 +246,11 @@ def main():
                 speaker.pause()
             else:
                 error_and_exit("Action 'pause' requires no parameters")
+        elif action == "pause_all":
+            if np == 0:
+                pause_all(speaker)
+            else:
+                error_and_exit("Action 'pause_all' requires no parameters")
         elif action == "play":
             if np == 0:
                 speaker.play()
@@ -244,7 +261,7 @@ def main():
                 speaker.next()
             else:
                 error_and_exit("Action 'next' requires no parameters")
-        elif action == "previous":
+        elif action in ["previous", "prev"]:
             if np == 0:
                 speaker.previous()
             else:
