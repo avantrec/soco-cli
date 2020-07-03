@@ -1,3 +1,5 @@
 black
 pylint
 flake8
+wheel
+twine

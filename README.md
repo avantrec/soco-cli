@@ -10,9 +10,7 @@ A simple `sonos` command is provided which allows easy control of speaker playba
 
 Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, `cron` jobs, etc.
 
-Sonos CLI depends on the speaker discovery mechanisms in SoCo (unless one knows and uses the speaker IP addresses directly). This should work for most people, but there are issues (related to multicast forwarding) on some networks that cause problems. There is also an issue if there is more than one Sonos system ('Household') on the same network, as would be the case with a 'split' S1/S2 Sonos system: SoCo discovery will pick one of the systems, and your required speaker may not be in that system.
-
-To overcome these issues, Soco CLI provides an alternative discovery mechanism that scans the network for Sonos devices without depending on multicast, and which works with multiple systems on the same network. See [Alternative Discovery](#alternative-discovery) below if the standard SoCo discovery doesn't work for you.
+If you experience any issues with discovering speakers, please take a look at the [Alternative Discovery](#alternative-discovery) section below.
 
 ## Supported Environments
 
@@ -21,7 +19,7 @@ To overcome these issues, Soco CLI provides an alternative discovery mechanism t
 
 ## Installation
 
-Instructions for installing from PyPi will follow shortly.
+Install from PyPi [2] using **`pip install soco-cli`**.
 
 ## User Guide
 
@@ -45,7 +43,6 @@ If an error is encountered, a short error message will be printed to `stderr`, a
 - **`sonos Study group Den`** Groups the Study speaker with the Den.
 - **`sonos 192.168.0.10 mute`** Returns the mute state ('on' or 'off') of the speaker at the given IP address.
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
-
 
 ### Available Actions
 
@@ -102,9 +99,9 @@ If an error is encountered, a short error message will be printed to `stderr`, a
 
 ## Alternative Discovery
 
-If the standard SoCo discovery method doesn't work for you, an alternative discovery mechanism is provided. This scans your local network(s) for Sonos devices and caches the results for use in subsequent `sonos` calls.
+Sonos CLI depends on the speaker discovery mechanisms in SoCo (unless one knows and uses the speaker IP addresses directly). This should work for most people, but there are issues (related to multicast forwarding) on some networks that can prevent Soco from finding speakers. There is also an issue if there is more than one Sonos system ('Household') on the same network, as would be the case with a 'split' S1/S2 Sonos system: SoCo discovery will pick one of the systems, and your required speaker may not be in that system.
 
-You can see the results of a network scan by using the `sonos-discovery` utility.
+To overcome these issues, Soco CLI provides an alternative discovery mechanism that scans the network for Sonos devices without depending on multicast, and which works with multiple systems on the same network. This mechanism scans your local network(s) for Sonos devices and caches the results for use in subsequent `sonos` calls. You can see the results of a network scan by using the `sonos-discovery` utility.
 
 To use this discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. The results of the discovery scan are stored in `<your_home_directory>/.soco-cli/` for use with future invocations of the `sonos` command.
 
@@ -118,4 +115,9 @@ If your speakers subsequently change (e.g., they are renamed or their IP address
 
 ## Resources
 
-[1] https://github.com/SoCo/SoCo
+[1] https://github.com/SoCo/SoCo \
+[2] https://pypi.org/project/soco-cli
+
+## Acknowledgments
+
+All trademarks acknowledged. Avantrec Ltd has no connection with Sonos Inc.
