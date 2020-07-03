@@ -12,6 +12,7 @@ from soco_cli import sonos_discover
 class SpeakerList:
     """This class handles a cache of speaker information, stored as
     a pickle file under the user's home directory"""
+
     def __init__(self):
         self.config_path = os.path.expanduser("~") + "/.soco-cli"
         if not os.path.exists(self.config_path):
@@ -487,9 +488,7 @@ def main():
         # Grouping ##################################################
         elif action == "group":
             if np == 1:
-                speaker2 = get_speaker(
-                    args.parameters[0], args.use_local_speaker_list
-                )
+                speaker2 = get_speaker(args.parameters[0], args.use_local_speaker_list)
                 speaker.join(speaker2)
             else:
                 error_and_exit(
@@ -520,7 +519,15 @@ def main():
                         print()
             else:
                 error_and_exit("Action 'groups' requires no parameters")
-        elif action == "rooms" or action == "all_rooms" or action == "visible_rooms":
+        # Zones information #########################################
+        elif action in [
+            "rooms",
+            "all_rooms",
+            "visible_rooms",
+            "zones",
+            "all_zones",
+            "visible_zones",
+        ]:
             if np == 0:
                 zones = speaker.all_zones if "all" in action else speaker.visible_zones
                 for zone in zones:

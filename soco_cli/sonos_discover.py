@@ -39,7 +39,9 @@ def find_ipv4_networks():
             if is_ipv4_address(ip.ip):
                 # Restrict to common domestic private IP ranges and sensible
                 # netmasks. Experimental ... assumptions need to be tested.
-                if ("192.168" in ip.ip or "10.0" in ip.ip) and ip.network_prefix <= 24:
+                if (
+                    ip.ip.startswith("192.168") or ip.ip.startswith("10.")
+                ) and ip.network_prefix <= 24:
                     nw = ipaddress.ip_network(
                         ip.ip + "/" + str(ip.network_prefix), False
                     )
