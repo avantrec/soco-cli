@@ -1,8 +1,13 @@
-build: LICENSE README.md MANIFEST.in requirements.txt setup.py soco_cli/*.py
+SRC = setup.py soco_cli/*.py
+ASSETS = LICENSE README.md MANIFEST.in requirements.txt
+BUILD_DIST = build dist soco_cli.egg-info
+PYCACHE = soco_cli/__pycache__ __pycache__
+
+build: $(SRC) $(ASSETS)
 	python setup.py sdist bdist_wheel
 
 clean:
-	rm -rf build dist soco_cli.egg.info __pycache__ soco_cli/__pycache__
+	rm -rf $(BUILD_DIST) $(PYCACHE)
 
 install: build
 	pip install -U -e .
@@ -12,3 +17,6 @@ uninstall:
 
 black: setup.py soco_cli/*.py
 	black setup.py soco_cli/*.py
+
+pypi_upload: clean build
+	python -m twine upload --repository pypi dist/*
