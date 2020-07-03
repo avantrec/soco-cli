@@ -176,14 +176,14 @@ def main():
     )
     # Optional arguments
     parser.add_argument(
-        "--use_local_speaker_list",
+        "--use-local-speaker-list",
         "-l",
         action="store_true",
         default=False,
         help="Use the local speaker list instead of SoCo discovery",
     )
     parser.add_argument(
-        "--refresh_local_speaker_list",
+        "--refresh-local-speaker_list",
         "-r",
         action="store_true",
         default=False,

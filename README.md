@@ -1,17 +1,23 @@
 # Soco CLI: Control Sonos Systems from the Command Line
 
-**Warning: Please consider this to be experimental at the moment. The code is immature and requires cleanup, and the command line structure and return values are not yet stable.**
+**Warning: Please consider this utility to be experimental at the moment. The code is immature and requires cleanup, and the command line structure and return values are not yet fully stable.**
 
 ## Overview
 
-Soco CLI is a command line wrapper for the popular Python SoCo library, used to develop control programs for Sonos systems. Soco CLI is written entirely in Python and is portable across platforms.
+Soco CLI is a command line wrapper for the popular Python SoCo library [1], used to develop control programs for Sonos systems. Soco CLI is written entirely in Python and is portable across platforms.
 
-It aims for an orderly command structure and consistent return values, making it very suitable for use in scripted automation scenarios, `cron` jobs, etc.
+A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc.
+
+Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, `cron` jobs, etc.
+
+Sonos CLI depends on the speaker discovery mechanisms in SoCo (unless one knows and uses the speaker IP addresses directly). This should work for most people, but there are issues (related to multicast forwarding) on some networks that cause problems. There is also an issue if there is more than one Sonos system ('Household') on the same network, as would be the case with a 'split' S1/S2 Sonos system: SoCo discovery will pick one of the systems, and your required speaker may not be in that system.
+
+To overcome these issues, Soco CLI provides an alternative discovery mechanism that scans the network for Sonos devices without depending on multicast, and which works with multiple systems on the same network. See [Alternative Discovery](#alternative-discovery) below if the standard SoCo discovery doesn't work for you.
 
 ## Supported Environments
 
 - Requires Python 3.5 or greater.
-- Should run on all platforms supported by Python. Tested on Linux, macOS and Windows.
+- Should run on all platforms supported by Python. Tested on various versions of Linux, macOS and Windows.
 
 ## Installation
 
@@ -22,21 +28,21 @@ Instructions for installing from PyPi will follow shortly.
 The installer puts the `sonos` command on the PATH. All commands have the form:
 
 ```
-sonos SPEAKER_NAME_OR_IP ACTION <parameters_required_by_action>
+sonos SPEAKER ACTION <parameters_required_by_action>
 ```
 
-- `SPEAKER_NAME_OR_IP` identifies the speaker, and can be an IPv4 address in dotted decimal format, or the name of the speaker as configured in the Sonos system. The speaker name is case sensitive (unless using alternative discovery, discussed below).
+- `SPEAKER` identifies the speaker, and can be the speaker's Sonos Room name or its IPv4 address in dotted decimal format. Note that the speaker name is case sensitive (unless using alternative discovery, discussed below).
 - `ACTION` is the operation to perform on the speaker. It can take zero or more parameters depending on the operation.
 
-Actions that make changes to speakers do not provide return values. The program exit code can be inspected to test for successful operation (exit code 0).
+Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0).
 
-If an error is encountered, a short error message will be printed to stderr, and the program will return a non-zero exit code.
+If an error is encountered, a short error message will be printed to `stderr`, and the program will return a non-zero exit code.
 
 ### Simple usage examples:
 
 - `sonos "Living Room" volume` Returns the current volume setting of the Living Room speaker.
 - `sonos Study volume 25` Sets the volume of the Study speaker to 25.
-- `sonos Study group Den` Groups the Study speaker with the Den (which becomes the group coordinator).
+- `sonos Study group Den` Groups the Study speaker with the Den.
 - `sonos 192.168.0.10 mute` Returns the mute state ('on' or 'off') of the speaker at the given IP address.
 - `sonos 192.168.0.10 mute on` Mutes the speaker at the given IP address.
 
@@ -93,12 +99,22 @@ If an error is encountered, a short error message will be printed to stderr, and
 - `volume <volume>` (or `vol`): Sets the volume of the speaker to `<volume>` (0 to 100).
 - `zones` (or `visible_zones`, `rooms`, `visible_rooms`): Returns the room names (and associated IP addresses) that are visible in the Sonos controller apps. Use `all_zones` (or `all_rooms`) to return all devices including ones not visible in the Sonos controller apps.
 
-## Alternative Speaker Discovery
+## Alternative Discovery
 
-Note -- include discussion of flags
+If the standard SoCo discovery method doesn't work for you, an alternative discovery mechanism is provided. This scans your local network(s) for Sonos devices and caches the results for use in subsequent `sonos` calls.
 
-## Examples
+You can see the results of a network scan by using the `sonos-discovery` utility.
 
-## Known Problems
+To use this discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. The results of the discovery scan are stored in `<your_home_directory>/.soco-cli/` for use with future invocations of the `sonos` command.
+
+**Example**: `sonos -l "living room" volume 50` uses the local speaker database to look up the "living room speaker".
+
+If your speakers subsequently change (e.g., they are renamed or their IP addresses change), you can force a refresh of the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option.
+
+**Example**: `sonos -lr "living room" volume 50` will refresh the discovery cache before executing the `sonos` command.
+
+Note: this approach will shortly be re-engineered so that `sonos-discover` can be used separately to create the discovery cache.
 
 ## Resources
+
+[1] https://github.com/SoCo/SoCo
