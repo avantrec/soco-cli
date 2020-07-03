@@ -5,12 +5,12 @@ import re
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-src = io.open('soco_cli/__init__.py', encoding='utf-8').read()
-metadata = dict(re.findall("__([a-z]+)__ = \"([^\"]+)\"", src))
-docstrings = re.findall('"""(.*?)"""', src, re.MULTILINE | re.DOTALL)
+src = io.open("soco_cli/__init__.py", encoding="utf-8").read()
+metadata = dict(re.findall('__([a-z]+)__ = "([^"]+)"', src))
+# docstrings = re.findall('"""(.*?)"""', src, re.MULTILINE | re.DOTALL)
 
 REQUIREMENTS = list(open("requirements.txt"))
-VERSION = metadata['version']
+VERSION = metadata["version"]
 
 setuptools.setup(
     name="soco-cli",

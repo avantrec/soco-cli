@@ -37,8 +37,10 @@ def find_ipv4_networks():
     for adapter in adapters:
         for ip in adapter.ips:
             if is_ipv4_address(ip.ip):
-                # Omit the loopback address
-                if ip.ip != "127.0.0.1":
+                # Restrict to common domestic private IP ranges and sensible
+                # netmasks. Experimental ... assumptions need to be tested.
+                if ("192.168" in ip.ip or "10.0" in ip.ip) and ip.network_prefix <= 24:
+                    print(ip.ip)
                     nw = ipaddress.ip_network(
                         ip.ip + "/" + str(ip.network_prefix), False
                     )
