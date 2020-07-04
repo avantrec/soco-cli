@@ -212,7 +212,7 @@ def main():
             )
         )
 
-    print("{} Sonos Households found: ".format(len(households)))
+    print("{} Sonos Household(s) found: ".format(len(households)))
     for household in households:
         print("  {}".format(household))
     print()
