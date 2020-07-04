@@ -2,7 +2,7 @@ import setuptools
 import io
 import re
 
-with open("README.md", "r") as fh:
+with open("PYPI_README.md", "r") as fh:
     long_description = fh.read()
 
 src = io.open("soco_cli/__init__.py", encoding="utf-8").read()
