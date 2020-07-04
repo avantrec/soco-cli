@@ -1,4 +1,4 @@
-# Placeholder
-#
-# if __name__ == "__main__":
-#     main()
+from soco_cli import sonos
+
+if __name__ == "__main__":
+    sonos.main()
