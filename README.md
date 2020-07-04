@@ -19,11 +19,11 @@ If you experience any issues with finding speakers, please take a look at the [A
 
 ## Installation
 
-Install from PyPi using **`pip install soco-cli`**.
+Install from PyPi [2] using **`pip install soco-cli`**.
 
 ## User Guide
 
-The installer puts the `sonos` command on the PATH. All commands have the form:
+The installer adds the `sonos` command to the PATH. All commands have the form:
 
 ```
 sonos SPEAKER ACTION <parameters>
@@ -130,7 +130,8 @@ If your speakers subsequently change (e.g., they are renamed or their IP address
 
 ## Resources
 
-[1] https://github.com/SoCo/SoCo
+[1] https://github.com/SoCo/SoCo \
+[2] https://pypi.org/project/soco-cli
 
 ## Acknowledgments
 

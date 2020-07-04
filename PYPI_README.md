@@ -14,7 +14,7 @@ For cases where standard SoCo speaker discovery doesn't work, an alternative spe
 
 ## Usage
 
-The installer puts the `sonos` command on the PATH. All commands have the form:
+The installer adds the `sonos` command to the PATH. All commands have the form:
 
 ```
 sonos SPEAKER ACTION <parameters>
