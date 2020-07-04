@@ -1,9 +1,11 @@
+.DEFAULT_GOAL := no_op
+
 SRC = setup.py soco_cli/*.py
-ASSETS = LICENSE README.md MANIFEST.in requirements.txt
+MANIFEST = LICENSE README.md MANIFEST.in requirements.txt
 BUILD_DIST = build dist soco_cli.egg-info
 PYCACHE = soco_cli/__pycache__ __pycache__
 
-build: $(SRC) $(ASSETS)
+build: $(SRC) $(MANIFEST)
 	python setup.py sdist bdist_wheel
 
 clean:
@@ -20,3 +22,9 @@ black: $(SRC)
 
 pypi_upload: clean build
 	python -m twine upload --repository pypi dist/*
+
+pypi_check: build
+	twine check dist/*
+
+no_op:
+	# Available targets are: build, clean, install, uninstall, black, pypi_upload, pypi_check
