@@ -116,9 +116,11 @@ To overcome these issues, Soco CLI provides an alternative discovery mechanism t
 
 ### Usage
 
-To use this discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. The results of the discovery scan are stored in `<your_home_directory>/.soco-cli/` for use with future invocations of the `sonos` command.
+To use this discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. A local speaker list is stored in `<your_home_directory>/.soco-cli/` for use with future invocations of the `sonos` command.
 
 **Example**: **`sonos -l "living room" volume 50`** uses the local speaker database to look up the "living room speaker".
+
+### Refreshing the Local Speaker List
 
 If your speakers subsequently change (e.g., they are renamed or their IP addresses change, or you add/remove speakers), you can force a refresh of the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option.
 
