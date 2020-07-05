@@ -189,6 +189,20 @@ def main():
         default=False,
         help="Refresh the local speaker list",
     )
+    parser.add_argument(
+        "--network_discovery_threads",
+        "-t",
+        type=int,
+        default=128,
+        help="Maximum number of threads used for Sonos network discovery",
+    )
+    parser.add_argument(
+        "--network_discovery_timeout",
+        "-n",
+        type=float,
+        default=3.0,
+        help="Network timeout when scanning for a Sonos device (seconds)",
+    )
 
     pp = pprint.PrettyPrinter(width=100)
 
