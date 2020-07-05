@@ -3,42 +3,11 @@ import soco
 import argparse
 import os
 import sys
-import ipaddress
 import pprint
-import pickle
-from soco_cli import sonos_discover
+from soco_cli import speakers
 
-
-class SpeakerList:
-    """This class handles a cache of speaker information, stored as
-    a pickle file under the user's home directory"""
-
-    def __init__(self):
-        self.config_path = os.path.expanduser("~") + "/.soco-cli"
-        if not os.path.exists(self.config_path):
-            os.mkdir(self.config_path)
-        self.pickle_file = self.config_path + "/speakers.pickle"
-        self.speakers = None
-
-    def save(self):
-        if self.speakers:
-            pickle.dump(self.speakers, open(self.pickle_file, "wb"))
-            return True
-        else:
-            return False
-
-    def load(self):
-        if os.path.exists(self.pickle_file):
-            try:
-                self.speakers = pickle.load(open(self.pickle_file, "rb"))
-            except:
-                return False
-            return True
-        else:
-            return False
-
-    def refresh(self):
-        self.speakers = sonos_discover.list_sonos_devices(socket_timeout=5)
+# Global Speakers instance
+speaker_list = None
 
 
 def error_and_exit(msg):
@@ -46,48 +15,6 @@ def error_and_exit(msg):
     print("Error:", msg, file=sys.stderr)
     # Use os._exit() to avoid the catch-all 'except'
     os._exit(1)
-
-
-def is_ipv4_address(speaker_name):
-    try:
-        ipaddress.IPv4Network(speaker_name)
-        return True
-    except ValueError:
-        return False
-
-
-def get_speaker(
-    speaker_name,
-    use_local_speaker_list=False,
-    refresh_local_speaker_list=False,
-    require_coordinator=True,
-):
-    try:
-        if is_ipv4_address(speaker_name):
-            return soco.SoCo(speaker_name)
-        if not use_local_speaker_list:
-            # Use standard SoCo lookup
-            speaker = soco.discovery.by_name(speaker_name)
-            if speaker:
-                return speaker
-            else:
-                error_and_exit("Speaker '{}' not found.".format(speaker_name))
-        else:
-            # Use local discovery and cached speaker list if it exists
-            speaker_list = SpeakerList()
-            if not speaker_list.load() or refresh_local_speaker_list:
-                speaker_list.refresh()
-                speaker_list.save()
-            for speaker in speaker_list.speakers:
-                if speaker.speaker_name.lower() == speaker_name.lower():
-                    if require_coordinator:
-                        if speaker.is_coordinator:
-                            return soco.SoCo(speaker.ip_address)
-                    else:
-                        return soco.SoCo(speaker.ip_address)
-            error_and_exit("Speaker '{}' not found.".format(speaker_name))
-    except Exception as e:
-        error_and_exit("Exception: {}".format(str(e)))
 
 
 def print_speaker_info(speaker):
@@ -158,6 +85,16 @@ def pause_all(speaker):
                 pass
 
 
+def get_speaker(name, local=False):
+    if local:
+        return speaker_list.find(name)
+    else:
+        if speakers.Speakers.is_ipv4_address(name):
+            return soco.SoCo(name)
+        else:
+            return soco.discovery.by_name(name)
+
+
 def main():
     # Create the argument parser
     parser = argparse.ArgumentParser(
@@ -190,32 +127,40 @@ def main():
         help="Refresh the local speaker list",
     )
     parser.add_argument(
-        "--network_discovery_threads",
+        "--network-discovery-threads",
         "-t",
         type=int,
         default=128,
         help="Maximum number of threads used for Sonos network discovery",
     )
     parser.add_argument(
-        "--network_discovery_timeout",
+        "--network-discovery-timeout",
         "-n",
         type=float,
         default=3.0,
-        help="Network timeout when scanning for a Sonos device (seconds)",
+        help="Network timeout for Sonos device scan (seconds)",
     )
-
-    pp = pprint.PrettyPrinter(width=100)
 
     # Parse the command line
     args = parser.parse_args()
+
+    if args.use_local_speaker_list:
+        global speaker_list
+        speaker_list = speakers.Speakers(
+            network_threads=args.network_discovery_threads,
+            network_timeout=args.network_discovery_timeout,
+        )
+        if args.refresh_local_speaker_list or not speaker_list.load():
+            speaker_list.discover()
+            speaker_list.save()
+
+    pp = pprint.PrettyPrinter(width=100)
 
     # Process the actions
     # Wrap everything in a try/except to catch all SoCo (etc.) errors
     # ToDo: improve so there's a single action pattern and a single function to interpret it
     try:
-        speaker = get_speaker(
-            args.speaker, args.use_local_speaker_list, args.refresh_local_speaker_list
-        )
+        speaker = get_speaker(args.speaker, args.use_local_speaker_list)
         if not speaker:
             error_and_exit("Speaker not found")
         np = len(args.parameters)

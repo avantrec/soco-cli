@@ -100,21 +100,21 @@ class Speakers:
         os.remove(self.save_pathname)
 
     @staticmethod
+    def is_ipv4_address(ip_address):
+        try:
+            ipaddress.IPv4Network(ip_address)
+            return True
+        except ValueError:
+            return False
+
+    @staticmethod
     def find_ipv4_networks():
         """Return a list of unique IPv4 networks to which this node is attached."""
-
-        def is_ipv4_address(ip_address):
-            try:
-                ipaddress.IPv4Network(ip_address)
-                return True
-            except ValueError:
-                return False
-
         ipv4_net_list = []
         adapters = ifaddr.get_adapters()
         for adapter in adapters:
             for ip in adapter.ips:
-                if is_ipv4_address(ip.ip):
+                if Speakers.is_ipv4_address(ip.ip):
                     # Restrict to common domestic private IP ranges and sensible
                     # netmasks. Experimental ... assumptions need to be tested.
                     if (
