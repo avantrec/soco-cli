@@ -103,6 +103,7 @@ class Speakers:
             return False
 
     def load(self):
+        """Loads a saved speaker list"""
         if os.path.exists(self.save_pathname):
             try:
                 self._speakers = pickle.load(open(self.save_pathname, "rb"))
@@ -113,13 +114,16 @@ class Speakers:
             return False
 
     def clear(self):
+        """Clears the in-memory speaker list"""
         self._speakers = []
 
     def remove_save_file(self):
+        """Renoves the saved speaker list file"""
         os.remove(self.save_pathname)
 
     @staticmethod
     def is_ipv4_address(ip_address):
+        """Tests for an IPv4 address"""
         try:
             ipaddress.IPv4Network(ip_address)
             return True
@@ -128,7 +132,7 @@ class Speakers:
 
     @staticmethod
     def find_ipv4_networks():
-        """Return a list of unique IPv4 networks to which this node is attached."""
+        """Returns a list of unique IPv4 networks to which this node is attached."""
         ipv4_net_list = []
         adapters = ifaddr.get_adapters()
         for adapter in adapters:
@@ -149,6 +153,7 @@ class Speakers:
 
     @staticmethod
     def get_ip_search_list():
+        """Returns a list of IP addresses to test"""
         ip_list = []
         for network in Speakers.find_ipv4_networks():
             for ip_addr in network:
@@ -167,7 +172,7 @@ class Speakers:
 
     @staticmethod
     def get_sonos_device_data(ip_addr, soco_timeout):
-        """Interrogate a Sonos device"""
+        """Get information from a Sonos device"""
         try:
             speaker = soco.SoCo(str(ip_addr))
             info = speaker.get_speaker_info(refresh=True, timeout=soco_timeout)
