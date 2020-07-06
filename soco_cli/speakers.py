@@ -38,6 +38,20 @@ class Speakers:
         self._speakers = []
 
     @property
+    def speaker_cache_loaded(self):
+        if self._speakers:
+            return True
+        else:
+            return False
+
+    @property
+    def speaker_cache_file_exists(self):
+        if os.path.exists(self.save_pathname):
+            return True
+        else:
+            return False
+
+    @property
     def speakers(self):
         return self._speakers
 
