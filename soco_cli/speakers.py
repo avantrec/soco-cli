@@ -94,9 +94,9 @@ class Speakers:
     def save(self):
         """Saves the speaker list as a pickle file.
         """
-        if not os.path.exists(self._save_directory):
-            os.mkdir(self._save_directory)
         if self._speakers:
+            if not os.path.exists(self._save_directory):
+                os.mkdir(self._save_directory)
             pickle.dump(self._speakers, open(self.save_pathname, "wb"))
             return True
         else:
