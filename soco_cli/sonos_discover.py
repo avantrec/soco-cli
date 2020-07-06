@@ -40,7 +40,7 @@ def main():
         help="Network timeout for Sonos device scan (seconds)",
     )
     parser.add_argument(
-        "--delete_local_speaker_cache",
+        "--delete-local-speaker-cache",
         "-d",
         action="store_true",
         default=False,
