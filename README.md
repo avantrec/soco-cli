@@ -112,7 +112,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 
 Sonos CLI depends on the speaker discovery mechanisms in SoCo (unless one knows and uses the speaker IP addresses directly). This should work for most people, but there are issues (related to multicast forwarding) on some networks that can prevent Soco from finding speakers. There is also an issue if there is more than one Sonos system ('Household') on the same network, as would be the case if there is a 'split' S1/S2 Sonos system: SoCo discovery will pick one of the systems, and your required speaker may not be in that system.
 
-To overcome these issues, Soco CLI provides an alternative discovery mechanism that scans the network for Sonos devices without depending on multicast, and which works with multiple systems on the same network. This mechanism scans your local network(s) for Sonos devices and caches the results for use in subsequent `sonos` calls. You can see the results of a network scan by using the `sonos-discovery` utility.
+To overcome these issues, Soco CLI provides an alternative discovery mechanism that scans the network for Sonos devices without depending on multicast, and which works with multiple Sonos systems on the same network. This mechanism scans your local network(s) for Sonos devices and caches the results for use in subsequent `sonos` calls.
 
 ### Usage
 
@@ -122,11 +122,26 @@ To use this discovery mechanism with `sonos`, use the `--use-local-speaker-list`
 
 ### Refreshing the Local Speaker List
 
-If your speakers subsequently change (e.g., they are renamed or their IP addresses change, or you add/remove speakers), you can force a refresh of the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option.
+If your speakers change in some way (e.g., they are renamed, are assigned different IP addresses, or you add/remove speakers), you can refresh the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option. You can also use the `sonos-discover` command (below)
 
 **Example**: **`sonos -lr "living room" volume 50`** will refresh the discovery cache before executing the `sonos` command.
 
-(Note: this approach will shortly be improved so that `sonos-discover` can be used separately to create or refresh the discovery cache.)
+### Discovery Options
+
+The following flags can be used to adjust network discovery behaviour if the discovery process is failing:
+
+- **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network. The default is 3.0s.
+
+These options only have an effect when combined with the `-l` and `-r` options.
+
+**Example**: **`sonos -lr -t 256 -n 1.0 "living room" volume 50`**
+
+### The `sonos-discover` Utility
+
+**`sonos-discover`** is a standalone utility for creating/updating the local speaker cache, and for seeing the results of the discovery process. It offers the same `-t` and `-n` options as the `sonos` command. The **`--print`** or **`-p`** option will print the results of the discovery process. It's an alternative to using the `sonos -r` command.
+
+**Example**: **`sonos-discover -p -t 256 -n 1.0`** will run `sonos-discover` with a maximum of 256 threads, a network timeout of 1.0s, and will print the result.
 
 ## Resources
 

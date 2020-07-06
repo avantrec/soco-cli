@@ -10,7 +10,7 @@ A simple `sonos` command is provided which allows easy control of a wide range o
 
 Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, `cron` jobs, etc.
 
-For cases where standard SoCo speaker discovery doesn't work, an alternative speaker discovery mechanism is provided that scans the network for Sonos devices and caches the results. This supports 'split S1/S2' Sonos systems, allowing control of both.
+For cases where standard SoCo speaker discovery doesn't work, an alternative speaker discovery mechanism is provided that scans the network for Sonos devices and caches the results. This also supports 'split S1/S2' Sonos systems, allowing control of speakers in both systems.
 
 ## Usage
 
