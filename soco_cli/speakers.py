@@ -215,9 +215,10 @@ class Speakers:
     def find(self, speaker_name, require_visible=True):
         """Find a speaker by name and return its SoCo object."""
         for speaker in self._speakers:
-            # Replace funny Sonos single quotes
+            # Replace funny Sonos apostrophes
             s = speaker.speaker_name.replace("’", "'")
-            if s.lower() == speaker_name.lower():
+            # Fuzzy match; ambiguous names will return first hit
+            if speaker_name.lower() in s.lower():
                 if require_visible:
                     if speaker.is_visible:
                         return soco.SoCo(speaker.ip_address)
