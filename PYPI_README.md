@@ -1,6 +1,6 @@
 # Soco CLI: Control Sonos Systems from the Command Line
 
-**Please consider this utility to be experimental at the moment. The code works but requires cleanup, and the command line structure and return values are not yet fully finalised.**
+**Please consider this utility to be experimental at the moment. The code is functional but requires cleanup, and the command line structure and return values are not yet fully finalised.**
 
 ## Overview
 
