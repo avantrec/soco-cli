@@ -19,6 +19,7 @@ class Speakers:
     """A class for discovering Sonos speakers, saving and loading speaker data,
     and looking up speaker names.
     """
+
     def __init__(
         self,
         save_directory=None,
@@ -35,6 +36,10 @@ class Speakers:
         self._network_threads = network_threads
         self._network_timeout = network_timeout
         self._speakers = []
+
+    @property
+    def speakers(self):
+        return self._speakers
 
     @property
     def save_directory(self):
@@ -200,7 +205,7 @@ class Speakers:
                     ),
                 )
             except:
-                pass
+                break
             thread_list.append(thread)
             thread.start()
         # Wait for all threads to finish before returning
@@ -210,7 +215,9 @@ class Speakers:
     def find(self, speaker_name, require_visible=True):
         """Find a speaker by name and return its SoCo object."""
         for speaker in self._speakers:
-            if speaker.speaker_name.lower() == speaker_name.lower():
+            # Replace funny Sonos single quotes
+            s = speaker.speaker_name.replace("’", "'")
+            if s.lower() == speaker_name.lower():
                 if require_visible:
                     if speaker.is_visible:
                         return soco.SoCo(speaker.ip_address)

@@ -120,7 +120,7 @@ def main():
         help="Use the local speaker list instead of SoCo discovery",
     )
     parser.add_argument(
-        "--refresh-local-speaker_list",
+        "--refresh-local-speaker-list",
         "-r",
         action="store_true",
         default=False,
@@ -158,7 +158,6 @@ def main():
 
     # Process the actions
     # Wrap everything in a try/except to catch all SoCo (etc.) errors
-    # ToDo: improve so there's a single action pattern and a single function to interpret it
     try:
         speaker = get_speaker(args.speaker, args.use_local_speaker_list)
         if not speaker:
