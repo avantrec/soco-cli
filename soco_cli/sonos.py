@@ -279,7 +279,7 @@ def main():
             else:
                 error_and_exit("Action 'line_in' takes 0, 1, or 2 parameter(s)")
         # Volume ####################################################
-        elif action in ["volume", "vol"]:
+        elif action in ["volume", "vol", "v"]:
             if np == 0:
                 print(speaker.volume)
             elif np == 1:
@@ -290,7 +290,7 @@ def main():
                     error_and_exit("Volume parameter must be from 0 to 100")
             else:
                 error_and_exit("Action 'volume' takes 0 or 1 parameter(s)")
-        elif action in ["relative_volume", "rel_vol"]:
+        elif action in ["relative_volume", "rel_vol", "relvol", "rv"]:
             if np == 1:
                 volume = int(args.parameters[0])
                 if -100 <= volume <= 100:
@@ -308,7 +308,7 @@ def main():
                     error_and_exit("Ramp parameter must be from 0 to 100")
             else:
                 error_and_exit("Action 'ramp/ramp_to_volume' requires 1 parameter")
-        elif action in ["group_volume", "group_vol"]:
+        elif action in ["group_volume", "group_vol", "gv"]:
             if np == 0:
                 print(speaker.group.volume)
             elif np == 1:
@@ -319,7 +319,7 @@ def main():
                     error_and_exit("Group Volume parameter must be from 0 to 100")
             else:
                 error_and_exit("Action 'group_volume' takes 0 or 1 parameter(s)")
-        elif action in ["group_relative_volume", "group_rel_vol"]:
+        elif action in ["group_relative_volume", "group_rel_vol", "grv"]:
             if np == 1:
                 volume = int(args.parameters[0])
                 if -100 <= volume <= 100:
@@ -471,7 +471,7 @@ def main():
                     "Action 'status_light' requires 0 or 1 parameter ('on' or 'off')"
                 )
         # Grouping ##################################################
-        elif action == "group":
+        elif action in ["group", "g"]:
             if np == 1:
                 speaker2 = get_speaker(args.parameters[0], args.use_local_speaker_list)
                 speaker.join(speaker2)
@@ -479,7 +479,7 @@ def main():
                 error_and_exit(
                     "Action 'group' requires 1 parameter (the speaker to group with"
                 )
-        elif action == "ungroup":
+        elif action in ["ungroup", "u"]:
             if np == 0:
                 speaker.unjoin()
             else:
