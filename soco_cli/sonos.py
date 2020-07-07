@@ -49,29 +49,46 @@ def print_speaker_info(speaker):
 
 def play_sonos_favourite(speaker, favourite):
     fs = speaker.music_library.get_sonos_favorites()
+    the_fav = None
+    # Strict match (case insensitive)
     for f in fs:
-        # Loose match
-        if favourite.lower() in f.title.lower():
-            uri = f.get_uri()
-            metadata = f.resource_meta_data
-            # play_uri works for some favourites
-            try:
-                speaker.play_uri(uri=uri, meta=metadata)
-                return
-            except Exception as e:
-                # error_and_exit(str(e))
-                e1 = e
-                pass
-            # Other favourites have to be added to the queue, then played
-            try:
-                speaker.clear_queue()
-                index = speaker.add_to_queue(f)
-                speaker.play_from_queue(index=0, start=True)
-                return
-            except Exception as e2:
-                error_and_exit("{}, {}".format(str(e1), str(e2)))
-                return
+        if favourite.lower() == f.title.lower():
+            the_fav = f
+    # Loose substring match if strict match not available
+    if not the_fav:
+        for f in fs:
+            if favourite.lower() in f.title.lower():
+                the_fav = f
+    if the_fav:
+        # play_uri works for some favourites
+        try:
+            uri = the_fav.get_uri()
+            metadata = the_fav.resource_meta_data
+            speaker.play_uri(uri=uri, meta=metadata)
+            return  # Success
+        except Exception as e:
+            e1 = e
+            pass
+        # Other favourites have to be added to the queue, then played
+        try:
+            speaker.clear_queue()
+            index = speaker.add_to_queue(the_fav)
+            speaker.play_from_queue(index=0, start=True)
+            return
+        except Exception as e2:
+            error_and_exit("{}, {}".format(str(e1), str(e2)))
+            return
     error_and_exit("Favourite '{}' not found".format(favourite))
+
+
+def list_favourites(speaker):
+    fs = speaker.music_library.get_sonos_favorites()
+    favs = []
+    for f in fs:
+        favs.append(f.title)
+    favs.sort()
+    for f in favs:
+        print(f)
 
 
 def pause_all(speaker):
@@ -80,6 +97,18 @@ def pause_all(speaker):
         if zone.is_visible:
             try:
                 zone.pause()
+            except:
+                # Ignore errors here; don't want to halt on
+                # a failed pause (e.g., if speaker isn't playing)
+                pass
+
+
+def ungroup_all(speaker):
+    zones = speaker.all_zones
+    for zone in zones:
+        if zone.is_visible:
+            try:
+                zone.unjoin()
             except:
                 # Ignore errors here; don't want to halt on
                 # a failed pause (e.g., if speaker isn't playing)
@@ -377,6 +406,11 @@ def main():
                 error_and_exit("Action 'favourite/favorite/fav' requires 1 parameter")
             else:
                 play_sonos_favourite(speaker, args.parameters[0])
+        elif action in ["list_favs"]:
+            if np == 0:
+                list_favourites(speaker)
+            else:
+                error_and_exit("Action 'list_favs' requires no parameters")
         # Play URI ##################################################
         elif action in ["uri", "play_uri"]:
             if not (np == 1 or np == 2):
@@ -507,6 +541,11 @@ def main():
                         print()
             else:
                 error_and_exit("Action 'groups' requires no parameters")
+        elif action in ["ungroup_all"]:
+            if np == 0:
+                ungroup_all(speaker)
+            else:
+                error_and_exit("Action 'ungroup_all' requires no parameters")
         # Zones information #########################################
         elif action in [
             "rooms",

@@ -76,6 +76,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to Line-In, 'off' otherwise.
 - **`line_in on`**: Switch a speaker to its Line-In input (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback.
 - **`line_in on <line_in_speaker`**: Switch a speaker to the Line-In input of `<line_in_speaker>` (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback.
+- **`list_favs`**: Lists the Sonos favourites applicable to this speaker.
 - **`next`**: Move to the next track (if applicable for the current audio source).
 - **`pause`**: Pause playback (if applicable for the audio source).
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
@@ -97,6 +98,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`pair <right_hand_speaker`**: Creates a stereo pair, where the target speaker becomes the left-hand speaker of the pair and `<right_hand_speaker>` becomes the right-hand of the pair. Can be used on dissimilar speakers.
 - **`party_mode` (or `party`)**: Adds all speakers in the system into a single group. The target speaker becomes the group coordinator. Remove speakers individually using `ungroup`.
 - **`ungroup`**: Removes the speaker from a group.
+- **`ungroup_all`**: Removes all speakers in the target speaker's household from all groups.
 - **`unpair`**: Separate a stereo pair. Can be applied to either speaker in the pair.
 
 #### Speaker and Sonos System Information
@@ -113,7 +115,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 
 Sonos CLI depends on the speaker discovery mechanisms in SoCo (unless one knows and uses the speaker IP addresses directly). This should work for most people, but there are issues (related to multicast forwarding) on some networks that can prevent Soco from finding speakers. There is also an issue if there is more than one Sonos system ('Household') on the same network, as would be the case if there is a 'split' S1/S2 Sonos system: SoCo discovery will pick one of the systems, and your required speaker may not be in that system.
 
-To overcome these issues, Soco CLI provides an alternative discovery mechanism that scans the network for Sonos devices without depending on multicast, and which works with multiple Sonos systems on the same network. This mechanism scans your local network(s) for Sonos devices and caches the results for use in subsequent uses of the `sonos` command. These will execute immediately, without the discovery delay.
+To overcome these issues, Soco CLI provides an alternative discovery mechanism that scans the network for Sonos devices without depending on multicast, and which works with multiple Sonos systems on the same network. This mechanism scans your local network(s) for Sonos devices and caches the results for use in subsequent uses of the `sonos` command. Theseg will execute immediately, without the discovery delay.
 
 ### Usage
 
