@@ -1,7 +1,8 @@
 1. Update __version__ in soco_cli/__init__.py
 2. Commit and push: git commit -a -m "Commit message"
 3. Tag the commit: git tag -a vX.Y.Z -m "Version X.Y.Z"
-4. Push the commit: git push --tags
-5. Build: make clean; make build
-6. PyPi check: make pypi_check
-7. PyPi push: make pypi_upload
+4. Push the commit: git push
+5. Push the commit tags: git push --tags
+6. Build: make clean; make build
+7. PyPi check: make pypi_check
+8. PyPi push: make pypi_upload

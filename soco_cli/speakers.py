@@ -10,14 +10,21 @@ from collections import namedtuple
 # Type for holding speaker details
 SonosDevice = namedtuple(
     "SonosDevice",
-    ["household_id", "ip_address", "speaker_name", "is_coordinator", "is_visible"],
+    [
+        "household_id",
+        "ip_address",
+        "speaker_name",
+        "is_coordinator",
+        "is_visible",
+        "model_name",
+    ],
     rename=False,
 )
 
 
 class Speakers:
     """A class for discovering Sonos speakers, saving and loading speaker data,
-    and looking up speaker names.
+    and finding speakers by name. An alternative to using SoCo discovery.
     """
 
     def __init__(
@@ -118,7 +125,7 @@ class Speakers:
         self._speakers = []
 
     def remove_save_file(self):
-        """Renoves the saved speaker list file"""
+        """Removes the saved speaker list file"""
         os.remove(self.save_pathname)
 
     @staticmethod
@@ -180,6 +187,7 @@ class Speakers:
                 info["zone_name"],
                 speaker.is_coordinator,
                 speaker.is_visible,
+                info["model_name"],
             )
         except Exception as e:
             # Probably not a Sonos device
