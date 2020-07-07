@@ -10,7 +10,7 @@ A simple `sonos` command is provided which allows easy control of speaker playba
 
 Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, `cron` jobs, etc.
 
-If you experience any issues with finding speakers, please take a look at the [Alternative Discovery](#alternative-discovery) section below.
+If you experience any issues with finding speakers, please take a look at the [Alternative Discovery](#alternative-discovery) section below. (You may prefer to use this approach anyway, even if normal SoCo discovery works for you.)
 
 ## Supported Environments
 
@@ -112,7 +112,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 
 Sonos CLI depends on the speaker discovery mechanisms in SoCo (unless one knows and uses the speaker IP addresses directly). This should work for most people, but there are issues (related to multicast forwarding) on some networks that can prevent Soco from finding speakers. There is also an issue if there is more than one Sonos system ('Household') on the same network, as would be the case if there is a 'split' S1/S2 Sonos system: SoCo discovery will pick one of the systems, and your required speaker may not be in that system.
 
-To overcome these issues, Soco CLI provides an alternative discovery mechanism that scans the network for Sonos devices without depending on multicast, and which works with multiple Sonos systems on the same network. This mechanism scans your local network(s) for Sonos devices and caches the results for use in subsequent `sonos` calls.
+To overcome these issues, Soco CLI provides an alternative discovery mechanism that scans the network for Sonos devices without depending on multicast, and which works with multiple Sonos systems on the same network. This mechanism scans your local network(s) for Sonos devices and caches the results for use in subsequent uses of the `sonos` command. These will execute immediately, without the discovery delay.
 
 ### Usage
 
