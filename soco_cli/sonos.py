@@ -4,7 +4,8 @@ import argparse
 import os
 import sys
 import pprint
-from soco_cli import speakers
+from . import speakers
+from . import __version__
 
 # Global Speakers instance
 speaker_list = None
@@ -159,11 +160,13 @@ def main():
     # Process the actions
     # Wrap everything in a try/except to catch all SoCo (etc.) errors
     try:
-        speaker = get_speaker(args.speaker, args.use_local_speaker_list)
-        if not speaker:
-            error_and_exit("Speaker not found")
-        np = len(args.parameters)
         action = args.action.lower()
+        if not action in ["version"]:
+            # Some actions don't require a valid speaker
+            speaker = get_speaker(args.speaker, args.use_local_speaker_list)
+            if not speaker:
+                error_and_exit("Speaker not found")
+        np = len(args.parameters)
         # Mute ######################################################
         if action == "mute":
             if np == 0:
@@ -539,6 +542,10 @@ def main():
                 speaker.separate_stereo_pair()
             else:
                 error_and_exit("Action 'unpair' requires no parameters")
+        # Version ###################################################
+        elif action == "version":
+            print("soco-cli version: {}".format(__version__))
+            print("soco version:     {}".format(soco.__version__))
         # Invalid Action ############################################
         else:
             error_and_exit("Action '{}' is not defined.".format(action))

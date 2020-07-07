@@ -1,7 +1,7 @@
 import os
 import argparse
 import pprint
-from soco_cli import speakers
+from . import speakers
 
 
 def error_and_exit(msg):

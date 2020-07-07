@@ -107,6 +107,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`status_light` (or `light`)**: Returns the state of the speaker's status light, 'on' or 'off'.
 - **`status_light <on|off>` (or `light`)**: Switch the speaker's status light on or off.
 - **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Returns the room names (and associated IP addresses) that are visible in the Sonos controller apps. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
+- **`version`**: Report the versions of soco-cli and soco. (A speaker name must be provided, but doesn't need to be a valid name.)
 
 ## Alternative Discovery
 
