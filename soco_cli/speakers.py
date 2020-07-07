@@ -132,8 +132,8 @@ class Speakers:
 
     @staticmethod
     def find_ipv4_networks():
-        """Returns a list of unique IPv4 networks to which this node is attached."""
-        ipv4_net_list = []
+        """Returns a set of IPv4 networks to which this node is attached."""
+        ipv4_net_list = set()
         adapters = ifaddr.get_adapters()
         for adapter in adapters:
             for ip in adapter.ips:
@@ -146,18 +146,16 @@ class Speakers:
                         nw = ipaddress.ip_network(
                             ip.ip + "/" + str(ip.network_prefix), False
                         )
-                        # Avoid duplicate subnets
-                        if nw not in ipv4_net_list:
-                            ipv4_net_list.append(nw)
+                        ipv4_net_list.add(nw)
         return ipv4_net_list
 
     @staticmethod
     def get_ip_search_list():
-        """Returns a list of IP addresses to test"""
-        ip_list = []
+        """Returns a set of IP addresses to test"""
+        ip_list = set()
         for network in Speakers.find_ipv4_networks():
             for ip_addr in network:
-                ip_list.append(ip_addr)
+                ip_list.add(ip_addr)
         return ip_list
 
     @staticmethod
@@ -189,11 +187,11 @@ class Speakers:
 
     @staticmethod
     def discovery_worker(ip_list, socket_timeout, soco_timeout, sonos_devices):
-        """Worker thread to pull IP addresses off a list, test if port 1400 is open,
+        """Worker thread to pull IP addresses from a set, test if port 1400 is open,
         and if so pull down the Sonos device data. Return when the list is empty.
         """
         while len(ip_list) > 0:
-            ip_addr = ip_list.pop(0)
+            ip_addr = ip_list.pop()
             if Speakers.check_ip_and_port(str(ip_addr), 1400, socket_timeout):
                 device = Speakers.get_sonos_device_data(ip_addr, soco_timeout)
                 if device:
