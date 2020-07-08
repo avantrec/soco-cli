@@ -46,7 +46,7 @@ def main():
         help="Delete the local speaker cache, if it exists",
     )
     parser.add_argument(
-        "--show-contents-of-current-cache-file",
+        "--show-current-speaker-cache",
         "-s",
         action="store_true",
         default=False,
@@ -56,7 +56,7 @@ def main():
     # Parse the command line
     args = parser.parse_args()
 
-    if args.show_contents_of_current_cache_file:
+    if args.show_current_speaker_cache:
         speaker_list = speakers.Speakers()
         if speaker_list.load():
             speaker_list.print()
