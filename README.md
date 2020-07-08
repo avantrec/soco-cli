@@ -52,6 +52,8 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`balance <left volume> <right volume>`**: Sets the balance of the speaker to. L and R must be between 0 and 100. (Examples: L=100, R=100 is level balance; L=0, R=100 drives the right channel only, etc.)
 - **`bass`**: Returns the bass setting of the speaker, from -10 to 10.
 - **`bass <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.
+- **`dialog_mode <on|off>`** (or **`dialog`**): Sets the dialog mode setting of the speaker to 'on' of 'off' (if applicable).
+- **`dialog_mode`** (or **`dialog`**): Returns the dialog mode setting of the speaker, 'on' or 'off' (if applicable).
 - **`group_mute`**: Returns the group mute state of a group of speakers, 'on' or 'off'.
 - **`group_mute <on|off>`**: Sets the group mute state of a group of speakers to 'on' or 'off'.
 - **`group_relative_volume <adjustment>` (or `group_rel_vol`)**: Raises or lowers the group volume by `<adjustment>` which must be a number from -100 to 100.
@@ -60,8 +62,9 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`loudness`**: Returns the loudness setting of the speaker, 'on' or 'off'.
 - **`loudness <on|off>`**: Sets the loudness setting of the speaker to 'on' of 'off'.
 - **`mute`**: Returns the mute setting of the speaker, 'on' or 'off'.
-- **`mute <on|off>`**: Sets the mute setting of the speaker to 'on' of 'off'.
-- **`ramp_to_volume <volume>` (or `ramp`)**: Gently raise or reduce the volume to `<volume>`, which is between 0 and 100. Returns the number of seconds to complete the ramp.
+- **`night_mode <on|off>`** (or **`night`**): Sets the night mode setting of the speaker to 'on' of 'off' (if applicable).
+- **`night_mode`** (or **`night`**): Returns the night mode setting of the speaker, 'on' or 'off' (if applicable).
+- **`mute <on|off>`**: Sets the mute setting of the speaker to 'on' of 'off'.- **`ramp_to_volume <volume>` (or `ramp`)**: Gently raise or reduce the volume to `<volume>`, which is between 0 and 100. Returns the number of seconds to complete the ramp.
 - **`relative_volume <adjustment>` (or `rel_vol`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
 - **`treble`**: Returns the treble setting of the speaker, from -10 to 10.
 - **`treble <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.

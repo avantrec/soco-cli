@@ -618,6 +618,43 @@ def main():
                 speaker.clear_queue()
             else:
                 error_and_exit("Action 'clear_queue' requires no parameters")
+        # Night / Dialogue Modes ####################################
+        elif action in ["night_mode", "night"]:
+            if np == 0:
+                state = "on" if speaker.night_mode else "off"
+                print(state)
+            elif np == 1:
+                v = (args.parameters[0]).lower()
+                if v == "on":
+                    speaker.night_mode = True
+                elif v == "off":
+                    speaker.night_mode = False
+                else:
+                    error_and_exit(
+                        "Action 'night_mode' with a parameter requires 'on' or 'off'"
+                    )
+            else:
+                error_and_exit(
+                    "Action 'night_mode' requires 0 or 1 parameter ('on' or 'off')"
+                )
+        elif action in ["dialogue_mode", "dialog_mode", "dialogue", "dialog"]:
+            if np == 0:
+                state = "on" if speaker.dialog_mode else "off"
+                print(state)
+            elif np == 1:
+                v = (args.parameters[0]).lower()
+                if v == "on":
+                    speaker.dialog_mode = True
+                elif v == "off":
+                    speaker.dialog_mode = False
+                else:
+                    error_and_exit(
+                        "Action 'dialog_mode' with a parameter requires 'on' or 'off'"
+                    )
+            else:
+                error_and_exit(
+                    "Action 'dialog_mode' requires 0 or 1 parameter ('on' or 'off')"
+                )
         # Invalid Action ############################################
         else:
             error_and_exit("Action '{}' is not defined.".format(action))
