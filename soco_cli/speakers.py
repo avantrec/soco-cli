@@ -15,7 +15,6 @@ SonosDevice = namedtuple(
         "household_id",
         "ip_address",
         "speaker_name",
-        "is_coordinator",
         "is_visible",
         "model_name",
     ],
@@ -213,12 +212,16 @@ class Speakers:
         for device in self._speakers:
             if device.household_id not in households:
                 households[device.household_id] = []
+            if device.is_visible:
+                visible = "Visible"
+            else:
+                visible = "Not Visible"
             households[device.household_id].append(
                 (
                     device.speaker_name,
                     device.ip_address,
-                    # device.is_coordinator,
-                    # device.is_visible,
+                    device.model_name,
+                    visible,
                 )
             )
 
