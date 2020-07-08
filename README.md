@@ -76,16 +76,18 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 
 - **`cross_fade`**: Returns the cross fade setting of the speaker, 'on' or 'off'.
 - **`cross_fade <on|off>`**: Sets the cross fade setting of the speaker to 'on' of 'off'.
-- **`favourite <favourite_name>` (or `favorite`, `fav`)**: Plays the Sonos favourite identified by `<favourite_name>`. The name is loosely matched; if `<favourite_name>` is a (case insensitive) substring of a Sonos favourite, it will match. In the case of duplicates, the first match encountered will be used. **Note: this currently works only for certain types of favourite: local library tracks and playlists, radio stations, single Spotify tracks, etc.**
+- **`favourite <favourite_name>` (or `favorite`, `fav`, `pf`, `play_fav`)**: Plays the Sonos favourite identified by `<favourite_name>`. The name is loosely matched; if `<favourite_name>` is a (case insensitive) substring of a Sonos favourite, it will match. In the case of duplicates, the first match encountered will be used. **Note: this currently works only for certain types of favourite: local library tracks and playlists, radio stations, single Spotify tracks, etc.**
 - **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to Line-In, 'off' otherwise.
 - **`line_in on`**: Switch a speaker to its Line-In input (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback.
 - **`line_in on <line_in_speaker`**: Switch a speaker to the Line-In input of `<line_in_speaker>` (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback.
-- **`list_favs`**: Lists the Sonos favourites applicable to this speaker.
+- **`list_favs`** (or **`list_favorites`, `list_favourites`, `lf`**): Lists the Sonos favourites applicable to this speaker.
+- **`list_playlists`** (or **`playlists`, `lp`**): Lists the Sonos playlists applicable to this speaker.
 - **`next`**: Move to the next track (if applicable for the current audio source).
 - **`pause`**: Pause playback (if applicable for the audio source).
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
 - **`play`**: Start playback.
 - **`playback`**: Returns the current playback state for the speaker.
+- **`play_from_queue <track>`** (or **`play_queue`, `pfq`, `pq`**): Play track number `<track>` from the queue. Tracks begin at 1.
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE` or `SHUFFLE_NO_REPEAT`.
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
 - **`play_uri <uri> <title>` (also `uri`)**: Plays the audio object given by the `<uri>` parameter (e.g., a radio stream URL). `<title>` is optional, and if present will be used for the title of the audio stream.
@@ -98,6 +100,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 
 #### Queue Actions
 
+- **`add_playlist_to_queue <playlist_name>`** (or **`add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. (To start playback, follow with action `play_from_queue`.)
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`**): List the tracks in the queue
 - **`play_from_queue <track_number>`** (or **`pq`**): Play `<track_number>` from the queue. Track numbers start from 1.
