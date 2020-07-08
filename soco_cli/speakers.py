@@ -220,7 +220,7 @@ class Speakers:
                 (
                     device.speaker_name,
                     device.ip_address,
-                    device.model_name,
+                    device.model_name.replace("Sonos ", ""),
                     visible,
                 )
             )
