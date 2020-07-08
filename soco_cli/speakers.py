@@ -185,7 +185,6 @@ class Speakers:
                 speaker.household_id,
                 str(ip_addr),
                 info["zone_name"],
-                speaker.is_coordinator,
                 speaker.is_visible,
                 info["model_name"],
             )
