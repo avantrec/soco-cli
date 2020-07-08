@@ -308,9 +308,9 @@ def main():
                     error_and_exit("Invalid play mode '{}'".format(args.parameters[0]))
             else:
                 error_and_exit("Action 'mode/play_mode' requires 0 or 1 parameeter(s)")
-        elif action == "playback":
+        elif action in ["playback", "state"]:
             if np == 0:
-                pp.pprint(speaker.get_current_transport_info())
+                print(speaker.get_current_transport_info()["current_transport_state"])
             else:
                 error_and_exit("Action 'playback' requires no parameters")
         elif action == "track":
@@ -615,7 +615,7 @@ def main():
             print("soco-cli version: {}".format(__version__))
             print("soco version:     {}".format(soco.__version__))
         # Queues ####################################################
-        elif action in ["list_queue", "lq"]:
+        elif action in ["list_queue", "lq", "queue", "q"]:
             if np == 0:
                 queue = speaker.get_queue()
                 for i in range(len(queue)):
