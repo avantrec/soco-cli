@@ -96,7 +96,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`stop`**: Stop playback.
 - **`track`**: Return information about the currently playing track.
 
-### Queue Actions
+#### Queue Actions
 
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`**): List the tracks in the queue

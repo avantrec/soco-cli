@@ -87,8 +87,37 @@ def list_favourites(speaker):
     for f in fs:
         favs.append(f.title)
     favs.sort()
+    index = 0
     for f in favs:
-        print(f)
+        index += 1
+        print("{:3d}: {}".format(index, f))
+
+
+def list_playlists(speaker):
+    ps = speaker.get_sonos_playlists()
+    playlists = []
+    for p in ps:
+        playlists.append(p.title)
+    playlists.sort()
+    index = 0
+    for p in playlists:
+        index += 1
+        print("{:3d}: {}".format(index, p))
+
+
+def add_playlist_to_queue(speaker, name):
+    playlists = speaker.get_sonos_playlists()
+    # Strict match
+    for playlist in playlists:
+        if name.lower() == playlist.title.lower():
+            speaker.add_to_queue(playlist)
+            return True
+    # Fuzzy match
+    for playlist in playlists:
+        if name.lower() in playlist.title.lower():
+            speaker.add_to_queue(playlist)
+            return True
+    return False
 
 
 def pause_all(speaker):
@@ -401,12 +430,12 @@ def main():
             else:
                 error_and_exit("Action 'balance' takes 0 or 2 parameters")
         # Play Favourite ############################################
-        elif action in ["favourite", "favorite", "fav"]:
+        elif action in ["favourite", "favorite", "fav", "pf", "play_fav"]:
             if np != 1:
                 error_and_exit("Action 'favourite/favorite/fav' requires 1 parameter")
             else:
                 play_sonos_favourite(speaker, args.parameters[0])
-        elif action in ["list_favs"]:
+        elif action in ["list_favs", "list_favorites", "list_favourites", "lf"]:
             if np == 0:
                 list_favourites(speaker)
             else:
@@ -414,7 +443,7 @@ def main():
         # Play URI ##################################################
         elif action in ["uri", "play_uri"]:
             if not (np == 1 or np == 2):
-                error_and_exit("Action 'uri/play_uri' requires 1 or 2 parameter(s)")
+                error_and_exit("Action 'play_uri' requires 1 or 2 parameter(s)")
             else:
                 force_radio = (
                     True if args.parameters[0][:4].lower() == "http" else False
@@ -590,9 +619,21 @@ def main():
             if np == 0:
                 queue = speaker.get_queue()
                 for i in range(len(queue)):
+                    try:
+                        artist = queue[i].creator
+                    except:
+                        artist = ""
+                    try:
+                        album = queue[i].album
+                    except:
+                        album = ""
+                    try:
+                        title = queue[i].title
+                    except:
+                        title = ""
                     print(
                         "{:3d}: Artist: {} | Album: {} | Title: {}".format(
-                            i + 1, queue[i].creator, queue[i].album, queue[i].title
+                            i + 1, artist, album, title
                         )
                     )
             else:
@@ -618,6 +659,12 @@ def main():
                 speaker.clear_queue()
             else:
                 error_and_exit("Action 'clear_queue' requires no parameters")
+        elif action in ["play_from_queue", "play_queue", "pfq", "pq"]:
+            if np == 1:
+                index = int(args.parameters[0])
+                speaker.play_from_queue(index - 1)
+            else:
+                error_and_exit("Action 'play_from_queue' takes 1 parameter")
         # Night / Dialogue Modes ####################################
         elif action in ["night_mode", "night"]:
             if np == 0:
@@ -654,6 +701,21 @@ def main():
             else:
                 error_and_exit(
                     "Action 'dialog_mode' requires 0 or 1 parameter ('on' or 'off')"
+                )
+        # Playlists #################################################
+        elif action in ["list_playlists", "playlists", "lp"]:
+            if np == 0:
+                list_playlists(speaker)
+            else:
+                error_and_exit("Action 'list_playlists' requires no parameters")
+        elif action in ["add_playlist_to_queue", "add_pl_to_queue", "apq"]:
+            if np == 1:
+                name = args.parameters[0]
+                if not add_playlist_to_queue(speaker, name):
+                    error_and_exit("Playlist not found")
+            else:
+                error_and_exit(
+                    "Action 'add_playlist_to_queue' requires one (integer) parameter"
                 )
         # Invalid Action ############################################
         else:
