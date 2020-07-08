@@ -662,7 +662,11 @@ def main():
         elif action in ["play_from_queue", "play_queue", "pfq", "pq"]:
             if np == 1:
                 index = int(args.parameters[0])
-                speaker.play_from_queue(index - 1)
+                qs = speaker.queue_size
+                if 1 <= index <= qs:
+                    speaker.play_from_queue(index - 1)
+                else:
+                    error_and_exit("Queue index '{}' is out of range".format(index))
             else:
                 error_and_exit("Action 'play_from_queue' takes 1 parameter")
         # Night / Dialogue Modes ####################################
