@@ -47,7 +47,7 @@ def main():
     )
     parser.add_argument(
         "--show-contents-of-current-cache-file",
-        "--s",
+        "-s",
         action="store_true",
         default=False,
         help="Show contents of the current cached speaker data"
