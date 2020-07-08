@@ -5,6 +5,7 @@ import socket
 import soco
 import ifaddr
 import threading
+import pprint
 from collections import namedtuple
 
 # Type for holding speaker details
@@ -204,6 +205,30 @@ class Speakers:
                 device = Speakers.get_sonos_device_data(ip_addr, soco_timeout)
                 if device:
                     sonos_devices.append(device)
+
+    def print(self):
+        if not self._speakers:
+            return
+        households = {}
+        for device in self._speakers:
+            if device.household_id not in households:
+                households[device.household_id] = []
+            households[device.household_id].append(
+                (
+                    device.speaker_name,
+                    device.ip_address,
+                    # device.is_coordinator,
+                    # device.is_visible,
+                )
+            )
+
+        print("{} Sonos Household(s) found: ".format(len(households)))
+        for household in households:
+            print("  {}".format(household))
+        print()
+
+        pp = pprint.PrettyPrinter(width=100)
+        pp.pprint(households)
 
     def discover(self):
         """Discover the Sonos speakers on the network(s) to which

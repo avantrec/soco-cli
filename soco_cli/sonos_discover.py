@@ -1,6 +1,5 @@
 import os
 import argparse
-import pprint
 from . import speakers
 
 
@@ -46,9 +45,24 @@ def main():
         default=False,
         help="Delete the local speaker cache, if it exists",
     )
+    parser.add_argument(
+        "--show-contents-of-current-cache-file",
+        "--s",
+        action="store_true",
+        default=False,
+        help="Show contents of the current cached speaker data"
+    )
 
     # Parse the command line
     args = parser.parse_args()
+
+    if args.show_contents_of_current_cache_file:
+        speaker_list = speakers.Speakers()
+        if speaker_list.load():
+            speaker_list.print()
+            exit(0)
+        else:
+            error_and_exit("No cached speaker data")
 
     # Parameter validation
     if not 1 <= args.network_discovery_threads <= 1024:
@@ -77,27 +91,7 @@ def main():
         error_and_exit(str(e))
 
     if args.print:
-        households = {}
-        for device in speaker_list.speakers:
-            if device.household_id not in households:
-                households[device.household_id] = []
-            households[device.household_id].append(
-                (
-                    device.speaker_name,
-                    device.ip_address,
-                    # device.is_coordinator,
-                    # device.is_visible,
-                )
-            )
-
-        print("{} Sonos Household(s) found: ".format(len(households)))
-        for household in households:
-            print("  {}".format(household))
-        print()
-
-        pp = pprint.PrettyPrinter(width=100)
-        pp.pprint(households)
-
+        speaker_list.print()
 
 if __name__ == "__main__":
     main()

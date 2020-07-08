@@ -150,6 +150,9 @@ These options only have an effect when combined with the `-l` and `-r` options.
 
 **Example**: **`sonos-discover -p -t 256 -n 1.0`** will run `sonos-discover` with a maximum of 256 threads, a network timeout of 1.0s, and will print the result.
 
+#### Other options
+- **`-show-current-speaker-cache, -s`**: Read and print the current contents of the speaker cache.
+
 ## Resources
 
 [1] https://github.com/SoCo/SoCo \
