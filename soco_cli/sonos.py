@@ -585,6 +585,35 @@ def main():
         elif action == "version":
             print("soco-cli version: {}".format(__version__))
             print("soco version:     {}".format(soco.__version__))
+        # Queues ####################################################
+        elif action in ["list_queue", "lq"]:
+            if np == 0:
+                queue = speaker.get_queue()
+                for i in range(len(queue)):
+                    print(
+                        ("{:3d}: Artist: {} | Album: {} | Title: {}").format(
+                            i + 1, queue[i].creator, queue[i].album, queue[i].title
+                        )
+                    )
+            else:
+                error_and_exit("Action 'list_queue' requires no parameters")
+        elif action in ["play_from_queue", "pq"]:
+            if np == 1:
+                index = int(args.parameters[0])
+                speaker.play_from_queue(index - 1)
+            else:
+                error_and_exit("Action 'play_from_queue' requires 1 (integer) parameter")
+        elif action in ["remove_from_queue", "rq"]:
+            if np == 1:
+                index = int(args.parameters[0])
+                speaker.remove_from_queue(index + 1)
+            else:
+                error_and_exit("Action 'remove_from_queue' requires 1 (integer) parameter")
+        elif action in ["clear_queue", "cq"]:
+            if np == 0:
+                speaker.clear_queue()
+            else:
+                error_and_exit("Action 'clear_queue' requires no parameters")
         # Invalid Action ############################################
         else:
             error_and_exit("Action '{}' is not defined.".format(action))

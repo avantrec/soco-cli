@@ -51,7 +51,7 @@ def main():
         "-s",
         action="store_true",
         default=False,
-        help="Show contents of the current cached speaker data"
+        help="Show contents of the current cached speaker data",
     )
 
     # Parse the command line

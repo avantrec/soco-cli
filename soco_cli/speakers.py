@@ -11,13 +11,7 @@ from collections import namedtuple
 # Type for holding speaker details
 SonosDevice = namedtuple(
     "SonosDevice",
-    [
-        "household_id",
-        "ip_address",
-        "speaker_name",
-        "is_visible",
-        "model_name",
-    ],
+    ["household_id", "ip_address", "speaker_name", "is_visible", "model_name",],
     rename=False,
 )
 

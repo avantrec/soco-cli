@@ -92,6 +92,13 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`stop`**: Stop playback.
 - **`track`**: Return information about the currently playing track.
 
+### Queue Actions
+
+- **`clear_queue`** (or **`cq`**): Clears the current queue
+- **`list_queue`** (or **`lq`**): List the tracks in the queue
+- **`play_from_queue <track_number>`** (or **`pq`**): Play `<track_number>` from the queue. Track numbers start from 1.
+- **`remove_from_queue <track_number>`** (or **`rq`**): Remove `<track_number>` from the queue. Track numbers start from 1.
+
 #### Grouping and Stereo Pairing
 
 - **`group <master_speaker>`**: Groups the speaker with `<master_speaker>`.
