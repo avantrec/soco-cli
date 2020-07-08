@@ -193,12 +193,12 @@ class Speakers:
             return None
 
     @staticmethod
-    def discovery_worker(ip_list, socket_timeout, soco_timeout, sonos_devices):
+    def discovery_worker(ip_set, socket_timeout, soco_timeout, sonos_devices):
         """Worker thread to pull IP addresses from a set, test if port 1400 is open,
         and if so pull down the Sonos device data. Return when the list is empty.
         """
-        while len(ip_list) > 0:
-            ip_addr = ip_list.pop()
+        while len(ip_set) > 0:
+            ip_addr = ip_set.pop()
             if Speakers.check_ip_and_port(str(ip_addr), 1400, socket_timeout):
                 device = Speakers.get_sonos_device_data(ip_addr, soco_timeout)
                 if device:
@@ -214,7 +214,7 @@ class Speakers:
             if device.is_visible:
                 visible = "Visible"
             else:
-                visible = "Not Visible"
+                visible = "Hidden"
             households[device.household_id].append(
                 (
                     device.speaker_name,
@@ -229,7 +229,7 @@ class Speakers:
             print("  {}".format(household))
         print()
 
-        pp = pprint.PrettyPrinter(width=100)
+        pp = pprint.PrettyPrinter(width=120)
         pp.pprint(households)
 
     def discover(self):

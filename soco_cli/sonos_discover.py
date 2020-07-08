@@ -94,5 +94,6 @@ def main():
     if args.print:
         speaker_list.print()
 
+
 if __name__ == "__main__":
     main()
