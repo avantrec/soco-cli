@@ -662,8 +662,7 @@ def main():
         elif action in ["play_from_queue", "play_queue", "pfq", "pq"]:
             if np == 1:
                 index = int(args.parameters[0])
-                qs = speaker.queue_size
-                if 1 <= index <= qs:
+                if 1 <= index <= speaker.queue_size:
                     speaker.play_from_queue(index - 1)
                 else:
                     error_and_exit("Queue index '{}' is out of range".format(index))
