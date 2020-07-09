@@ -733,12 +733,13 @@ def main():
         speaker_name = elements[0].lower()
         action = elements[1].lower()
         # Special case of a "wait" command
+        # We're assuming there aren't any speakers called this!
         if speaker_name in ["wait", "w", "sleep"]:
             time.sleep(int(action))
             continue
         args = elements[2:]
         try:
-            if not action in ["version"] or speaker_name == previous_speaker_name:
+            if action not in ["version"] or speaker_name == previous_speaker_name:
                 # Some actions don't require a valid speaker
                 speaker = get_speaker(speaker_name, use_local_speaker_list)
                 if not speaker:
