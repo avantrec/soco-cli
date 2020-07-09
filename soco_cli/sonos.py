@@ -726,7 +726,6 @@ def main():
     commands = all_args.split(sep=":")
 
     # Loop through processing command sequences
-    previous_speaker_name = ""
     for command in commands:
         speaker = None
         elements = command.split()
@@ -739,13 +738,12 @@ def main():
             continue
         args = elements[2:]
         try:
-            if action not in ["version"] or speaker_name == previous_speaker_name:
+            if action not in ["version"]:
                 # Some actions don't require a valid speaker
                 speaker = get_speaker(speaker_name, use_local_speaker_list)
                 if not speaker:
                     error_and_exit("Speaker '{}' not found".format(speaker_name))
             process_action(speaker, action, args, use_local_speaker_list)
-            previous_speaker_name = speaker_name
         except Exception as e:
             error_and_exit("Exception: {}".format(str(e)))
     exit(0)
