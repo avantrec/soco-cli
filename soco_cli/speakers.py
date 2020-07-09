@@ -37,6 +37,7 @@ class Speakers:
         self._network_threads = network_threads
         self._network_timeout = network_timeout
         self._speakers = []
+        self._networks = []
 
     @property
     def speaker_cache_loaded(self):
@@ -131,8 +132,7 @@ class Speakers:
         except ValueError:
             return False
 
-    @staticmethod
-    def find_ipv4_networks():
+    def find_ipv4_networks(self):
         """Returns a set of IPv4 networks to which this node is attached."""
         ipv4_net_list = set()
         adapters = ifaddr.get_adapters()
@@ -148,13 +148,13 @@ class Speakers:
                             ip.ip + "/" + str(ip.network_prefix), False
                         )
                         ipv4_net_list.add(nw)
+        self._networks = list(ipv4_net_list)
         return ipv4_net_list
 
-    @staticmethod
-    def get_ip_search_list():
+    def get_ip_search_list(self):
         """Returns a set of IP addresses to test"""
         ip_list = set()
-        for network in Speakers.find_ipv4_networks():
+        for network in self.find_ipv4_networks():
             for ip_addr in network:
                 ip_list.add(ip_addr)
         return ip_list
@@ -218,18 +218,20 @@ class Speakers:
                 )
             )
 
+        print()
+        print("Networks searched: {}".format(self._networks))
+        print()
         print("{} Sonos Household(s) found: ".format(len(households)))
         for household in households:
             print("  {}".format(household))
         print()
-
         pp = pprint.PrettyPrinter(width=120)
         pp.pprint(households)
 
     def discover(self):
         """Discover the Sonos speakers on the network(s) to which
         this host is attached."""
-        ip_list = Speakers.get_ip_search_list()
+        ip_list = self.get_ip_search_list()
         thread_list = []
         self._speakers = []
         # Disable SoCo caching to prevent problems caused by multiple households

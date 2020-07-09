@@ -164,8 +164,15 @@ These options only have an effect when combined with the `-l` and `-r` options.
 
 **Example**: **`sonos-discover -p -t 256 -n 1.0`** will run `sonos-discover` with a maximum of 256 threads, a network timeout of 1.0s, and will print the result.
 
-#### Other options
-- **`-show-current-speaker-cache, -s`**: Read and print the current contents of the speaker cache.
+#### `sonos-discover` options
+
+Without options, `sonos-discover` will execute the discovery process and complete silently.
+
+- **`--print, -p`**: Prints the results of a discovery, including the networks that were searched.
+- **`--show-local-speaker-cache, -s`**: Read and print the current contents of the speaker cache.
+- **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache
+- **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network. The default is 3.0s.
 
 ## Resources
 
