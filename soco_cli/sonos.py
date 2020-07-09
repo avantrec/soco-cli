@@ -715,7 +715,7 @@ def main():
             speaker_list.discover()
             speaker_list.save()
 
-    # Process the actions
+    # Process the action
     # Wrap everything in a try/except to catch all SoCo (etc.) errors
     speaker = None
     try:
