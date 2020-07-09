@@ -103,15 +103,15 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`add_playlist_to_queue <playlist_name>`** (or **`add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. (To start playback, follow with action `play_from_queue`.)
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`**): List the tracks in the queue
-- **`play_from_queue <track_number>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1.
+- **`play_from_queue <track_number>`** (or **`pfq`, `pq`, `q`**): Play `<track_number>` from the queue. Track numbers start from 1.
 - **`remove_from_queue <track_number>`** (or **`rq`**): Remove `<track_number>` from the queue. Track numbers start from 1.
 
 #### Grouping and Stereo Pairing
 
-- **`group <master_speaker>`**: Groups the speaker with `<master_speaker>`.
+- **`group <master_speaker>`(or `g`**): Groups the speaker with `<master_speaker>`.
 - **`pair <right_hand_speaker`**: Creates a stereo pair, where the target speaker becomes the left-hand speaker of the pair and `<right_hand_speaker>` becomes the right-hand of the pair. Can be used on dissimilar speakers.
 - **`party_mode` (or `party`)**: Adds all speakers in the system into a single group. The target speaker becomes the group coordinator. Remove speakers individually using `ungroup`.
-- **`ungroup`**: Removes the speaker from a group.
+- **`ungroup` (or `u`)**: Removes the speaker from a group.
 - **`ungroup_all`**: Removes all speakers in the target speaker's household from all groups.
 - **`unpair`**: Separate a stereo pair. Can be applied to either speaker in the pair.
 
@@ -166,7 +166,7 @@ These options only have an effect when combined with the `-l` and `-r` options.
 
 #### `sonos-discover` options
 
-Without options, `sonos-discover` will execute the discovery process and complete silently.
+Without options, `sonos-discover` will execute the discovery process and complete silently. Other options:
 
 - **`--print, -p`**: Prints the results of a discovery, including the networks that were searched.
 - **`--show-local-speaker-cache, -s`**: Read and print the current contents of the speaker cache.

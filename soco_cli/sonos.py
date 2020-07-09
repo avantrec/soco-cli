@@ -145,13 +145,13 @@ def ungroup_all(speaker):
 
 
 def get_speaker(name, local=False):
+    # Allow the use of an IP address even if 'local' is specified
+    if speakers.Speakers.is_ipv4_address(name):
+        return soco.SoCo(name)
     if local:
         return speaker_list.find(name)
     else:
-        if speakers.Speakers.is_ipv4_address(name):
-            return soco.SoCo(name)
-        else:
-            return soco.discovery.by_name(name)
+        return soco.discovery.by_name(name)
 
 
 def main():
@@ -217,6 +217,7 @@ def main():
 
     # Process the actions
     # Wrap everything in a try/except to catch all SoCo (etc.) errors
+    speaker = None
     try:
         action = args.action.lower()
         if not action in ["version"]:
@@ -307,7 +308,7 @@ def main():
                 else:
                     error_and_exit("Invalid play mode '{}'".format(args.parameters[0]))
             else:
-                error_and_exit("Action 'mode/play_mode' requires 0 or 1 parameeter(s)")
+                error_and_exit("Action 'mode/play_mode' requires 0 or 1 parameter(s)")
         elif action in ["playback", "state"]:
             if np == 0:
                 print(speaker.get_current_transport_info()["current_transport_state"])
