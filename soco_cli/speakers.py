@@ -142,7 +142,7 @@ class Speakers:
                     # Restrict to common domestic private IP ranges and sensible
                     # netmasks. Experimental ... assumptions need to be tested.
                     if (
-                        ip.ip.startswith("192.168") or ip.ip.startswith("10.")
+                        ip.ip.startswith("192.168.") or ip.ip.startswith("10.")
                     ) and ip.network_prefix <= 24:
                         nw = ipaddress.ip_network(
                             ip.ip + "/" + str(ip.network_prefix), False
