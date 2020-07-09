@@ -125,6 +125,19 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Returns the room names (and associated IP addresses) that are visible in the Sonos controller apps. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
 - **`version`**: Report the versions of soco-cli and soco. (A speaker name must be provided, but doesn't need to be a valid name.)
 
+## Multiple Commands
+
+Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. These will be executed in order.
+
+When using multiple commands, a new `wait <seconds>` (or `w`, `sleep`) primitive is available that simply waits for the specified number of seconds before moving on to the next command. This is useful for instances where one wants to play audio for a specific period of time, or maintain a speaker goruping for a specific period, etc.
+
+An arbitrary number of commands can be supplied as part of a single `sonos` invoctaion. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
+
+Examples:
+
+- **`sonos Bedroom group Study : Study group_volume 50 : Study play : wait 600 : Study stop : Study ungroup`**
+- **`sonos Kitchen play_favourite Jazz24 : wait 1800 : Kitchen stop
+
 ## Alternative Discovery
 
 Sonos CLI depends on the speaker discovery mechanisms in SoCo (unless one knows and uses the speaker IP addresses directly). This should work for most people, but there are issues (related to multicast forwarding) on some networks that can prevent Soco from finding speakers. There is also an issue if there is more than one Sonos system ('Household') on the same network, as would be the case if there is a 'split' S1/S2 Sonos system: SoCo discovery will pick one of the systems, and your required speaker may not be in that system.

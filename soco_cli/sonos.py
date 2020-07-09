@@ -4,6 +4,7 @@ import argparse
 import os
 import sys
 import pprint
+import time
 from . import speakers
 from . import __version__
 
@@ -155,7 +156,7 @@ def get_speaker(name, local=False):
         return soco.discovery.by_name(name)
 
 
-def process_action(speaker, action, args):
+def process_action(speaker, action, args, use_local_speaker_list):
     np = len(args)
     if action == "mute":
         if np == 0:
@@ -262,7 +263,7 @@ def process_action(speaker, action, args):
                     speaker.switch_to_line_in()
                 elif np == 2:
                     line_in_source = get_speaker(
-                        args[1], args.use_local_speaker_list
+                        args[1], use_local_speaker_list
                     )
                     # The speaker lookup above will error out if not found
                     speaker.switch_to_line_in(line_in_source)
@@ -470,7 +471,7 @@ def process_action(speaker, action, args):
     # Grouping ##################################################
     elif action in ["group", "g"]:
         if np == 1:
-            speaker2 = get_speaker(args[0], args.use_local_speaker_list)
+            speaker2 = get_speaker(args[0], use_local_speaker_list)
             speaker.join(speaker2)
         else:
             error_and_exit(
@@ -527,7 +528,7 @@ def process_action(speaker, action, args):
             error_and_exit("Pairing operations require SoCo v0.20 or greater")
         if np == 1:
             right_speaker = get_speaker(
-                args[0], args.use_local_speaker_list
+                args[0], use_local_speaker_list
             )
             speaker.create_stereo_pair(right_speaker)
         else:
@@ -705,7 +706,8 @@ def main():
     # Parse the command line
     args = parser.parse_args()
 
-    if args.use_local_speaker_list:
+    use_local_speaker_list = args.use_local_speaker_list
+    if use_local_speaker_list:
         global speaker_list
         speaker_list = speakers.Speakers(
             network_threads=args.network_discovery_threads,
@@ -715,19 +717,36 @@ def main():
             speaker_list.discover()
             speaker_list.save()
 
-    # Process the action
-    # Wrap everything in a try/except to catch all SoCo (etc.) errors
-    speaker = None
-    try:
-        action = args.action.lower()
-        if not action in ["version"]:
-            # Some actions don't require a valid speaker
-            speaker = get_speaker(args.speaker, args.use_local_speaker_list)
-            if not speaker:
-                error_and_exit("Speaker not found")
-        process_action(speaker, action, args.parameters)
-    except Exception as e:
-        error_and_exit("Exception: {}".format(str(e)))
+    # Break up the command line into command sequences, using separator
+    # Add the initial speaker and action combination to the start of the args
+    all_args = args.speaker + " " + args.action
+    for arg in args.parameters:
+        all_args = all_args + " " + arg
+    # Batch up the separate command sequences (speaker, action, args)
+    commands = all_args.split(sep=":")
+
+    # Loop through processing command sequences
+    previous_speaker_name = ""
+    for command in commands:
+        speaker = None
+        elements = command.split()
+        speaker_name = elements[0].lower()
+        action = elements[1].lower()
+        # Special case of a "wait" command
+        if speaker_name in ["wait", "w", "sleep"]:
+            time.sleep(int(action))
+            continue
+        args = elements[2:]
+        try:
+            if not action in ["version"] or speaker_name == previous_speaker_name:
+                # Some actions don't require a valid speaker
+                speaker = get_speaker(speaker_name, use_local_speaker_list)
+                if not speaker:
+                    error_and_exit("Speaker '{}' not found".format(speaker_name))
+            process_action(speaker, action, args, use_local_speaker_list)
+            previous_speaker_name = speaker_name
+        except Exception as e:
+            error_and_exit("Exception: {}".format(str(e)))
     exit(0)
 
 
