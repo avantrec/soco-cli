@@ -638,7 +638,7 @@ def main():
                     )
             else:
                 error_and_exit("Action 'list_queue' requires no parameters")
-        elif action in ["play_from_queue", "pq"]:
+        elif action in ["play_from_queue", "pfq", "pq"]:
             if np == 1:
                 index = int(args.parameters[0])
                 speaker.play_from_queue(index - 1)

@@ -57,30 +57,30 @@ def main():
     # Parse the command line
     args = parser.parse_args()
 
+    speaker_list = speakers.Speakers()
+
     if args.show_current_speaker_cache:
-        speaker_list = speakers.Speakers()
         if speaker_list.load():
             speaker_list.print()
             exit(0)
         else:
             error_and_exit("No cached speaker data")
 
+    if args.delete_local_speaker_cache:
+        try:
+            speaker_list.remove_save_file()
+            exit(0)
+        except Exception as e:
+            error_and_exit(str(e))
+
     # Parameter validation
     if not 1 <= args.network_discovery_threads <= 1024:
-        print(
-            "Error: value of 'threads' parameter should be an integer between 1 and 1024"
-        )
-        exit(1)
-    if not 0 <= args.network_discovery_timeout <= 60:
-        print(
-            "Error: value of 'network_timeout' parameter should be a float between 0 and 60"
-        )
-        exit(1)
+        error_and_exit("Value of 'threads' parameter should be an integer between 1 and 1024")
+    speaker_list.network_threads = args.network_discovery_threads
 
-    speaker_list = speakers.Speakers(
-        network_threads=args.network_discovery_threads,
-        network_timeout=args.network_discovery_timeout,
-    )
+    if not 0 <= args.network_discovery_timeout <= 60:
+        error_and_exit("Value of 'network_timeout' parameter should be a float between 0 and 60")
+    speaker_list.network_timeout = args.network_discovery_timeout
 
     try:
         if args.delete_local_speaker_cache:
