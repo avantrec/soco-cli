@@ -152,9 +152,9 @@ If your speakers change in some way (e.g., they are renamed, are assigned differ
 The following flags can be used to adjust network discovery behaviour if the discovery process is failing:
 
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network. The default is 3.0s.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 3.0s.
 
-These options only have an effect when combined with the `-l` and `-r` options.
+These options only have an effect when combined with the `-l` **and** `-r` options.
 
 **Example**: **`sonos -lr -t 256 -n 1.0 "living room" volume 50`**
 
@@ -172,7 +172,7 @@ Without options, `sonos-discover` will execute the discovery process and complet
 - **`--show-local-speaker-cache, -s`**: Read and print the current contents of the speaker cache.
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network. The default is 3.0s.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 3.0s.
 
 ## Resources
 
