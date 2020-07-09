@@ -136,7 +136,7 @@ An arbitrary number of commands can be supplied as part of a single `sonos` invo
 Examples:
 
 - **`sonos Bedroom group Study : Study group_volume 50 : Study play : wait 600 : Study stop : Study ungroup`**
-- **`sonos Kitchen play_favourite Jazz24 : wait 1800 : Kitchen stop
+- **`sonos Kitchen play_favourite Jazz24 : wait 1800 : Kitchen stop`**
 
 ## Alternative Discovery
 
