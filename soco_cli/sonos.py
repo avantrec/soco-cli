@@ -708,10 +708,7 @@ def main():
     sequence = []  # A single command sequence
     sequences = []  # A list of command sequences
     for arg in args.parameters:
-        if len(arg) > 1 and (
-            arg.endswith(command_line_separator)
-            or arg.startswith(command_line_separator)
-        ):
+        if len(arg) > 1 and command_line_separator in arg:
             error_and_exit("Spaces are required each side of the ':' command separator")
         if arg != command_line_separator:
             sequence.append(arg)
@@ -720,7 +717,6 @@ def main():
             sequence = []
     if sequence:
         sequences.append(sequence)
-    print(sequences)
 
     # Loop through processing command sequences
     for sequence in sequences:
