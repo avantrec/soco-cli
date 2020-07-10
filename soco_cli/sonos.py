@@ -701,16 +701,30 @@ def main():
             speaker_list.discover()
             speaker_list.save()
 
-    # Break up the command line into command sequences, using separator.
+    # Break up the command line into command sequences, observing the separator.
     # Introduce an internal separator to split up arguments within a command.
     # I'm sure there must be a neater way of doing this, but it works for now.
     command_line_separator = ":"
     internal_separator = "%%%"
-    all_args = "{}{}{}".format(args.speaker, internal_separator, args.action)
+    # if args.action.endswith(command_line_separator):
+    #     error_and_exit("Spaces are required each side of the ':' separator")
+    # all_args = "{}{}{}".format(args.speaker, internal_separator, args.action)
+    args.parameters.insert(0, args.action)
+    args.parameters.insert(0, args.speaker)
+    all_args = ""
     previous_arg = ""
     for arg in args.parameters:
+        if len(arg) > 1 and (
+            arg.endswith(command_line_separator)
+            or arg.startswith(command_line_separator)
+        ):
+            error_and_exit("Spaces are required each side of the ':' command separator")
         # Suppress internal separator either side of a command line separator
-        if arg == command_line_separator or previous_arg == command_line_separator:
+        if (
+            arg == command_line_separator
+            or previous_arg == command_line_separator
+            or previous_arg == ""
+        ):
             all_args = "{}{}".format(all_args, arg)
         else:
             all_args = "{}{}{}".format(all_args, internal_separator, arg)
