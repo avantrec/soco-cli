@@ -262,9 +262,7 @@ def process_action(speaker, action, args, use_local_speaker_list):
                 if np == 1:
                     speaker.switch_to_line_in()
                 elif np == 2:
-                    line_in_source = get_speaker(
-                        args[1], use_local_speaker_list
-                    )
+                    line_in_source = get_speaker(args[1], use_local_speaker_list)
                     # The speaker lookup above will error out if not found
                     speaker.switch_to_line_in(line_in_source)
             else:
@@ -356,9 +354,7 @@ def process_action(speaker, action, args, use_local_speaker_list):
             if 0 <= balance[0] <= 100 and 0 <= balance[1] <= 100:
                 speaker.balance = balance
             else:
-                error_and_exit(
-                    "Balance parameters 'Left Right' must be from 0 to 100"
-                )
+                error_and_exit("Balance parameters 'Left Right' must be from 0 to 100")
         else:
             error_and_exit("Action 'balance' takes 0 or 2 parameters")
     # Play Favourite ############################################
@@ -377,14 +373,10 @@ def process_action(speaker, action, args, use_local_speaker_list):
         if not (np == 1 or np == 2):
             error_and_exit("Action 'play_uri' requires 1 or 2 parameter(s)")
         else:
-            force_radio = (
-                True if args[0][:4].lower() == "http" else False
-            )
+            force_radio = True if args[0][:4].lower() == "http" else False
             if np == 2:
                 speaker.play_uri(
-                    args[0],
-                    title=args[1],
-                    force_radio=force_radio,
+                    args[0], title=args[1], force_radio=force_radio,
                 )
             else:
                 speaker.play_uri(args[0], force_radio=force_radio)
@@ -494,9 +486,7 @@ def process_action(speaker, action, args, use_local_speaker_list):
                     print("[{}] : ".format(group.short_label), end="")
                     for member in group.members:
                         print(
-                            "{} ({}) ".format(
-                                member.player_name, member.ip_address
-                            ),
+                            "{} ({}) ".format(member.player_name, member.ip_address),
                             end="",
                         )
                     print()
@@ -527,9 +517,7 @@ def process_action(speaker, action, args, use_local_speaker_list):
         if float(soco.__version__) <= 0.19:
             error_and_exit("Pairing operations require SoCo v0.20 or greater")
         if np == 1:
-            right_speaker = get_speaker(
-                args[0], use_local_speaker_list
-            )
+            right_speaker = get_speaker(args[0], use_local_speaker_list)
             speaker.create_stereo_pair(right_speaker)
         else:
             error_and_exit(
@@ -575,17 +563,13 @@ def process_action(speaker, action, args, use_local_speaker_list):
             index = int(args[0])
             speaker.play_from_queue(index - 1)
         else:
-            error_and_exit(
-                "Action 'play_from_queue' requires 1 (integer) parameter"
-            )
+            error_and_exit("Action 'play_from_queue' requires 1 (integer) parameter")
     elif action in ["remove_from_queue", "rq"]:
         if np == 1:
             index = int(args[0])
             speaker.remove_from_queue(index - 1)
         else:
-            error_and_exit(
-                "Action 'remove_from_queue' requires 1 (integer) parameter"
-            )
+            error_and_exit("Action 'remove_from_queue' requires 1 (integer) parameter")
     elif action in ["clear_queue", "cq"]:
         if np == 0:
             speaker.clear_queue()
@@ -717,19 +701,27 @@ def main():
             speaker_list.discover()
             speaker_list.save()
 
-    # Break up the command line into command sequences, using separator
-    # Add the initial speaker and action combination to the start of the args
-    all_args = args.speaker + " " + args.action
+    # Break up the command line into command sequences, using separator.
+    # Introduce an internal separator to split up arguments within a command.
+    # I'm sure there must be a neater way of doing this, but it works for now.
+    command_line_separator = ":"
+    internal_separator = "%%%"
+    all_args = "{}{}{}".format(args.speaker, internal_separator, args.action)
+    previous_arg = ""
     for arg in args.parameters:
-        all_args = all_args + " " + arg
-    # Batch up the separate command sequences (speaker, action, args)
-    commands = all_args.split(sep=":")
+        # Suppress internal separator either side of a command line separator
+        if arg == command_line_separator or previous_arg == command_line_separator:
+            all_args = "{}{}".format(all_args, arg)
+        else:
+            all_args = "{}{}{}".format(all_args, internal_separator, arg)
+        previous_arg = arg
+    commands = all_args.split(sep=command_line_separator)
 
     # Loop through processing command sequences
     for command in commands:
         speaker = None
-        elements = command.split()
-        speaker_name = elements[0].lower()
+        elements = command.split(sep=internal_separator)
+        speaker_name = elements[0]
         action = elements[1].lower()
         # Special case of a "wait" command
         # We're assuming there aren't any speakers called this!
