@@ -706,9 +706,6 @@ def main():
     # I'm sure there must be a neater way of doing this, but it works for now.
     command_line_separator = ":"
     internal_separator = "%%%"
-    # if args.action.endswith(command_line_separator):
-    #     error_and_exit("Spaces are required each side of the ':' separator")
-    # all_args = "{}{}{}".format(args.speaker, internal_separator, args.action)
     args.parameters.insert(0, args.action)
     args.parameters.insert(0, args.speaker)
     all_args = ""
