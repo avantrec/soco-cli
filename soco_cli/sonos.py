@@ -530,10 +530,6 @@ def process_action(speaker, action, args, use_local_speaker_list):
             speaker.separate_stereo_pair()
         else:
             error_and_exit("Action 'unpair' requires no parameters")
-    # Version ###################################################
-    elif action == "version":
-        print("soco-cli version: {}".format(__version__))
-        print("soco version:     {}".format(soco.__version__))
     # Queues ####################################################
     elif action in ["list_queue", "lq", "queue", "q"]:
         if np == 0:
@@ -644,17 +640,12 @@ def main():
     # Create the argument parser
     parser = argparse.ArgumentParser(
         prog="sonos",
-        usage="%(prog)s speaker action",
+        usage="%(prog)s SPEAKER_NAME_OR_IP ACTION",
         description="Command line utility for controlling Sonos speakers",
     )
-    # Set up arguments
-    parser.add_argument(
-        "speaker", help="The name (Sonos Room/Zone) or IP address of the speaker"
-    )
-    parser.add_argument("action", help="The action to perform")
     # A variable number of arguments depending on the action
     parser.add_argument(
-        "parameters", nargs="*", help="Parameter(s), if required by the action"
+        "parameters", nargs="*", help="Sequences of SPEAKER ACTION <parameters> : ..."
     )
     # Optional arguments
     parser.add_argument(
@@ -685,9 +676,21 @@ def main():
         default=3.0,
         help="Network timeout for Sonos device scan (seconds)",
     )
+    parser.add_argument(
+        "--version",
+        "-v",
+        action="store_true",
+        default=False,
+        help="Print the soco-cli and SoCo versions and exit",
+    )
 
     # Parse the command line
     args = parser.parse_args()
+
+    if args.version:
+        print("soco-cli version: {}".format(__version__))
+        print("soco version:     {}".format(soco.__version__))
+        exit(0)
 
     use_local_speaker_list = args.use_local_speaker_list
     if use_local_speaker_list:
@@ -702,8 +705,6 @@ def main():
 
     # Break up the command line into command sequences, observing the separator.
     command_line_separator = ":"
-    args.parameters.insert(0, args.action)
-    args.parameters.insert(0, args.speaker)
     sequence = []  # A single command sequence
     sequences = []  # A list of command sequences
     for arg in args.parameters:
@@ -724,17 +725,15 @@ def main():
         speaker_name = sequence[0]
         action = sequence[1].lower()
         # Special case of a "wait" command
-        # We're assuming there aren't any speakers called this!
+        # Assume there aren't any speakers called this.
         if speaker_name in ["wait", "w", "sleep"]:
             time.sleep(int(action))
             continue
         args = sequence[2:]
         try:
-            if action not in ["version"]:
-                # Some actions don't require a valid speaker
-                speaker = get_speaker(speaker_name, use_local_speaker_list)
-                if not speaker:
-                    error_and_exit("Speaker '{}' not found".format(speaker_name))
+            speaker = get_speaker(speaker_name, use_local_speaker_list)
+            if not speaker:
+                error_and_exit("Speaker '{}' not found".format(speaker_name))
             process_action(speaker, action, args, use_local_speaker_list)
         except Exception as e:
             error_and_exit("Exception: {}".format(str(e)))

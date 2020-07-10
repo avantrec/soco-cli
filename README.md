@@ -126,6 +126,10 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Returns the room names (and associated IP addresses) that are visible in the Sonos controller apps. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
 - **`version`**: Report the versions of soco-cli and soco. (A speaker name must be provided, but doesn't need to be a valid name.)
 
+#### Flags
+
+- **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
+
 ## Multiple Commands
 
 Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. These will be executed in order. The `:` separator must be surrounded by spaces.
