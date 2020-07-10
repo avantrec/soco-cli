@@ -572,10 +572,10 @@ def process_action(speaker, action, args, use_local_speaker_list):
     elif action in ["remove_from_queue", "rq"]:
         if np == 1:
             index = int(args[0])
-            if 0 < index <= speaker.queue_size:
+            if 1 <= index <= speaker.queue_size:
                 speaker.remove_from_queue(index - 1)
             else:
-                error_and_exit("Index '{}' is out of range".format(index))
+                error_and_exit("Queue index '{}' is out of range".format(index))
         else:
             error_and_exit("Action 'remove_from_queue' requires 1 (integer) parameter")
     elif action in ["clear_queue", "cq"]:
