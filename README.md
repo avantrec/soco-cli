@@ -57,7 +57,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`dialog_mode`** (or **`dialog`**): Returns the dialog mode setting of the speaker, 'on' or 'off' (if applicable).
 - **`group_mute`**: Returns the group mute state of a group of speakers, 'on' or 'off'.
 - **`group_mute <on|off>`**: Sets the group mute state of a group of speakers to 'on' or 'off'.
-- **`group_relative_volume <adjustment>` (or `group_rel_vol`)**: Raises or lowers the group volume by `<adjustment>` which must be a number from -100 to 100.
+- **`group_relative_volume <adjustment>` (or `group_rel_vol`, `grv`)**: Raises or lowers the group volume by `<adjustment>` which must be a number from -100 to 100.
 - **`group_volume` (or `group_vol`)**: Returns the current group volume setting of the speaker's group (0 to 100)
 - **`group_volume <volume>` (or `group_vol`)**: Sets the volume of the speaker's group to `<volume>` (0 to 100).
 - **`loudness`**: Returns the loudness setting of the speaker, 'on' or 'off'.
@@ -67,7 +67,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`night_mode`** (or **`night`**): Returns the night mode setting of the speaker, 'on' or 'off' (if applicable).
 - **`mute <on|off>`**: Sets the mute setting of the speaker to 'on' of 'off'.
 - **`ramp_to_volume <volume>` (or `ramp`)**: Gently raise or reduce the volume to `<volume>`, which is between 0 and 100. Returns the number of seconds to complete the ramp.
-- **`relative_volume <adjustment>` (or `rel_vol`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
+- **`relative_volume <adjustment>` (or `rel_vol`, 'rv')**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
 - **`treble`**: Returns the treble setting of the speaker, from -10 to 10.
 - **`treble <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.
 - **`volume` (or `vol`)**: Returns the current volume setting of the speaker (0 to 100)
