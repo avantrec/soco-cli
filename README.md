@@ -127,7 +127,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 
 ## Multiple Commands
 
-Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. These will be executed in order.
+Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. These will be executed in order. The `:` separator must be surrounded by spaces.
 
 When using multiple commands, a new `wait <seconds>` (or `w`, `sleep`) primitive is available that simply waits for the specified number of seconds before moving on to the next command. This is useful for instances where one wants to play audio for a specific period of time, or maintain a speaker goruping for a specific period, etc.
 

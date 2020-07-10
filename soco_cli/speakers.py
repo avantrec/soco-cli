@@ -219,13 +219,14 @@ class Speakers:
             )
 
         print()
-        print("Networks searched: {}".format(self._networks))
-        print()
+        if self._networks:
+            print("Networks searched: {}".format(self._networks))
+            print()
         print("{} Sonos Household(s) found: ".format(len(households)))
         for household in households:
             print("  {}".format(household))
         print()
-        pp = pprint.PrettyPrinter(width=120)
+        pp = pprint.PrettyPrinter(width=100)
         pp.pprint(households)
 
     def discover(self):
