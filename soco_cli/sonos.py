@@ -537,7 +537,7 @@ def process_action(speaker, action, args, use_local_speaker_list):
     # Queues ####################################################
     elif action in ["list_queue", "lq", "queue", "q"]:
         if np == 0:
-            queue = speaker.get_queue()
+            queue = speaker.get_queue(max_items=1000)
             for i in range(len(queue)):
                 try:
                     artist = queue[i].creator
@@ -558,18 +558,24 @@ def process_action(speaker, action, args, use_local_speaker_list):
                 )
         else:
             error_and_exit("Action 'list_queue' requires no parameters")
-    elif action in ["play_from_queue", "pfq", "pq"]:
+    elif action in ["play_from_queue", "play_queue", "pfq", "pq"]:
         if np == 0:
             speaker.play_from_queue(0)
         elif np == 1:
             index = int(args[0])
-            speaker.play_from_queue(index - 1)
+            if 1 <= index <= speaker.queue_size:
+                speaker.play_from_queue(index - 1)
+            else:
+                error_and_exit("Queue index '{}' is out of range".format(index))
         else:
             error_and_exit("Action 'play_from_queue' requires zero or 1 parameter")
     elif action in ["remove_from_queue", "rq"]:
         if np == 1:
             index = int(args[0])
-            speaker.remove_from_queue(index - 1)
+            if 0 < index <= speaker.queue_size:
+                speaker.remove_from_queue(index - 1)
+            else:
+                error_and_exit("Index '{}' is out of range".format(index))
         else:
             error_and_exit("Action 'remove_from_queue' requires 1 (integer) parameter")
     elif action in ["clear_queue", "cq"]:
@@ -577,15 +583,6 @@ def process_action(speaker, action, args, use_local_speaker_list):
             speaker.clear_queue()
         else:
             error_and_exit("Action 'clear_queue' requires no parameters")
-    elif action in ["play_from_queue", "play_queue", "pfq", "pq"]:
-        if np == 1:
-            index = int(args[0])
-            if 1 <= index <= speaker.queue_size:
-                speaker.play_from_queue(index - 1)
-            else:
-                error_and_exit("Queue index '{}' is out of range".format(index))
-        else:
-            error_and_exit("Action 'play_from_queue' takes 1 parameter")
     # Night / Dialogue Modes ####################################
     elif action in ["night_mode", "night"]:
         if np == 0:
