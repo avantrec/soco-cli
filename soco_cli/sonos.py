@@ -702,44 +702,37 @@ def main():
             speaker_list.save()
 
     # Break up the command line into command sequences, observing the separator.
-    # Introduce an internal separator to split up arguments within a command.
-    # I'm sure there must be a neater way of doing this, but it works for now.
     command_line_separator = ":"
-    internal_separator = "%%%"
     args.parameters.insert(0, args.action)
     args.parameters.insert(0, args.speaker)
-    all_args = ""
-    previous_arg = ""
+    sequence = []  # A single command sequence
+    sequences = []  # A list of command sequences
     for arg in args.parameters:
         if len(arg) > 1 and (
             arg.endswith(command_line_separator)
             or arg.startswith(command_line_separator)
         ):
             error_and_exit("Spaces are required each side of the ':' command separator")
-        # Suppress internal separator either side of a command line separator
-        if (
-            arg == command_line_separator
-            or previous_arg == command_line_separator
-            or previous_arg == ""
-        ):
-            all_args = "{}{}".format(all_args, arg)
+        if arg != command_line_separator:
+            sequence.append(arg)
         else:
-            all_args = "{}{}{}".format(all_args, internal_separator, arg)
-        previous_arg = arg
-    commands = all_args.split(sep=command_line_separator)
+            sequences.append(sequence)
+            sequence = []
+    if sequence:
+        sequences.append(sequence)
+    print(sequences)
 
     # Loop through processing command sequences
-    for command in commands:
+    for sequence in sequences:
         speaker = None
-        elements = command.split(sep=internal_separator)
-        speaker_name = elements[0]
-        action = elements[1].lower()
+        speaker_name = sequence[0]
+        action = sequence[1].lower()
         # Special case of a "wait" command
         # We're assuming there aren't any speakers called this!
         if speaker_name in ["wait", "w", "sleep"]:
             time.sleep(int(action))
             continue
-        args = elements[2:]
+        args = sequence[2:]
         try:
             if action not in ["version"]:
                 # Some actions don't require a valid speaker
