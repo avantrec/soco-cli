@@ -234,8 +234,9 @@ class Speakers:
         """Find a speaker by name and return its SoCo object."""
         # Check for exact match first
         for speaker in self._speakers:
-            # Replace funny Sonos apostrophes
+            # Normalise apostrophes
             s = speaker.speaker_name.replace("’", "'")
+            speaker_name = speaker_name.replace("’", "'")
             if speaker_name.lower() == s.lower():
                 if require_visible:
                     if speaker.is_visible:
@@ -244,8 +245,9 @@ class Speakers:
                     return soco.SoCo(speaker.ip_address)
         # Check for partial match if no exact match
         for speaker in self._speakers:
-            # Replace funny Sonos apostrophes
+            # Normalise apostrophes
             s = speaker.speaker_name.replace("’", "'")
+            speaker_name = speaker_name.replace("’", "'")
             if speaker_name.lower() in s.lower():
                 if require_visible:
                     if speaker.is_visible:
