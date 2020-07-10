@@ -198,41 +198,6 @@ class Speakers:
                 if device:
                     sonos_devices.append(device)
 
-    def print(self):
-        if not self._speakers:
-            return
-        households = {}
-        num_devices = 0
-        for device in self._speakers:
-            if device.household_id not in households:
-                households[device.household_id] = []
-            if device.is_visible:
-                visible = "Visible"
-            else:
-                visible = "Hidden"
-            households[device.household_id].append(
-                (
-                    device.speaker_name,
-                    device.ip_address,
-                    device.model_name.replace("Sonos ", ""),
-                    visible,
-                )
-            )
-            num_devices += 1
-
-        print()
-        if self._networks:
-            print("Networks searched: {}".format(self._networks))
-            print()
-        print("{} Sonos Household(s) found: ".format(len(households)))
-        for household in households:
-            print("  {}".format(household))
-        print()
-        print("{} Sonos devices found".format(num_devices))
-        print()
-        pp = pprint.PrettyPrinter(width=100)
-        pp.pprint(households)
-
     def discover(self):
         """Discover the Sonos speakers on the network(s) to which
         this host is attached."""
@@ -288,3 +253,38 @@ class Speakers:
                 else:
                     return soco.SoCo(speaker.ip_address)
         return None
+
+    def print(self):
+        if not self._speakers:
+            return
+        households = {}
+        num_devices = 0
+        for device in self._speakers:
+            if device.household_id not in households:
+                households[device.household_id] = []
+            if device.is_visible:
+                visible = "Visible"
+            else:
+                visible = "Hidden"
+            households[device.household_id].append(
+                (
+                    device.speaker_name,
+                    device.ip_address,
+                    device.model_name.replace("Sonos ", ""),
+                    visible,
+                )
+            )
+            num_devices += 1
+
+        print()
+        if self._networks:
+            print("Networks searched: {}".format(self._networks))
+            print()
+        print("{} Sonos Household(s) found: ".format(len(households)))
+        for household in households:
+            print("  {}".format(household))
+        print()
+        print("{} Sonos devices found".format(num_devices))
+        print()
+        pp = pprint.PrettyPrinter(width=100)
+        pp.pprint(households)
