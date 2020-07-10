@@ -104,7 +104,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`add_playlist_to_queue <playlist_name>`** (or **`add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. (To start playback, follow with action `play_from_queue`.)
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`**): List the tracks in the queue
-- **`play_from_queue <track_number>`** (or **`pfq`, `pq`, `q`**): Play `<track_number>` from the queue. Track numbers start from 1.
+- **`play_from_queue <track_number>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue.
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
 - **`remove_from_queue <track_number>`** (or **`rq`**): Remove `<track_number>` from the queue. Track numbers start from 1.
 - **`save_queue <title>`** (or **`sq`**): Save the current queue as a Sonos playlist called `<title>`.
@@ -114,7 +114,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`group <master_speaker>`(or `g`**): Groups the speaker with `<master_speaker>`.
 - **`pair <right_hand_speaker`**: Creates a stereo pair, where the target speaker becomes the left-hand speaker of the pair and `<right_hand_speaker>` becomes the right-hand of the pair. Can be used on dissimilar speakers.
 - **`party_mode` (or `party`)**: Adds all speakers in the system into a single group. The target speaker becomes the group coordinator. Remove speakers individually using `ungroup`.
-- **`ungroup` (or `u`)**: Removes the speaker from a group.
+- **`ungroup` (or `ug`, `u`)**: Removes the speaker from a group.
 - **`ungroup_all`**: Removes all speakers in the target speaker's household from all groups.
 - **`unpair`**: Separate a stereo pair. Can be applied to either speaker in the pair.
 

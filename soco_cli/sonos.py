@@ -469,7 +469,7 @@ def process_action(speaker, action, args, use_local_speaker_list):
             error_and_exit(
                 "Action 'group' requires 1 parameter (the speaker to group with"
             )
-    elif action in ["ungroup", "u"]:
+    elif action in ["ungroup", "ug", "u"]:
         if np == 0:
             speaker.unjoin()
         else:
