@@ -708,7 +708,7 @@ def main():
     sequence = []  # A single command sequence
     sequences = []  # A list of command sequences
     for arg in args.parameters:
-        if len(arg) > 1 and command_line_separator in arg:
+        if len(arg) > 1 and command_line_separator in arg and sequence[-1] != "seek":
             error_and_exit("Spaces are required each side of the ':' command separator")
         if arg != command_line_separator:
             sequence.append(arg)
