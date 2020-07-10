@@ -6,7 +6,7 @@
 
 Soco CLI is a command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. Soco CLI is written entirely in Python and is portable across platforms.
 
-A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc.
+A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands.
 
 Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, `cron` jobs, etc.
 
@@ -43,6 +43,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`sonos Study group Kitchen`** Groups the *Study* speaker with the *Kitchen* speaker.
 - **`sonos 192.168.0.10 mute`** Returns the mute state ('on' or 'off') of the speaker at the given IP address.
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
+- **`sonos Kitchen play_favourite Jazz24 : wait 1800 : Kitchen stop`** Plays 'Jazz24' for 30 minutes (1800 seconds), then stops playback.
 
 ### Available Actions
 
