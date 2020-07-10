@@ -233,7 +233,7 @@ def process_action(speaker, action, args, use_local_speaker_list):
                 "repeat_all",
                 "repeat_one",
                 "shuffle",
-                "shuffle_no_repeat",
+                "shuffle_norepeat",
             ]:
                 speaker.play_mode = args[0]
             else:
@@ -559,11 +559,13 @@ def process_action(speaker, action, args, use_local_speaker_list):
         else:
             error_and_exit("Action 'list_queue' requires no parameters")
     elif action in ["play_from_queue", "pfq", "pq"]:
-        if np == 1:
+        if np == 0:
+            speaker.play_from_queue(0)
+        elif np == 1:
             index = int(args[0])
             speaker.play_from_queue(index - 1)
         else:
-            error_and_exit("Action 'play_from_queue' requires 1 (integer) parameter")
+            error_and_exit("Action 'play_from_queue' requires zero or 1 parameter")
     elif action in ["remove_from_queue", "rq"]:
         if np == 1:
             index = int(args[0])
