@@ -105,7 +105,9 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`**): List the tracks in the queue
 - **`play_from_queue <track_number>`** (or **`pfq`, `pq`, `q`**): Play `<track_number>` from the queue. Track numbers start from 1.
+- **`queue_length`** (or **`ql`**): Return the length of the current queue.
 - **`remove_from_queue <track_number>`** (or **`rq`**): Remove `<track_number>` from the queue. Track numbers start from 1.
+- **`save_queue <title>`** (or **`sq`**): Save the current queue as a Sonos playlist called `<title>`.
 
 #### Grouping and Stereo Pairing
 

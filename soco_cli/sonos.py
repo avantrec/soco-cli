@@ -579,6 +579,16 @@ def process_action(speaker, action, args, use_local_speaker_list):
             speaker.clear_queue()
         else:
             error_and_exit("Action 'clear_queue' requires no parameters")
+    elif action in ["save_queue", "sq"]:
+        if np == 1:
+            speaker.create_sonos_playlist_from_queue(args[0])
+        else:
+            error_and_exit("Action 'save_queue' requires one parameter (playlist title)")
+    elif action in ["queue_length", "ql"]:
+        if np == 0:
+            print(speaker.queue_size)
+        else:
+            error_and_exit("Action 'queue_length' takes no parameters")
     # Night / Dialogue Modes ####################################
     elif action in ["night_mode", "night"]:
         if np == 0:
