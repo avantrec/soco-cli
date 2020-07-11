@@ -247,7 +247,7 @@ class Speakers:
         # Check for partial match if no exact match
         for speaker in self._speakers:
             # Normalise apostrophes
-            speaker_name = speaker_name.replace("’", "'")
+            s = speaker.speaker_name.replace("’", "'")
             if speaker_name.lower() in s.lower():
                 if require_visible:
                     if speaker.is_visible:
