@@ -112,7 +112,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 #### Grouping and Stereo Pairing
 
 - **`group <master_speaker>`(or `g`**): Groups the speaker with `<master_speaker>`.
-- **`pair <right_hand_speaker`**: Creates a stereo pair, where the target speaker becomes the left-hand speaker of the pair and `<right_hand_speaker>` becomes the right-hand of the pair. Can be used on dissimilar speakers.
+- **`pair <right_hand_speaker`**: Creates a stereo pair, where the target speaker becomes the left-hand speaker of the pair and `<right_hand_speaker>` becomes the right-hand of the pair. Can be used to pair dissimilar Sonos devices (e.g., to stereo-pair a Play:1 with a One).
 - **`party_mode` (or `party`)**: Adds all speakers in the system into a single group. The target speaker becomes the group coordinator. Remove speakers individually using `ungroup`.
 - **`ungroup` (or `ug`, `u`)**: Removes the speaker from a group.
 - **`ungroup_all`**: Removes all speakers in the target speaker's household from all groups.

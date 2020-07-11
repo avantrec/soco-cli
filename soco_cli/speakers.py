@@ -232,11 +232,12 @@ class Speakers:
 
     def find(self, speaker_name, require_visible=True):
         """Find a speaker by name and return its SoCo object."""
+        # Normalise apostrophes
+        speaker_name = speaker_name.replace("’", "'")
         # Check for exact match first
         for speaker in self._speakers:
             # Normalise apostrophes
             s = speaker.speaker_name.replace("’", "'")
-            speaker_name = speaker_name.replace("’", "'")
             if speaker_name.lower() == s.lower():
                 if require_visible:
                     if speaker.is_visible:
@@ -246,7 +247,6 @@ class Speakers:
         # Check for partial match if no exact match
         for speaker in self._speakers:
             # Normalise apostrophes
-            s = speaker.speaker_name.replace("’", "'")
             speaker_name = speaker_name.replace("’", "'")
             if speaker_name.lower() in s.lower():
                 if require_visible:
