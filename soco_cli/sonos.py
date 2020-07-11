@@ -5,8 +5,10 @@ import os
 import sys
 import pprint
 import time
+
 from . import speakers
 from . import __version__
+from . import action_processor as ap
 
 # Globals
 speaker_list = None
@@ -744,6 +746,9 @@ def main():
             speaker = get_speaker(speaker_name, use_local_speaker_list)
             if not speaker:
                 error_and_exit("Speaker '{}' not found".format(speaker_name))
+            if ap.process_action(speaker, action, args, use_local_speaker_list):
+                print("Successfully used action processor")
+                exit(0)
             process_action(speaker, action, args, use_local_speaker_list)
         except Exception as e:
             error_and_exit("Exception: {}".format(str(e)))
