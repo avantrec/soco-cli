@@ -107,7 +107,9 @@ def main():
         if len(arg) > 1 and command_line_separator in arg:
             # Catch special cases of colon use: 'seek' action and URLs
             if not (sequence and sequence[-1] == "seek" or ":/" in arg):
-                error_and_exit("Spaces are required each side of the ':' command separator")
+                error_and_exit(
+                    "Spaces are required each side of the ':' command separator"
+                )
         if arg != command_line_separator:
             sequence.append(arg)
         else:
@@ -133,7 +135,12 @@ def main():
             speaker = get_speaker(speaker_name, use_local_speaker_list)
             if not speaker:
                 error_and_exit("Speaker '{}' not found".format(speaker_name))
-            ap.process_action(speaker, action, args, use_local_speaker_list)
+            if not ap.process_action(speaker, action, args, use_local_speaker_list):
+                error_and_exit(
+                    "Action '{}' not found. Available actions are: \n\n {}".format(
+                        action, list(ap.actions.keys())
+                    )
+                )
         except Exception as e:
             error_and_exit(str(e))
     exit(0)
