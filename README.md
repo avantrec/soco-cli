@@ -50,7 +50,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 #### Volume and EQ Control
 
 - **`balance`**: Returns the balance setting of the speaker as a pair of values (L, R) where each of L and R is between 0 and 100.
-- **`balance <left volume> <right volume>`**: Sets the balance of the speaker to. L and R must be between 0 and 100. (Examples: L=100, R=100 is level balance; L=0, R=100 drives the right channel only, etc.)
+- **`balance <balance_setting>`**: Sets the balance of the speaker to a value between -100 and +100, where -100 is left channel only, 0 is left and right set to the same volume, and +100 is right channel only. Intermediate values produce a mix of right/left channels.
 - **`bass`**: Returns the bass setting of the speaker, from -10 to 10.
 - **`bass <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.
 - **`dialog_mode <on|off>`** (or **`dialog`**): Sets the dialog mode setting of the speaker to 'on' of 'off' (if applicable).

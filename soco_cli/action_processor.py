@@ -428,6 +428,52 @@ def line_in(speaker, action, args, sonos_function, use_local_speaker_list):
     return True
 
 
+def eq(speaker, action, args, sonos_function, use_local_speaker_list):
+    np = len(args)
+    if np > 1:
+        parameter_number_error(action, "0 or 1")
+        return False
+    if np == 0:
+        print(getattr(speaker, sonos_function))
+    elif np == 1:
+        try:
+            setting = int(args[0])
+        except:
+            parameter_type_error(action, "integer from -10 to 10")
+            return False
+        if -10 <= setting <= 10:
+            setattr(speaker, sonos_function, setting)
+        else:
+            parameter_type_error(action, "integer from -10 to 10")
+            return False
+    return True
+
+
+def balance(speaker, action, args, sonos_function, use_local_speaker_list):
+    np = len(args)
+    if np > 1:
+        parameter_number_error(action, "0 or 1")
+        return False
+    if np == 0:
+        left, right = getattr(speaker, sonos_function)
+        # Convert to something more intelligible
+        print(right - left)
+    elif np == 1:
+        try:
+            setting = int(args[0])
+        except:
+            parameter_type_error(action, "integer from -100 to 100")
+            return False
+        if -100 <= setting <= 100:
+            left = 0 - setting
+            right = 0 + setting
+            setattr(speaker, sonos_function, (left, right))
+        else:
+            parameter_type_error(action, "integer from -100 to 100")
+            return False
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -540,4 +586,7 @@ actions = {
     "pause_all": SonosFunction(operate_on_all, "pause"),
     "seek": SonosFunction(seek, "seek"),
     "line_in": SonosFunction(line_in, ""),
+    "bass": SonosFunction(eq, "bass"),
+    "treble": SonosFunction(eq, "treble"),
+    "balance": SonosFunction(balance, "balance"),
 }
