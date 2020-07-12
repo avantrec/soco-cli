@@ -652,7 +652,7 @@ def main():
     # Create the argument parser
     parser = argparse.ArgumentParser(
         prog="sonos",
-        usage="%(prog)s SPEAKER_NAME_OR_IP ACTION",
+        usage="%(prog)s SPEAKER_NAME_OR_IP ACTION <parameters> <: ...>",
         description="Command line utility for controlling Sonos speakers",
     )
     # A variable number of arguments depending on the action
@@ -721,7 +721,8 @@ def main():
     sequences = []  # A list of command sequences
     for arg in args.parameters:
         if len(arg) > 1 and command_line_separator in arg:
-            if not (sequence and sequence[-1] == "seek"):
+            # Catch special cases of colon use
+            if not (sequence and sequence[-1] == "seek" or ":/" in arg):
                 error_and_exit("Spaces are required each side of the ':' command separator")
         if arg != command_line_separator:
             sequence.append(arg)
@@ -733,25 +734,27 @@ def main():
 
     # Loop through processing command sequences
     for sequence in sequences:
-        speaker = None
-        speaker_name = sequence[0]
-        action = sequence[1].lower()
-        # Special case of a "wait" command
-        # Assume there aren't any speakers called this.
-        if speaker_name in ["wait", "w", "sleep"]:
-            time.sleep(int(action))
-            continue
-        args = sequence[2:]
         try:
+            if len(sequence) < 2:
+                error_and_exit("{}: At least two arguments required".format(sequence))
+            speaker = None
+            speaker_name = sequence[0]
+            action = sequence[1].lower()
+            # Special case of a "wait" command
+            # Assume there aren't any speakers called any of these.
+            if speaker_name in ["wait", "w", "sleep"]:
+                time.sleep(int(action))
+                continue
+            args = sequence[2:]
             speaker = get_speaker(speaker_name, use_local_speaker_list)
             if not speaker:
                 error_and_exit("Speaker '{}' not found".format(speaker_name))
             if ap.process_action(speaker, action, args, use_local_speaker_list):
                 print("Successfully used action processor")
-                exit(0)
-            process_action(speaker, action, args, use_local_speaker_list)
+            else:
+                process_action(speaker, action, args, use_local_speaker_list)
         except Exception as e:
-            error_and_exit("Exception: {}".format(str(e)))
+            error_and_exit(str(e))
     exit(0)
 
 

@@ -1,7 +1,10 @@
 import os
 import sys
 import soco
+import pprint
 from collections import namedtuple
+
+pp = pprint.PrettyPrinter(width=120)
 
 
 def error_and_exit(msg):
@@ -17,7 +20,7 @@ def parameter_type_error(action, required_params):
 
 
 def parameter_number_error(action, parameter_number):
-    msg = "Action '{}' requires {} parameters".format(action, parameter_number)
+    msg = "Action '{}' takes {} parameters".format(action, parameter_number)
     error_and_exit(msg)
 
 
@@ -102,6 +105,7 @@ def list_numbered_things(speaker, action, args, sonos_function, use_local_speake
 
 def volume_actions(speaker, action, args, sonos_function, use_local_speaker_list):
     np = len(args)
+    # Special case for ramp_to_volume
     if sonos_function == "ramp_to_volume":
         if np == 1:
             vol = int(args[0])
@@ -155,6 +159,125 @@ def relative_volume_actions(speaker, action, args, sonos_function, use_local_spe
     return True
 
 
+def print_info(speaker, action, args, sonos_function, use_local_speaker_list):
+    if len(args) > 0:
+        parameter_number_error(action, "0")
+        return False
+    output = getattr(speaker, sonos_function)()
+    for item in sorted(output):
+        if item not in ["metadata", "uri"]:
+            print("  {}: {}".format(item, output[item]))
+    return True
+
+
+def playback_mode(speaker, action, args, sonos_function, use_local_speaker_list):
+    np = len(args)
+    possible_args = [
+            "normal",
+            "repeat_all",
+            "repeat_one",
+            "shuffle",
+            "shuffle_norepeat",
+    ]
+    if np == 0:
+        print(speaker.play_mode)
+    elif np == 1:
+        if args[0].lower() in possible_args:
+            speaker.play_mode = args[0]
+        else:
+            parameter_type_error(action, possible_args)
+    else:
+        parameter_number_error(action, "0 or 1")
+        return False
+    return True
+
+
+def transport_state(speaker, action, args, sonos_function, use_local_speaker_list):
+    if len(args) == 0:
+        print(speaker.get_current_transport_info()["current_transport_state"])
+        return True
+    else:
+        parameter_number_error(action, "0")
+        return False
+
+
+def play_favourite(speaker, action, args, sonos_function, use_local_speaker_list):
+        if len(args) != 1:
+            parameter_number_error(action, "1")
+            return False
+        favourite = args[0].lower()
+        fs = speaker.music_library.get_sonos_favorites()
+        the_fav = None
+        # Strict match (case insensitive)
+        for f in fs:
+            if favourite == f.title.lower():
+                the_fav = f
+        # Loose substring match if strict match not available
+        if not the_fav:
+            for f in fs:
+                if favourite in f.title.lower():
+                    the_fav = f
+        if the_fav:
+            # play_uri works for some favourites
+            try:
+                uri = the_fav.get_uri()
+                metadata = the_fav.resource_meta_data
+                speaker.play_uri(uri=uri, meta=metadata)
+                return  # Success
+            except Exception as e:
+                e1 = e
+                pass
+            # Other favourites have to be added to the queue, then played
+            try:
+                # speaker.clear_queue()
+                index = speaker.add_to_queue(the_fav)
+                speaker.play_from_queue(index, start=True)
+                return
+            except Exception as e2:
+                error_and_exit("{}, {}".format(str(e1), str(e2)))
+                return
+        error_and_exit("Favourite '{}' not found".format(favourite))
+
+
+def play_uri(speaker, action, args, sonos_function, use_local_speaker_list):
+    np = len(args)
+    if not (np == 1 or np == 2):
+        parameter_number_error(action, "1 or 2")
+        return False
+    else:
+        force_radio = True if args[0][:4].lower() == "http" else False
+        if np == 2:
+            speaker.play_uri(
+                args[0], title=args[1], force_radio=force_radio,
+            )
+        else:
+            speaker.play_uri(args[0], force_radio=force_radio)
+    return True
+
+
+def sleep_timer(speaker, action, args, sonos_function, use_local_speaker_list):
+    np = len(args)
+    if np == 0:
+        st = speaker.get_sleep_timer()
+        if st:
+            print(st)
+        else:
+            print(0)
+    elif np == 1:
+        try:
+            t = int(args[0])
+            if not 0 <= t <= 86399:
+                raise Exception
+        except:
+            parameter_type_error(action, "integer > 0")
+            return False
+        speaker.set_sleep_timer(int(args[0]))
+    else:
+        parameter_number_error(action, "0 or 1")
+        return False
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -176,7 +299,7 @@ SonosFunction = namedtuple(
     rename=False,
 )
 
-# Actions and associated processing methods
+# Actions and associated processing functions
 actions = {
     "mute": SonosFunction(on_off_action, "mute"),
     "cross_fade": SonosFunction(on_off_action, "cross_fade"),
@@ -220,4 +343,20 @@ actions = {
     "group_relative_volume": SonosFunction(relative_volume_actions, "group_relative_volume"),
     "group_rel_vol": SonosFunction(relative_volume_actions, "group_relative_volume"),
     "grv": SonosFunction(relative_volume_actions, "group_relative_volume"),
+    "track": SonosFunction(print_info, "get_current_track_info"),
+    "play_mode": SonosFunction(playback_mode, "play_mode"),
+    "mode": SonosFunction(playback_mode, "play_mode"),
+    "playback_state": SonosFunction(transport_state, "get_current_transport_info"),
+    "playback": SonosFunction(transport_state, "get_current_transport_info"),
+    "state": SonosFunction(transport_state, "get_current_transport_info"),
+    "favourite": SonosFunction(play_favourite, "play_favorite"),
+    "favorite": SonosFunction(play_favourite, "play_favorite"),
+    "play_fav": SonosFunction(play_favourite, "play_favorite"),
+    "fav": SonosFunction(play_favourite, "play_favorite"),
+    "pf": SonosFunction(play_favourite, "play_favorite"),
+    "play_uri": SonosFunction(play_uri, "play_uri"),
+    "uri": SonosFunction(play_uri, "play_uri"),
+    "pu": SonosFunction(play_uri, "play_uri"),
+    "sleep_timer": SonosFunction(sleep_timer, "sleep_timer"),
+    "sleep": SonosFunction(sleep_timer, "sleep_timer"),
 }
