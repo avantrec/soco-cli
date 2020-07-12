@@ -53,6 +53,9 @@ def no_args_no_output(speaker, action, args, soco_function, use_local_speaker_li
     if len(args) != 0:
         parameter_number_error(action, "no")
         return False
+    if soco_function == "separate_stereo_pair" and float(soco.__version__) < 0.20:
+        error_and_exit("Pairing operations require SoCo v0.20 or greater")
+        return False
     getattr(speaker, soco_function)()
     return True
 
@@ -97,12 +100,12 @@ def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
         return True
 
 
-def list_numbered_things(speaker, action, args, sonos_function, use_local_speaker_list):
+def list_numbered_things(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) == 0:
-        if sonos_function == "get_sonos_favorites":
-            things = getattr(speaker.music_library, sonos_function)()
+        if soco_function == "get_sonos_favorites":
+            things = getattr(speaker.music_library, soco_function)()
         else:
-            things = getattr(speaker, sonos_function)()
+            things = getattr(speaker, soco_function)()
         things_list = []
         for thing in things:
             things_list.append(thing.title)
@@ -118,10 +121,10 @@ def list_numbered_things(speaker, action, args, sonos_function, use_local_speake
         return True
 
 
-def volume_actions(speaker, action, args, sonos_function, use_local_speaker_list):
+def volume_actions(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     # Special case for ramp_to_volume
-    if sonos_function == "ramp_to_volume":
+    if soco_function == "ramp_to_volume":
         if np == 1:
             vol = int(args[0])
             if 0 <= vol <= 100:
@@ -133,7 +136,7 @@ def volume_actions(speaker, action, args, sonos_function, use_local_speaker_list
         else:
             parameter_number_error(action, "1")
             return False
-    if sonos_function == "group_volume":
+    if soco_function == "group_volume":
         speaker = speaker.group
     if np == 0:
         print(speaker.volume)
@@ -154,11 +157,11 @@ def volume_actions(speaker, action, args, sonos_function, use_local_speaker_list
     return True
 
 
-def relative_volume_actions(speaker, action, args, sonos_function, use_local_speaker_list):
+def relative_volume_actions(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 1:
         parameter_number_error(action, "1")
         return False
-    if sonos_function == "group_relative_volume":
+    if soco_function == "group_relative_volume":
         speaker = speaker.group
     try:
         vol = int(args[0])
@@ -172,18 +175,18 @@ def relative_volume_actions(speaker, action, args, sonos_function, use_local_spe
     return True
 
 
-def print_info(speaker, action, args, sonos_function, use_local_speaker_list):
+def print_info(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) > 0:
         parameter_number_error(action, "no")
         return False
-    output = getattr(speaker, sonos_function)()
+    output = getattr(speaker, soco_function)()
     for item in sorted(output):
         if item not in ["metadata", "uri"]:
             print("  {}: {}".format(item, output[item]))
     return True
 
 
-def playback_mode(speaker, action, args, sonos_function, use_local_speaker_list):
+def playback_mode(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     possible_args = [
             "normal",
@@ -205,7 +208,7 @@ def playback_mode(speaker, action, args, sonos_function, use_local_speaker_list)
     return True
 
 
-def transport_state(speaker, action, args, sonos_function, use_local_speaker_list):
+def transport_state(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) == 0:
         print(speaker.get_current_transport_info()["current_transport_state"])
         return True
@@ -214,7 +217,7 @@ def transport_state(speaker, action, args, sonos_function, use_local_speaker_lis
         return False
 
 
-def play_favourite(speaker, action, args, sonos_function, use_local_speaker_list):
+def play_favourite(speaker, action, args, soco_function, use_local_speaker_list):
         if len(args) != 1:
             parameter_number_error(action, "1")
             return False
@@ -253,7 +256,7 @@ def play_favourite(speaker, action, args, sonos_function, use_local_speaker_list
         return False
 
 
-def play_uri(speaker, action, args, sonos_function, use_local_speaker_list):
+def play_uri(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if not (np == 1 or np == 2):
         parameter_number_error(action, "1 or 2")
@@ -269,7 +272,7 @@ def play_uri(speaker, action, args, sonos_function, use_local_speaker_list):
     return True
 
 
-def sleep_timer(speaker, action, args, sonos_function, use_local_speaker_list):
+def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if np == 0:
         st = speaker.get_sleep_timer()
@@ -292,16 +295,19 @@ def sleep_timer(speaker, action, args, sonos_function, use_local_speaker_list):
     return True
 
 
-def group(speaker, action, args, sonos_function, use_local_speaker_list):
+def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 1:
         parameter_number_error(action, "1")
         return False
+    if soco_function == "create_stereo_pair" and float(soco.__version__) < 0.20:
+        error_and_exit("Pairing operations require SoCo v0.20 or greater")
+        return False
     speaker2 = sonos.get_speaker(args[0], use_local_speaker_list)
-    speaker.join(speaker2)
+    getattr(speaker, soco_function)(speaker2)
     return True
 
 
-def operate_on_all(speaker, action, args, sonos_function, use_local_speaker_list):
+def operate_on_all(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 0:
         parameter_number_error(action, "no")
         return False
@@ -310,7 +316,7 @@ def operate_on_all(speaker, action, args, sonos_function, use_local_speaker_list
         if zone.is_visible:
             try:
                 # zone.unjoin()
-                getattr(zone, sonos_function)()
+                getattr(zone, soco_function)()
             except:
                 # Ignore errors here; don't want to halt on
                 # a failed pause (e.g., if speaker isn't playing)
@@ -318,7 +324,7 @@ def operate_on_all(speaker, action, args, sonos_function, use_local_speaker_list
     return True
 
 
-def zones(speaker, action, args, sonos_function, use_local_speaker_list):
+def zones(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 0:
         parameter_number_error(action, "no")
         return False
@@ -328,7 +334,7 @@ def zones(speaker, action, args, sonos_function, use_local_speaker_list):
     return True
 
 
-def play_from_queue(speaker, action, args, sonos_function, use_local_speaker_list):
+def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if np == 0:
         speaker.play_from_queue(0)
@@ -349,7 +355,7 @@ def play_from_queue(speaker, action, args, sonos_function, use_local_speaker_lis
     return True
 
 
-def remove_from_queue(speaker, action, args, sonos_function, use_local_speaker_list):
+def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 1:
         parameter_number_error(action, "1")
         return False
@@ -367,7 +373,7 @@ def remove_from_queue(speaker, action, args, sonos_function, use_local_speaker_l
     return True
 
 
-def save_queue(speaker, action, args, sonos_function, use_local_speaker_list):
+def save_queue(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 1:
         parameter_number_error(action, "1")
         return False
@@ -375,7 +381,7 @@ def save_queue(speaker, action, args, sonos_function, use_local_speaker_list):
     return True
 
 
-def seek(speaker, action, args, sonos_function, use_local_speaker_list):
+def seek(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 1:
         parameter_number_error(action, "1")
         return False
@@ -386,7 +392,8 @@ def seek(speaker, action, args, sonos_function, use_local_speaker_list):
         return False
     return True
 
-def add_playlist_to_queue(speaker, action, args, sonos_function, use_local_speaker_list):
+
+def add_playlist_to_queue(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 1:
         parameter_number_error(action, "1")
         return False
@@ -406,7 +413,7 @@ def add_playlist_to_queue(speaker, action, args, sonos_function, use_local_speak
     return False
 
 
-def line_in(speaker, action, args, sonos_function, use_local_speaker_list):
+def line_in(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if np not in [0, 1]:
         parameter_number_error(action, "0 or 1")
@@ -426,13 +433,13 @@ def line_in(speaker, action, args, sonos_function, use_local_speaker_list):
     return True
 
 
-def eq(speaker, action, args, sonos_function, use_local_speaker_list):
+def eq(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if np > 1:
         parameter_number_error(action, "0 or 1")
         return False
     if np == 0:
-        print(getattr(speaker, sonos_function))
+        print(getattr(speaker, soco_function))
     elif np == 1:
         try:
             setting = int(args[0])
@@ -440,20 +447,20 @@ def eq(speaker, action, args, sonos_function, use_local_speaker_list):
             parameter_type_error(action, "integer from -10 to 10")
             return False
         if -10 <= setting <= 10:
-            setattr(speaker, sonos_function, setting)
+            setattr(speaker, soco_function, setting)
         else:
             parameter_type_error(action, "integer from -10 to 10")
             return False
     return True
 
 
-def balance(speaker, action, args, sonos_function, use_local_speaker_list):
+def balance(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if np > 1:
         parameter_number_error(action, "0 or 1")
         return False
     if np == 0:
-        left, right = getattr(speaker, sonos_function)
+        left, right = getattr(speaker, soco_function)
         # Convert to something more intelligible than a tuple
         # Use range from -100 (full left) to +100 (full right)
         print(right - left)
@@ -466,14 +473,14 @@ def balance(speaker, action, args, sonos_function, use_local_speaker_list):
         if -100 <= setting <= 100:
             left = 0 - setting
             right = 0 + setting
-            setattr(speaker, sonos_function, (left, right))
+            setattr(speaker, soco_function, (left, right))
         else:
             parameter_type_error(action, "integer from -100 to 100")
             return False
     return True
 
 
-def reindex(speaker, action, args, sonos_function, use_local_speaker_list):
+def reindex(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 0:
         parameter_number_error(action, "no")
         return False
@@ -481,7 +488,7 @@ def reindex(speaker, action, args, sonos_function, use_local_speaker_list):
     return True
 
 
-def info(speaker, action, args, sonos_function, use_local_speaker_list):
+def info(speaker, action, args, soco_function, use_local_speaker_list):
     info = speaker.get_speaker_info()
     model = info["model_name"].lower()
     if not ("boost" in model or "bridge" in model):
@@ -508,6 +515,22 @@ def info(speaker, action, args, sonos_function, use_local_speaker_list):
         info["is_visible"] = speaker.is_visible
     for item in sorted(info):
         print("  {} = {}".format(item, info[item]))
+    return True
+
+
+def groups(speaker, action, args, soco_function, use_local_speaker_list):
+    if len(args) != 0:
+        parameter_number_error(action, "no")
+        return False
+    for group in speaker.all_groups:
+        if group.coordinator.is_visible:
+            print("[{}] : ".format(group.short_label), end="")
+            for member in group.members:
+                print(
+                    "{} ({}) ".format(member.player_name, member.ip_address),
+                    end="",
+                )
+            print()
     return True
 
 
@@ -592,8 +615,8 @@ actions = {
     "pu": SonosFunction(play_uri, "play_uri"),
     "sleep_timer": SonosFunction(sleep_timer, "sleep_timer"),
     "sleep": SonosFunction(sleep_timer, "sleep_timer"),
-    "group": SonosFunction(group, "join"),
-    "g": SonosFunction(group, "join"),
+    "group": SonosFunction(group_or_pair, "join"),
+    "g": SonosFunction(group_or_pair, "join"),
     "ungroup": SonosFunction(no_args_no_output, "unjoin"),
     "u": SonosFunction(no_args_no_output, "unjoin"),
     "party_mode": SonosFunction(no_args_no_output, "partymode"),
@@ -628,4 +651,7 @@ actions = {
     "balance": SonosFunction(balance, "balance"),
     "reindex": SonosFunction(reindex, "start_library_update"),
     "info": SonosFunction(info, "get_info"),
+    "groups": SonosFunction(groups, "groups"),
+    "pair": SonosFunction(group_or_pair, "create_stereo_pair"),
+    "unpair": SonosFunction(no_args_no_output, "separate_stereo_pair"),
 }
