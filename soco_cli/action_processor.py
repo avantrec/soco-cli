@@ -4,6 +4,8 @@ import soco
 import pprint
 from collections import namedtuple
 
+from . import sonos
+
 pp = pprint.PrettyPrinter(width=120)
 
 
@@ -20,7 +22,7 @@ def parameter_type_error(action, required_params):
 
 
 def parameter_number_error(action, parameter_number):
-    msg = "Action '{}' takes {} parameters".format(action, parameter_number)
+    msg = "Action '{}' takes {} parameter(s)".format(action, parameter_number)
     error_and_exit(msg)
 
 
@@ -28,6 +30,9 @@ def parameter_number_error(action, parameter_number):
 def on_off_action(speaker, action, args, soco_function, use_local_speaker_list):
     """Method to deal with actions that have 'on|off semantics"""
     np = len(args)
+    if action == "group_mute":
+        speaker = speaker.group
+        soco_function = "mute"
     if np == 0:
         state = "on" if getattr(speaker, soco_function) else "off"
         print(state)
@@ -45,13 +50,23 @@ def on_off_action(speaker, action, args, soco_function, use_local_speaker_list):
 
 
 def no_args_no_output(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) == 0:
-        getattr(speaker, soco_function)()
-        return True
-    else:
+    if len(args) != 0:
         parameter_number_error(action, "no")
-        # Probably doesn't get here, but just in case
-        return True
+        return False
+    getattr(speaker, soco_function)()
+    return True
+
+
+def no_args_one_output(speaker, action, args, soco_function, use_local_speaker_list):
+    if len(args) != 0:
+        parameter_number_error(action, "no")
+        return False
+    result = getattr(speaker, soco_function)
+    if callable(result):
+        print(getattr(speaker, soco_function)())
+    else:
+        print(result)
+    return True
 
 
 def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
@@ -118,19 +133,18 @@ def volume_actions(speaker, action, args, sonos_function, use_local_speaker_list
         else:
             parameter_number_error(action, "1")
             return False
-    group = True if sonos_function == "group_volume" else False
+    if sonos_function == "group_volume":
+        speaker = speaker.group
     if np == 0:
-        if group:
-            print(speaker.group.volume)
-        else:
-            print(speaker.volume)
+        print(speaker.volume)
     elif np == 1:
-        vol = int(args[0])
+        try:
+            vol = int(args[0])
+        except:
+            parameter_type_error(action, "integer from 0 to 100")
+            return False
         if 0 <= vol <= 100:
-            if group:
-                speaker.group.volume = vol
-            else:
-                speaker.volume = vol
+            speaker.volume = vol
         else:
             parameter_type_error(action, "0 to 100")
             return False
@@ -141,27 +155,26 @@ def volume_actions(speaker, action, args, sonos_function, use_local_speaker_list
 
 
 def relative_volume_actions(speaker, action, args, sonos_function, use_local_speaker_list):
-    np = len(args)
-    group = True if sonos_function == "group_relative_volume" else False
-    if np == 1:
-        vol = int(args[0])
-        if -100 <= vol <= 100:
-            if group:
-                speaker.group.volume += vol
-            else:
-                speaker.volume += vol
-        else:
-            parameter_type_error(action, "-100 to 100")
-            return False
-    else:
+    if len(args) != 1:
         parameter_number_error(action, "1")
+        return False
+    if sonos_function == "group_relative_volume":
+        speaker = speaker.group
+    try:
+        vol = int(args[0])
+    except:
+        parameter_type_error(action, "integer from -100 to 100")
+    if -100 <= vol <= 100:
+        speaker.volume += vol
+    else:
+        parameter_type_error(action, "integer from -100 to 100")
         return False
     return True
 
 
 def print_info(speaker, action, args, sonos_function, use_local_speaker_list):
     if len(args) > 0:
-        parameter_number_error(action, "0")
+        parameter_number_error(action, "no")
         return False
     output = getattr(speaker, sonos_function)()
     for item in sorted(output):
@@ -197,7 +210,7 @@ def transport_state(speaker, action, args, sonos_function, use_local_speaker_lis
         print(speaker.get_current_transport_info()["current_transport_state"])
         return True
     else:
-        parameter_number_error(action, "0")
+        parameter_number_error(action, "no")
         return False
 
 
@@ -223,7 +236,7 @@ def play_favourite(speaker, action, args, sonos_function, use_local_speaker_list
                 uri = the_fav.get_uri()
                 metadata = the_fav.resource_meta_data
                 speaker.play_uri(uri=uri, meta=metadata)
-                return  # Success
+                return True  # Success
             except Exception as e:
                 e1 = e
                 pass
@@ -232,11 +245,12 @@ def play_favourite(speaker, action, args, sonos_function, use_local_speaker_list
                 # speaker.clear_queue()
                 index = speaker.add_to_queue(the_fav)
                 speaker.play_from_queue(index, start=True)
-                return
+                return True
             except Exception as e2:
                 error_and_exit("{}, {}".format(str(e1), str(e2)))
-                return
+                return False
         error_and_exit("Favourite '{}' not found".format(favourite))
+        return False
 
 
 def play_uri(speaker, action, args, sonos_function, use_local_speaker_list):
@@ -275,6 +289,142 @@ def sleep_timer(speaker, action, args, sonos_function, use_local_speaker_list):
     else:
         parameter_number_error(action, "0 or 1")
         return False
+    return True
+
+
+def group(speaker, action, args, sonos_function, use_local_speaker_list):
+    if len(args) != 1:
+        parameter_number_error(action, "1")
+        return False
+    speaker2 = sonos.get_speaker(args[0], use_local_speaker_list)
+    speaker.join(speaker2)
+    return True
+
+
+def operate_on_all(speaker, action, args, sonos_function, use_local_speaker_list):
+    if len(args) != 0:
+        parameter_number_error(action, "no")
+        return False
+    zones = speaker.all_zones
+    for zone in zones:
+        if zone.is_visible:
+            try:
+                # zone.unjoin()
+                getattr(zone, sonos_function)()
+            except:
+                # Ignore errors here; don't want to halt on
+                # a failed pause (e.g., if speaker isn't playing)
+                continue
+    return True
+
+
+def zones(speaker, action, args, sonos_function, use_local_speaker_list):
+    if len(args) != 0:
+        parameter_number_error(action, "no")
+        return False
+    zones = speaker.all_zones if "all" in action else speaker.visible_zones
+    for zone in zones:
+        print("{} ({})".format(zone.player_name, zone.ip_address))
+    return True
+
+
+def play_from_queue(speaker, action, args, sonos_function, use_local_speaker_list):
+    np = len(args)
+    if np == 0:
+        speaker.play_from_queue(0)
+    elif np == 1:
+        try:
+            index = int(args[0])
+        except:
+            parameter_type_error(action, "integer")
+            return False
+        if 1 <= index <= speaker.queue_size:
+            speaker.play_from_queue(index - 1)
+        else:
+            error_and_exit("Queue index '{}' is out of range".format(index))
+            return False
+    else:
+        parameter_number_error(action, "0 or 1")
+        return False
+    return True
+
+
+def remove_from_queue(speaker, action, args, sonos_function, use_local_speaker_list):
+    if len(args) != 1:
+        parameter_number_error(action, "1")
+        return False
+    try:
+        index = int(args[0])
+    except:
+        parameter_type_error(action, "integer")
+        return False
+    qs = speaker.queue_size
+    if 1 <= index <= qs:
+        speaker.play_from_queue(index - 1)
+    else:
+        error_and_exit("Queue index should be between 1 and {}".format(qs))
+        return False
+    return True
+
+
+def save_queue(speaker, action, args, sonos_function, use_local_speaker_list):
+    if len(args) != 1:
+        parameter_number_error(action, "1")
+        return False
+    speaker.create_sonos_playlist_from_queue(args[0])
+    return True
+
+
+def seek(speaker, action, args, sonos_function, use_local_speaker_list):
+    if len(args) != 1:
+        parameter_number_error(action, "1")
+        return False
+    try:
+        speaker.seek(args[0])
+    except:
+        parameter_type_error(action, "HH:MM:SS on a seekable source")
+        return False
+    return True
+
+def add_playlist_to_queue(speaker, action, args, sonos_function, use_local_speaker_list):
+    if len(args) != 1:
+        parameter_number_error(action, "1")
+        return False
+    name = args[0].lower()
+    playlists = speaker.get_sonos_playlists()
+    # Strict match
+    for playlist in playlists:
+        if name == playlist.title.lower():
+            speaker.add_to_queue(playlist)
+            return True
+    # Fuzzy match
+    for playlist in playlists:
+        if name in playlist.title.lower():
+            speaker.add_to_queue(playlist)
+            return True
+    error_and_exit("Playlist {} not found".format(args[0]))
+    return False
+
+
+def line_in(speaker, action, args, sonos_function, use_local_speaker_list):
+    np = len(args)
+    if not 0 <= np <= 2:
+        parameter_number_error(action, "0, 1 or 2")
+    if np == 0:
+        state = "on" if speaker.is_playing_line_in else "off"
+        print(state)
+    elif np == 1 or np == 2:
+        if args[0].lower() == "on":
+            if np == 1:
+                speaker.switch_to_line_in()
+            elif np == 2:
+                line_in_source = sonos.get_speaker(args[1], use_local_speaker_list)
+                if not line_in_source:
+                    error_and_exit("Speaker {} not found".format(args[1]))
+                    return False
+                speaker.switch_to_line_in(line_in_source)
+        else:
+            parameter_type_error(action, "'on' as first parameter")
     return True
 
 
@@ -359,4 +509,35 @@ actions = {
     "pu": SonosFunction(play_uri, "play_uri"),
     "sleep_timer": SonosFunction(sleep_timer, "sleep_timer"),
     "sleep": SonosFunction(sleep_timer, "sleep_timer"),
+    "group": SonosFunction(group, "join"),
+    "g": SonosFunction(group, "join"),
+    "ungroup": SonosFunction(no_args_no_output, "unjoin"),
+    "u": SonosFunction(no_args_no_output, "unjoin"),
+    "party_mode": SonosFunction(no_args_no_output, "partymode"),
+    "party": SonosFunction(no_args_no_output, "partymode"),
+    "ungroup_all": SonosFunction(operate_on_all, "unjoin"),
+    "zones": SonosFunction(zones, "zones"),
+    "all_zones": SonosFunction(zones, "zones"),
+    "rooms": SonosFunction(zones, "zones"),
+    "all_rooms": SonosFunction(zones, "zones"),
+    "visible_zones": SonosFunction(zones, "zones"),
+    "visible_rooms": SonosFunction(zones, "zones"),
+    "play_from_queue": SonosFunction(play_from_queue, "play_from_queue"),
+    "play_queue": SonosFunction(play_from_queue, "play_from_queue"),
+    "pfq": SonosFunction(play_from_queue, "play_from_queue"),
+    "pq": SonosFunction(play_from_queue, "play_from_queue"),
+    "remove_from_queue": SonosFunction(remove_from_queue, "remove_from_queue"),
+    "rq": SonosFunction(remove_from_queue, "remove_from_queue"),
+    "clear_queue": SonosFunction(no_args_no_output, "clear_queue"),
+    "cq": SonosFunction(no_args_no_output, "clear_queue"),
+    "group_mute": SonosFunction(on_off_action, "group_mute"),
+    "save_queue": SonosFunction(save_queue, "create_sonos_playlist_from_queue"),
+    "sq": SonosFunction(save_queue, "create_sonos_playlist_from_queue"),
+    "queue_length": SonosFunction(no_args_one_output, "queue_size"),
+    "add_playlist_to_queue": SonosFunction(add_playlist_to_queue, "add_to_queue"),
+    "add_pl_to_queue": SonosFunction(add_playlist_to_queue, "add_to_queue"),
+    "apq": SonosFunction(add_playlist_to_queue, "add_to_queue"),
+    "pause_all": SonosFunction(operate_on_all, "pause"),
+    "seek": SonosFunction(seek, "seek"),
+    "line_in": SonosFunction(line_in, ""),
 }
