@@ -456,7 +456,8 @@ def balance(speaker, action, args, sonos_function, use_local_speaker_list):
         return False
     if np == 0:
         left, right = getattr(speaker, sonos_function)
-        # Convert to something more intelligible
+        # Convert to something more intelligible than a tuple
+        # Use range from -100 (full left) to +100 (full right)
         print(right - left)
     elif np == 1:
         try:
@@ -471,6 +472,44 @@ def balance(speaker, action, args, sonos_function, use_local_speaker_list):
         else:
             parameter_type_error(action, "integer from -100 to 100")
             return False
+    return True
+
+
+def reindex(speaker, action, args, sonos_function, use_local_speaker_list):
+    if len(args) != 0:
+        parameter_number_error(action, "no")
+        return False
+    speaker.music_library.start_library_update()
+    return True
+
+
+def info(speaker, action, args, sonos_function, use_local_speaker_list):
+    info = speaker.get_speaker_info()
+    model = info["model_name"].lower()
+    if not ("boost" in model or "bridge" in model):
+        info["volume"] = speaker.volume
+        info["mute"] = speaker.mute
+        info["state"] = speaker.get_current_transport_info()["current_transport_state"]
+        info["title"] = speaker.get_current_track_info()["title"]
+        info["player_name"] = speaker.player_name
+        info["ip_address"] = speaker.ip_address
+        info["household_id"] = speaker.household_id
+        info["status_light"] = speaker.status_light
+        info["is_coordinator"] = speaker.is_coordinator
+        info["grouped_or_paired"] = False if len(speaker.group.members) == 1 else True
+        info["loudness"] = speaker.loudness
+        info["treble"] = speaker.treble
+        info["bass"] = speaker.bass
+        info["is_coordinator"] = speaker.is_coordinator
+        if speaker.is_coordinator:
+            info["cross_fade"] = speaker.cross_fade
+        info["balance"] = speaker.balance
+        info["night_mode"] = speaker.night_mode
+        info["is_soundbar"] = speaker.is_soundbar
+        info["is_playing_line_in"] = speaker.is_playing_line_in
+        info["is_visible"] = speaker.is_visible
+    for item in sorted(info):
+        print("  {} = {}".format(item, info[item]))
     return True
 
 
@@ -589,4 +628,6 @@ actions = {
     "bass": SonosFunction(eq, "bass"),
     "treble": SonosFunction(eq, "treble"),
     "balance": SonosFunction(balance, "balance"),
+    "reindex": SonosFunction(reindex, "start_library_update"),
+    "info": SonosFunction(info, "get_info"),
 }
