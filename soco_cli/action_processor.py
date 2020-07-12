@@ -408,23 +408,21 @@ def add_playlist_to_queue(speaker, action, args, sonos_function, use_local_speak
 
 def line_in(speaker, action, args, sonos_function, use_local_speaker_list):
     np = len(args)
-    if not 0 <= np <= 2:
-        parameter_number_error(action, "0, 1 or 2")
+    if np not in [0, 1]:
+        parameter_number_error(action, "0 or 1")
+        return False
     if np == 0:
         state = "on" if speaker.is_playing_line_in else "off"
         print(state)
-    elif np == 1 or np == 2:
+    else:
         if args[0].lower() == "on":
-            if np == 1:
-                speaker.switch_to_line_in()
-            elif np == 2:
-                line_in_source = sonos.get_speaker(args[1], use_local_speaker_list)
-                if not line_in_source:
-                    error_and_exit("Speaker {} not found".format(args[1]))
-                    return False
-                speaker.switch_to_line_in(line_in_source)
+            speaker.switch_to_line_in()
         else:
-            parameter_type_error(action, "'on' as first parameter")
+            line_in_source = sonos.get_speaker(args[0], use_local_speaker_list)
+            if not line_in_source:
+                error_and_exit("Speaker {} not found".format(args[0]))
+                return False
+            speaker.switch_to_line_in(line_in_source)
     return True
 
 

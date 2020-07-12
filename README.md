@@ -61,11 +61,11 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`group_volume` (or `group_vol`)**: Returns the current group volume setting of the speaker's group (0 to 100)
 - **`group_volume <volume>` (or `group_vol`)**: Sets the volume of the speaker's group to `<volume>` (0 to 100).
 - **`loudness`**: Returns the loudness setting of the speaker, 'on' or 'off'.
-- **`loudness <on|off>`**: Sets the loudness setting of the speaker to 'on' of 'off'.
+- **`loudness <on|off>`**: Sets the loudness setting of the speaker to 'on' or 'off'.
 - **`mute`**: Returns the mute setting of the speaker, 'on' or 'off'.
-- **`night_mode <on|off>`** (or **`night`**): Sets the night mode setting of the speaker to 'on' of 'off' (if applicable).
+- **`night_mode <on|off>`** (or **`night`**): Sets the night mode setting of the speaker to 'on' or 'off' (if applicable).
 - **`night_mode`** (or **`night`**): Returns the night mode setting of the speaker, 'on' or 'off' (if applicable).
-- **`mute <on|off>`**: Sets the mute setting of the speaker to 'on' of 'off'.
+- **`mute <on|off>`**: Sets the mute setting of the speaker to 'on' or 'off'.
 - **`ramp_to_volume <volume>` (or `ramp`)**: Gently raise or reduce the volume to `<volume>`, which is between 0 and 100. Returns the number of seconds to complete the ramp.
 - **`relative_volume <adjustment>` (or `rel_vol`, `rv`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
 - **`treble`**: Returns the treble setting of the speaker, from -10 to 10.
@@ -78,9 +78,8 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`cross_fade`**: Returns the cross fade setting of the speaker, 'on' or 'off'.
 - **`cross_fade <on|off>`**: Sets the cross fade setting of the speaker to 'on' of 'off'.
 - **`favourite <favourite_name>` (or `favorite`, `fav`, `pf`, `play_fav`)**: Plays the Sonos favourite identified by `<favourite_name>`. The name is loosely matched; if `<favourite_name>` is a (case insensitive) substring of a Sonos favourite, it will match. In the case of duplicates, the first match encountered will be used. **Note: this currently works only for certain types of favourite: local library tracks and playlists, radio stations, single Spotify tracks, etc.**
-- **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to Line-In, 'off' otherwise.
-- **`line_in on`**: Switch a speaker to its Line-In input (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback.
-- **`line_in on <line_in_speaker`**: Switch a speaker to the Line-In input of `<line_in_speaker>` (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback.
+- **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise.
+- **`line_in <on or line_in_speaker>`**: Switch a speaker to its own Line-In input (`<on>`), **or** the Line-In input of `<line_in_speaker>` (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback.
 - **`list_favs`** (or **`list_favorites`, `list_favourites`, `lf`**): Lists the Sonos favourites applicable to this speaker.
 - **`list_playlists`** (or **`playlists`, `lp`**): Lists the Sonos playlists applicable to this speaker.
 - **`next`**: Move to the next track (if applicable for the current audio source).
