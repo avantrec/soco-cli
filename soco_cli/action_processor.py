@@ -30,6 +30,9 @@ def parameter_number_error(action, parameter_number):
 def on_off_action(speaker, action, args, soco_function, use_local_speaker_list):
     """Method to deal with actions that have 'on|off semantics"""
     np = len(args)
+    if np not in [0, 1]:
+        parameter_number_error(action, "0 or 1")
+        return False
     if action == "group_mute":
         speaker = speaker.group
         soco_function = "mute"
@@ -44,8 +47,6 @@ def on_off_action(speaker, action, args, soco_function, use_local_speaker_list):
             setattr(speaker, soco_function, False)
         else:
             parameter_type_error(action, "on|off")
-    else:
-        parameter_number_error(action, "0 or 1")
     return True
 
 
@@ -73,56 +74,56 @@ def no_args_one_output(speaker, action, args, soco_function, use_local_speaker_l
 
 
 def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) == 0:
-        queue = speaker.get_queue(max_items=1000)
-        for i in range(len(queue)):
-            try:
-                artist = queue[i].creator
-            except:
-                artist = ""
-            try:
-                album = queue[i].album
-            except:
-                album = ""
-            try:
-                title = queue[i].title
-            except:
-                title = ""
-            print(
-                "{:3d}: Artist: {} | Album: {} | Title: {}".format(
-                    i + 1, artist, album, title
-                )
-            )
-        return True
-    else:
+    if len(args) != 0:
         parameter_number_error(action, "no")
-        # Probably doesn't get here, but just in case
-        return True
+        return False
+    queue = speaker.get_queue(max_items=1000)
+    for i in range(len(queue)):
+        try:
+            artist = queue[i].creator
+        except:
+            artist = ""
+        try:
+            album = queue[i].album
+        except:
+            album = ""
+        try:
+            title = queue[i].title
+        except:
+            title = ""
+        print(
+            "{:3d}: Artist: {} | Album: {} | Title: {}".format(
+                i + 1, artist, album, title
+            )
+        )
+    return True
 
 
 def list_numbered_things(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) == 0:
-        if soco_function == "get_sonos_favorites":
-            things = getattr(speaker.music_library, soco_function)()
-        else:
-            things = getattr(speaker, soco_function)()
-        things_list = []
-        for thing in things:
-            things_list.append(thing.title)
-        things_list.sort()
-        index = 0
-        for thing in things_list:
-            index += 1
-            print("{:3d}: {}".format(index, thing))
-        return True
-    else:
+    if len(args) != 0:
         parameter_number_error(action, "no")
         # Probably doesn't get here, but just in case
-        return True
+        return False
+    if soco_function == "get_sonos_favorites":
+        things = getattr(speaker.music_library, soco_function)()
+    else:
+        things = getattr(speaker, soco_function)()
+    things_list = []
+    for thing in things:
+        things_list.append(thing.title)
+    things_list.sort()
+    index = 0
+    for thing in things_list:
+        index += 1
+        print("{:3d}: {}".format(index, thing))
+    return True
 
 
 def volume_actions(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
+    if np not in [0, 1]:
+        parameter_number_error(action, "0 or 1")
+        return False
     # Special case for ramp_to_volume
     if soco_function == "ramp_to_volume":
         if np == 1:
@@ -151,9 +152,6 @@ def volume_actions(speaker, action, args, soco_function, use_local_speaker_list)
         else:
             parameter_type_error(action, "0 to 100")
             return False
-    else:
-        parameter_number_error(action, "0 or 1")
-        return False
     return True
 
 
@@ -176,7 +174,7 @@ def relative_volume_actions(speaker, action, args, soco_function, use_local_spea
 
 
 def print_info(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) > 0:
+    if len(args) != 0:
         parameter_number_error(action, "no")
         return False
     output = getattr(speaker, soco_function)()
