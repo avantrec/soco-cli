@@ -155,9 +155,7 @@ def volume_actions(speaker, action, args, soco_function, use_local_speaker_list)
     return True
 
 
-def relative_volume_actions(
-    speaker, action, args, soco_function, use_local_speaker_list
-):
+def relative_volume(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 1:
         parameter_number_error(action, "1")
         return False
@@ -167,6 +165,7 @@ def relative_volume_actions(
         vol = int(args[0])
     except:
         parameter_type_error(action, "integer from -100 to 100")
+        return False
     if -100 <= vol <= 100:
         speaker.volume += vol
     else:
@@ -228,11 +227,13 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
     for f in fs:
         if favourite == f.title.lower():
             the_fav = f
+            break
     # Loose substring match if strict match not available
     if not the_fav:
         for f in fs:
             if favourite in f.title.lower():
                 the_fav = f
+                break
     if the_fav:
         # play_uri works for some favourites
         try:
@@ -461,7 +462,7 @@ def balance(speaker, action, args, soco_function, use_local_speaker_list):
         return False
     if np == 0:
         left, right = getattr(speaker, soco_function)
-        # Convert to something more intelligible than a tuple
+        # Convert to something more intelligible than a 2-tuple
         # Use range from -100 (full left) to +100 (full right)
         print(right - left)
     elif np == 1:
@@ -471,8 +472,8 @@ def balance(speaker, action, args, soco_function, use_local_speaker_list):
             parameter_type_error(action, "integer from -100 to 100")
             return False
         if -100 <= setting <= 100:
-            left = 0 - setting
-            right = 0 + setting
+            left = max(0, min(0 - setting, 100))
+            right = max(0, min(setting, 100))
             setattr(speaker, soco_function, (left, right))
         else:
             parameter_type_error(action, "integer from -100 to 100")
@@ -589,14 +590,12 @@ actions = {
     "gv": SonosFunction(volume_actions, "group_volume"),
     "ramp_to_volume": SonosFunction(volume_actions, "ramp_to_volume"),
     "ramp": SonosFunction(volume_actions, "ramp_to_volume"),
-    "relative_volume": SonosFunction(relative_volume_actions, "relative_volume"),
-    "rel_vol": SonosFunction(relative_volume_actions, "relative_volume"),
-    "rv": SonosFunction(relative_volume_actions, "relative_volume"),
-    "group_relative_volume": SonosFunction(
-        relative_volume_actions, "group_relative_volume"
-    ),
-    "group_rel_vol": SonosFunction(relative_volume_actions, "group_relative_volume"),
-    "grv": SonosFunction(relative_volume_actions, "group_relative_volume"),
+    "relative_volume": SonosFunction(relative_volume, "relative_volume"),
+    "rel_vol": SonosFunction(relative_volume, "relative_volume"),
+    "rv": SonosFunction(relative_volume, "relative_volume"),
+    "group_relative_volume": SonosFunction(relative_volume, "group_relative_volume"),
+    "group_rel_vol": SonosFunction(relative_volume, "group_relative_volume"),
+    "grv": SonosFunction(relative_volume, "group_relative_volume"),
     "track": SonosFunction(print_info, "get_current_track_info"),
     "play_mode": SonosFunction(playback_mode, "play_mode"),
     "mode": SonosFunction(playback_mode, "play_mode"),
