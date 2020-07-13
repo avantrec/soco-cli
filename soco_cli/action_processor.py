@@ -9,6 +9,7 @@ from . import sonos
 pp = pprint.PrettyPrinter(width=120)
 
 
+# Error handling functions
 def error_and_exit(msg):
     # Print to stderror
     print("Error:", msg, file=sys.stderr)
@@ -102,7 +103,6 @@ def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
 def list_numbered_things(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 0:
         parameter_number_error(action, "no")
-        # Probably doesn't get here, but just in case
         return False
     if soco_function == "get_sonos_favorites":
         things = getattr(speaker.music_library, soco_function)()
@@ -155,7 +155,9 @@ def volume_actions(speaker, action, args, soco_function, use_local_speaker_list)
     return True
 
 
-def relative_volume_actions(speaker, action, args, soco_function, use_local_speaker_list):
+def relative_volume_actions(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
     if len(args) != 1:
         parameter_number_error(action, "1")
         return False
@@ -186,12 +188,15 @@ def print_info(speaker, action, args, soco_function, use_local_speaker_list):
 
 def playback_mode(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
+    if np not in [0, 1]:
+        parameter_number_error(action, "0 or 1")
+        return False
     possible_args = [
-            "normal",
-            "repeat_all",
-            "repeat_one",
-            "shuffle",
-            "shuffle_norepeat",
+        "normal",
+        "repeat_all",
+        "repeat_one",
+        "shuffle",
+        "shuffle_norepeat",
     ]
     if np == 0:
         print(speaker.play_mode)
@@ -200,9 +205,6 @@ def playback_mode(speaker, action, args, soco_function, use_local_speaker_list):
             speaker.play_mode = args[0]
         else:
             parameter_type_error(action, possible_args)
-    else:
-        parameter_number_error(action, "0 or 1")
-        return False
     return True
 
 
@@ -216,47 +218,47 @@ def transport_state(speaker, action, args, soco_function, use_local_speaker_list
 
 
 def play_favourite(speaker, action, args, soco_function, use_local_speaker_list):
-        if len(args) != 1:
-            parameter_number_error(action, "1")
-            return False
-        favourite = args[0].lower()
-        fs = speaker.music_library.get_sonos_favorites()
-        the_fav = None
-        # Strict match (case insensitive)
-        for f in fs:
-            if favourite == f.title.lower():
-                the_fav = f
-        # Loose substring match if strict match not available
-        if not the_fav:
-            for f in fs:
-                if favourite in f.title.lower():
-                    the_fav = f
-        if the_fav:
-            # play_uri works for some favourites
-            try:
-                uri = the_fav.get_uri()
-                metadata = the_fav.resource_meta_data
-                speaker.play_uri(uri=uri, meta=metadata)
-                return True  # Success
-            except Exception as e:
-                e1 = e
-                pass
-            # Other favourites have to be added to the queue, then played
-            try:
-                # speaker.clear_queue()
-                index = speaker.add_to_queue(the_fav)
-                speaker.play_from_queue(index, start=True)
-                return True
-            except Exception as e2:
-                error_and_exit("{}, {}".format(str(e1), str(e2)))
-                return False
-        error_and_exit("Favourite '{}' not found".format(favourite))
+    if len(args) != 1:
+        parameter_number_error(action, "1")
         return False
+    favourite = args[0].lower()
+    fs = speaker.music_library.get_sonos_favorites()
+    the_fav = None
+    # Strict match (case insensitive)
+    for f in fs:
+        if favourite == f.title.lower():
+            the_fav = f
+    # Loose substring match if strict match not available
+    if not the_fav:
+        for f in fs:
+            if favourite in f.title.lower():
+                the_fav = f
+    if the_fav:
+        # play_uri works for some favourites
+        try:
+            uri = the_fav.get_uri()
+            metadata = the_fav.resource_meta_data
+            speaker.play_uri(uri=uri, meta=metadata)
+            return True  # Success
+        except Exception as e:
+            e1 = e
+            pass
+        # Other favourites have to be added to the queue, then played
+        try:
+            # speaker.clear_queue()
+            index = speaker.add_to_queue(the_fav)
+            speaker.play_from_queue(index, start=True)
+            return True
+        except Exception as e2:
+            error_and_exit("{}, {}".format(str(e1), str(e2)))
+            return False
+    error_and_exit("Favourite '{}' not found".format(favourite))
+    return False
 
 
 def play_uri(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
-    if not (np == 1 or np == 2):
+    if np not in [1, 2]:
         parameter_number_error(action, "1 or 2")
         return False
     else:
@@ -272,6 +274,9 @@ def play_uri(speaker, action, args, soco_function, use_local_speaker_list):
 
 def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
+    if np not in [0, 1]:
+        parameter_number_error(action, "0 or 1")
+        return False
     if np == 0:
         st = speaker.get_sleep_timer()
         if st:
@@ -287,9 +292,6 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
             parameter_type_error(action, "integer > 0")
             return False
         speaker.set_sleep_timer(int(args[0]))
-    else:
-        parameter_number_error(action, "0 or 1")
-        return False
     return True
 
 
@@ -334,6 +336,9 @@ def zones(speaker, action, args, soco_function, use_local_speaker_list):
 
 def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
+    if np not in [0, 1]:
+        parameter_number_error(action, "0 or 1")
+        return False
     if np == 0:
         speaker.play_from_queue(0)
     elif np == 1:
@@ -347,9 +352,6 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
         else:
             error_and_exit("Queue index '{}' is out of range".format(index))
             return False
-    else:
-        parameter_number_error(action, "0 or 1")
-        return False
     return True
 
 
@@ -433,7 +435,7 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
 
 def eq(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
-    if np > 1:
+    if np not in [0, 1]:
         parameter_number_error(action, "0 or 1")
         return False
     if np == 0:
@@ -454,7 +456,7 @@ def eq(speaker, action, args, soco_function, use_local_speaker_list):
 
 def balance(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
-    if np > 1:
+    if np not in [0, 1]:
         parameter_number_error(action, "0 or 1")
         return False
     if np == 0:
@@ -487,6 +489,9 @@ def reindex(speaker, action, args, soco_function, use_local_speaker_list):
 
 
 def info(speaker, action, args, soco_function, use_local_speaker_list):
+    if len(args) != 0:
+        parameter_number_error(action, "no")
+        return False
     info = speaker.get_speaker_info()
     model = info["model_name"].lower()
     if not ("boost" in model or "bridge" in model):
@@ -525,8 +530,7 @@ def groups(speaker, action, args, soco_function, use_local_speaker_list):
             print("[{}] : ".format(group.short_label), end="")
             for member in group.members:
                 print(
-                    "{} ({}) ".format(member.player_name, member.ip_address),
-                    end="",
+                    "{} ({}) ".format(member.player_name, member.ip_address), end="",
                 )
             print()
     return True
@@ -536,11 +540,7 @@ def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
         return sonos_function.processing_function(
-            speaker,
-            action,
-            args,
-            sonos_function.soco_function,
-            use_local_speaker_list,
+            speaker, action, args, sonos_function.soco_function, use_local_speaker_list,
         )
     else:
         return False
@@ -548,9 +548,7 @@ def process_action(speaker, action, args, use_local_speaker_list):
 
 # Type for holding action processing functions
 SonosFunction = namedtuple(
-    "SonosFunction",
-    ["processing_function", "soco_function",],
-    rename=False,
+    "SonosFunction", ["processing_function", "soco_function",], rename=False,
 )
 
 # Actions and associated processing functions
@@ -594,7 +592,9 @@ actions = {
     "relative_volume": SonosFunction(relative_volume_actions, "relative_volume"),
     "rel_vol": SonosFunction(relative_volume_actions, "relative_volume"),
     "rv": SonosFunction(relative_volume_actions, "relative_volume"),
-    "group_relative_volume": SonosFunction(relative_volume_actions, "group_relative_volume"),
+    "group_relative_volume": SonosFunction(
+        relative_volume_actions, "group_relative_volume"
+    ),
     "group_rel_vol": SonosFunction(relative_volume_actions, "group_relative_volume"),
     "grv": SonosFunction(relative_volume_actions, "group_relative_volume"),
     "track": SonosFunction(print_info, "get_current_track_info"),
