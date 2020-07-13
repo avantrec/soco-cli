@@ -77,6 +77,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 
 - **`cross_fade`**: Returns the cross fade setting of the speaker, 'on' or 'off'.
 - **`cross_fade <on|off>`**: Sets the cross fade setting of the speaker to 'on' of 'off'.
+- **`delete_playlist <playlist>`**: Delete the Sonos playlist named `<playlist>`.
 - **`favourite <favourite_name>` (or `favorite`, `fav`, `pf`, `play_fav`)**: Plays the Sonos favourite identified by `<favourite_name>`. The name is loosely matched; if `<favourite_name>` is a (case insensitive) substring of a Sonos favourite, it will match. In the case of duplicates, the first match encountered will be used. **Note: this currently works only for certain types of favourite: local library tracks and playlists, radio stations, single Spotify tracks, etc.**
 - **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise.
 - **`line_in <on or line_in_speaker>`**: Switch a speaker to its own Line-In input (`<on>`), **or** the Line-In input of `<line_in_speaker>` (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback.
