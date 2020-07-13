@@ -402,14 +402,14 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     if soco_function == "create_sonos_playlist":
         getattr(speaker, soco_function)(name)
         return True
-    name = name.lower()
     playlists = speaker.get_sonos_playlists()
     # Strict match
     for playlist in playlists:
-        if name == playlist.title.lower():
+        if name == playlist.title:
             getattr(speaker, soco_function)(playlist)
             return True
     # Fuzzy match
+    name = name.lower()
     for playlist in playlists:
         if name in playlist.title.lower():
             getattr(speaker, soco_function)(playlist)
