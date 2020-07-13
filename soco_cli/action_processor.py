@@ -394,7 +394,7 @@ def seek(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-def add_playlist_to_queue(speaker, action, args, soco_function, use_local_speaker_list):
+def playlist_operations(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) != 1:
         parameter_number_error(action, "1")
         return False
@@ -403,12 +403,14 @@ def add_playlist_to_queue(speaker, action, args, soco_function, use_local_speake
     # Strict match
     for playlist in playlists:
         if name == playlist.title.lower():
-            speaker.add_to_queue(playlist)
+            # speaker.add_to_queue(playlist)
+            getattr(speaker, soco_function)(playlist)
             return True
     # Fuzzy match
     for playlist in playlists:
         if name in playlist.title.lower():
-            speaker.add_to_queue(playlist)
+            getattr(speaker, soco_function)(playlist)
+            # speaker.add_to_queue(playlist)
             return True
     error_and_exit("Playlist {} not found".format(args[0]))
     return False
@@ -637,9 +639,9 @@ actions = {
     "save_queue": SonosFunction(save_queue, "create_sonos_playlist_from_queue"),
     "sq": SonosFunction(save_queue, "create_sonos_playlist_from_queue"),
     "queue_length": SonosFunction(no_args_one_output, "queue_size"),
-    "add_playlist_to_queue": SonosFunction(add_playlist_to_queue, "add_to_queue"),
-    "add_pl_to_queue": SonosFunction(add_playlist_to_queue, "add_to_queue"),
-    "apq": SonosFunction(add_playlist_to_queue, "add_to_queue"),
+    "add_playlist_to_queue": SonosFunction(playlist_operations, "add_to_queue"),
+    "add_pl_to_queue": SonosFunction(playlist_operations, "add_to_queue"),
+    "apq": SonosFunction(playlist_operations, "add_to_queue"),
     "pause_all": SonosFunction(operate_on_all, "pause"),
     "seek": SonosFunction(seek, "seek"),
     "line_in": SonosFunction(line_in, ""),
@@ -651,4 +653,5 @@ actions = {
     "groups": SonosFunction(groups, "groups"),
     "pair": SonosFunction(group_or_pair, "create_stereo_pair"),
     "unpair": SonosFunction(no_args_no_output, "separate_stereo_pair"),
+    "delete_playlist": SonosFunction(playlist_operations, "remove_sonos_playlist"),
 }
