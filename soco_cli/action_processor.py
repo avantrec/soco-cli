@@ -654,4 +654,5 @@ actions = {
     "pair": SonosFunction(group_or_pair, "create_stereo_pair"),
     "unpair": SonosFunction(no_args_no_output, "separate_stereo_pair"),
     "delete_playlist": SonosFunction(playlist_operations, "remove_sonos_playlist"),
+    "clear_playlist": SonosFunction(playlist_operations, "clear_sonos_playlist"),
 }
