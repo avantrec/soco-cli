@@ -398,19 +398,21 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     if len(args) != 1:
         parameter_number_error(action, "1")
         return False
-    name = args[0].lower()
+    name = args[0]
+    if soco_function == "create_sonos_playlist":
+        getattr(speaker, soco_function)(name)
+        return True
+    name = name.lower()
     playlists = speaker.get_sonos_playlists()
     # Strict match
     for playlist in playlists:
         if name == playlist.title.lower():
-            # speaker.add_to_queue(playlist)
             getattr(speaker, soco_function)(playlist)
             return True
     # Fuzzy match
     for playlist in playlists:
         if name in playlist.title.lower():
             getattr(speaker, soco_function)(playlist)
-            # speaker.add_to_queue(playlist)
             return True
     error_and_exit("Playlist {} not found".format(args[0]))
     return False
@@ -655,4 +657,5 @@ actions = {
     "unpair": SonosFunction(no_args_no_output, "separate_stereo_pair"),
     "delete_playlist": SonosFunction(playlist_operations, "remove_sonos_playlist"),
     "clear_playlist": SonosFunction(playlist_operations, "clear_sonos_playlist"),
+    "create_playlist": SonosFunction(playlist_operations, "create_sonos_playlist"),
 }

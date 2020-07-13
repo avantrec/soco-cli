@@ -76,6 +76,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 #### Playback Control
 
 - **`clear_playlist <playlist>`**: Clear the Sonos playlist named `<playlist>`.
+- **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`.
 - **`cross_fade`**: Returns the cross fade setting of the speaker, 'on' or 'off'.
 - **`cross_fade <on|off>`**: Sets the cross fade setting of the speaker to 'on' of 'off'.
 - **`delete_playlist <playlist>`**: Delete the Sonos playlist named `<playlist>`.
