@@ -104,10 +104,10 @@ def list_numbered_things(speaker, action, args, soco_function, use_local_speaker
     if len(args) != 0:
         parameter_number_error(action, "no")
         return False
-    if soco_function in ["get_sonos_favorites", "get_favorite_radio_stations"]:
-        things = getattr(speaker.music_library, soco_function)()
+    if soco_function in ["get_sonos_favorites", "get_favorite_radio_stations", "get_albums", "get_artists", "get_tracks"]:
+        things = getattr(speaker.music_library, soco_function)(complete_result=True)
     else:
-        things = getattr(speaker, soco_function)()
+        things = getattr(speaker, soco_function)(complete_result=True)
     things_list = []
     for thing in things:
         things_list.append(thing.title)
@@ -115,7 +115,7 @@ def list_numbered_things(speaker, action, args, soco_function, use_local_speaker
     index = 0
     for thing in things_list:
         index += 1
-        print("{:3d}: {}".format(index, thing))
+        print("{:5d}: {}".format(index, thing))
     return True
 
 
@@ -749,4 +749,7 @@ actions = {
     "play_favourite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
     "play_favorite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
     "pfrs": SonosFunction(play_favourite_radio, "play_uri"),
+    "albums": SonosFunction(list_numbered_things, "get_albums"),
+    "artists": SonosFunction(list_numbered_things, "get_artists"),
+    "tracks": SonosFunction(list_numbered_things, "get_tracks"),
 }

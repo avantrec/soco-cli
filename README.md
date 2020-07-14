@@ -1,6 +1,6 @@
 # Soco CLI: Control Sonos Systems from the Command Line
 
-**Please consider this utility to be experimental at the moment. The code is functional but requires cleanup, and the command line structure and return values are not yet finalised.**
+**Please consider this utility to be experimental at the moment. The command line structure and return values are not yet fully finalised. Feedback welcome.**
 
 ## Overview
 
@@ -9,8 +9,6 @@ Soco CLI is a command line wrapper for the popular Python SoCo library [1] for c
 A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands.
 
 Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, `cron` jobs, etc.
-
-If you experience any issues with finding speakers, please take a look at the [Alternative Discovery](#alternative-discovery) section below. (You may prefer to use this approach anyway, even if normal SoCo discovery works for you.)
 
 ## Supported Environments
 
@@ -32,9 +30,9 @@ sonos SPEAKER ACTION <parameters>
 - `SPEAKER` identifies the speaker, and can be the speaker's Sonos Room name or its IPv4 address in dotted decimal format. Note that the speaker name is case sensitive (unless using alternative discovery, discussed below).
 - `ACTION` is the operation to perform on the speaker. It can take zero or more parameters depending on the operation.
 
-Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0).
+Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code.
 
-If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code.
+If you experience any issues with finding your speakers, or if you have multiple Sonos systems ('Households') on your network, please take a look at the [Alternative Discovery](#alternative-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it offers some advantages.
 
 ### Simple Usage Examples:
 
@@ -45,11 +43,24 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
 - **`sonos Kitchen play_favourite Jazz24 : wait 1800 : Kitchen stop`** Plays 'Jazz24' for 30 minutes (1800 seconds), then stops playback.
 
-### Available Actions
+#### Options
+
+- **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
+
+The following options are for use with the alternative discovery mechanism:
+
+- **`--use-local-speaker-list, -l`**: Use the local speaker list instead of SoCo discovery. The speaker list will first be created and saved if it doesn't already exist.
+- **`--refresh-local-speaker-list, -l`**: In conjunction with the `-l` option, the speaker list will be regenerated and saved.
+- **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 3.0s.
+
+Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list.
+
+### Actions
 
 #### Volume and EQ Control
 
-- **`balance`**: Returns the balance setting of the speaker as a pair of values (L, R) where each of L and R is between 0 and 100.
+- **`balance`**: Returns the balance setting of the speaker as a value between -100 and +100, where -100 is left channel only, 0 is left and right set to the same volume, and +100 is right channel only.
 - **`balance <balance_setting>`**: Sets the balance of the speaker to a value between -100 and +100, where -100 is left channel only, 0 is left and right set to the same volume, and +100 is right channel only. Intermediate values produce a mix of right/left channels.
 - **`bass`**: Returns the bass setting of the speaker, from -10 to 10.
 - **`bass <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.
@@ -110,11 +121,11 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`clear_playlist <playlist>`**: Clear the Sonos playlist named `<playlist>`.
 - **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`.
 - **`delete_playlist <playlist>`** (or **`remove_playlist`**): Delete the Sonos playlist named `<playlist>`.
-- **`favourite <favourite_name>` (or `favorite`, `fav`, `pf`, `play_fav`)**: Plays the Sonos favourite identified by `<favourite_name>`. The name is loosely matched; if `<favourite_name>` is a (case insensitive) substring of a Sonos favourite, it will match. In the case of duplicates, the first match encountered will be used. If a queueable item, the favourite will be added to the end of the current queue and played. **Note: this currently works only for certain types of favourite: local library tracks and playlists, radio stations, single Spotify tracks, etc.**
 - **`favourite_radio_stations`** (or **`favorite_radio_stations`**): List the favourite radio stations.
 - **`list_favs`** (or **`list_favorites`, `list_favourites`, `lf`**): Lists all Sonos favourites.
 - **`list_playlists`** (or **`playlists`, `lp`**): Lists the Sonos playlists.
-- **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station.
+- **`play_favourite <favourite_name>` (or `play_favorite`, `favourite`, `favorite`, `fav`, `pf`, `play_fav`)**: Plays the Sonos favourite identified by `<favourite_name>`. The name is loosely matched; if `<favourite_name>` is a (case insensitive) substring of a Sonos favourite, it will match. In the case of duplicates, the first match encountered will be used. If a queueable item, the favourite will be added to the end of the current queue and played. **Note: this currently works only for certain types of favourite: local library tracks and playlists, radio stations, single Spotify tracks, etc.**
+- **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station. Note that this action doesn't work well: it's better to add radio stations as normal Sonos favourites, and play them using `favourite`.
 - **`remove_from_playlist <playlist_name> <track_number>`** (or **`rfp`**): Remove a track from a Sonos playlist.
 
 #### Grouping and Stereo Pairing
@@ -136,17 +147,13 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Returns the room names (and associated IP addresses) that are visible in the Sonos controller apps. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
 - **`version`**: Report the versions of soco-cli and soco. (A speaker name must be provided, but doesn't need to be a valid name.)
 
-#### Flags
+## Multiple Sequential Commands
 
-- **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
+Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. The `:` separator must be surrounded by spaces.
 
-## Multiple Commands
+A `wait <seconds>` (or `w`, `sleep`) primitive is available that simply waits for the specified number of seconds before moving on to the next command. This is useful when, for example, one wants to play audio for a specific period of time, or maintain a speaker grouping for a specific period, etc.
 
-Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. These will be executed in order. The `:` separator must be surrounded by spaces.
-
-When using multiple commands, a new `wait <seconds>` (or `w`, `sleep`) primitive is available that simply waits for the specified number of seconds before moving on to the next command. This is useful for instances where one wants to play audio for a specific period of time, or maintain a speaker grouping for a specific period, etc.
-
-An arbitrary number of commands can be supplied as part of a single `sonos` invoctaion. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
+An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
 
 Examples:
 
@@ -155,9 +162,19 @@ Examples:
 
 ## Alternative Discovery
 
-Sonos CLI depends on the speaker discovery mechanisms in SoCo (unless one knows and uses the speaker IP addresses directly). This should work for most people, but there are issues (related to multicast forwarding) on some networks that can prevent Soco from finding speakers. There is also an issue if there is more than one Sonos system ('Household') on the same network, as would be the case if there is a 'split' S1/S2 Sonos system: SoCo discovery will pick one of the systems, and your required speaker may not be in that system.
+Sonos CLI depends on the speaker discovery mechanisms in SoCo, which uses mDNS multicast to discover Sonos devices when they are referenced by speaker name.
 
-To overcome these issues, Soco CLI provides an alternative discovery mechanism that scans the network for Sonos devices without depending on multicast, and which works with multiple Sonos systems on the same network. This mechanism scans your local network(s) for Sonos devices and caches the results for use in subsequent invocations of the `sonos` command. These will execute immediately, without the discovery delay.
+Sonos CLI also provides an alternative discovery process, which works by scanning the network(s) to which your device is attached, and generating and saving a list of Sonos speaker names and other information.
+
+There are three reasons why you might want to use this alternative mechanism:
+
+1. On some networks, particularly on WiFi, multicast forwarding does not work properly. This prevents normal SoCo speaker discovery.
+
+2. If you have two Sonos systems on the same network, for example when there is a 'split' S1/S2 system, normal SoCo discovery will find only one of the systems, which may not include the speaker you want to control. In this case, discovery will fail.
+
+3. It's often faster and more convenient to use the local cached speaker list. For example, speaker name matches can be case insensitive and can match on substrings.
+
+It should be noted that it's always possible to avoid any kind of discovery step by using a speaker's IP address directly.
 
 ### Usage
 
@@ -180,7 +197,7 @@ If your speakers change in some way (e.g., they are renamed, are assigned differ
 The following flags can be used to adjust network discovery behaviour if the discovery process is failing:
 
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 3.0s.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 10.0s.
 
 These options only have an effect when combined with the `-l` **and** `-r` options.
 
@@ -198,11 +215,11 @@ Without options, `sonos-discover` will execute the discovery process and complet
 
 Other options:
 
-- **`--print, -p`**: Prints the results of a discovery, including the networks that were searched.
-- **`--show-local-speaker-cache, -s`**: Read and print the current contents of the speaker cache file.
+- **`--print, -p`**: Print the results after discovery, including the networks that were searched.
+- **`--show-local-speaker-cache, -s`**: Read and print the current contents of the speaker cache file, then exit.
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache file.
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 3.0s; increase this if sonos-discover is not finding all of your Sonos devices.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 10.0s; increase this if sonos-discover is not finding all of your Sonos devices.
 
 ## Resources
 

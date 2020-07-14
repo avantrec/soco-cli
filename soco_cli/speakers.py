@@ -26,7 +26,7 @@ class Speakers:
         save_directory=None,
         save_file=None,
         network_threads=128,
-        network_timeout=3.0,
+        network_timeout=10.0,
     ):
         self._save_directory = (
             save_directory
