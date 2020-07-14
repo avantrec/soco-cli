@@ -104,7 +104,13 @@ def list_numbered_things(speaker, action, args, soco_function, use_local_speaker
     if len(args) != 0:
         parameter_number_error(action, "no")
         return False
-    if soco_function in ["get_sonos_favorites", "get_favorite_radio_stations", "get_albums", "get_artists", "get_tracks"]:
+    if soco_function in [
+        "get_sonos_favorites",
+        "get_favorite_radio_stations",
+        "get_albums",
+        "get_artists",
+        "get_tracks",
+    ]:
         things = getattr(speaker.music_library, soco_function)(complete_result=True)
     else:
         things = getattr(speaker, soco_function)(complete_result=True)
@@ -742,10 +748,16 @@ actions = {
     "create_playlist": SonosFunction(playlist_operations, "create_sonos_playlist"),
     "add_uri_to_queue": SonosFunction(playlist_operations, "add_uri_to_queue"),
     "auq": SonosFunction(playlist_operations, "add_uri_to_queue"),
-    "remove_from_playlist": SonosFunction(remove_from_playlist, "remove_from_sonos_playlist"),
+    "remove_from_playlist": SonosFunction(
+        remove_from_playlist, "remove_from_sonos_playlist"
+    ),
     "rfp": SonosFunction(remove_from_playlist, "remove_from_sonos_playlist"),
-    "favorite_radio_stations": SonosFunction(list_numbered_things, "get_favorite_radio_stations"),
-    "favourite_radio_stations": SonosFunction(list_numbered_things, "get_favorite_radio_stations"),
+    "favorite_radio_stations": SonosFunction(
+        list_numbered_things, "get_favorite_radio_stations"
+    ),
+    "favourite_radio_stations": SonosFunction(
+        list_numbered_things, "get_favorite_radio_stations"
+    ),
     "play_favourite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
     "play_favorite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
     "pfrs": SonosFunction(play_favourite_radio, "play_uri"),

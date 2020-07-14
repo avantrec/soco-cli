@@ -137,7 +137,7 @@ def main():
                 error_and_exit("Speaker '{}' not found".format(speaker_name))
             if not ap.process_action(speaker, action, args, use_local_speaker_list):
                 error_and_exit(
-                    "Action '{}' not found. Available actions are: \n\n {}".format(
+                    "Action '{}' not found. \n\nAvailable actions are: {} and 'wait'.\n".format(
                         action, list(ap.actions.keys())
                     )
                 )

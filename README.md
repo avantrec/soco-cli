@@ -1,4 +1,4 @@
-# Soco CLI: Control Sonos Systems from the Command Line
+# SoCo CLI: Control Sonos Systems from the Command Line
 
 **Please consider this utility to be experimental at the moment. The command line structure and return values are not yet fully finalised. Feedback welcome.**
 
@@ -52,7 +52,7 @@ The following options are for use with the alternative discovery mechanism:
 - **`--use-local-speaker-list, -l`**: Use the local speaker list instead of SoCo discovery. The speaker list will first be created and saved if it doesn't already exist.
 - **`--refresh-local-speaker-list, -l`**: In conjunction with the `-l` option, the speaker list will be regenerated and saved.
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 3.0s.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 10.0s.
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list.
 
@@ -151,7 +151,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. The `:` separator must be surrounded by spaces.
 
-A `wait <seconds>` (or `w`, `sleep`) primitive is available that simply waits for the specified number of seconds before moving on to the next command. This is useful when, for example, one wants to play audio for a specific period of time, or maintain a speaker grouping for a specific period, etc.
+A `wait <seconds>` (or `w`, `sleep`) primitive is available that waits for the specified number of seconds before moving on to the next command. This is useful when, for example, one wants to play audio for a specific period of time, or maintain a speaker grouping for a specific period, etc.
 
 An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
 
