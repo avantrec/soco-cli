@@ -32,8 +32,6 @@ sonos SPEAKER ACTION <parameters>
 
 Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code.
 
-If you experience any issues with finding your speakers, or if you have multiple Sonos systems ('Households') on your network, please take a look at the [Alternative Discovery](#alternative-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it offers some advantages.
-
 ### Simple Usage Examples:
 
 - **`sonos "Living Room" volume`** Returns the current volume setting of the *Living Room* speaker.
