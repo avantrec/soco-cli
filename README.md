@@ -79,7 +79,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`.
 - **`cross_fade`**: Returns the cross fade setting of the speaker, 'on' or 'off'.
 - **`cross_fade <on|off>`**: Sets the cross fade setting of the speaker to 'on' of 'off'.
-- **`delete_playlist <playlist>`**: Delete the Sonos playlist named `<playlist>`.
+- **`delete_playlist <playlist>`** (or **`remove_playlist`**): Delete the Sonos playlist named `<playlist>`.
 - **`favourite <favourite_name>` (or `favorite`, `fav`, `pf`, `play_fav`)**: Plays the Sonos favourite identified by `<favourite_name>`. The name is loosely matched; if `<favourite_name>` is a (case insensitive) substring of a Sonos favourite, it will match. In the case of duplicates, the first match encountered will be used. If a queueable item, the favourite will be added to the end of the current queue and played. **Note: this currently works only for certain types of favourite: local library tracks and playlists, radio stations, single Spotify tracks, etc.**
 - **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise.
 - **`line_in <on or line_in_speaker>`**: Switch a speaker to its own Line-In input (`<on>`), **or** the Line-In input of `<line_in_speaker>` (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback.
@@ -95,6 +95,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
 - **`play_uri <uri> <title>` (or `uri`, `pu`)**: Plays the audio object given by the `<uri>` parameter (e.g., a radio stream URL). `<title>` is optional, and if present will be used for the title of the audio stream.
 - **`previous` (or `prev`)**: Move to the previous track (if applicable for the audio source).
+- **`remove_from_playlist <playlist_name> <track_number>`** (or **`rfp`**): Remove a track from a Sonos playlist.
 - **`seek <HH:MM:SS>`**: Seek to a point within a track (if applicable for the audio source).
 - **`sleep_timer` (or `sleep`)**: Returns the current sleep timer remaining time in seconds; 0 if no sleep timer is active.
 - **`sleep_timer <seconds>` (or `sleep`)**: Set the sleep timer to `<seconds>` seconds.

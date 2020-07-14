@@ -403,6 +403,9 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     if soco_function == "create_sonos_playlist":
         getattr(speaker, soco_function)(name)
         return True
+    if soco_function == "add_uri_to_queue":
+        getattr(speaker, soco_function)(name)
+        return True
     playlists = speaker.get_sonos_playlists()
     # Strict match
     for playlist in playlists:
@@ -414,6 +417,32 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     for playlist in playlists:
         if name in playlist.title.lower():
             getattr(speaker, soco_function)(playlist)
+            return True
+    error_and_exit("Playlist {} not found".format(args[0]))
+    return False
+
+
+def remove_from_playlist(speaker, action, args, soco_function, use_local_speaker_list):
+    if len(args) != 2:
+        parameter_number_error(action, "2")
+        return False
+    name = args[0]
+    try:
+        track_number = int(args[1])
+    except:
+        parameter_type_error(action, "integer (track number)")
+        return False
+    playlists = speaker.get_sonos_playlists()
+    # Strict match
+    for playlist in playlists:
+        if name == playlist.title:
+            getattr(speaker, soco_function)(playlist, track_number - 1)
+            return True
+    # Fuzzy match
+    name = name.lower()
+    for playlist in playlists:
+        if name in playlist.title.lower():
+            getattr(speaker, soco_function)(playlist, track_number - 1)
             return True
     error_and_exit("Playlist {} not found".format(args[0]))
     return False
@@ -664,6 +693,11 @@ actions = {
     "pair": SonosFunction(group_or_pair, "create_stereo_pair"),
     "unpair": SonosFunction(no_args_no_output, "separate_stereo_pair"),
     "delete_playlist": SonosFunction(playlist_operations, "remove_sonos_playlist"),
+    "remove_playlist": SonosFunction(playlist_operations, "remove_sonos_playlist"),
     "clear_playlist": SonosFunction(playlist_operations, "clear_sonos_playlist"),
     "create_playlist": SonosFunction(playlist_operations, "create_sonos_playlist"),
+    "add_uri_to_queue": SonosFunction(playlist_operations, "add_uri_to_queue"),
+    "auq": SonosFunction(playlist_operations, "add_uri_to_queue"),
+    "remove_from_playlist": SonosFunction(remove_from_playlist, "remove_from_sonos_playlist"),
+    "rfp": SonosFunction(remove_from_playlist, "remove_from_sonos_playlist"),
 }
