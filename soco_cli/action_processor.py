@@ -477,8 +477,12 @@ def balance(speaker, action, args, soco_function, use_local_speaker_list):
             parameter_type_error(action, "integer from -100 to 100")
             return False
         if -100 <= setting <= 100:
-            left = max(0, min(0 - setting, 100))
-            right = max(0, min(setting, 100))
+            if setting >= 0:
+                left = 100 - setting
+                right = 100
+            elif setting < 0:
+                left = 100
+                right = 100 + setting
             setattr(speaker, soco_function, (left, right))
         else:
             parameter_type_error(action, "integer from -100 to 100")
