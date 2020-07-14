@@ -114,6 +114,7 @@ If an error is encountered, an error message will be printed to `stderr`, and th
 - **`favourite_radio_stations`** (or **`favorite_radio_stations`**): List the favourite radio stations.
 - **`list_favs`** (or **`list_favorites`, `list_favourites`, `lf`**): Lists all Sonos favourites.
 - **`list_playlists`** (or **`playlists`, `lp`**): Lists the Sonos playlists.
+- **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station.
 - **`remove_from_playlist <playlist_name> <track_number>`** (or **`rfp`**): Remove a track from a Sonos playlist.
 
 #### Grouping and Stereo Pairing

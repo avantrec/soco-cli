@@ -258,6 +258,48 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
     return False
 
 
+def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker_list):
+    if len(args) != 1:
+        parameter_number_error(action, "1")
+        return False
+    favourite = args[0]
+    fs = speaker.music_library.get_favorite_radio_stations()
+    the_fav = None
+    # Strict match
+    for f in fs:
+        if favourite == f.title:
+            the_fav = f
+            break
+    # Fuzzy match
+    favourite = favourite.lower()
+    if not the_fav:
+        for f in fs:
+            if favourite in f.title.lower():
+                the_fav = f
+                break
+    if the_fav:
+        # play_uri works for some favourites
+        try:
+            uri = the_fav.get_uri()
+            metadata = the_fav.resource_meta_data
+            speaker.play_uri(uri=uri, meta=metadata)
+            return True
+        except Exception as e:
+            e1 = e
+            pass
+        # Other favourites will be added to the queue, then played
+        try:
+            # Add to the end of the current queue and play
+            index = speaker.add_to_queue(the_fav, as_next=True)
+            speaker.play_from_queue(index, start=True)
+            return True
+        except Exception as e2:
+            error_and_exit("1: {} | 2:{}".format(str(e1), str(e2)))
+            return False
+    error_and_exit("Favourite '{}' not found".format(args[0]))
+    return False
+
+
 def play_uri(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if np not in [1, 2]:
@@ -704,4 +746,7 @@ actions = {
     "rfp": SonosFunction(remove_from_playlist, "remove_from_sonos_playlist"),
     "favorite_radio_stations": SonosFunction(list_numbered_things, "get_favorite_radio_stations"),
     "favourite_radio_stations": SonosFunction(list_numbered_things, "get_favorite_radio_stations"),
+    "play_favourite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
+    "play_favorite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
+    "pfrs": SonosFunction(play_favourite_radio, "play_uri"),
 }
