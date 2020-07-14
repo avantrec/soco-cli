@@ -39,7 +39,7 @@ Actions that make changes to speakers do not generally provide return values. In
 - **`sonos Study group Kitchen`** Groups the *Study* speaker with the *Kitchen* speaker.
 - **`sonos 192.168.0.10 mute`** Returns the mute state ('on' or 'off') of the speaker at the given IP address.
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
-- **`sonos Kitchen play_favourite Jazz24 : wait 1800 : Kitchen stop`** Plays 'Jazz24' for 30 minutes (1800 seconds), then stops playback.
+- **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`** Plays 'Jazz24' for 30 minutes, then stops playback.
 
 Please see [https://github.com/avantrec/soco-cli](https://github.com/avantrec/soco-cli) for full documentation.
 
