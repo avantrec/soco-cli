@@ -6,6 +6,7 @@ import soco
 import ifaddr
 import threading
 import pprint
+import tabulate
 from collections import namedtuple
 
 # Type for holding speaker details
@@ -278,15 +279,17 @@ class Speakers:
             )
             num_devices += 1
 
-        print()
         if self._networks:
-            print("Networks searched: {}".format(self._networks))
             print()
-        print("{} Sonos Household(s) found: ".format(len(households)))
+            print("Networks searched: {}".format(self._networks))
+
+        headers = ["Speaker Name", "IP Address", "Speaker Model", "Visible?"]
         for household in households:
-            print("  {}".format(household))
-        print()
+            print()
+            print("Sonos Household: {}\n".format(household))
+            print(tabulate.tabulate(sorted(households[household]), headers))
+            print()
+
+        print("{} Sonos Household(s) found: ".format(len(households)))
         print("{} Sonos devices found".format(num_devices))
         print()
-        pp = pprint.PrettyPrinter(width=100)
-        pp.pprint(households)
