@@ -104,7 +104,7 @@ def list_numbered_things(speaker, action, args, soco_function, use_local_speaker
     if len(args) != 0:
         parameter_number_error(action, "no")
         return False
-    if soco_function == "get_sonos_favorites":
+    if soco_function in ["get_sonos_favorites", "get_favorite_radio_stations"]:
         things = getattr(speaker.music_library, soco_function)()
     else:
         things = getattr(speaker, soco_function)()
@@ -700,4 +700,6 @@ actions = {
     "auq": SonosFunction(playlist_operations, "add_uri_to_queue"),
     "remove_from_playlist": SonosFunction(remove_from_playlist, "remove_from_sonos_playlist"),
     "rfp": SonosFunction(remove_from_playlist, "remove_from_sonos_playlist"),
+    "favorite_radio_stations": SonosFunction(list_numbered_things, "get_favorite_radio_stations"),
+    "favourite_radio_stations": SonosFunction(list_numbered_things, "get_favorite_radio_stations"),
 }
