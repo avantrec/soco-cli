@@ -554,6 +554,8 @@ def info(speaker, action, args, soco_function, use_local_speaker_list):
         info["night_mode"] = speaker.night_mode
         info["is_soundbar"] = speaker.is_soundbar
         info["is_playing_line_in"] = speaker.is_playing_line_in
+        info["is_playing_radio"] = speaker.is_playing_radio
+        info["is_playing_tv"] = speaker.is_playing_tv
         info["is_visible"] = speaker.is_visible
     for item in sorted(info):
         print("  {} = {}".format(item, info[item]))
