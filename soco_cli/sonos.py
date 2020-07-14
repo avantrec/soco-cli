@@ -127,9 +127,22 @@ def main():
             speaker_name = sequence[0]
             action = sequence[1].lower()
             # Special case of a "wait" command
-            # Assume there aren't any speakers called any of these.
-            if speaker_name in ["wait", "w", "sleep"]:
-                time.sleep(int(action))
+            # Assume there aren't any speakers called 'wait':
+            if speaker_name in ["wait"]:
+                try:
+                    if action.endswith("s"):  # Seconds (explicit)
+                        duration = float(action[:-1])
+                    elif action.endswith("m"):  # Minutes not seconds
+                        duration = float(action[:-1]) * 60
+                    elif action.endswith("h"):  # Hours not seconds
+                        duration = float(action[:-1]) * 60 * 60
+                    else:
+                        duration = float(action)
+                    time.sleep(duration)
+                except:
+                    error_and_exit(
+                        "'wait' requires integer number of seconds, or float number of minutes + 'm'"
+                    )
                 continue
             args = sequence[2:]
             speaker = get_speaker(speaker_name, use_local_speaker_list)

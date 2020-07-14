@@ -30,7 +30,7 @@ sonos SPEAKER ACTION <parameters>
 - `SPEAKER` identifies the speaker, and can be the speaker's Sonos Room name or its IPv4 address in dotted decimal format. Note that the speaker name is case sensitive (unless using alternative discovery, discussed below).
 - `ACTION` is the operation to perform on the speaker. It can take zero or more parameters depending on the operation.
 
-Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code.
+Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without any user confirmation required; please bear this in mind when manipulating the queue, etc.
 
 If you experience any issues with finding your speakers, or if you have multiple Sonos systems ('Households') on your network, please take a look at the [Alternative Discovery](#alternative-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it offers some advantages.
 
@@ -149,16 +149,19 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 ## Multiple Sequential Commands
 
-Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. The `:` separator must be surrounded by spaces.
+Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. **The `:` separator must be surrounded by spaces** to disambiguate from other uses of `:` in sonos actions.
 
-A `wait <seconds>` (or `w`, `sleep`) primitive is available that waits for the specified number of seconds before moving on to the next command. This is useful when, for example, one wants to play audio for a specific period of time, or maintain a speaker grouping for a specific period, etc.
+A **`wait <duration>`** action is available that waits for the specified duration before moving on to the next command. No speaker name is required. This action is useful when, for example, one wants to play audio for a specific period of time, or maintain a speaker grouping for a specific period then ungroup, etc.
+
+`<duration>` can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed.
 
 An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
 
 Examples:
 
-- **`sonos Bedroom group Study : Study group_volume 50 : Study play : wait 600 : Study stop : Study ungroup`**
-- **`sonos Kitchen play_favourite Jazz24 : wait 1800 : Kitchen stop`**
+- **`sonos Bedroom group Study : Study group_volume 50 : Study play : wait 10m : Study stop : Study ungroup`**
+- **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`**
+- **`sonos Bedroom volume 0 : Bedroom play_favourite "Radio 4" : Bedroom ramp 40 : wait 1h : Bedroom ramp 0 : Bedroom stop`**
 
 ## Alternative Discovery
 
