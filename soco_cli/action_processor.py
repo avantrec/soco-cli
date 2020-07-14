@@ -220,15 +220,16 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
     if len(args) != 1:
         parameter_number_error(action, "1")
         return False
-    favourite = args[0].lower()
+    favourite = args[0]
     fs = speaker.music_library.get_sonos_favorites()
     the_fav = None
-    # Strict match (case insensitive)
+    # Strict match
     for f in fs:
-        if favourite == f.title.lower():
+        if favourite == f.title:
             the_fav = f
             break
-    # Loose substring match if strict match not available
+    # Fuzzy match
+    favourite = favourite.lower()
     if not the_fav:
         for f in fs:
             if favourite in f.title.lower():
@@ -246,7 +247,7 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
             pass
         # Other favourites have to be added to the queue, then played
         try:
-            # speaker.clear_queue()
+            # Add to the end of the current queue and play
             index = speaker.add_to_queue(the_fav)
             speaker.play_from_queue(index, start=True)
             return True
