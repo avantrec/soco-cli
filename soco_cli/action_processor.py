@@ -241,20 +241,20 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
             uri = the_fav.get_uri()
             metadata = the_fav.resource_meta_data
             speaker.play_uri(uri=uri, meta=metadata)
-            return True  # Success
+            return True
         except Exception as e:
             e1 = e
             pass
-        # Other favourites have to be added to the queue, then played
+        # Other favourites will be added to the queue, then played
         try:
             # Add to the end of the current queue and play
-            index = speaker.add_to_queue(the_fav)
+            index = speaker.add_to_queue(the_fav, as_next=True)
             speaker.play_from_queue(index, start=True)
             return True
         except Exception as e2:
-            error_and_exit("{}, {}".format(str(e1), str(e2)))
+            error_and_exit("1: {} | 2:{}".format(str(e1), str(e2)))
             return False
-    error_and_exit("Favourite '{}' not found".format(favourite))
+    error_and_exit("Favourite '{}' not found".format(args[0]))
     return False
 
 
@@ -368,7 +368,7 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
         return False
     qs = speaker.queue_size
     if 1 <= index <= qs:
-        speaker.play_from_queue(index - 1)
+        speaker.remove_from_queue(index - 1)
     else:
         error_and_exit("Queue index should be between 1 and {}".format(qs))
         return False
@@ -607,6 +607,8 @@ actions = {
     "playback_state": SonosFunction(transport_state, "get_current_transport_info"),
     "playback": SonosFunction(transport_state, "get_current_transport_info"),
     "state": SonosFunction(transport_state, "get_current_transport_info"),
+    "play_favourite": SonosFunction(play_favourite, "play_favorite"),
+    "play_favorite": SonosFunction(play_favourite, "play_favorite"),
     "favourite": SonosFunction(play_favourite, "play_favorite"),
     "favorite": SonosFunction(play_favourite, "play_favorite"),
     "play_fav": SonosFunction(play_favourite, "play_favorite"),
