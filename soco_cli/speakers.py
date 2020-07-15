@@ -12,7 +12,14 @@ from collections import namedtuple
 # Type for holding speaker details
 SonosDevice = namedtuple(
     "SonosDevice",
-    ["household_id", "ip_address", "speaker_name", "is_visible", "model_name",],
+    [
+        "household_id",
+        "ip_address",
+        "speaker_name",
+        "is_visible",
+        "model_name",
+        "display_version",
+    ],
     rename=False,
 )
 
@@ -182,6 +189,7 @@ class Speakers:
                 info["zone_name"],
                 speaker.is_visible,
                 info["model_name"],
+                info["display_version"],
             )
         except Exception as e:
             # Probably not a Sonos device
@@ -275,6 +283,7 @@ class Speakers:
                     device.ip_address,
                     device.model_name.replace("Sonos ", ""),
                     visible,
+                    device.display_version,
                 )
             )
             num_devices += 1
@@ -283,13 +292,19 @@ class Speakers:
             print()
             print("Networks searched: {}".format(self._networks))
 
-        headers = ["Speaker Name", "IP Address", "Speaker Model", "Visible?"]
+        headers = [
+            "Room/Zone Name",
+            "IP Address",
+            "Device Model",
+            "Visibility",
+            "SW Vers.",
+        ]
         for household in households:
             print()
             print("Sonos Household: {}\n".format(household))
             print(tabulate.tabulate(sorted(households[household]), headers))
             print()
 
-        print("{} Sonos Household(s) found: ".format(len(households)))
+        print("{} Sonos Household(s) found".format(len(households)))
         print("{} Sonos devices found".format(num_devices))
         print()

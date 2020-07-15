@@ -32,6 +32,11 @@ def get_speaker(name, local=False):
         return soco.discovery.by_name(name)
 
 
+def version():
+    print("soco-cli version: {}".format(__version__))
+    print("soco version:     {}".format(soco.__version__))
+
+
 def main():
     # Create the argument parser
     parser = argparse.ArgumentParser(
@@ -84,8 +89,7 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        print("soco-cli version: {}".format(__version__))
-        print("soco version:     {}".format(soco.__version__))
+        version()
         exit(0)
 
     use_local_speaker_list = args.use_local_speaker_list

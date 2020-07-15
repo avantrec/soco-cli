@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 from . import speakers
+from . import sonos
 
 
 def error_and_exit(msg):
@@ -53,9 +54,20 @@ def main():
         default=False,
         help="Show contents of the local speaker cache",
     )
+    parser.add_argument(
+        "--version",
+        "-v",
+        action="store_true",
+        default=False,
+        help="Show the soco-cli and SoCo version, and exit.",
+    )
 
     # Parse the command line
     args = parser.parse_args()
+
+    if args.version:
+        sonos.version()
+        exit(0)
 
     speaker_list = speakers.Speakers()
 

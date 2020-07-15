@@ -223,6 +223,7 @@ Other options:
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache file.
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 10.0s; increase this if sonos-discover is not finding all of your Sonos devices.
+- **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
 
 ## Resources
 
