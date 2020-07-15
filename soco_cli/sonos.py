@@ -146,11 +146,11 @@ def main():
                 try:
                     if action.endswith("s"):  # Seconds (explicit)
                         duration = float(action[:-1])
-                    elif action.endswith("m"):  # Minutes not seconds
+                    elif action.endswith("m"):  # Minutes
                         duration = float(action[:-1]) * 60
-                    elif action.endswith("h"):  # Hours not seconds
+                    elif action.endswith("h"):  # Hours
                         duration = float(action[:-1]) * 60 * 60
-                    else:
+                    else:  # Seconds (default)
                         duration = float(action)
                 except:
                     error_and_exit(

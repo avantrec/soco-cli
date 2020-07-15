@@ -41,11 +41,20 @@ class Speakers:
             if save_directory
             else os.path.expanduser("~") + "/.soco-cli/"
         )
-        self._save_file = save_file if save_file else "speakers.pickle"
+        self._save_file = save_file if save_file else "speakers_v2.pickle"
+        self.remove_deprecated_pickle_files()
         self._network_threads = network_threads
         self._network_timeout = network_timeout
         self._speakers = []
         self._networks = []
+
+    def remove_deprecated_pickle_files(self):
+        """Remove any older, incompatible versions of the pickle file"""
+        for old_file in ["speakers.pickle"]:
+            pathname = self._save_directory + old_file
+            if os.path.exists(pathname):
+                # print("Removing deprecated local speaker file:", pathname)
+                os.remove(pathname)
 
     @property
     def speaker_cache_loaded(self):
