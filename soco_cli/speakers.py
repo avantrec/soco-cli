@@ -302,7 +302,11 @@ class Speakers:
         for household in households:
             print()
             print("Sonos Household: {}\n".format(household))
-            print(tabulate.tabulate(sorted(households[household]), headers))
+            print(
+                tabulate.tabulate(
+                    sorted(households[household]), headers, numalign="left"
+                )
+            )
             print()
 
         print("{} Sonos Household(s) found".format(len(households)))

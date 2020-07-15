@@ -142,6 +142,7 @@ def main():
             # Special case of a "wait" command
             # Assume there aren't any speakers called 'wait':
             if speaker_name in ["wait"]:
+                duration = 0
                 try:
                     if action.endswith("s"):  # Seconds (explicit)
                         duration = float(action[:-1])
@@ -155,7 +156,6 @@ def main():
                     error_and_exit(
                         "'wait' requires integer number of seconds, or float number of minutes + 'm'"
                     )
-                    continue
                 time.sleep(duration)
                 continue
             args = sequence[2:]
