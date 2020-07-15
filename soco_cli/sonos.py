@@ -3,6 +3,7 @@ import soco
 import argparse
 import os
 import sys
+from signal import signal, SIGINT
 import pprint
 import time
 
@@ -22,6 +23,11 @@ def error_and_exit(msg):
     os._exit(1)
 
 
+def handler(signal_received, frame):
+    # Exit silently without stack dump
+    exit(0)
+
+
 def get_speaker(name, local=False):
     # Allow the use of an IP address even if 'local' is specified
     if speakers.Speakers.is_ipv4_address(name):
@@ -38,6 +44,9 @@ def version():
 
 
 def main():
+    # Handle SIGINT
+    signal(SIGINT, handler)
+
     # Create the argument parser
     parser = argparse.ArgumentParser(
         prog="sonos",
@@ -142,11 +151,12 @@ def main():
                         duration = float(action[:-1]) * 60 * 60
                     else:
                         duration = float(action)
-                    time.sleep(duration)
                 except:
                     error_and_exit(
                         "'wait' requires integer number of seconds, or float number of minutes + 'm'"
                     )
+                    continue
+                time.sleep(duration)
                 continue
             args = sequence[2:]
             speaker = get_speaker(speaker_name, use_local_speaker_list)
