@@ -639,7 +639,8 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
         parameter_number_error(action, "no")
         return False
     alarms = soco.alarms.get_alarms(speaker)
-    print(alarms)
+    if not alarms:
+        return True
     details = []
     for alarm in alarms:
         didl = alarm.program_metadata
