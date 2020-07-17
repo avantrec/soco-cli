@@ -139,6 +139,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 #### Speaker and Sonos System Information
 
+- **`alarms`**: List the alarms in the Sonos system.
 - **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
 - **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
 - **`reindex`**: Start a reindex of the local music libraries.

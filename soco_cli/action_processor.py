@@ -1,7 +1,9 @@
 import os
 import sys
 import soco
+import soco.alarms
 import pprint
+import tabulate
 from collections import namedtuple
 
 from . import sonos
@@ -25,6 +27,13 @@ def parameter_type_error(action, required_params):
 def parameter_number_error(action, parameter_number):
     msg = "Action '{}' takes {} parameter(s)".format(action, parameter_number)
     error_and_exit(msg)
+
+
+def convert_true_false(true_or_false, conversion="YesOrNo"):
+    if conversion == "YesOrNo":
+        return "Yes" if true_or_false is True else "No"
+    if conversion == "onoroff":
+        return "on" if true_or_false is True else "off"
 
 
 # Action processing functions
@@ -625,6 +634,55 @@ def groups(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
+    if len(args) != 0:
+        parameter_number_error(action, "no")
+        return False
+    alarms = soco.alarms.get_alarms(speaker)
+    print(alarms)
+    details = []
+    for alarm in alarms:
+        didl = alarm.program_metadata
+        title_start = didl.find("<dc:title>")
+        if title_start >= 0:
+            title_start += len("<dc:title>")
+            title_end = didl.find("</dc:title>")
+            title = didl[title_start:title_end]
+        else:
+            title = "Unknown"
+        time = alarm.start_time.strftime("%H:%M")
+        if alarm.duration:
+            duration = alarm.duration.strftime("%H:%M")
+        else:
+            duration = "No Limit"
+        details.append(
+            [
+                alarm.zone.player_name,
+                time,
+                duration,
+                title,
+                alarm.volume,
+                convert_true_false(alarm.enabled),
+                alarm.play_mode,
+                alarm.recurrence,
+                convert_true_false(alarm.include_linked_zones),
+            ]
+        )
+    headers = [
+        "Speaker",
+        "Start Time",
+        "Duration",
+        "Title",
+        "Volume",
+        "Enabled",
+        "Play Mode",
+        "Recurrence",
+        "Include Grouped",
+    ]
+    print(tabulate.tabulate(sorted(details), headers))
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -764,4 +822,5 @@ actions = {
     "albums": SonosFunction(list_numbered_things, "get_albums"),
     "artists": SonosFunction(list_numbered_things, "get_artists"),
     "tracks": SonosFunction(list_numbered_things, "get_tracks"),
+    "alarms": SonosFunction(list_alarms, "get_alarms"),
 }

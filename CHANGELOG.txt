@@ -2,4 +2,5 @@ v0.1.13 - Change to local speaker list file contents. Old speaker data files
           will be removed and rediscovery will be required.
         - Simple SIGINT handling added.
         - Added '-v' option to sonos-discover
-        - 'sonos-discover -s' prints Sonos software version
+        - 'sonos-discover -s' prints Sonos software version of each speaker
+        - Add 'alarms' action to list Sonos alarms
