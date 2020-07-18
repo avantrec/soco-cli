@@ -7,6 +7,7 @@ import tabulate
 from collections import namedtuple
 
 from . import sonos
+from . import speaker_info
 
 pp = pprint.PrettyPrinter(width=120)
 
@@ -696,6 +697,14 @@ def list_libraries(speaker, action, args, soco_function, use_local_speaker_list)
     return True
 
 
+def system_info(speaker, action, args, soco_function, use_local_speaker_list):
+    if len(args) != 0:
+        parameter_number_error(action, "no")
+        return False
+    speaker_info.print_speaker_table(speaker)
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -838,4 +847,5 @@ actions = {
     "alarms": SonosFunction(list_alarms, "get_alarms"),
     "libraries": SonosFunction(list_libraries, "list_library_shares"),
     "shares": SonosFunction(list_libraries, "list_library_shares"),
+    "sysinfo": SonosFunction(system_info, ""),
 }
