@@ -1,4 +1,5 @@
 0. Start on branch 'next_version'; when changes are ready to be released:
+   Update the CHANGELOG
    git commit -a -m "<What's Changed?>"
    git checkout master
    git merge next_version

@@ -1,3 +1,6 @@
+v0.1.14 - Improved, faster discovery for local speaker list
+        - Add 'libraries' action
+        - Add 'sysinfo' action
 v0.1.13 - Change to local speaker list file contents. Old speaker data files
           will be removed and rediscovery will be required.
         - Simple SIGINT handling added.
