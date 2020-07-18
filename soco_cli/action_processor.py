@@ -680,7 +680,19 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
         "Recurrence",
         "Include Grouped",
     ]
-    print(tabulate.tabulate(sorted(details), headers))
+    print(tabulate.tabulate(sorted(details), headers, numalign="center"))
+    return True
+
+
+def list_libraries(speaker, action, args, soco_function, use_local_speaker_list):
+    if len(args) != 0:
+        parameter_number_error(action, "no")
+        return False
+    shares = speaker.music_library.list_library_shares()
+    index = 0
+    for share in sorted(shares):
+        index += 1
+        print("{:2d}: {}".format(index, share))
     return True
 
 
@@ -824,4 +836,6 @@ actions = {
     "artists": SonosFunction(list_numbered_things, "get_artists"),
     "tracks": SonosFunction(list_numbered_things, "get_tracks"),
     "alarms": SonosFunction(list_alarms, "get_alarms"),
+    "libraries": SonosFunction(list_libraries, "list_library_shares"),
+    "shares": SonosFunction(list_libraries, "list_library_shares"),
 }

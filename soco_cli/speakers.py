@@ -319,5 +319,5 @@ class Speakers:
             print()
 
         print("{} Sonos Household(s) found".format(len(households)))
-        print("{} Sonos devices found".format(num_devices))
+        print("{} Sonos device(s) found".format(num_devices))
         print()

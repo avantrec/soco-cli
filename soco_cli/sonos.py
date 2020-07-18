@@ -135,7 +135,7 @@ def main():
     for sequence in sequences:
         try:
             if len(sequence) < 2:
-                error_and_exit("{}: At least two arguments required".format(sequence))
+                error_and_exit("At least two arguments required")
             speaker = None
             speaker_name = sequence[0]
             action = sequence[1].lower()
