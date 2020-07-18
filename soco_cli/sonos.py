@@ -83,7 +83,7 @@ def main():
         "--network-discovery-timeout",
         "-n",
         type=float,
-        default=10.0,
+        default=2.0,
         help="Network timeout for Sonos device scan (seconds)",
     )
     parser.add_argument(

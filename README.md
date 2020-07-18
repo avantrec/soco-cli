@@ -52,7 +52,7 @@ The following options are for use with the alternative discovery mechanism:
 - **`--use-local-speaker-list, -l`**: Use the local speaker list instead of SoCo discovery. The speaker list will first be created and saved if it doesn't already exist.
 - **`--refresh-local-speaker-list, -l`**: In conjunction with the `-l` option, the speaker list will be regenerated and saved.
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 10.0s.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s.
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list.
 
@@ -203,7 +203,7 @@ If your speakers change in some way (e.g., they are renamed, are assigned differ
 The following flags can be used to adjust network discovery behaviour if the discovery process is failing:
 
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 10.0s.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s.
 
 These options only have an effect when combined with the `-l` **and** `-r` options.
 
@@ -225,7 +225,7 @@ Other options:
 - **`--show-local-speaker-cache, -s`**: Read and print the current contents of the speaker cache file, then exit.
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache file.
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 10.0s; increase this if sonos-discover is not finding all of your Sonos devices.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s; increase this if sonos-discover is not finding all of your Sonos devices.
 - **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
 
 ## Resources

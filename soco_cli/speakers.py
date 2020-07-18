@@ -34,7 +34,7 @@ class Speakers:
         save_directory=None,
         save_file=None,
         network_threads=128,
-        network_timeout=10.0,
+        network_timeout=2.0,
     ):
         self._save_directory = (
             save_directory
@@ -247,6 +247,20 @@ class Speakers:
         # Wait for all threads to finish before returning
         for thread in thread_list:
             thread.join()
+        # Finally, for each household ID, check that all zones have been recorded
+        # using zone information obtained from Sonos
+        households = []
+        for speaker in self._speakers:
+            if speaker.household_id not in households:
+                households.append(speaker.household_id)
+                try:
+                    for zone in soco.SoCo(speaker.ip_address).all_zones:
+                        device = Speakers.get_sonos_device_data(zone.ip_address, self._network_timeout)
+                        if not device in self._speakers:
+                            self._speakers.append(device)
+                except:
+                    pass
+
 
     def find(self, speaker_name, require_visible=True):
         """Find a speaker by name and return its SoCo object."""
