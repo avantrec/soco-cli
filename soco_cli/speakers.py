@@ -261,7 +261,6 @@ class Speakers:
                 except:
                     pass
 
-
     def find(self, speaker_name, require_visible=True):
         """Find a speaker by name and return its SoCo object."""
         # Normalise apostrophes
