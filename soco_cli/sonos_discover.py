@@ -2,7 +2,6 @@ import os
 import sys
 import argparse
 import logging
-from logging import debug, info, warning, error, critical
 from . import speakers
 from . import sonos
 

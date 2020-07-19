@@ -5,10 +5,10 @@ import socket
 import soco
 import ifaddr
 import threading
-import pprint
+import logging
 import tabulate
 from collections import namedtuple
-from logging import debug, info, warning, error, critical
+
 
 # Type for holding speaker details
 SonosDevice = namedtuple(
@@ -217,7 +217,7 @@ class Speakers:
                 device = Speakers.get_sonos_device_data(ip_addr, soco_timeout)
                 if device:
                     sonos_devices.append(device)
-                    info("Found Sonos device at: {}".format(device.ip_address))
+                    logging.info("Found Sonos device at: {}".format(device.ip_address))
 
     def discover(self):
         """Discover the Sonos speakers on the network(s) to which
@@ -247,6 +247,7 @@ class Speakers:
                 break
             thread_list.append(thread)
             thread.start()
+        logging.info("Created {} threads for network scan".format(len(thread_list)))
         # Wait for all threads to finish before returning
         for thread in thread_list:
             thread.join()
@@ -262,7 +263,7 @@ class Speakers:
                             zone.ip_address, self._network_timeout
                         )
                         if not device in self._speakers:
-                            info(
+                            logging.info(
                                 "Group discovery found additional speaker at {}".format(
                                     device.ip_address
                                 )

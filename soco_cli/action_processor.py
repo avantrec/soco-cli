@@ -6,6 +6,8 @@ import pprint
 import tabulate
 from collections import namedtuple
 
+import logging
+
 from . import sonos
 from . import speaker_info
 
@@ -374,16 +376,18 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
         else:
             print(0)
     elif np == 1:
-        try:
-            duration = sonos.convert_to_seconds(args[0])
-            if not 0 <= duration <= 86399:
-                raise Exception
-        except:
+        duration = sonos.convert_to_seconds(args[0])
+        if duration is None:
             parameter_type_error(
                 action, "float number of hours, seconds or minutes + 'h/m/s'"
             )
             return False
-        speaker.set_sleep_timer(duration)
+        if 0 <= duration <= 86399:
+            logging.info("Setting sleep timer to {}s".format(duration))
+            speaker.set_sleep_timer(duration)
+        else:
+            parameter_type_error(action, "maximum duration is 23.999hrs")
+            return False
     return True
 
 

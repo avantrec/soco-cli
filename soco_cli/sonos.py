@@ -41,7 +41,8 @@ def convert_to_seconds(time_str):
         else:  # Seconds (default)
             duration = float(time_str)
         return duration
-    except:
+    except ValueError:
+        # Catch cast failures
         return None
 
 
