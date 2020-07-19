@@ -7,7 +7,6 @@ from signal import signal, SIGINT
 import pprint
 import time
 import logging
-from logging import debug, info, warning, error, critical
 
 from . import speakers
 from . import __version__
@@ -186,7 +185,7 @@ def main():
                     error_and_exit("Action 'wait' requires 1 parameter")
                 duration = convert_to_seconds(action)
                 if duration is not None:
-                    info("Waiting for {}s".format(duration))
+                    logging.info("Waiting for {}s".format(duration))
                     time.sleep(duration)
                 else:
                     error_and_exit(
