@@ -376,18 +376,22 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
         else:
             print(0)
     elif np == 1:
-        duration = sonos.convert_to_seconds(args[0])
-        if duration is None:
-            parameter_type_error(
-                action, "float number of hours, seconds or minutes + 'h/m/s'"
-            )
-            return False
-        if 0 <= duration <= 86399:
-            logging.info("Setting sleep timer to {}s".format(duration))
-            speaker.set_sleep_timer(duration)
+        if args[0].lower() in ["off", "cancel"]:
+            speaker.set_sleep_timer(None)
         else:
-            parameter_type_error(action, "maximum duration is 23.999hrs")
-            return False
+            duration = sonos.convert_to_seconds(args[0])
+            if duration is None:
+                parameter_type_error(
+                    action,
+                    "number of hours, seconds or minutes + 'h/m/s', or off|cancel",
+                )
+                return False
+            if 0 <= duration <= 86399:
+                logging.info("Setting sleep timer to {}s".format(duration))
+                speaker.set_sleep_timer(duration)
+            else:
+                parameter_type_error(action, "maximum duration is 23.999hrs")
+                return False
     return True
 
 

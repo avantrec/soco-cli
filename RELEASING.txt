@@ -16,4 +16,5 @@
 9. git checkout next_version
    git merge master
    git push
+   Add '+' to __version__ in __init__.py
    start next set of changes

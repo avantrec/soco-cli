@@ -1,3 +1,4 @@
+v0.1.16 - Add ability to cancel sleep timers
 v0.1.15 - Improve sleep timer action to allow durations in h/m/s
         - Initial logging capability
 v0.1.14 - Improved, faster discovery for local speaker list
