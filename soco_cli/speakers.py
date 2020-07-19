@@ -240,7 +240,7 @@ class Speakers:
                         self._speakers,
                     ),
                 )
-            except:
+            except RuntimeError:
                 break
             thread_list.append(thread)
             thread.start()
@@ -255,7 +255,9 @@ class Speakers:
                 households.append(speaker.household_id)
                 try:
                     for zone in soco.SoCo(speaker.ip_address).all_zones:
-                        device = Speakers.get_sonos_device_data(zone.ip_address, self._network_timeout)
+                        device = Speakers.get_sonos_device_data(
+                            zone.ip_address, self._network_timeout
+                        )
                         if not device in self._speakers:
                             self._speakers.append(device)
                 except:

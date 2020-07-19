@@ -37,16 +37,65 @@ def convert_true_false(true_or_false, conversion="YesOrNo"):
         return "on" if true_or_false is True else "off"
 
 
+# Parameter checking decorators
+def zero_parameters(f):
+    def wrapper(*args, **kwargs):
+        if len(args[2]) != 0:
+            parameter_number_error(args[1], "no")
+            return False
+        else:
+            return f(*args, **kwargs)
+    return wrapper
+
+
+def one_parameter(f):
+    def wrapper(*args, **kwargs):
+        if len(args[2]) != 1:
+            parameter_number_error(args[1], "1")
+            return False
+        else:
+            return f(*args, **kwargs)
+    return wrapper
+
+
+def zero_or_one_parameter(f):
+    def wrapper(*args, **kwargs):
+        if len(args[2]) not in [0, 1]:
+            parameter_number_error(args[1], "0 or 1")
+            return False
+        else:
+            return f(*args, **kwargs)
+    return wrapper
+
+
+def one_or_two_parameters(f):
+    def wrapper(*args, **kwargs):
+        if len(args[2]) not in [1, 2]:
+            parameter_number_error(args[1], "1 or 2")
+            return False
+        else:
+            return f(*args, **kwargs)
+    return wrapper
+
+
+def two_parameters(f):
+    def wrapper(*args, **kwargs):
+        if len(args[2]) != 2:
+            parameter_number_error(args[1], "2")
+            return False
+        else:
+            return f(*args, **kwargs)
+    return wrapper
+
+
 # Action processing functions
+@zero_or_one_parameter
 def on_off_action(speaker, action, args, soco_function, use_local_speaker_list):
     """Method to deal with actions that have 'on|off semantics"""
-    np = len(args)
-    if np not in [0, 1]:
-        parameter_number_error(action, "0 or 1")
-        return False
     if action == "group_mute":
         speaker = speaker.group
         soco_function = "mute"
+    np = len(args)
     if np == 0:
         state = "on" if getattr(speaker, soco_function) else "off"
         print(state)
@@ -61,10 +110,8 @@ def on_off_action(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
 def no_args_no_output(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     if soco_function == "separate_stereo_pair" and float(soco.__version__) < 0.20:
         error_and_exit("Pairing operations require SoCo v0.20 or greater")
         return False
@@ -72,10 +119,8 @@ def no_args_no_output(speaker, action, args, soco_function, use_local_speaker_li
     return True
 
 
+@zero_parameters
 def no_args_one_output(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     result = getattr(speaker, soco_function)
     if callable(result):
         print(getattr(speaker, soco_function)())
@@ -84,10 +129,8 @@ def no_args_one_output(speaker, action, args, soco_function, use_local_speaker_l
     return True
 
 
+@zero_parameters
 def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     queue = speaker.get_queue(max_items=1000)
     for i in range(len(queue)):
         try:
@@ -110,10 +153,8 @@ def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
 def list_numbered_things(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     if soco_function in [
         "get_sonos_favorites",
         "get_favorite_radio_stations",
@@ -135,11 +176,9 @@ def list_numbered_things(speaker, action, args, soco_function, use_local_speaker
     return True
 
 
+@zero_or_one_parameter
 def volume_actions(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
-    if np not in [0, 1]:
-        parameter_number_error(action, "0 or 1")
-        return False
     # Special case for ramp_to_volume
     if soco_function == "ramp_to_volume":
         if np == 1:
@@ -171,10 +210,8 @@ def volume_actions(speaker, action, args, soco_function, use_local_speaker_list)
     return True
 
 
+@one_parameter
 def relative_volume(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 1:
-        parameter_number_error(action, "1")
-        return False
     if soco_function == "group_relative_volume":
         speaker = speaker.group
     try:
@@ -190,10 +227,8 @@ def relative_volume(speaker, action, args, soco_function, use_local_speaker_list
     return True
 
 
+@zero_parameters
 def print_info(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     output = getattr(speaker, soco_function)()
     for item in sorted(output):
         if item not in ["metadata", "uri"]:
@@ -201,11 +236,9 @@ def print_info(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_or_one_parameter
 def playback_mode(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
-    if np not in [0, 1]:
-        parameter_number_error(action, "0 or 1")
-        return False
     possible_args = [
         "normal",
         "repeat_all",
@@ -223,19 +256,14 @@ def playback_mode(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
 def transport_state(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) == 0:
-        print(speaker.get_current_transport_info()["current_transport_state"])
-        return True
-    else:
-        parameter_number_error(action, "no")
-        return False
+    print(speaker.get_current_transport_info()["current_transport_state"])
+    return True
 
 
+@one_parameter
 def play_favourite(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 1:
-        parameter_number_error(action, "1")
-        return False
     favourite = args[0]
     fs = speaker.music_library.get_sonos_favorites()
     the_fav = None
@@ -274,10 +302,8 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
     return False
 
 
+@one_parameter
 def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 1:
-        parameter_number_error(action, "1")
-        return False
     favourite = args[0]
     fs = speaker.music_library.get_favorite_radio_stations()
     the_fav = None
@@ -316,6 +342,7 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
     return False
 
 
+@one_or_two_parameters
 def play_uri(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if np not in [1, 2]:
@@ -332,11 +359,9 @@ def play_uri(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_or_one_parameter
 def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
-    if np not in [0, 1]:
-        parameter_number_error(action, "0 or 1")
-        return False
     if np == 0:
         st = speaker.get_sleep_timer()
         if st:
@@ -355,10 +380,8 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@one_parameter
 def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 1:
-        parameter_number_error(action, "1")
-        return False
     if soco_function == "create_stereo_pair" and float(soco.__version__) < 0.20:
         error_and_exit("Pairing operations require SoCo v0.20 or greater")
         return False
@@ -367,10 +390,8 @@ def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
 def operate_on_all(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     zones = speaker.all_zones
     for zone in zones:
         if zone.is_visible:
@@ -384,21 +405,17 @@ def operate_on_all(speaker, action, args, soco_function, use_local_speaker_list)
     return True
 
 
+@zero_parameters
 def zones(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     zones = speaker.all_zones if "all" in action else speaker.visible_zones
     for zone in zones:
         print("{} ({})".format(zone.player_name, zone.ip_address))
     return True
 
 
+@zero_or_one_parameter
 def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
-    if np not in [0, 1]:
-        parameter_number_error(action, "0 or 1")
-        return False
     if np == 0:
         speaker.play_from_queue(0)
     elif np == 1:
@@ -415,10 +432,8 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
     return True
 
 
+@one_parameter
 def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 1:
-        parameter_number_error(action, "1")
-        return False
     try:
         index = int(args[0])
     except:
@@ -433,18 +448,14 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
     return True
 
 
+@one_parameter
 def save_queue(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 1:
-        parameter_number_error(action, "1")
-        return False
     speaker.create_sonos_playlist_from_queue(args[0])
     return True
 
 
+@one_parameter
 def seek(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 1:
-        parameter_number_error(action, "1")
-        return False
     try:
         speaker.seek(args[0])
     except:
@@ -453,10 +464,8 @@ def seek(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@one_parameter
 def playlist_operations(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 1:
-        parameter_number_error(action, "1")
-        return False
     name = args[0]
     if soco_function == "create_sonos_playlist":
         getattr(speaker, soco_function)(name)
@@ -480,10 +489,8 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     return False
 
 
+@two_parameters
 def remove_from_playlist(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 2:
-        parameter_number_error(action, "2")
-        return False
     name = args[0]
     try:
         track_number = int(args[1])
@@ -506,11 +513,9 @@ def remove_from_playlist(speaker, action, args, soco_function, use_local_speaker
     return False
 
 
+@zero_or_one_parameter
 def line_in(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
-    if np not in [0, 1]:
-        parameter_number_error(action, "0 or 1")
-        return False
     if np == 0:
         state = "on" if speaker.is_playing_line_in else "off"
         print(state)
@@ -526,11 +531,9 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_or_one_parameter
 def eq(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
-    if np not in [0, 1]:
-        parameter_number_error(action, "0 or 1")
-        return False
     if np == 0:
         print(getattr(speaker, soco_function))
     elif np == 1:
@@ -547,11 +550,9 @@ def eq(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_or_one_parameter
 def balance(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
-    if np not in [0, 1]:
-        parameter_number_error(action, "0 or 1")
-        return False
     if np == 0:
         left, right = getattr(speaker, soco_function)
         # Convert to something more intelligible than a 2-tuple
@@ -577,18 +578,14 @@ def balance(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
 def reindex(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     speaker.music_library.start_library_update()
     return True
 
 
+@zero_parameters
 def info(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     info = speaker.get_speaker_info()
     model = info["model_name"].lower()
     if not ("boost" in model or "bridge" in model):
@@ -620,10 +617,8 @@ def info(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
 def groups(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     for group in speaker.all_groups:
         if group.coordinator.is_visible:
             print("[{}] : ".format(group.short_label), end="")
@@ -635,10 +630,8 @@ def groups(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
 def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     alarms = soco.alarms.get_alarms(speaker)
     if not alarms:
         return True
@@ -685,10 +678,8 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
 def list_libraries(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     shares = speaker.music_library.list_library_shares()
     index = 0
     for share in sorted(shares):
@@ -697,10 +688,8 @@ def list_libraries(speaker, action, args, soco_function, use_local_speaker_list)
     return True
 
 
+@zero_parameters
 def system_info(speaker, action, args, soco_function, use_local_speaker_list):
-    if len(args) != 0:
-        parameter_number_error(action, "no")
-        return False
     speaker_info.print_speaker_table(speaker)
     return True
 
