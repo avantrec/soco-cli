@@ -1,12 +1,11 @@
 import os
 import sys
+import logging
 import soco
 import soco.alarms
 import pprint
 import tabulate
 from collections import namedtuple
-
-import logging
 
 from . import sonos
 from . import speaker_info
@@ -238,7 +237,7 @@ def relative_volume(speaker, action, args, soco_function, use_local_speaker_list
 def print_info(speaker, action, args, soco_function, use_local_speaker_list):
     output = getattr(speaker, soco_function)()
     for item in sorted(output):
-        if item not in ["metadata", "uri"]:
+        if item not in ["metadata", "uri", "album_art"]:
             print("  {}: {}".format(item, output[item]))
     return True
 

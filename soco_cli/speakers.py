@@ -54,7 +54,7 @@ class Speakers:
         for old_file in ["speakers.pickle"]:
             pathname = self._save_directory + old_file
             if os.path.exists(pathname):
-                info("Removing old local speaker cache {}".format(pathname))
+                logging.info("Removing old local speaker cache {}".format(pathname))
                 # print("Removing deprecated local speaker file:", pathname)
                 os.remove(pathname)
 
@@ -330,7 +330,7 @@ class Speakers:
             "IP Address",
             "Device Model",
             "Visibility",
-            "SW Vers.",
+            "SW Version",
         ]
         for household in households:
             print()

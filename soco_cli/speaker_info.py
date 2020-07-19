@@ -16,8 +16,8 @@ headers = [
     # "Title",
     "Model Name",
     "Model No.",
-    "HW Vers.",
-    "SW Vers.",
+    "HW Version",
+    "SW Version",
 ]
 models = set()
 errors = []

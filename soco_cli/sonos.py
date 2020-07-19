@@ -148,6 +148,7 @@ def main():
             network_timeout=args.network_discovery_timeout,
         )
         if args.refresh_local_speaker_list or not speaker_list.load():
+            logging.info("Discovering speakers")
             speaker_list.discover()
             speaker_list.save()
 
@@ -171,6 +172,7 @@ def main():
         sequences.append(sequence)
 
     # Loop through processing command sequences
+    logging.info("Found {} action sequence(s)".format(len(sequences)))
     for sequence in sequences:
         try:
             if len(sequence) < 2:
