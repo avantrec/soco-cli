@@ -53,6 +53,7 @@ The following options are for use with the alternative discovery mechanism:
 - **`--refresh-local-speaker-list, -l`**: In conjunction with the `-l` option, the speaker list will be regenerated and saved.
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s.
+- **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list.
 
@@ -227,6 +228,7 @@ Other options:
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s; increase this if sonos-discover is not finding all of your Sonos devices.
 - **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
+- **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
 ## Resources
 

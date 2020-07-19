@@ -6,6 +6,8 @@ import sys
 from signal import signal, SIGINT
 import pprint
 import time
+import logging
+from logging import debug, info, warning, error, critical
 
 from . import speakers
 from . import __version__
@@ -93,13 +95,35 @@ def main():
         default=False,
         help="Print the soco-cli and SoCo versions and exit",
     )
-
+    parser.add_argument(
+        "--log",
+        type=str,
+        default="NONE",
+        help="Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
+    )
     # Parse the command line
     args = parser.parse_args()
 
     if args.version:
         version()
         exit(0)
+
+    # Set up logging
+    log_level = args.log.lower()
+    if log_level != "none":
+        log_format = (
+            "%(asctime)s %(filename)s:%(lineno)s - %(funcName)20s() - %(message)s"
+        )
+        if log_level == "debug":
+            logging.basicConfig(format=log_format, level=logging.DEBUG)
+        elif log_level == "info":
+            logging.basicConfig(format=log_format, level=logging.INFO)
+        elif log_level == "warning":
+            logging.basicConfig(format=log_format, level=logging.WARNING)
+        elif log_level == "error":
+            logging.basicConfig(format=log_format, level=logging.ERROR)
+        elif log_level == "critical":
+            logging.basicConfig(format=log_format, level=logging.CRITICAL)
 
     use_local_speaker_list = args.use_local_speaker_list
     if use_local_speaker_list:

@@ -45,6 +45,7 @@ def zero_parameters(f):
             return False
         else:
             return f(*args, **kwargs)
+
     return wrapper
 
 
@@ -55,6 +56,7 @@ def one_parameter(f):
             return False
         else:
             return f(*args, **kwargs)
+
     return wrapper
 
 
@@ -65,6 +67,7 @@ def zero_or_one_parameter(f):
             return False
         else:
             return f(*args, **kwargs)
+
     return wrapper
 
 
@@ -75,6 +78,7 @@ def one_or_two_parameters(f):
             return False
         else:
             return f(*args, **kwargs)
+
     return wrapper
 
 
@@ -85,6 +89,7 @@ def two_parameters(f):
             return False
         else:
             return f(*args, **kwargs)
+
     return wrapper
 
 

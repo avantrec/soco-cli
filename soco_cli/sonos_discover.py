@@ -1,6 +1,8 @@
 import os
 import sys
 import argparse
+import logging
+from logging import debug, info, warning, error, critical
 from . import speakers
 from . import sonos
 
@@ -61,6 +63,12 @@ def main():
         default=False,
         help="Show the soco-cli and SoCo version, and exit.",
     )
+    parser.add_argument(
+        "--log",
+        type=str,
+        default="NONE",
+        help="Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
+    )
 
     # Parse the command line
     args = parser.parse_args()
@@ -68,6 +76,20 @@ def main():
     if args.version:
         sonos.version()
         exit(0)
+
+    # Set up logging
+    log_level = args.log.lower()
+    log_format = "%(asctime)s %(filename)s:%(lineno)s - %(funcName)20s() - %(message)s"
+    if log_level == "debug":
+        logging.basicConfig(format=log_format, level=logging.DEBUG)
+    elif log_level == "info":
+        logging.basicConfig(format=log_format, level=logging.INFO)
+    elif log_level == "warning":
+        logging.basicConfig(format=log_format, level=logging.WARNING)
+    elif log_level == "error":
+        logging.basicConfig(format=log_format, level=logging.ERROR)
+    elif log_level == "critical":
+        logging.basicConfig(format=log_format, level=logging.CRITICAL)
 
     speaker_list = speakers.Speakers()
 
