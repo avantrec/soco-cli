@@ -30,6 +30,21 @@ def handler(signal_received, frame):
     exit(0)
 
 
+def convert_to_seconds(time_str):
+    try:
+        if time_str.endswith("s"):  # Seconds (explicit)
+            duration = float(time_str[:-1])
+        elif time_str.endswith("m"):  # Minutes
+            duration = float(time_str[:-1]) * 60
+        elif time_str.endswith("h"):  # Hours
+            duration = float(time_str[:-1]) * 60 * 60
+        else:  # Seconds (default)
+            duration = float(time_str)
+        return duration
+    except:
+        return None
+
+
 def get_speaker(name, local=False):
     # Allow the use of an IP address even if 'local' is specified
     if speakers.Speakers.is_ipv4_address(name):
@@ -166,21 +181,16 @@ def main():
             # Special case of a "wait" command
             # Assume there aren't any speakers called 'wait':
             if speaker_name in ["wait"]:
-                duration = 0
-                try:
-                    if action.endswith("s"):  # Seconds (explicit)
-                        duration = float(action[:-1])
-                    elif action.endswith("m"):  # Minutes
-                        duration = float(action[:-1]) * 60
-                    elif action.endswith("h"):  # Hours
-                        duration = float(action[:-1]) * 60 * 60
-                    else:  # Seconds (default)
-                        duration = float(action)
-                except:
+                if len(sequence) != 2:
+                    error_and_exit("Action 'wait' requires 1 parameter")
+                duration = convert_to_seconds(action)
+                if duration is not None:
+                    info("Waiting for {}s".format(duration))
+                    time.sleep(duration)
+                else:
                     error_and_exit(
-                        "'wait' requires integer number of seconds, or float number of minutes + 'm'"
+                        "'wait' requires float number of hours, seconds or minutes + 'h/m/s'"
                     )
-                time.sleep(duration)
                 continue
             args = sequence[2:]
             speaker = get_speaker(speaker_name, use_local_speaker_list)

@@ -103,7 +103,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 - **`previous` (or `prev`)**: Move to the previous track (if applicable for the audio source).
 - **`seek <HH:MM:SS>`**: Seek to a point within a track (if applicable for the audio source).
 - **`sleep_timer` (or `sleep`)**: Returns the current sleep timer remaining time in seconds; 0 if no sleep timer is active.
-- **`sleep_timer <seconds>` (or `sleep`)**: Set the sleep timer to `<seconds>` seconds.
+- **`sleep_timer <duration>` (or `sleep`)**: Set the sleep timer to `<duration>`, which can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed.
 - **`stop`**: Stop playback.
 - **`track`**: Return information about the currently playing track.
 
