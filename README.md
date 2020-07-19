@@ -193,6 +193,8 @@ To use this discovery mechanism with `sonos`, use the `--use-local-speaker-list`
 
 When using the local speaker list, speaker naming does not need to be exact, unlike when using standard discovery. Matching is case insensitive, and matching works on substrings. For example, if you have a speaker named `Front Reception`, then `"front reception"` or just `front` will match. (Be careful not to submit ambiguously matchable speaker names; the first hit will be matched, and may not be the speaker you intend.)
 
+Note that if you have speakers with the same names in multiple Sonos systems (Households), you will get inconsistent name matches. It's best to keep speaker names unique within a network.
+
 ### Refreshing the Local Speaker List
 
 If your speakers change in some way (e.g., they are renamed, are assigned different IP addresses, or you add/remove speakers), you can refresh the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option. You can also use the `sonos-discover` command (below)
