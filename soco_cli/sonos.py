@@ -26,12 +26,30 @@ def error_and_exit(msg):
 
 def handler(signal_received, frame):
     # Exit silently without stack dump
+    logging.info("Caught signal, exiting.")
     exit(0)
 
 
 def convert_to_seconds(time_str):
+    """Convert a time string to seconds.
+    time_str can be one of Nh, Nm or Ns, or of the form HH:MM:SS"""
+    time_str = time_str.lower()
     try:
-        if time_str.endswith("s"):  # Seconds (explicit)
+        if ":" in time_str:  # Assume form is HH:MM:SS or HH:MM
+            parts = time_str.split(":")
+            if len(parts) == 3:  # HH:MM:SS
+                if 0 <= int(parts[1]) <= 59 and 0 <= int(parts[2]) <= 59:
+                    duration = float(
+                        int(parts[0]) * 60 * 60 + int(parts[1]) * 60 + int(parts[2])
+                    )
+                else:
+                    duration = None
+            else:  # HH:MM
+                if 0 <= int(parts[1]) <= 59:
+                    duration = float(int(parts[0]) * 60 * 60 + int(parts[1]) * 60)
+                else:
+                    duration = None
+        elif time_str.endswith("s"):  # Seconds (explicit)
             duration = float(time_str[:-1])
         elif time_str.endswith("m"):  # Minutes
             duration = float(time_str[:-1]) * 60
@@ -127,7 +145,7 @@ def main():
     log_level = args.log.lower()
     if log_level != "none":
         log_format = (
-            "%(asctime)s %(filename)s:%(lineno)s - %(funcName)20s() - %(message)s"
+            "%(asctime)s %(filename)s:%(lineno)s - %(funcName)s() - %(message)s"
         )
         if log_level == "debug":
             logging.basicConfig(format=log_format, level=logging.DEBUG)
@@ -158,8 +176,13 @@ def main():
     sequences = []  # A list of command sequences
     for arg in args.parameters:
         if len(arg) > 1 and command_line_separator in arg:
-            # Catch special cases of colon use: 'seek' action and URLs
-            if not (sequence and sequence[-1] == "seek" or ":/" in arg):
+            # Catch special cases of colon use: HH:MM(:SS) time formats,
+            # and URLs
+            if not (
+                sequence
+                and sequence[-1] in ["wait", "seek", "sleep", "sleep_timer"]
+                or ":/" in arg
+            ):
                 error_and_exit(
                     "Spaces are required each side of the ':' command separator"
                 )

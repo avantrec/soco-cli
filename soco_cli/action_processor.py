@@ -376,6 +376,7 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
             print(0)
     elif np == 1:
         if args[0].lower() in ["off", "cancel"]:
+            logging.info("Cancelling sleep timer")
             speaker.set_sleep_timer(None)
         else:
             duration = sonos.convert_to_seconds(args[0])
@@ -788,6 +789,7 @@ actions = {
     "group": SonosFunction(group_or_pair, "join"),
     "g": SonosFunction(group_or_pair, "join"),
     "ungroup": SonosFunction(no_args_no_output, "unjoin"),
+    "ug": SonosFunction(no_args_no_output, "unjoin"),
     "u": SonosFunction(no_args_no_output, "unjoin"),
     "party_mode": SonosFunction(no_args_no_output, "partymode"),
     "party": SonosFunction(no_args_no_output, "partymode"),

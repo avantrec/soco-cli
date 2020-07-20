@@ -1,4 +1,3 @@
-import soco
 import tabulate
 import datetime
 
@@ -87,8 +86,8 @@ def print_speaker_table(device):
         speaker = [
             sco.player_name,
             sco.ip_address,
-            sco.is_visible,
-            sco.is_coordinator,
+            "Yes" if sco.is_visible else "No",
+            "Yes" if sco.is_coordinator else "No",
             coord_ip,
             volume,
             mute,
@@ -114,7 +113,7 @@ def print_speaker_table(device):
 
     # Print the speaker information table in a nice format
     print()
-    print(tabulate.tabulate(sorted(speakers), headers))
+    print(tabulate.tabulate(sorted(speakers), headers, numalign="center"))
 
     # Print the list of unique model numbers
     print("\nSonos model numbers present:", end="")

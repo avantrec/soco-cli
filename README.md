@@ -103,7 +103,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 - **`previous` (or `prev`)**: Move to the previous track (if applicable for the audio source).
 - **`seek <HH:MM:SS>`**: Seek to a point within a track (if applicable for the audio source).
 - **`sleep_timer` (or `sleep`)**: Returns the current sleep timer remaining time in seconds; 0 if no sleep timer is active.
-- **`sleep_timer <duration | off | cancel>` (or `sleep`)**: Set the sleep timer to `<duration>`, which can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed. To **cancel** a sleep timer, use `off` or `cancel` instead of a duration.
+- **`sleep_timer <duration | off | cancel>` (or `sleep`)**: Set the sleep timer to `<duration>`, which can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed. The time duration formats HH:MM and HH:MM:SS can also be used. To **cancel** a sleep timer, use `off` or `cancel` instead of a duration.
 - **`stop`**: Stop playback.
 - **`track`**: Return information about the currently playing track.
 
@@ -157,7 +157,7 @@ Multiple commands can be run as part of the same `sonos` invocation by using the
 
 A **`wait <duration>`** action is available that waits for the specified duration before moving on to the next command. No speaker name is required. This action is useful when, for example, one wants to play audio for a specific period of time, or maintain a speaker grouping for a specific period then ungroup, etc.
 
-`<duration>` can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed.
+`<duration>` can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed. The time duration formats HH:MM and HH:MM:SS can also be used.
 
 An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
 
