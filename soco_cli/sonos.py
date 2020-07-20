@@ -180,7 +180,7 @@ def main():
             # and URLs
             if not (
                 sequence
-                and sequence[-1] in ["wait", "seek", "sleep", "sleep_timer"]
+                and sequence[-1] in ["wait", "seek", "sleep", "sleep_timer", "sleep_at"]
                 or ":/" in arg
             ):
                 error_and_exit(
