@@ -1,4 +1,7 @@
 v0.1.16 - Add ability to cancel sleep timers
+        - Add the 'sleep_at' action to schedule a sleep timer
+        - Allow 'wait', 'sleep', to use HH:MM:SS format for durations
+        - Miscellaneous minor fixes
 v0.1.15 - Improve sleep timer action to allow durations in h/m/s
         - Initial logging capability
 v0.1.14 - Improved, faster discovery for local speaker list
