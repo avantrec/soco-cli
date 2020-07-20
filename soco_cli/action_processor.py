@@ -8,13 +8,17 @@ import tabulate
 import datetime
 from collections import namedtuple
 
+# Required because 'fromisoformat. not supported until Python 3.7
+from backports.datetime_fromisoformat import MonkeyPatch
+MonkeyPatch.patch_fromisoformat()
+
 from . import sonos
 from . import speaker_info
 
 pp = pprint.PrettyPrinter(width=120)
 
 
-# Error handling functions
+# Error handling functions 3.7
 def error_and_exit(msg):
     # Print to stderror
     print("Error:", msg, file=sys.stderr)
