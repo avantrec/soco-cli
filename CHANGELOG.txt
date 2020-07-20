@@ -1,4 +1,5 @@
-v0.1.17 - Added 'wait_until" action
+v0.1.17 - Added 'wait_until' action
+        - Fix for Python 3.7 requirement
 v0.1.16 - Add ability to cancel sleep timers
         - Add the 'sleep_at' action to schedule a sleep timer
         - Allow 'wait', 'sleep', to use HH:MM:SS format for durations
