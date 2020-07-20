@@ -190,7 +190,7 @@ It should be noted that it's always possible to avoid any kind of discovery step
 
 To use this discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. A local speaker list is stored in `<your_home_directory>/.soco-cli/` for use with future invocations of the `sonos` command.
 
-**Example**: **`sonos -l "living room" volume 50`** uses the local speaker database to look up the "living room speaker".
+**Example**: **`sonos -l "living room" volume 50`** uses the local speaker database to look up the "living room" speaker.
 
 ### Speaker Naming
 
