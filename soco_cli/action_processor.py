@@ -399,13 +399,13 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
 def seconds_until(time_str):
     target_time = datetime.time.fromisoformat(time_str)
     now_time = datetime.datetime.now().time()
-    delta_off = datetime.timedelta(
+    delta_target = datetime.timedelta(
         hours=target_time.hour, minutes=target_time.minute, seconds=target_time.second
     )
     delta_now = datetime.timedelta(
         hours=now_time.hour, minutes=now_time.minute, seconds=now_time.second
     )
-    diff = int((delta_off - delta_now).total_seconds())
+    diff = int((delta_target - delta_now).total_seconds())
     # Ensure 'past' times are treated as future times by adding 24hr
     return diff if diff > 0 else diff + 24 * 60 * 60
 

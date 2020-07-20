@@ -220,14 +220,14 @@ def main():
                 continue
             elif speaker_name in ["wait_until"]:
                 if len(sequence) != 2:
-                    error_and_exit("Action 'wait_until' requires 1 parameter")
+                    error_and_exit("'wait_until' requires 1 parameter")
                 try:
                     duration = ap.seconds_until(action)
                     logging.info("Waiting for {}s".format(duration))
                     time.sleep(duration)
                 except ValueError:
                     error_and_exit(
-                        "'wait_until' requires parameter time in 24hr HH:MM format"
+                        "'wait_until' requires parameter: time in 24hr HH:MM format"
                     )
                 continue
             args = sequence[2:]
