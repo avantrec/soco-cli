@@ -396,14 +396,22 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+def seconds_until(time_str):
+    off_time = datetime.time.fromisoformat(time_str)
+    now_time = datetime.datetime.now().time()
+    delta_off = datetime.timedelta(
+        hours=off_time.hour, minutes=off_time.minute, seconds=off_time.second
+    )
+    delta_now = datetime.timedelta(
+        hours=now_time.hour, minutes=now_time.minute, seconds=now_time.second
+    )
+    return int((delta_off - delta_now).total_seconds())
+
+
 @one_parameter
 def sleep_at(speaker, action, args, soco_function, use_local_speaker_list):
     try:
-        off_time = datetime.time.fromisoformat(args[0])
-        now_time = datetime.datetime.now().time()
-        delta_off = datetime.timedelta(hours=off_time.hour, minutes=off_time.minute, seconds=off_time.second)
-        delta_now = datetime.timedelta(hours=now_time.hour, minutes=now_time.minute, seconds=now_time.second)
-        duration = int((delta_off - delta_now).total_seconds())
+        duration = seconds_until(args[0])
     except ValueError:
         parameter_type_error(action, "a time in 24hr 'HH:MM' or 'HH:MM:SS' format")
         return False
@@ -874,5 +882,5 @@ actions = {
     "libraries": SonosFunction(list_libraries, "list_library_shares"),
     "shares": SonosFunction(list_libraries, "list_library_shares"),
     "sysinfo": SonosFunction(system_info, ""),
-    "sleep_at": SonosFunction(sleep_at, "")
+    "sleep_at": SonosFunction(sleep_at, ""),
 }
