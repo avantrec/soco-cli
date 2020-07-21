@@ -57,6 +57,26 @@ The following options are for use with the alternative discovery mechanism:
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list.
 
+### Guidelines on Playing Your Selections
+
+When using **soco-cli**, we aim to keep things simple by enabling playback selections only from your Sonos Favourites and Sonos Playlists.
+
+#### Radio Stations
+
+The best way to play a radio station is to add it to your general list of Sonos Favourites (**not** the radio station favourites), then play it using:
+
+`sonos <speaker_name> play_fav <favourite_name>`
+
+#### Single Tracks
+
+As with radio stations, add single tracks from local libraries and music services to your Sonos Favourites, and play them using `play_fav`. (Note that this can currently throw a SoCo warning with some music sources, which can be ignored. The issue has been reported.)
+
+#### Lists of Tracks
+
+Albums and playlists from local libraries or music services should be added to your Sonos Playlists. They can then be played by adding them to the queue, and playing from the queue. For example:
+
+`sonos <speaker_name> clear_queue : <speaker_name> add_playlist_to_queue <playlist> : <speaker_name> play_from_queue`
+
 ### Actions
 
 #### Volume and EQ Control
@@ -110,7 +130,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 #### Queue Actions
 
-- **`add_playlist_to_queue <playlist_name>`** (or **`add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. (To start playback, follow with action `play_from_queue`.)
+- **`add_playlist_to_queue <playlist_name>`** (or **`add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. The number in the queue of the first track in the playlist will be returned. To start playback, follow with action `play_from_queue`, optionally followed by the track number.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`**): List the tracks in the queue
 - **`play_from_queue <track_number>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue.

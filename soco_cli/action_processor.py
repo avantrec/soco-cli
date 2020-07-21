@@ -400,7 +400,6 @@ def create_time_from_str(time_str):
     """Process times in HH:MM(:SS) format. Return a 'time' object."""
     if ":" not in time_str:
         return None
-    time_str = time_str.lower()
     parts = time_str.split(":")
     if len(parts) not in [2, 3]:
         return None
@@ -550,13 +549,13 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     # Strict match
     for playlist in playlists:
         if name == playlist.title:
-            getattr(speaker, soco_function)(playlist)
+            print(getattr(speaker, soco_function)(playlist))
             return True
     # Fuzzy match
     name = name.lower()
     for playlist in playlists:
         if name in playlist.title.lower():
-            getattr(speaker, soco_function)(playlist)
+            print(getattr(speaker, soco_function)(playlist))
             return True
     error_and_exit("Playlist {} not found".format(args[0]))
     return False
