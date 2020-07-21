@@ -215,7 +215,7 @@ def main():
                     time.sleep(duration)
                 else:
                     error_and_exit(
-                        "'wait' requires float number of hours, seconds or minutes + 'h/m/s'"
+                        "'wait' requires number hours, seconds or minutes + 'h/m/s', or HH:MM(:SS)"
                     )
                 continue
             elif speaker_name in ["wait_until"]:
@@ -227,7 +227,7 @@ def main():
                     time.sleep(duration)
                 except ValueError:
                     error_and_exit(
-                        "'wait_until' requires parameter: time in 24hr HH:MM format"
+                        "'wait_until' requires parameter: time in 24hr HH:MM(:SS) format"
                     )
                 continue
             args = sequence[2:]

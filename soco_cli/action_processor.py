@@ -396,34 +396,33 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-def create_time(time_str):
+def create_time_from_str(time_str):
     """Process times in HH:MM(:SS) format. Return a 'time' object."""
+    if ":" not in time_str:
+        return None
     time_str = time_str.lower()
+    parts = time_str.split(":")
+    if len(parts) not in [2, 3]:
+        return None
     try:
-        if ":" in time_str:  # Assume form is HH:MM:SS or HH:MM
-            parts = time_str.split(":")
-            if len(parts) == 3:  # HH:MM:SS
-                hours = int(parts[0])
-                minutes = int(parts[1])
-                seconds = int(parts[2])
-                if not (0 <= hours <= 24 and 0 <= minutes <= 59 and 0 <= seconds <= 59):
-                    return None
-            elif len(parts) == 2:  # HH:MM
-                hours = int(parts[0])
-                minutes = int(parts[1])
-                seconds = 0
-                if not (0 <= hours <= 24 and 0 <= minutes <= 59):
-                    return None
-            else:
-                return None
-            return datetime.time(hour=hours, minute=minutes, second=seconds)
+        hours = int(parts[0])
+        minutes = int(parts[1])
+        if len(parts) == 3:  # HH:MM:SS
+            seconds = int(parts[2])
+        else:
+            seconds = 0
     except ValueError:
+        return None
+    # Accept time strings from 00:00:00 to 23:59:59
+    if 0 <= hours <= 23 and 0 <= minutes <= 59 and 0 <= seconds <= 59:
+        return datetime.time(hour=hours, minute=minutes, second=seconds)
+    else:
         return None
 
 
 def seconds_until(time_str):
     # target_time = datetime.time.fromisoformat(time_str)
-    target_time = create_time(time_str)
+    target_time = create_time_from_str(time_str)
     if not target_time:
         raise ValueError
     now_time = datetime.datetime.now().time()
