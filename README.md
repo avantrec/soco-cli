@@ -71,11 +71,21 @@ The best way to play a radio station is to add it to your general list of Sonos 
 
 As with radio stations, add single tracks from local libraries and music services to your Sonos Favourites, and play them using `play_fav`. (Note that this can currently throw a SoCo warning with some music sources, which can be ignored. The issue has been reported.)
 
+`sonos <speaker_name> play_fav <favourite_name>`
+
 #### Lists of Tracks
 
 Albums and playlists from local libraries or music services should be added to your Sonos Playlists. They can then be played by adding them to the queue, and playing from the queue. For example:
 
 `sonos <speaker_name> clear_queue : <speaker_name> add_playlist_to_queue <playlist> : <speaker_name> play_from_queue`
+
+Or, to add to the current queue, then play the first playlist track:
+
+```
+sonos <speaker_name> add_playlist_to_queue <playlist>
+24 <-- Returns queue position of the first playlist track
+sonos <speaker_name> play_from_queue 24
+```
 
 ### Actions
 
@@ -137,6 +147,10 @@ Albums and playlists from local libraries or music services should be added to y
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
 - **`remove_from_queue <track_number>`** (or **`rq`**): Remove `<track_number>` from the queue. Track numbers start from 1.
 - **`save_queue <title>`** (or **`sq`**): Save the current queue as a Sonos playlist called `<title>`.
+
+The following has issues and requires further development. For example, it's currently possible to add radio stations to the queue!
+
+- **`add_favourite_to_queue`** (or **`add_favorite_to_queue`, `add_fav_to_queue`, `afq`**): Add a Sonos Favourite to the queue.
 
 #### Favourites and Playlists
 

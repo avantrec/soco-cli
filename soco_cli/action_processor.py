@@ -310,6 +310,34 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
 
 
 @one_parameter
+def add_favourite_to_queue(speaker, action, args, soco_function, use_local_speaker_list):
+    favourite = args[0]
+    fs = speaker.music_library.get_sonos_favorites()
+    the_fav = None
+    # Strict match
+    for f in fs:
+        if favourite == f.title:
+            the_fav = f
+            break
+    # Fuzzy match
+    favourite = favourite.lower()
+    if not the_fav:
+        for f in fs:
+            if favourite in f.title.lower():
+                the_fav = f
+                break
+    if the_fav:
+        try:
+            print(speaker.add_to_queue(the_fav))
+            return True
+        except Exception as e:
+            error_and_exit("{}".format(str(e)))
+            return False
+    error_and_exit("Favourite '{}' not found".format(args[0]))
+    return False
+
+
+@one_parameter
 def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker_list):
     favourite = args[0]
     fs = speaker.music_library.get_favorite_radio_stations()
@@ -911,4 +939,8 @@ actions = {
     "shares": SonosFunction(list_libraries, "list_library_shares"),
     "sysinfo": SonosFunction(system_info, ""),
     "sleep_at": SonosFunction(sleep_at, ""),
+    "afq": SonosFunction(add_favourite_to_queue, "add_to_queue"),
+    "add_fav_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
+    "add_favourite_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
+    "add_favorite_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
 }
