@@ -8,10 +8,6 @@ import tabulate
 import datetime
 from collections import namedtuple
 
-# Required because 'fromisoformat. not supported until Python 3.7
-from backports.datetime_fromisoformat import MonkeyPatch
-MonkeyPatch.patch_fromisoformat()
-
 from . import sonos
 from . import speaker_info
 
@@ -400,8 +396,36 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+def create_time(time_str):
+    """Process times in HH:MM(:SS) format. Return a 'time' object."""
+    time_str = time_str.lower()
+    try:
+        if ":" in time_str:  # Assume form is HH:MM:SS or HH:MM
+            parts = time_str.split(":")
+            if len(parts) == 3:  # HH:MM:SS
+                hours = int(parts[0])
+                minutes = int(parts[1])
+                seconds = int(parts[2])
+                if not (0 <= hours <= 24 and 0 <= minutes <= 59 and 0 <= seconds <= 59):
+                    return None
+            elif len(parts) == 2:  # HH:MM
+                hours = int(parts[0])
+                minutes = int(parts[1])
+                seconds = 0
+                if not (0 <= hours <= 24 and 0 <= minutes <= 59):
+                    return None
+            else:
+                return None
+            return datetime.time(hour=hours, minute=minutes, second=seconds)
+    except ValueError:
+        return None
+
+
 def seconds_until(time_str):
-    target_time = datetime.time.fromisoformat(time_str)
+    # target_time = datetime.time.fromisoformat(time_str)
+    target_time = create_time(time_str)
+    if not target_time:
+        raise ValueError
     now_time = datetime.datetime.now().time()
     delta_target = datetime.timedelta(
         hours=target_time.hour, minutes=target_time.minute, seconds=target_time.second
