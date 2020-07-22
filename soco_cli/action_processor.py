@@ -272,25 +272,30 @@ def transport_state(speaker, action, args, soco_function, use_local_speaker_list
 @one_parameter
 def play_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     favourite = args[0]
-    fs = speaker.music_library.get_sonos_favorites()
+    fs = speaker.music_library.get_sonos_favorites(complete_result=True)
     the_fav = None
     # Strict match
     for f in fs:
         if favourite == f.title:
+            logging.info("Strict match '{}' found".format(f.title))
             the_fav = f
             break
     # Fuzzy match
-    favourite = favourite.lower()
     if not the_fav:
+        favourite = favourite.lower()
         for f in fs:
             if favourite in f.title.lower():
+                logging.info("Fuzzy match '{}' found".format(f.title))
                 the_fav = f
                 break
     if the_fav:
         # play_uri works for some favourites
+        # ToDo: this is broken and we should test for the
+        #       type of favourite
         try:
             uri = the_fav.get_uri()
             metadata = the_fav.resource_meta_data
+            logging.info("Trying 'play_uri()': URI={}, Metadata={}".format(uri, metadata))
             speaker.play_uri(uri=uri, meta=metadata)
             return True
         except Exception as e:
@@ -299,6 +304,7 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
         # Other favourites will be added to the queue, then played
         try:
             # Add to the end of the current queue and play
+            logging.info("Trying 'add_to_queue()'")
             index = speaker.add_to_queue(the_fav, as_next=True)
             speaker.play_from_queue(index, start=True)
             return True
@@ -328,6 +334,7 @@ def add_favourite_to_queue(speaker, action, args, soco_function, use_local_speak
                 break
     if the_fav:
         try:
+            # Print the queue position and return
             print(speaker.add_to_queue(the_fav))
             return True
         except Exception as e:
@@ -434,7 +441,7 @@ def create_time_from_str(time_str):
     try:
         hours = int(parts[0])
         minutes = int(parts[1])
-        if len(parts) == 3:  # HH:MM:SS
+        if len(parts) == 3:
             seconds = int(parts[2])
         else:
             seconds = 0
@@ -577,12 +584,14 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     # Strict match
     for playlist in playlists:
         if name == playlist.title:
+            # Print the queue position and return
             print(getattr(speaker, soco_function)(playlist))
             return True
     # Fuzzy match
     name = name.lower()
     for playlist in playlists:
         if name in playlist.title.lower():
+            # Print the queue position and return
             print(getattr(speaker, soco_function)(playlist))
             return True
     error_and_exit("Playlist {} not found".format(args[0]))

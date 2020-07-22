@@ -57,9 +57,9 @@ The following options are for use with the alternative discovery mechanism:
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list.
 
-### Guidelines on Playing Your Selections
+### Guidelines on Playing Content
 
-When using **soco-cli**, we aim to keep things simple by enabling playback selections only from your Sonos Favourites and Sonos Playlists.
+Currently, **soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. You should add content to these lists in order to facilitate playback.
 
 #### Radio Stations
 
@@ -69,7 +69,7 @@ The best way to play a radio station is to add it to your general list of Sonos 
 
 #### Single Tracks
 
-As with radio stations, add single tracks from local libraries and music services to your Sonos Favourites, and play them using `play_fav`. (Note that this can currently throw a SoCo warning with some music sources, which can be ignored. The issue has been reported.)
+As with radio stations, add single tracks from local libraries and music services to your Sonos Favourites, and play them using `play_fav`.
 
 `sonos <speaker_name> play_fav <favourite_name>`
 

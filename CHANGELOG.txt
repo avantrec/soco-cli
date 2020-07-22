@@ -1,6 +1,7 @@
 v0.1.18   - Add README notes on what sources can be played back
-          - add_playlist_to_queue now returns the first track queue position
+          - 'add_playlist_to_queue' now returns the first track queue position
           - Experimental support for 'add_fav_to_queue', with some issues
+          - Fix issue with WARN-level logging being enabled by default
 v0.1.17_1 - Remove backport requirement (was breaking Windows installs)
 v0.1.17   - Added 'wait_until' action
           - Fix for Python 3.7 requirement

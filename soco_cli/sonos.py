@@ -143,7 +143,10 @@ def main():
 
     # Set up logging
     log_level = args.log.lower()
-    if log_level != "none":
+    if log_level == "none":
+        # Disables all logging (i.e., CRITICAL and below)
+        logging.disable(logging.CRITICAL)
+    else:
         log_format = (
             "%(asctime)s %(filename)s:%(lineno)s - %(funcName)s() - %(message)s"
         )
