@@ -82,6 +82,8 @@ class Speakers:
 
     @save_directory.setter
     def save_directory(self, directory):
+        if not directory.endswith("/"):
+            directory += "/"
         self._save_directory = directory
 
     @property

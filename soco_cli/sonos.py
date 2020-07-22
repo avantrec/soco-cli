@@ -134,6 +134,12 @@ def main():
         default="NONE",
         help="Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
     )
+    parser.add_argument(
+        "--save-directory",
+        type=str,
+        default="",
+        help="Specify the directory for the local speaker information cache",
+    )
     # Parse the command line
     args = parser.parse_args()
 
@@ -172,8 +178,10 @@ def main():
             network_threads=args.network_discovery_threads,
             network_timeout=args.network_discovery_timeout,
         )
+        if args.save_directory != "":
+            speaker_list.save_directory = args.save_directory
         if args.refresh_local_speaker_list or not speaker_list.load():
-            logging.info("Discovering speakers")
+            logging.info("Discovering speakers and saving speaker list")
             speaker_list.discover()
             speaker_list.save()
 
@@ -208,7 +216,6 @@ def main():
         try:
             if len(sequence) < 2:
                 error_and_exit("At least two arguments required")
-            speaker = None
             speaker_name = sequence[0]
             action = sequence[1].lower()
             # Special case of a "wait" command
@@ -222,7 +229,7 @@ def main():
                     time.sleep(duration)
                 else:
                     error_and_exit(
-                        "'wait' requires number hours, seconds or minutes + 'h/m/s', or HH:MM(:SS)"
+                        "'wait' requires number of hours, seconds or minutes + 'h/m/s', or HH:MM(:SS)"
                     )
                 continue
             elif speaker_name in ["wait_until"]:
