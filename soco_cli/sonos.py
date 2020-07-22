@@ -160,6 +160,10 @@ def main():
             logging.basicConfig(format=log_format, level=logging.ERROR)
         elif log_level == "critical":
             logging.basicConfig(format=log_format, level=logging.CRITICAL)
+        else:
+            error_and_exit(
+                "--log takes one of: NONE, DEBUG, INFO, WARN, ERROR, CRITICAL"
+            )
 
     use_local_speaker_list = args.use_local_speaker_list
     if use_local_speaker_list:
@@ -239,7 +243,7 @@ def main():
                 error_and_exit("Speaker '{}' not found".format(speaker_name))
             if not ap.process_action(speaker, action, args, use_local_speaker_list):
                 error_and_exit(
-                    "Action '{}' not found. \n\nAvailable actions are: {} and 'wait'.\n".format(
+                    "Action '{}' not found. \n\nAvailable actions are: {} and 'wait', 'wait_until'.\n".format(
                         action, list(ap.actions.keys())
                     )
                 )

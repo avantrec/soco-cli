@@ -295,7 +295,9 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
         try:
             uri = the_fav.get_uri()
             metadata = the_fav.resource_meta_data
-            logging.info("Trying 'play_uri()': URI={}, Metadata={}".format(uri, metadata))
+            logging.info(
+                "Trying 'play_uri()': URI={}, Metadata={}".format(uri, metadata)
+            )
             speaker.play_uri(uri=uri, meta=metadata)
             return True
         except Exception as e:
@@ -316,7 +318,9 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
 
 
 @one_parameter
-def add_favourite_to_queue(speaker, action, args, soco_function, use_local_speaker_list):
+def add_favourite_to_queue(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
     favourite = args[0]
     fs = speaker.music_library.get_sonos_favorites()
     the_fav = None
