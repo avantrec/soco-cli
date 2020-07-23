@@ -280,16 +280,18 @@ class Speakers:
         for speaker in self._speakers:
             # Normalise apostrophes
             s = speaker.speaker_name.replace("’", "'")
-            if speaker_name.lower() == s.lower():
+            if speaker_name == s:
                 if require_visible:
                     if speaker.is_visible:
                         logging.info(
-                            "Found exact speaker name match for '{}'".format(speaker_name)
+                            "Found exact speaker name match for '{}'".format(
+                                speaker.speaker_name
+                            )
                         )
                         return soco.SoCo(speaker.ip_address)
                 else:
                     return soco.SoCo(speaker.ip_address)
-        # Check for partial match if no exact match
+        # Check for partial, case insensitive match if no exact match
         for speaker in self._speakers:
             # Normalise apostrophes
             s = speaker.speaker_name.replace("’", "'")

@@ -384,7 +384,7 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
         try:
             # Add to the end of the current queue and play
             index = speaker.add_to_queue(the_fav, as_next=True)
-            logging.info("Trying 'add_to_queue() [{}], then play'".format(index))
+            logging.info("Used'add_to_queue() [at {}], then play'".format(index))
             speaker.play_from_queue(index, start=True)
             return True
         except Exception as e2:
