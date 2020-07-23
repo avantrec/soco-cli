@@ -283,6 +283,9 @@ class Speakers:
             if speaker_name.lower() == s.lower():
                 if require_visible:
                     if speaker.is_visible:
+                        logging.info(
+                            "Found exact speaker name match for '{}'".format(speaker_name)
+                        )
                         return soco.SoCo(speaker.ip_address)
                 else:
                     return soco.SoCo(speaker.ip_address)
@@ -293,6 +296,11 @@ class Speakers:
             if speaker_name.lower() in s.lower():
                 if require_visible:
                     if speaker.is_visible:
+                        logging.info(
+                            "Found fuzzy speaker name match for '{}'".format(
+                                speaker.speaker_name
+                            )
+                        )
                         return soco.SoCo(speaker.ip_address)
                 else:
                     return soco.SoCo(speaker.ip_address)

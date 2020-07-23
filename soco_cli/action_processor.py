@@ -327,6 +327,7 @@ def add_favourite_to_queue(
     # Strict match
     for f in fs:
         if favourite == f.title:
+            logging.info("Strict match '{}' found".format(f.title))
             the_fav = f
             break
     # Fuzzy match
@@ -334,6 +335,7 @@ def add_favourite_to_queue(
     if not the_fav:
         for f in fs:
             if favourite in f.title.lower():
+                logging.info("Fuzzy match '{}' found".format(f.title))
                 the_fav = f
                 break
     if the_fav:
@@ -356,6 +358,7 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
     # Strict match
     for f in fs:
         if favourite == f.title:
+            logging.info("Strict match '{}' found".format(f.title))
             the_fav = f
             break
     # Fuzzy match
@@ -363,6 +366,7 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
     if not the_fav:
         for f in fs:
             if favourite in f.title.lower():
+                logging.info("Fuzzy match '{}' found".format(f.title))
                 the_fav = f
                 break
     if the_fav:
@@ -370,6 +374,7 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
         try:
             uri = the_fav.get_uri()
             metadata = the_fav.resource_meta_data
+            "Trying 'play_uri()': URI={}, Metadata={}".format(uri, metadata)
             speaker.play_uri(uri=uri, meta=metadata)
             return True
         except Exception as e:
@@ -379,6 +384,7 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
         try:
             # Add to the end of the current queue and play
             index = speaker.add_to_queue(the_fav, as_next=True)
+            logging.info("Trying 'add_to_queue() [{}], then play'".format(index))
             speaker.play_from_queue(index, start=True)
             return True
         except Exception as e2:
@@ -390,18 +396,13 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
 
 @one_or_two_parameters
 def play_uri(speaker, action, args, soco_function, use_local_speaker_list):
-    np = len(args)
-    if np not in [1, 2]:
-        parameter_number_error(action, "1 or 2")
-        return False
+    force_radio = True if args[0][:4].lower() == "http" else False
+    if len(args) == 2:
+        speaker.play_uri(
+            args[0], title=args[1], force_radio=force_radio,
+        )
     else:
-        force_radio = True if args[0][:4].lower() == "http" else False
-        if np == 2:
-            speaker.play_uri(
-                args[0], title=args[1], force_radio=force_radio,
-            )
-        else:
-            speaker.play_uri(args[0], force_radio=force_radio)
+        speaker.play_uri(args[0], force_radio=force_radio)
     return True
 
 

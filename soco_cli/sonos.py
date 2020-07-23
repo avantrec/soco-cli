@@ -66,10 +66,13 @@ def convert_to_seconds(time_str):
 def get_speaker(name, local=False):
     # Allow the use of an IP address even if 'local' is specified
     if speakers.Speakers.is_ipv4_address(name):
+        logging.info("Using IP address instead of speaker name")
         return soco.SoCo(name)
     if local:
+        logging.info("Using local speaker list")
         return speaker_list.find(name)
     else:
+        logging.info("Using SoCo speaker discovery")
         return soco.discovery.by_name(name)
 
 
