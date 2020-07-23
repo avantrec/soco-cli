@@ -1,3 +1,5 @@
+v0.1.19   - Exact speaker name matching is now case sensitive
+          - Additional logging
 v0.1.18   - Add README notes on what sources can be played back
           - 'add_playlist_to_queue' now returns the first track queue position
           - Experimental support for 'add_fav_to_queue', with some issues

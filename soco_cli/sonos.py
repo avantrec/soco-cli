@@ -32,7 +32,9 @@ def handler(signal_received, frame):
 
 def convert_to_seconds(time_str):
     """Convert a time string to seconds.
-    time_str can be one of Nh, Nm or Ns, or of the form HH:MM:SS"""
+    time_str can be one of Nh, Nm or Ns, or of the form HH:MM:SS
+    """
+    logging.info("Converting '{}' to a number of seconds".format(time_str))
     time_str = time_str.lower()
     try:
         if ":" in time_str:  # Assume form is HH:MM:SS or HH:MM
@@ -176,7 +178,7 @@ def main():
             network_timeout=args.network_discovery_timeout,
         )
         if args.refresh_local_speaker_list or not speaker_list.load():
-            logging.info("Discovering speakers")
+            logging.info("Start speaker discovery")
             speaker_list.discover()
             speaker_list.save()
 
@@ -206,7 +208,7 @@ def main():
         sequences.append(sequence)
 
     # Loop through processing command sequences
-    logging.info("Found {} action sequence(s)".format(len(sequences)))
+    logging.info("Found {} action sequence(s): {}".format(len(sequences), sequences))
     for sequence in sequences:
         try:
             if len(sequence) < 2:
