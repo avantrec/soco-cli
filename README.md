@@ -14,7 +14,7 @@ Sonos CLI aims for an orderly command structure and consistent return values, ma
 
 - Requires Python 3.5 or greater.
 - Should run on all platforms supported by Python. Tested on various versions of Linux, macOS and Windows.
-- Works with Sonos 'S1' and 'S2' systems, as well as split S1/s2 systems.
+- Works with Sonos 'S1' and 'S2' systems, as well as split S1/S2 systems.
 
 ## Installation
 
@@ -47,6 +47,7 @@ If you experience any issues with finding your speakers, or if you have multiple
 #### Options
 
 - **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
+- **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
 The following options are for use with the alternative discovery mechanism:
 
@@ -54,7 +55,6 @@ The following options are for use with the alternative discovery mechanism:
 - **`--refresh-local-speaker-list, -l`**: In conjunction with the `-l` option, the speaker list will be regenerated and saved.
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s.
-- **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list.
 

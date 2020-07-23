@@ -14,7 +14,7 @@ Sonos CLI aims for an orderly command structure and consistent return values, ma
 
 - Requires Python 3.5 or greater.
 - Should run on all platforms supported by Python. Tested on various versions of Linux, macOS and Windows.
-- Works with Sonos 'S1' and 'S2' systems, as well as split S1/s2 systems.
+- Works with Sonos 'S1' and 'S2' systems, as well as split S1/S2 systems.
 
 ## Installation
 
