@@ -78,17 +78,27 @@ def main():
 
     # Set up logging
     log_level = args.log.lower()
-    log_format = "%(asctime)s %(filename)s:%(lineno)s - %(funcName)20s() - %(message)s"
-    if log_level == "debug":
-        logging.basicConfig(format=log_format, level=logging.DEBUG)
-    elif log_level == "info":
-        logging.basicConfig(format=log_format, level=logging.INFO)
-    elif log_level == "warning":
-        logging.basicConfig(format=log_format, level=logging.WARNING)
-    elif log_level == "error":
-        logging.basicConfig(format=log_format, level=logging.ERROR)
-    elif log_level == "critical":
-        logging.basicConfig(format=log_format, level=logging.CRITICAL)
+    if log_level == "none":
+        # Disables all logging (i.e., CRITICAL and below)
+        logging.disable(logging.CRITICAL)
+    else:
+        log_format = (
+            "%(asctime)s %(filename)s:%(lineno)s - %(funcName)s() - %(message)s"
+        )
+        if log_level == "debug":
+            logging.basicConfig(format=log_format, level=logging.DEBUG)
+        elif log_level == "info":
+            logging.basicConfig(format=log_format, level=logging.INFO)
+        elif log_level == "warning":
+            logging.basicConfig(format=log_format, level=logging.WARNING)
+        elif log_level == "error":
+            logging.basicConfig(format=log_format, level=logging.ERROR)
+        elif log_level == "critical":
+            logging.basicConfig(format=log_format, level=logging.CRITICAL)
+        else:
+            error_and_exit(
+                "--log takes one of: NONE, DEBUG, INFO, WARN, ERROR, CRITICAL"
+            )
 
     speaker_list = speakers.Speakers()
 
