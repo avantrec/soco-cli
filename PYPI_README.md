@@ -27,7 +27,7 @@ The installer adds the `sonos` command to the PATH. All commands have the form:
 sonos SPEAKER ACTION <parameters>
 ```
 
-- `SPEAKER` identifies the speaker, and can be the speaker's Sonos Room name or its IPv4 address in dotted decimal format. Note that the speaker name is case sensitive (unless using alternative discovery, discussed below).
+- `SPEAKER` identifies the speaker, and can be the speaker's Sonos Room name or its IPv4 address in dotted decimal format. Note that the speaker name is case sensitive (unless using alternative discovery, discussed in the full documentation).
 - `ACTION` is the operation to perform on the speaker. It can take zero or more parameters depending on the operation.
 
 Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code.
