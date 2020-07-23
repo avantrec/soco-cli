@@ -68,12 +68,6 @@ def main():
         default="NONE",
         help="Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
     )
-    parser.add_argument(
-        "--save-directory",
-        type=str,
-        default="",
-        help="Specify the directory for the local speaker information cache",
-    )
 
     # Parse the command line
     args = parser.parse_args()
@@ -84,25 +78,17 @@ def main():
 
     # Set up logging
     log_level = args.log.lower()
-    if log_level == "none":
-        # Disables all logging (i.e., CRITICAL and below)
-        logging.disable(logging.CRITICAL)
-    else:
-        log_format = "%(asctime)s %(filename)s:%(lineno)s - %(funcName)20s() - %(message)s"
-        if log_level == "debug":
-            logging.basicConfig(format=log_format, level=logging.DEBUG)
-        elif log_level == "info":
-            logging.basicConfig(format=log_format, level=logging.INFO)
-        elif log_level == "warning":
-            logging.basicConfig(format=log_format, level=logging.WARNING)
-        elif log_level == "error":
-            logging.basicConfig(format=log_format, level=logging.ERROR)
-        elif log_level == "critical":
-            logging.basicConfig(format=log_format, level=logging.CRITICAL)
-        else:
-            error_and_exit(
-                "--log takes one of: NONE, DEBUG, INFO, WARN, ERROR, CRITICAL"
-            )
+    log_format = "%(asctime)s %(filename)s:%(lineno)s - %(funcName)20s() - %(message)s"
+    if log_level == "debug":
+        logging.basicConfig(format=log_format, level=logging.DEBUG)
+    elif log_level == "info":
+        logging.basicConfig(format=log_format, level=logging.INFO)
+    elif log_level == "warning":
+        logging.basicConfig(format=log_format, level=logging.WARNING)
+    elif log_level == "error":
+        logging.basicConfig(format=log_format, level=logging.ERROR)
+    elif log_level == "critical":
+        logging.basicConfig(format=log_format, level=logging.CRITICAL)
 
     speaker_list = speakers.Speakers()
 
@@ -132,9 +118,6 @@ def main():
             "Value of 'network_timeout' parameter should be a float between 0 and 60"
         )
     speaker_list.network_timeout = args.network_discovery_timeout
-
-    if args.save_directory != "":
-        speaker_list.save_directory = args.save_directory
 
     try:
         if args.delete_local_speaker_cache:
