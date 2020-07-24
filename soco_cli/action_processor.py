@@ -32,13 +32,6 @@ def parameter_number_error(action, parameter_number):
     error_and_exit(msg)
 
 
-def convert_true_false(true_or_false, conversion="YesOrNo"):
-    if conversion == "YesOrNo":
-        return "Yes" if true_or_false is True else "No"
-    if conversion == "onoroff":
-        return "on" if true_or_false is True else "off"
-
-
 # Parameter checking decorators
 def zero_parameters(f):
     def wrapper(*args, **kwargs):
@@ -95,6 +88,97 @@ def two_parameters(f):
     return wrapper
 
 
+# Utility functions
+def seconds_until(time_str):
+    # target_time = datetime.time.fromisoformat(time_str)
+    target_time = create_time_from_str(time_str)
+    if not target_time:
+        raise ValueError
+    now_time = datetime.datetime.now().time()
+    delta_target = datetime.timedelta(
+        hours=target_time.hour, minutes=target_time.minute, seconds=target_time.second
+    )
+    delta_now = datetime.timedelta(
+        hours=now_time.hour, minutes=now_time.minute, seconds=now_time.second
+    )
+    diff = int((delta_target - delta_now).total_seconds())
+    # Ensure 'past' times are treated as future times by adding 24hr
+    return diff if diff > 0 else diff + 24 * 60 * 60
+
+
+def create_time_from_str(time_str):
+    """Process times in HH:MM(:SS) format. Return a 'time' object."""
+    if ":" not in time_str:
+        return None
+    parts = time_str.split(":")
+    if len(parts) not in [2, 3]:
+        return None
+    try:
+        hours = int(parts[0])
+        minutes = int(parts[1])
+        if len(parts) == 3:
+            seconds = int(parts[2])
+        else:
+            seconds = 0
+    except ValueError:
+        return None
+    # Accept time strings from 00:00:00 to 23:59:59
+    if 0 <= hours <= 23 and 0 <= minutes <= 59 and 0 <= seconds <= 59:
+        return datetime.time(hour=hours, minute=minutes, second=seconds)
+    else:
+        return None
+
+
+def get_playlist(speaker, name):
+    """Returns the playlist object with 'name' otherwise None"""
+    playlists = speaker.get_sonos_playlists(complete_result=True)
+    # Strict match
+    for playlist in playlists:
+        if name == playlist.title:
+            logging.info(
+                "Found playlist '{}' using strict match".format(playlist.title)
+            )
+            return playlist
+    # Fuzzy match
+    name = name.lower()
+    for playlist in playlists:
+        if name in playlist.title.lower():
+            logging.info("Found playlist '{}' using fuzzy match".format(playlist.title))
+            return playlist
+    return None
+
+
+def convert_true_false(true_or_false, conversion="YesOrNo"):
+    if conversion == "YesOrNo":
+        return "Yes" if true_or_false is True else "No"
+    if conversion == "onoroff":
+        return "on" if true_or_false is True else "off"
+
+
+def print_tracks(tracks):
+    item_number = 1
+    for track in tracks:
+        try:
+            artist = track.creator
+        except:
+            artist = ""
+        try:
+            album = track.album
+        except:
+            album = ""
+        try:
+            title = track.title
+        except:
+            title = ""
+        print(
+            "{:5d}: Artist: {} | Album: {} | Title: {}".format(
+                item_number, artist, album, title
+            )
+        )
+        item_number += 1
+    return True
+
+
 # Action processing functions
 @zero_or_one_parameter
 def on_off_action(speaker, action, args, soco_function, use_local_speaker_list):
@@ -139,24 +223,7 @@ def no_args_one_output(speaker, action, args, soco_function, use_local_speaker_l
 @zero_parameters
 def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
     queue = speaker.get_queue(max_items=1000)
-    for i in range(len(queue)):
-        try:
-            artist = queue[i].creator
-        except:
-            artist = ""
-        try:
-            album = queue[i].album
-        except:
-            album = ""
-        try:
-            title = queue[i].title
-        except:
-            title = ""
-        print(
-            "{:3d}: Artist: {} | Album: {} | Title: {}".format(
-                i + 1, artist, album, title
-            )
-        )
+    print_tracks(queue)
     return True
 
 
@@ -436,46 +503,6 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-def create_time_from_str(time_str):
-    """Process times in HH:MM(:SS) format. Return a 'time' object."""
-    if ":" not in time_str:
-        return None
-    parts = time_str.split(":")
-    if len(parts) not in [2, 3]:
-        return None
-    try:
-        hours = int(parts[0])
-        minutes = int(parts[1])
-        if len(parts) == 3:
-            seconds = int(parts[2])
-        else:
-            seconds = 0
-    except ValueError:
-        return None
-    # Accept time strings from 00:00:00 to 23:59:59
-    if 0 <= hours <= 23 and 0 <= minutes <= 59 and 0 <= seconds <= 59:
-        return datetime.time(hour=hours, minute=minutes, second=seconds)
-    else:
-        return None
-
-
-def seconds_until(time_str):
-    # target_time = datetime.time.fromisoformat(time_str)
-    target_time = create_time_from_str(time_str)
-    if not target_time:
-        raise ValueError
-    now_time = datetime.datetime.now().time()
-    delta_target = datetime.timedelta(
-        hours=target_time.hour, minutes=target_time.minute, seconds=target_time.second
-    )
-    delta_now = datetime.timedelta(
-        hours=now_time.hour, minutes=now_time.minute, seconds=now_time.second
-    )
-    diff = int((delta_target - delta_now).total_seconds())
-    # Ensure 'past' times are treated as future times by adding 24hr
-    return diff if diff > 0 else diff + 24 * 60 * 60
-
-
 @one_parameter
 def sleep_at(speaker, action, args, soco_function, use_local_speaker_list):
     try:
@@ -576,23 +603,6 @@ def seek(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-def get_playlist(speaker, name):
-    """Returns the playlist object with 'name' otherwise None"""
-    playlists = speaker.get_sonos_playlists()
-    # Strict match
-    for playlist in playlists:
-        if name == playlist.title:
-            logging.info("Found playlist '{}' using strict match".format(playlist.title))
-            return playlist
-    # Fuzzy match
-    name = name.lower()
-    for playlist in playlists:
-        if name in playlist.title.lower():
-            logging.info("Found playlist '{}' using fuzzy match".format(playlist.title))
-            return playlist
-    return None
-
-
 @one_parameter
 def playlist_operations(speaker, action, args, soco_function, use_local_speaker_list):
     name = args[0]
@@ -613,6 +623,20 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     return True
 
 
+@one_parameter
+def list_playlist_tracks(speaker, action, args, soco_function, use_local_speaker_list):
+    playlist = get_playlist(speaker, args[0])
+    if playlist:
+        tracks = speaker.music_library.browse_by_idstring(
+            "sonos_playlists", playlist.item_id
+        )
+        print_tracks(tracks)
+        return True
+    else:
+        error_and_exit("Playlist {} not found".format(args[0]))
+        return False
+
+
 @two_parameters
 def remove_from_playlist(speaker, action, args, soco_function, use_local_speaker_list):
     name = args[0]
@@ -621,20 +645,13 @@ def remove_from_playlist(speaker, action, args, soco_function, use_local_speaker
     except:
         parameter_type_error(action, "integer (track number)")
         return False
-    playlists = speaker.get_sonos_playlists()
-    # Strict match
-    for playlist in playlists:
-        if name == playlist.title:
-            getattr(speaker, soco_function)(playlist, track_number - 1)
-            return True
-    # Fuzzy match
-    name = name.lower()
-    for playlist in playlists:
-        if name in playlist.title.lower():
-            getattr(speaker, soco_function)(playlist, track_number - 1)
-            return True
-    error_and_exit("Playlist {} not found".format(args[0]))
-    return False
+    playlist = get_playlist(speaker, name)
+    if playlist:
+        speaker.remove_from_sonos_playlist(playlist, track_number - 1)
+        return True
+    else:
+        error_and_exit("Playlist {} not found".format(args[0]))
+        return False
 
 
 @zero_or_one_parameter
@@ -967,4 +984,6 @@ actions = {
     "add_fav_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
     "add_favourite_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
     "add_favorite_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
+    "list_playlist_tracks": SonosFunction(list_playlist_tracks, "list_tracks"),
+    "lpt": SonosFunction(list_playlist_tracks, "list_tracks"),
 }

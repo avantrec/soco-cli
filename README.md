@@ -9,7 +9,7 @@
       * [Installation](#installation)
       * [User Guide](#user-guide)
          * [Simple Usage Examples:](#simple-usage-examples)
-            * [Options](#options)
+         * [Options](#options)
          * [Guidelines on Playing Content](#guidelines-on-playing-content)
             * [Radio Stations](#radio-stations)
             * [Single Tracks](#single-tracks)
@@ -28,11 +28,11 @@
          * [Refreshing the Local Speaker List](#refreshing-the-local-speaker-list)
          * [Discovery Options](#discovery-options)
          * [The sonos-discover Utility](#the-sonos-discover-utility)
-            * [sonos-discover options](#sonos-discover-options)
+         * [sonos-discover options](#sonos-discover-options)
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Fri Jul 24 10:49:55 BST 2020 -->
+<!-- Added by: pwt, at: Fri Jul 24 13:11:33 BST 2020 -->
 
 <!--te-->
 
@@ -195,6 +195,7 @@ The following has issues and requires further development. For example, it's cur
 - **`favourite_radio_stations`** (or **`favorite_radio_stations`**): List the favourite radio stations.
 - **`list_favs`** (or **`list_favorites`, `list_favourites`, `lf`**): Lists all Sonos favourites.
 - **`list_playlists`** (or **`playlists`, `lp`**): Lists the Sonos playlists.
+- **`list_playlist_tracks <playlist_name>`** (or **`lpt`**): List the tracks in a given Sonos Playlist.
 - **`play_favourite <favourite_name>` (or `play_favorite`, `favourite`, `favorite`, `fav`, `pf`, `play_fav`)**: Plays the Sonos favourite identified by `<favourite_name>`. The name is loosely matched; if `<favourite_name>` is a (case insensitive) substring of a Sonos favourite, it will match. In the case of duplicates, the first match encountered will be used. If a queueable item, the favourite will be added to the end of the current queue and played. **Note: this currently works only for certain types of favourite: local library tracks and playlists, radio stations, single Spotify tracks, etc.**
 - **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station. Note that this action doesn't work well: it's better to add radio stations as normal Sonos favourites, and play them using `favourite`.
 - **`remove_from_playlist <playlist_name> <track_number>`** (or **`rfp`**): Remove a track from a Sonos playlist.
