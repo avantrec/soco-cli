@@ -6,3 +6,5 @@ __pycache__/
 /dist/
 /soco_cli.egg-info/
 *.pyc
+/README.md.orig.*
+/README.md.toc.*

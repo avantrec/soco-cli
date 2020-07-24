@@ -2,8 +2,7 @@
 
 **Please consider this utility to be experimental at the moment. The command line structure and return values are not yet fully finalised. Feedback welcome.**
 
-**TABLE OF CONTENTS**
-
+<!--ts-->
    * [SoCo CLI: Control Sonos Systems from the Command Line](#soco-cli-control-sonos-systems-from-the-command-line)
       * [Overview](#overview)
       * [Supported Environments](#supported-environments)
@@ -32,6 +31,10 @@
             * [sonos-discover options](#sonos-discover-options)
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
+
+<!-- Added by: pwt, at: Fri Jul 24 10:43:39 BST 2020 -->
+
+<!--te-->
 
 ## Overview
 

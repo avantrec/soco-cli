@@ -26,5 +26,8 @@ pypi_upload: clean build
 pypi_check: build
 	twine check dist/*
 
+toc:
+	./gh-md-toc --insert README.md
+
 no_op:
 	# Available targets are: build, clean, install, uninstall, black, pypi_upload, pypi_check
