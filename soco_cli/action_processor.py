@@ -589,8 +589,9 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     # Strict match
     for playlist in playlists:
         if name == playlist.title:
-            # Print the queue position and return
-            print(getattr(speaker, soco_function)(playlist))
+            result = getattr(speaker, soco_function)(playlist)
+            if soco_function in ["add_to_queue"]:
+                print(result)
             return True
     # Fuzzy match
     name = name.lower()
