@@ -206,19 +206,21 @@ Examples:
 
 ## Alternative Discovery
 
-Sonos CLI depends on the speaker discovery mechanisms in SoCo, which uses mDNS multicast to discover Sonos devices when they are referenced by speaker name.
+Soco CLI depends on the speaker discovery mechanisms in SoCo, which uses the native Sonos SSDP multicast process to discover Sonos devices, and then to look up speakers by their name.
 
-Sonos CLI also provides an alternative discovery process, which works by scanning the network(s) to which your device is attached, and generating and saving a list of Sonos speaker names and other information.
+Soco CLI also provides an alternative discovery process, which works by scanning the network(s) to which your device is attached, and generating and saving a list of Sonos speaker names and other speaker information.
 
 There are three reasons why you might want to use this alternative mechanism:
 
-1. On some networks, particularly on WiFi, multicast forwarding does not work properly. This prevents normal SoCo speaker discovery.
+1. On some networks, particularly when using WiFi, multicast forwarding does not work properly. This blocks normal SoCo speaker discovery.
 
-2. If you have two Sonos systems on the same network, for example when there is a 'split' S1/S2 system, normal SoCo discovery will find only one of the systems, which may not include the speaker you want to control. In this case, discovery will fail.
+2. If you have two Sonos systems on the same network, for example when there is a 'split' S1/S2 system, normal SoCo discovery will find only one of the systems (randomly), which may not be the system that includes the speaker you want to control. In this case, discovery will fail.
 
-3. It's often faster and more convenient to use the local cached speaker list. For example, speaker name matches can be case insensitive and can match on substrings.
+3. It's often faster and more convenient to use the local cached speaker list. For example, in terms of convenience, speaker name matches can be case insensitive and can match on substrings.
 
-It should be noted that it's always possible to avoid any kind of discovery step by using a speaker's IP address directly.
+The disadvantage of using the alternative discovery mechanism is that the speaker list can become stale, requiring a manual refresh.
+
+Note that it's always possible to avoid any kind of discovery step by simply using a speaker's IP address directly.
 
 ### Usage
 

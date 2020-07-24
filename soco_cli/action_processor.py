@@ -586,8 +586,8 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
         getattr(speaker, soco_function)(name)
         return True
     playlists = speaker.get_sonos_playlists()
-    # Strict match
     the_playlist = None
+    # Strict match
     for playlist in playlists:
         if name == playlist.title:
             logging.info("Found playlist '{}' using strict match".format(playlist.title))
