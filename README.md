@@ -2,6 +2,37 @@
 
 **Please consider this utility to be experimental at the moment. The command line structure and return values are not yet fully finalised. Feedback welcome.**
 
+**TABLE OF CONTENTS**
+
+   * [SoCo CLI: Control Sonos Systems from the Command Line](#soco-cli-control-sonos-systems-from-the-command-line)
+      * [Overview](#overview)
+      * [Supported Environments](#supported-environments)
+      * [Installation](#installation)
+      * [User Guide](#user-guide)
+         * [Simple Usage Examples:](#simple-usage-examples)
+            * [Options](#options)
+         * [Guidelines on Playing Content](#guidelines-on-playing-content)
+            * [Radio Stations](#radio-stations)
+            * [Single Tracks](#single-tracks)
+            * [Lists of Tracks](#lists-of-tracks)
+         * [Actions](#actions)
+            * [Volume and EQ Control](#volume-and-eq-control)
+            * [Playback Control](#playback-control)
+            * [Queue Actions](#queue-actions)
+            * [Favourites and Playlists](#favourites-and-playlists)
+            * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
+            * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
+      * [Multiple Sequential Commands](#multiple-sequential-commands)
+      * [Alternative Discovery](#alternative-discovery)
+         * [Usage](#usage)
+         * [Speaker Naming](#speaker-naming)
+         * [Refreshing the Local Speaker List](#refreshing-the-local-speaker-list)
+         * [Discovery Options](#discovery-options)
+         * [The sonos-discover Utility](#the-sonos-discover-utility)
+            * [sonos-discover options](#sonos-discover-options)
+      * [Resources](#resources)
+      * [Acknowledgments](#acknowledgments)
+
 ## Overview
 
 Soco CLI is a command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. Soco CLI is written entirely in Python and is portable across platforms.
