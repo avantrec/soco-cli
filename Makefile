@@ -4,12 +4,13 @@ SRC = setup.py soco_cli/*.py
 MANIFEST = LICENSE README.md PYPI_README.md MANIFEST.in requirements.txt
 BUILD_DIST = build dist soco_cli.egg-info
 PYCACHE = soco_cli/__pycache__ __pycache__
+TOC = README.md.*
 
 build: $(SRC) $(MANIFEST)
 	python setup.py sdist bdist_wheel
 
 clean:
-	rm -rf $(BUILD_DIST) $(PYCACHE)
+	rm -rf $(BUILD_DIST) $(PYCACHE) $(TOC)
 
 install: build
 	pip install -U -e .
