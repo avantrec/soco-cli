@@ -618,7 +618,7 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
         if soco_function in ["add_to_queue"]:
             print(result)
     else:
-        error_and_exit("Playlist {} not found".format(args[0]))
+        error_and_exit("Playlist '{}' not found".format(args[0]))
         return False
     return True
 
@@ -627,13 +627,14 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
 def list_playlist_tracks(speaker, action, args, soco_function, use_local_speaker_list):
     playlist = get_playlist(speaker, args[0])
     if playlist:
+        print("Sonos Playlist: {}".format(playlist.title))
         tracks = speaker.music_library.browse_by_idstring(
             "sonos_playlists", playlist.item_id
         )
         print_tracks(tracks)
         return True
     else:
-        error_and_exit("Playlist {} not found".format(args[0]))
+        error_and_exit("Playlist '{}' not found".format(args[0]))
         return False
 
 
@@ -650,7 +651,7 @@ def remove_from_playlist(speaker, action, args, soco_function, use_local_speaker
         speaker.remove_from_sonos_playlist(playlist, track_number - 1)
         return True
     else:
-        error_and_exit("Playlist {} not found".format(args[0]))
+        error_and_exit("Playlist '{}' not found".format(args[0]))
         return False
 
 
@@ -666,7 +667,7 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
         else:
             line_in_source = sonos.get_speaker(args[0], use_local_speaker_list)
             if not line_in_source:
-                error_and_exit("Speaker {} not found".format(args[0]))
+                error_and_exit("Speaker '{}' not found".format(args[0]))
                 return False
             speaker.switch_to_line_in(line_in_source)
     return True
@@ -835,6 +836,19 @@ def system_info(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
+def list_all_playlist_tracks(speaker, action, args, soco_function, use_local_speaker_list):
+    playlists = speaker.get_sonos_playlists(complete_result=True)
+    for playlist in playlists:
+        print("Sonos Playlist: {}".format(playlist.title))
+        tracks = speaker.music_library.browse_by_idstring(
+            "sonos_playlists", playlist.item_id
+        )
+        print_tracks(tracks)
+        print()
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -854,6 +868,7 @@ SonosFunction = namedtuple(
 actions = {
     "mute": SonosFunction(on_off_action, "mute"),
     "cross_fade": SonosFunction(on_off_action, "cross_fade"),
+    "crossfade": SonosFunction(on_off_action, "cross_fade"),
     "loudness": SonosFunction(on_off_action, "loudness"),
     "status_light": SonosFunction(on_off_action, "status_light"),
     "light": SonosFunction(on_off_action, "status_light"),
@@ -986,4 +1001,5 @@ actions = {
     "add_favorite_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
     "list_playlist_tracks": SonosFunction(list_playlist_tracks, "list_tracks"),
     "lpt": SonosFunction(list_playlist_tracks, "list_tracks"),
+    "list_all_playlist_tracks": SonosFunction(list_all_playlist_tracks, ""),
 }

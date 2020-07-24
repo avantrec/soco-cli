@@ -42,7 +42,7 @@ Soco CLI is a command line wrapper for the popular Python SoCo library [1] for c
 
 A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands.
 
-Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, `cron` jobs, etc.
+Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
 ## Supported Environments
 
@@ -52,7 +52,9 @@ Sonos CLI aims for an orderly command structure and consistent return values, ma
 
 ## Installation
 
-Install from PyPi [2] using **`pip install soco-cli`**.
+Install the latest version from PyPi [2] using **`pip install -U soco-cli`**.
+
+Please see the CHANGELOG.txt file for a list of the user-facing changes in each release.
 
 ## User Guide
 
@@ -62,12 +64,12 @@ The installer adds the `sonos` command to the PATH. All commands have the form:
 sonos SPEAKER ACTION <parameters>
 ```
 
-- `SPEAKER` identifies the speaker, and can be the speaker's Sonos Room name or its IPv4 address in dotted decimal format. Note that the speaker name is case sensitive (unless using alternative discovery, discussed below).
+- `SPEAKER` identifies the speaker to operate on, and can be the speaker's Sonos Room (Zone) name or its IPv4 address in dotted decimal format. Note that the speaker name is case sensitive (unless using 'alternative discovery', discussed below).
 - `ACTION` is the operation to perform on the speaker. It can take zero or more parameters depending on the operation.
 
-Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without any user confirmation required; please bear this in mind when manipulating the queue, etc.
+Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking any user confirmation; please bear this in mind when manipulating the queue, playlists, etc.!
 
-If you experience any issues with finding your speakers, or if you have multiple Sonos systems ('Households') on your network, please take a look at the [Alternative Discovery](#alternative-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it offers some advantages.
+If you experience any issues with finding your speakers, or if you have multiple Sonos systems ('Households') on your network, please take a look at the [Alternative Discovery](#alternative-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it can be more convenient.
 
 ### Simple Usage Examples:
 
@@ -94,7 +96,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 ### Guidelines on Playing Content
 
-Currently, **soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. You should add content to these lists in order to facilitate playback.
+Currently, **soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. You should add content to these lists in order to facilitate playback. Content can be from local libraries, streaming services, or radio stations.
 
 #### Radio Stations
 
@@ -152,8 +154,8 @@ sonos <speaker_name> play_from_queue 24
 
 #### Playback Control
 
-- **`cross_fade`**: Returns the cross fade setting of the speaker, 'on' or 'off'.
-- **`cross_fade <on|off>`**: Sets the cross fade setting of the speaker to 'on' of 'off'.
+- **`cross_fade`** (or **`crossfade`**): Returns the cross fade setting of the speaker, 'on' or 'off'.
+- **`cross_fade <on|off>`** (or **`crossfade`**): Sets the cross fade setting of the speaker to 'on' of 'off'.
 - **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise.
 - **`line_in <on or line_in_speaker>`**: Switch a speaker to its own Line-In input (`<on>`), **or** the Line-In input of `<line_in_speaker>` (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback.
 - **`next`**: Move to the next track (if applicable for the current audio source).
@@ -193,6 +195,7 @@ The following has issues and requires further development. For example, it's cur
 - **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`.
 - **`delete_playlist <playlist>`** (or **`remove_playlist`**): Delete the Sonos playlist named `<playlist>`.
 - **`favourite_radio_stations`** (or **`favorite_radio_stations`**): List the favourite radio stations.
+- **`list_all_playlist_tracks`**: Lists all tracks in all Sonos Playlists.
 - **`list_favs`** (or **`list_favorites`, `list_favourites`, `lf`**): Lists all Sonos favourites.
 - **`list_playlists`** (or **`playlists`, `lp`**): Lists the Sonos playlists.
 - **`list_playlist_tracks <playlist_name>`** (or **`lpt`**): List the tracks in a given Sonos Playlist.
