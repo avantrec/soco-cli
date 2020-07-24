@@ -78,7 +78,7 @@ If you experience any issues with finding your speakers, or if you have multiple
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`** Plays 'Jazz24' for 30 minutes, then stops playback.
 
-#### Options
+### Options
 
 - **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
@@ -291,7 +291,7 @@ These options only have an effect when combined with the `-l` **and** `-r` optio
 
 **Example**: **`sonos-discover -p -t 256 -n 1.0`** will run `sonos-discover` with a maximum of 256 threads, a network timeout of 1.0s, and will print the result.
 
-#### `sonos-discover` options
+### `sonos-discover` options
 
 Without options, `sonos-discover` will execute the discovery process and complete silently. It will create a speaker cache file, or replace it if already present.
 

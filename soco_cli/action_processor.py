@@ -576,6 +576,23 @@ def seek(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+def get_playlist(speaker, name):
+    """Returns the playlist object with 'name' otherwise None"""
+    playlists = speaker.get_sonos_playlists()
+    # Strict match
+    for playlist in playlists:
+        if name == playlist.title:
+            logging.info("Found playlist '{}' using strict match".format(playlist.title))
+            return playlist
+    # Fuzzy match
+    name = name.lower()
+    for playlist in playlists:
+        if name in playlist.title.lower():
+            logging.info("Found playlist '{}' using fuzzy match".format(playlist.title))
+            return playlist
+    return None
+
+
 @one_parameter
 def playlist_operations(speaker, action, args, soco_function, use_local_speaker_list):
     name = args[0]
@@ -585,22 +602,9 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     if soco_function == "add_uri_to_queue":
         getattr(speaker, soco_function)(name)
         return True
-    playlists = speaker.get_sonos_playlists()
-    the_playlist = None
-    # Strict match
-    for playlist in playlists:
-        if name == playlist.title:
-            logging.info("Found playlist '{}' using strict match".format(playlist.title))
-            the_playlist = playlist
-    # Fuzzy match
-    if the_playlist is None:
-        name = name.lower()
-        for playlist in playlists:
-            if name in playlist.title.lower():
-                logging.info("Found playlist '{}' using fuzzy match".format(playlist.title))
-                the_playlist = playlist
-    if the_playlist is not None:
-        result = getattr(speaker, soco_function)(the_playlist)
+    playlist = get_playlist(speaker, name)
+    if playlist is not None:
+        result = getattr(speaker, soco_function)(playlist)
         if soco_function in ["add_to_queue"]:
             print(result)
     else:
