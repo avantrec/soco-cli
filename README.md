@@ -5,7 +5,7 @@
       * [Overview](#overview)
       * [Supported Environments](#supported-environments)
       * [Installation](#installation)
-      * [User Guide](#user-guide)
+      * [User Guide: the sonos Command](#user-guide-the-sonos-command)
          * [Simple Usage Examples](#simple-usage-examples)
          * [Options for the sonos Command](#options-for-the-sonos-command)
       * [Guidelines on Playing Content](#guidelines-on-playing-content)
@@ -20,7 +20,7 @@
          * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
          * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
       * [Multiple Sequential Commands](#multiple-sequential-commands)
-         * [Inserting Delays: 'wait' and 'wait_until'](#inserting-delays-wait-and-wait_until)
+         * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
          * [Examples:](#examples)
       * [Alternative Discovery](#alternative-discovery)
          * [Usage](#usage)
@@ -32,7 +32,7 @@
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Sat Jul 25 15:47:55 BST 2020 -->
+<!-- Added by: pwt, at: Sat Jul 25 16:04:29 BST 2020 -->
 
 <!--te-->
 
@@ -56,7 +56,7 @@ Install the latest version from PyPi [2] using **`pip install -U soco-cli`**.
 
 Please see the CHANGELOG.txt file for a list of the user-facing changes in each release.
 
-## User Guide
+## User Guide: the `sonos` Command
 
 The installer adds the `sonos` command to the PATH. All commands have the form:
 
@@ -96,7 +96,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 ## Guidelines on Playing Content
 
-Currently, **soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. You should add content to these lists in order to facilitate playback. Content can be from local libraries, streaming services, or radio stations.
+Currently, **soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. You should add content to these lists in order to facilitate playback. Content can be from local libraries, streaming services, or streaming radio stations.
 
 ### Radio Stations
 
@@ -230,13 +230,18 @@ Multiple commands can be run as part of the same `sonos` invocation by using the
 
 An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
 
-### Inserting Delays: 'wait' and 'wait_until'
+### Inserting Delays: `wait` and `wait_until`
 
-A **`wait <duration>`** action is available that waits for the specified duration before moving on to the next command. No speaker name is required. This action is useful when, for example, one wants to play audio for a specific period of time, or maintain a speaker grouping for a specific period then ungroup, etc.
+```
+sonos wait <duration>
+sonos wait_until <time>
+```
 
-`<duration>` can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed. The time duration formats HH:MM and HH:MM:SS can also be used. Examples are `wait 30s`, `wait 10m`, `wait 1.5h`, `wait 2:30` (waits 2hrs and 30mins), `wait 0:1:25` (waits 1min 25secs).
+The **`wait <duration>`** action waits for the specified duration before moving on to the next command. Do not supply a speaker name. This action is useful when, for example, one wants to play audio for a specific period of time, or maintain a speaker grouping for a specific period then ungroup, etc.
 
-A **`wait_until <time>`** action is also available that pauses sonos command line execution until the specified time, in 24hr HH:MM or HH:MM:SS format, for example `wait_until 16:30`.
+`<duration>` can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: `wait 10s`, `wait 30m`, `wait 1.5h`. (If the s/m/h is omitted, `s` (seconds) is assumed.) The time duration formats HH:MM and HH:MM:SS can also be used. Examples are `wait 2:30` (waits 2hrs and 30mins), `wait 0:1:25` (waits 1min 25secs).
+
+The **`wait_until <time>`** action pauses sonos command line execution until the specified time, in 24hr HH:MM or HH:MM:SS format, for example `wait_until 16:30`.
 
 ### Examples:
 
