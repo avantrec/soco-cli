@@ -7,6 +7,8 @@ import pprint
 import tabulate
 import datetime
 from collections import namedtuple
+from soco.events import event_listener
+from queue import Empty
 
 from . import sonos
 from . import speaker_info
@@ -849,6 +851,17 @@ def list_all_playlist_tracks(speaker, action, args, soco_function, use_local_spe
     return True
 
 
+@zero_parameters
+def watch_events(speaker, action, args, soco_function, use_local_speaker_list):
+    event_sub = speaker.zoneGroupTopology.subscribe()
+    while True:
+        try:
+            event = event_sub.events.get(timeout=1.0)
+            print(event)
+        except Empty:
+            pass
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -1003,4 +1016,5 @@ actions = {
     "lpt": SonosFunction(list_playlist_tracks, "list_tracks"),
     "list_all_playlist_tracks": SonosFunction(list_all_playlist_tracks, ""),
     "lapt": SonosFunction(list_all_playlist_tracks, ""),
+    "watch": SonosFunction(watch_events, ""),
 }
