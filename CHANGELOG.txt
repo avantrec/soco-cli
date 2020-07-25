@@ -1,4 +1,5 @@
 v0.1.20   - Add 'list_all_playlist_tracks' action
+          - Added 'wait_start' and 'wait_stop' actions
 v0.1.19   - Exact speaker name matching is now case sensitive
           - Additional logging
           - Add 'list_playlist_tracks' action

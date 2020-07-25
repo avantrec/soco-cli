@@ -854,12 +854,27 @@ def list_all_playlist_tracks(
 
 
 @zero_parameters
-def watch_events(speaker, action, args, soco_function, use_local_speaker_list):
-    event_sub = speaker.zoneGroupTopology.subscribe()
+def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
+    sub = speaker.avTransport.subscribe(auto_renew=True)
     while True:
         try:
-            event = event_sub.events.get(timeout=1.0)
-            print(event)
+            event = sub.events.get(timeout=1.0)
+            if event.variables["transport_state"] != "PLAYING":
+                sub.unsubscribe()
+                return True
+        except Empty:
+            pass
+
+
+@zero_parameters
+def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
+    sub = speaker.avTransport.subscribe(auto_renew=True)
+    while True:
+        try:
+            event = sub.events.get(timeout=1.0)
+            if event.variables["transport_state"] == "PLAYING":
+                sub.unsubscribe()
+                return True
         except Empty:
             pass
 
@@ -1018,5 +1033,6 @@ actions = {
     "lpt": SonosFunction(list_playlist_tracks, "list_tracks"),
     "list_all_playlist_tracks": SonosFunction(list_all_playlist_tracks, ""),
     "lapt": SonosFunction(list_all_playlist_tracks, ""),
-    "watch": SonosFunction(watch_events, ""),
+    "wait_stop": SonosFunction(wait_stop, ""),
+    "wait_start": SonosFunction(wait_start, ""),
 }

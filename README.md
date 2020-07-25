@@ -249,6 +249,12 @@ The **`wait_until <time>`** action pauses sonos command line execution until the
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`**
 - **`sonos Bedroom volume 0 : Bedroom play_favourite "Radio 4" : Bedroom ramp 40 : wait 1h : Bedroom ramp 0 : Bedroom stop`**
 
+### Waiting Until Playback has Started or Stopped: `wait_start` and `wait_stop`
+
+The `<speaker> wait_start` and `<speaker> wait_stop` actions are used to pause execution of the sequence of `sonos` actions until a speaker has either started or stopped playback. For example, to reset the volume back to `25` after the `Bedroom` speaker has stopped playing, use the following command sequence:
+
+`sonos Bedroom wait_stop : Bedroom volume 25` 
+
 ## Alternative Discovery
 
 Soco CLI depends on the speaker discovery mechanisms in SoCo, which uses the native Sonos SSDP multicast process to discover Sonos devices, and then to look up speakers by their name.
