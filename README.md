@@ -21,7 +21,8 @@
          * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
       * [Multiple Sequential Commands](#multiple-sequential-commands)
          * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
-         * [Examples:](#examples)
+         * [Examples](#examples)
+         * [Waiting Until Playback has Started or Stopped: wait_start and wait_stop Actions](#waiting-until-playback-has-started-or-stopped-wait_start-and-wait_stop-actions)
       * [Alternative Discovery](#alternative-discovery)
          * [Usage](#usage)
          * [Speaker Naming](#speaker-naming)
@@ -32,7 +33,7 @@
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Sat Jul 25 16:04:29 BST 2020 -->
+<!-- Added by: pwt, at: Sat Jul 25 19:59:39 BST 2020 -->
 
 <!--te-->
 
@@ -243,13 +244,13 @@ The **`wait <duration>`** action waits for the specified duration before moving 
 
 The **`wait_until <time>`** action pauses sonos command line execution until the specified time, in 24hr HH:MM or HH:MM:SS format, for example `wait_until 16:30`.
 
-### Examples:
+### Examples
 
 - **`sonos Bedroom group Study : Study group_volume 50 : Study play : wait 10m : Study stop : Study ungroup`**
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`**
 - **`sonos Bedroom volume 0 : Bedroom play_favourite "Radio 4" : Bedroom ramp 40 : wait 1h : Bedroom ramp 0 : Bedroom stop`**
 
-### Waiting Until Playback has Started or Stopped: `wait_start` and `wait_stop`
+### Waiting Until Playback has Started or Stopped: `wait_start` and `wait_stop` Actions
 
 The **`<speaker> wait_start`** and **`<speaker> wait_stop`** actions are used to pause execution of the sequence of `sonos` command processing until a speaker has either started or stopped playback. For example, to reset the volume back to `25` after the `Bedroom` speaker has stopped playing, use the following command sequence:
 
