@@ -179,10 +179,10 @@ sonos <speaker_name> play_from_queue 24
 
 - **`add_playlist_to_queue <playlist_name>`** (or **`add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. The number in the queue of the first track in the playlist will be returned. To start playback, follow with action `play_from_queue`, optionally followed by the track number.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
-- **`list_queue`** (or **`lq`**): List the tracks in the queue
+- **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
 - **`play_from_queue <track_number>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue.
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
-- **`remove_from_queue <track_number>`** (or **`rq`**): Remove `<track_number>` from the queue. Track numbers start from 1.
+- **`remove_from_queue <track_number>`** (or **`rfq`, `rq`**): Remove `<track_number>` from the queue. Track numbers start from 1.
 - **`save_queue <title>`** (or **`sq`**): Save the current queue as a Sonos playlist called `<title>`.
 
 The following has issues and requires further development. For example, it's currently possible to add radio stations to the queue!
@@ -251,9 +251,13 @@ The **`wait_until <time>`** action pauses sonos command line execution until the
 
 ### Waiting Until Playback has Started or Stopped: `wait_start` and `wait_stop`
 
-The `<speaker> wait_start` and `<speaker> wait_stop` actions are used to pause execution of the sequence of `sonos` actions until a speaker has either started or stopped playback. For example, to reset the volume back to `25` after the `Bedroom` speaker has stopped playing, use the following command sequence:
+The **`<speaker> wait_start`** and **`<speaker> wait_stop`** actions are used to pause execution of the sequence of `sonos` command processing until a speaker has either started or stopped playback. For example, to reset the volume back to `25` after the `Bedroom` speaker has stopped playing, use the following command sequence:
 
-`sonos Bedroom wait_stop : Bedroom volume 25` 
+`sonos Bedroom wait_stop : Bedroom volume 25`
+
+Note that if a speaker is already playing, `wait_start` will continue immediately, and if a speaker is already stopped, `wait_stop` will continue immediately. If the behaviour you want is to continue **after** the **next** piece of audio ends, then you can chain commands as follows:
+
+`<speaker> wait_start : <speaker> wait_stop`
 
 ## Alternative Discovery
 

@@ -584,7 +584,7 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
     if 1 <= index <= qs:
         speaker.remove_from_queue(index - 1)
     else:
-        error_and_exit("Queue index should be between 1 and {}".format(qs))
+        error_and_exit("Queue index must be between 1 and {}".format(qs))
         return False
     return True
 
@@ -976,6 +976,7 @@ actions = {
     "pfq": SonosFunction(play_from_queue, "play_from_queue"),
     "pq": SonosFunction(play_from_queue, "play_from_queue"),
     "remove_from_queue": SonosFunction(remove_from_queue, "remove_from_queue"),
+    "rfq": SonosFunction(remove_from_queue, "remove_from_queue"),
     "rq": SonosFunction(remove_from_queue, "remove_from_queue"),
     "clear_queue": SonosFunction(no_args_no_output, "clear_queue"),
     "cq": SonosFunction(no_args_no_output, "clear_queue"),
