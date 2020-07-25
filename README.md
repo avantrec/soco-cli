@@ -195,7 +195,7 @@ The following has issues and requires further development. For example, it's cur
 - **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`.
 - **`delete_playlist <playlist>`** (or **`remove_playlist`**): Delete the Sonos playlist named `<playlist>`.
 - **`favourite_radio_stations`** (or **`favorite_radio_stations`**): List the favourite radio stations.
-- **`list_all_playlist_tracks`**: Lists all tracks in all Sonos Playlists.
+- **`list_all_playlist_tracks`** (or **`lapt`**): Lists all tracks in all Sonos Playlists.
 - **`list_favs`** (or **`list_favorites`, `list_favourites`, `lf`**): Lists all Sonos favourites.
 - **`list_playlists`** (or **`playlists`, `lp`**): Lists the Sonos playlists.
 - **`list_playlist_tracks <playlist_name>`** (or **`lpt`**): List the tracks in a given Sonos Playlist.

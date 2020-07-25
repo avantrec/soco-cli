@@ -1002,4 +1002,5 @@ actions = {
     "list_playlist_tracks": SonosFunction(list_playlist_tracks, "list_tracks"),
     "lpt": SonosFunction(list_playlist_tracks, "list_tracks"),
     "list_all_playlist_tracks": SonosFunction(list_all_playlist_tracks, ""),
+    "lapt": SonosFunction(list_all_playlist_tracks, ""),
 }
