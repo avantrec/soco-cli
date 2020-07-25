@@ -1,38 +1,38 @@
 # SoCo CLI: Control Sonos Systems from the Command Line
 
-**Please consider this utility to be experimental at the moment. The command line structure and return values are not yet fully finalised. Feedback welcome.**
-
 <!--ts-->
    * [SoCo CLI: Control Sonos Systems from the Command Line](#soco-cli-control-sonos-systems-from-the-command-line)
       * [Overview](#overview)
       * [Supported Environments](#supported-environments)
       * [Installation](#installation)
-      * [User Guide](#user-guide)
-         * [Simple Usage Examples:](#simple-usage-examples)
-         * [Options](#options)
-         * [Guidelines on Playing Content](#guidelines-on-playing-content)
-            * [Radio Stations](#radio-stations)
-            * [Single Tracks](#single-tracks)
-            * [Lists of Tracks](#lists-of-tracks)
-         * [Actions](#actions)
-            * [Volume and EQ Control](#volume-and-eq-control)
-            * [Playback Control](#playback-control)
-            * [Queue Actions](#queue-actions)
-            * [Favourites and Playlists](#favourites-and-playlists)
-            * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
-            * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
+      * [User Guide: the sonos Command](#user-guide-the-sonos-command)
+         * [Simple Usage Examples](#simple-usage-examples)
+         * [Options for the sonos Command](#options-for-the-sonos-command)
+      * [Guidelines on Playing Content](#guidelines-on-playing-content)
+         * [Radio Stations](#radio-stations)
+         * [Single Tracks](#single-tracks)
+         * [Albums and Playlists](#albums-and-playlists)
+      * [Available Actions](#available-actions)
+         * [Volume and EQ Control](#volume-and-eq-control)
+         * [Playback Control](#playback-control)
+         * [Queue Actions](#queue-actions)
+         * [Favourites and Playlists](#favourites-and-playlists)
+         * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
+         * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
       * [Multiple Sequential Commands](#multiple-sequential-commands)
+         * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
+         * [Examples:](#examples)
       * [Alternative Discovery](#alternative-discovery)
          * [Usage](#usage)
          * [Speaker Naming](#speaker-naming)
          * [Refreshing the Local Speaker List](#refreshing-the-local-speaker-list)
          * [Discovery Options](#discovery-options)
-         * [The sonos-discover Utility](#the-sonos-discover-utility)
-         * [sonos-discover options](#sonos-discover-options)
+         * [The sonos-discover Command](#the-sonos-discover-command)
+         * [Options for the sonos-discover Command](#options-for-the-sonos-discover-command)
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Fri Jul 24 13:11:33 BST 2020 -->
+<!-- Added by: pwt, at: Sat Jul 25 16:04:29 BST 2020 -->
 
 <!--te-->
 
@@ -56,7 +56,7 @@ Install the latest version from PyPi [2] using **`pip install -U soco-cli`**.
 
 Please see the CHANGELOG.txt file for a list of the user-facing changes in each release.
 
-## User Guide
+## User Guide: the `sonos` Command
 
 The installer adds the `sonos` command to the PATH. All commands have the form:
 
@@ -71,7 +71,7 @@ Actions that make changes to speakers do not generally provide return values. In
 
 If you experience any issues with finding your speakers, or if you have multiple Sonos systems ('Households') on your network, please take a look at the [Alternative Discovery](#alternative-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it can be more convenient.
 
-### Simple Usage Examples:
+### Simple Usage Examples
 
 - **`sonos "Living Room" volume`** Returns the current volume setting of the *Living Room* speaker.
 - **`sonos Study volume 25`** Sets the volume of the *Study* speaker to 25.
@@ -80,7 +80,7 @@ If you experience any issues with finding your speakers, or if you have multiple
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`** Plays 'Jazz24' for 30 minutes, then stops playback.
 
-### Options
+### Options for the `sonos` Command
 
 - **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
@@ -94,23 +94,23 @@ The following options are for use with the alternative discovery mechanism:
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list.
 
-### Guidelines on Playing Content
+## Guidelines on Playing Content
 
-Currently, **soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. You should add content to these lists in order to facilitate playback. Content can be from local libraries, streaming services, or radio stations.
+Currently, **soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. You should add content to these lists in order to facilitate playback. Content can be from local libraries, streaming services, or streaming radio stations.
 
-#### Radio Stations
+### Radio Stations
 
 The best way to play a radio station is to add it to your general list of Sonos Favourites (**not** the radio station favourites), then play it using:
 
 `sonos <speaker_name> play_fav <favourite_name>`
 
-#### Single Tracks
+### Single Tracks
 
 As with radio stations, add single tracks from local libraries and music services to your Sonos Favourites, and play them using `play_fav`.
 
 `sonos <speaker_name> play_fav <favourite_name>`
 
-#### Lists of Tracks
+### Albums and Playlists
 
 Albums and playlists from local libraries or music services should be added to your Sonos Playlists. They can then be played by adding them to the queue, and playing from the queue. For example:
 
@@ -124,9 +124,9 @@ sonos <speaker_name> add_playlist_to_queue <playlist>
 sonos <speaker_name> play_from_queue 24
 ```
 
-### Actions
+## Available Actions
 
-#### Volume and EQ Control
+### Volume and EQ Control
 
 - **`balance`**: Returns the balance setting of the speaker as a value between -100 and +100, where -100 is left channel only, 0 is left and right set to the same volume, and +100 is right channel only.
 - **`balance <balance_setting>`**: Sets the balance of the speaker to a value between -100 and +100, where -100 is left channel only, 0 is left and right set to the same volume, and +100 is right channel only. Intermediate values produce a mix of right/left channels.
@@ -152,10 +152,10 @@ sonos <speaker_name> play_from_queue 24
 - **`volume` (or `vol`)**: Returns the current volume setting of the speaker (0 to 100)
 - **`volume <volume>` (or `vol`)**: Sets the volume of the speaker to `<volume>` (0 to 100).
 
-#### Playback Control
+### Playback Control
 
 - **`cross_fade`** (or **`crossfade`**): Returns the cross fade setting of the speaker, 'on' or 'off'.
-- **`cross_fade <on|off>`** (or **`crossfade`**): Sets the cross fade setting of the speaker to 'on' of 'off'.
+- **`cross_fade <on|off>`** (or **`crossfade`**): Sets the cross fade setting of the speaker to 'on' or 'off'.
 - **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise.
 - **`line_in <on or line_in_speaker>`**: Switch a speaker to its own Line-In input (`<on>`), **or** the Line-In input of `<line_in_speaker>` (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback.
 - **`next`**: Move to the next track (if applicable for the current audio source).
@@ -175,7 +175,7 @@ sonos <speaker_name> play_from_queue 24
 - **`stop`**: Stop playback.
 - **`track`**: Return information about the currently playing track.
 
-#### Queue Actions
+### Queue Actions
 
 - **`add_playlist_to_queue <playlist_name>`** (or **`add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. The number in the queue of the first track in the playlist will be returned. To start playback, follow with action `play_from_queue`, optionally followed by the track number.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
@@ -189,7 +189,7 @@ The following has issues and requires further development. For example, it's cur
 
 - **`add_favourite_to_queue`** (or **`add_favorite_to_queue`, `add_fav_to_queue`, `afq`**): Add a Sonos Favourite to the queue.
 
-#### Favourites and Playlists
+### Favourites and Playlists
 
 - **`clear_playlist <playlist>`**: Clear the Sonos playlist named `<playlist>`.
 - **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`.
@@ -203,7 +203,7 @@ The following has issues and requires further development. For example, it's cur
 - **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station. Note that this action doesn't work well: it's better to add radio stations as normal Sonos favourites, and play them using `favourite`.
 - **`remove_from_playlist <playlist_name> <track_number>`** (or **`rfp`**): Remove a track from a Sonos playlist.
 
-#### Grouping and Stereo Pairing
+### Grouping and Stereo Pairing
 
 - **`group <master_speaker>`(or `g`**): Groups the speaker with `<master_speaker>`.
 - **`pair <right_hand_speaker`**: Creates a stereo pair, where the target speaker becomes the left-hand speaker of the pair and `<right_hand_speaker>` becomes the right-hand of the pair. Can be used to pair dissimilar Sonos devices (e.g., to stereo-pair a Play:1 with a One).
@@ -212,7 +212,7 @@ The following has issues and requires further development. For example, it's cur
 - **`ungroup_all`**: Removes all speakers in the target speaker's household from all groups.
 - **`unpair`**: Separate a stereo pair. Can be applied to either speaker in the pair.
 
-#### Speaker and Sonos System Information
+### Speaker and Sonos System Information
 
 - **`alarms`**: List the alarms in the Sonos system.
 - **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
@@ -228,15 +228,22 @@ The following has issues and requires further development. For example, it's cur
 
 Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. **The `:` separator must be surrounded by spaces** to disambiguate from other uses of `:` in sonos actions.
 
-A **`wait <duration>`** action is available that waits for the specified duration before moving on to the next command. No speaker name is required. This action is useful when, for example, one wants to play audio for a specific period of time, or maintain a speaker grouping for a specific period then ungroup, etc.
-
-`<duration>` can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed. The time duration formats HH:MM and HH:MM:SS can also be used.
-
-A **`wait_until <time>`** action is also available that pauses sonos command line execution until the specified time, in 24hr HH:MM or HH:MM:SS format, for example `wait_until 16:30`.
-
 An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
 
-Examples:
+### Inserting Delays: `wait` and `wait_until`
+
+```
+sonos wait <duration>
+sonos wait_until <time>
+```
+
+The **`wait <duration>`** action waits for the specified duration before moving on to the next command. Do not supply a speaker name. This action is useful when, for example, one wants to play audio for a specific period of time, or maintain a speaker grouping for a specific period then ungroup, etc.
+
+`<duration>` can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: `wait 10s`, `wait 30m`, `wait 1.5h`. (If the s/m/h is omitted, `s` (seconds) is assumed.) The time duration formats HH:MM and HH:MM:SS can also be used. Examples are `wait 2:30` (waits 2hrs and 30mins), `wait 0:1:25` (waits 1min 25secs).
+
+The **`wait_until <time>`** action pauses sonos command line execution until the specified time, in 24hr HH:MM or HH:MM:SS format, for example `wait_until 16:30`.
+
+### Examples:
 
 - **`sonos Bedroom group Study : Study group_volume 50 : Study play : wait 10m : Study stop : Study ungroup`**
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`**
@@ -289,13 +296,13 @@ These options only have an effect when combined with the `-l` **and** `-r` optio
 
 **Example**: **`sonos -lr -t 256 -n 1.0 "living room" volume 50`**
 
-### The `sonos-discover` Utility
+### The `sonos-discover` Command
 
 **`sonos-discover`** is a standalone utility for creating/updating the local speaker cache, and for seeing the results of the discovery process. It offers the same `-t` and `-n` options as the `sonos` command. The **`--print`** or **`-p`** option will print the results of the discovery process. It's an alternative to using the `sonos -r` command.
 
 **Example**: **`sonos-discover -p -t 256 -n 1.0`** will run `sonos-discover` with a maximum of 256 threads, a network timeout of 1.0s, and will print the result.
 
-### `sonos-discover` options
+### Options for the `sonos-discover` Command
 
 Without options, `sonos-discover` will execute the discovery process and complete silently. It will create a speaker cache file, or replace it if already present.
 

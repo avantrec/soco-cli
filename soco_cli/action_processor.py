@@ -839,7 +839,9 @@ def system_info(speaker, action, args, soco_function, use_local_speaker_list):
 
 
 @zero_parameters
-def list_all_playlist_tracks(speaker, action, args, soco_function, use_local_speaker_list):
+def list_all_playlist_tracks(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
     playlists = speaker.get_sonos_playlists(complete_result=True)
     for playlist in playlists:
         print("Sonos Playlist: {}".format(playlist.title))

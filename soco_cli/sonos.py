@@ -27,6 +27,7 @@ def error_and_exit(msg):
 def handler(signal_received, frame):
     # Exit silently without stack dump
     logging.info("Caught signal, exiting.")
+    print(" CTRL-C ... exiting.")
     exit(0)
 
 
