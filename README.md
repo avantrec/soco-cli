@@ -20,6 +20,7 @@
          * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
          * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
       * [Multiple Sequential Commands](#multiple-sequential-commands)
+         * [Chaining Commands Using the : Separator](#chaining-commands-using-the--separator)
          * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
          * [Waiting Until Playback has Started or Stopped: wait_start and wait_stop Actions](#waiting-until-playback-has-started-or-stopped-wait_start-and-wait_stop-actions)
          * [Waiting until Playback has Stopped for : the wait_stopped_for Action](#waiting-until-playback-has-stopped-for--the-wait_stopped_for-action)
@@ -34,7 +35,7 @@
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Sun Jul 26 18:03:01 BST 2020 -->
+<!-- Added by: pwt, at: Sun Jul 26 18:05:57 BST 2020 -->
 
 <!--te-->
 
@@ -227,6 +228,8 @@ The following has issues and requires further development. For example, it's cur
 - **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Returns the room names (and associated IP addresses) that are visible in the Sonos controller apps. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
 
 ## Multiple Sequential Commands
+
+### Chaining Commands Using the `:` Separator
 
 Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. **The `:` separator must be surrounded by spaces** to disambiguate from other uses of `:` in sonos actions.
 
