@@ -70,6 +70,8 @@ sonos SPEAKER ACTION <parameters>
 - `SPEAKER` identifies the speaker to operate on, and can be the speaker's Sonos Room (Zone) name or its IPv4 address in dotted decimal format. Note that the speaker name is case sensitive (unless using 'alternative discovery', discussed below).
 - `ACTION` is the operation to perform on the speaker. It can take zero or more parameters depending on the operation.
 
+Arguments containing spaces must be surrounded by quotes: double quotes work on all OS platforms, while Linux and macOS also support single quotes.
+
 Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking any user confirmation; please bear this in mind when manipulating the queue, playlists, etc.!
 
 If you experience any issues with finding your speakers, or if you have multiple Sonos systems ('Households') on your network, please take a look at the [Alternative Discovery](#alternative-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it can be more convenient.
