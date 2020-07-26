@@ -6,6 +6,7 @@ import soco.alarms
 import pprint
 import tabulate
 import datetime
+import time
 from collections import namedtuple
 from soco.events import event_listener
 from queue import Empty
@@ -866,6 +867,47 @@ def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
             pass
 
 
+@one_parameter
+def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_list):
+    duration = sonos.convert_to_seconds(args[0])
+    if not duration:
+        parameter_type_error(action, "Time h/m/s or HH:MM:SS")
+    logging.info("Waiting until playback stopped for {}s".format(duration))
+    sub = speaker.avTransport.subscribe(auto_renew=True)
+    while True:
+        try:
+            event = sub.events.get(timeout=1.0)
+            if event.variables["transport_state"] != "PLAYING":
+                sub.unsubscribe()
+                # Poll for changes; count down reset timer
+                # ToDo: Polling is not ideal; should be redesigned using events
+                elapsed = 0.0
+                total_elapsed_since_first_state_change = 0.0
+                poll_increment = 10.0
+                logging.info(
+                    "Checking for not PLAYING, increment = {}s".format(poll_increment)
+                )
+                while duration > elapsed:
+                    time.sleep(poll_increment)
+                    total_elapsed_since_first_state_change += poll_increment
+                    state = speaker.get_current_transport_info()[
+                        "current_transport_state"
+                    ]
+                    logging.info("Transport state = '{}'".format(state))
+                    if state != "PLAYING":
+                        elapsed += poll_increment
+                    else:
+                        elapsed = 0
+                    logging.info(
+                        "Elapsed since not 'PLAYING' = {}s, Total elapsed = {}s".format(
+                            elapsed, total_elapsed_since_first_state_change
+                        )
+                    )
+                return True
+        except:
+            pass
+
+
 @zero_parameters
 def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
     sub = speaker.avTransport.subscribe(auto_renew=True)
@@ -1036,4 +1078,6 @@ actions = {
     "lapt": SonosFunction(list_all_playlist_tracks, ""),
     "wait_stop": SonosFunction(wait_stop, ""),
     "wait_start": SonosFunction(wait_start, ""),
+    "wait_stopped_for": SonosFunction(wait_stopped_for, ""),
+    "wsf": SonosFunction(wait_stopped_for, ""),
 }

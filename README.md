@@ -260,6 +260,12 @@ Note that if a speaker is already playing, `wait_start` will continue immediatel
 
 `<speaker> wait_start : <speaker> wait_stop`
 
+### Waiting until Playback has Stopped for <duration>: `wait_stopped_for` Action
+
+**Note: This action is experimental.**
+
+The **`<speaker> wait_stopped_for <duration>`** (or **`wsf`**) action will wait until a speaker has stopped playback for <duration> (which uses the same parameter format as the `wait` action). If the speaker stops playback, but then restarts (any number of times) during <duration>, the timer will be reset. Processing continues once the speaker has been stopped for a continuous period of <duration> or greater.
+
 ## Alternative Discovery
 
 Soco CLI depends on the speaker discovery mechanisms in SoCo, which uses the native Sonos SSDP multicast process to discover Sonos devices, and then to look up speakers by their name.

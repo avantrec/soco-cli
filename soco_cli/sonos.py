@@ -194,7 +194,15 @@ def main():
             if not (
                 sequence
                 and sequence[-1]
-                in ["wait", "wait_until", "seek", "sleep", "sleep_timer", "sleep_at"]
+                in [
+                    "wait",
+                    "wait_until",
+                    "seek",
+                    "sleep",
+                    "sleep_timer",
+                    "sleep_at",
+                    "wait_stopped_for",
+                ]
                 or ":/" in arg
             ):
                 error_and_exit(
