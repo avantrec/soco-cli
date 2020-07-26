@@ -21,8 +21,9 @@
          * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
       * [Multiple Sequential Commands](#multiple-sequential-commands)
          * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
-         * [Examples](#examples)
          * [Waiting Until Playback has Started or Stopped: wait_start and wait_stop Actions](#waiting-until-playback-has-started-or-stopped-wait_start-and-wait_stop-actions)
+         * [Waiting until Playback has Stopped for : the wait_stopped_for Action](#waiting-until-playback-has-stopped-for--the-wait_stopped_for-action)
+         * [Looping: The loop Action](#looping-the-loop-action)
       * [Alternative Discovery](#alternative-discovery)
          * [Usage](#usage)
          * [Speaker Naming](#speaker-naming)
@@ -33,7 +34,7 @@
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Sat Jul 25 19:59:39 BST 2020 -->
+<!-- Added by: pwt, at: Sun Jul 26 18:03:01 BST 2020 -->
 
 <!--te-->
 
@@ -244,7 +245,7 @@ The **`wait <duration>`** action waits for the specified duration before moving 
 
 The **`wait_until <time>`** action pauses sonos command line execution until the specified time, in 24hr HH:MM or HH:MM:SS format, for example `wait_until 16:30`.
 
-### Examples
+Examples:
 
 - **`sonos Bedroom group Study : Study group_volume 50 : Study play : wait 10m : Study stop : Study ungroup`**
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`**
@@ -252,29 +253,42 @@ The **`wait_until <time>`** action pauses sonos command line execution until the
 
 ### Waiting Until Playback has Started or Stopped: `wait_start` and `wait_stop` Actions
 
-The **`<speaker> wait_start`** and **`<speaker> wait_stop`** actions are used to pause execution of the sequence of `sonos` command processing until a speaker has either started or stopped playback. For example, to reset the volume back to `25` after the `Bedroom` speaker has stopped playing, use the following command sequence:
+The **`<speaker> wait_start`** and **`<speaker> wait_stop`** actions are used to pause execution of the sequence of `sonos` commands until a speaker has either started or stopped playback. For example, to reset the volume back to `25` only after the `Bedroom` speaker has stopped playing, use the following command sequence:
 
 `sonos Bedroom wait_stop : Bedroom volume 25`
 
-Note that if a speaker is already playing, `wait_start` will continue immediately, and if a speaker is already stopped, `wait_stop` will continue immediately. If the behaviour you want is to continue **after** the **next** piece of audio ends, then you can chain commands as follows:
+Note that if a speaker is already playing, `wait_start` will continue immediately, and if a speaker is already stopped, `wait_stop` will continue immediately. If the behaviour you want is to continue **after** the **next** piece of audio ends, then you can chain commands as shown in the following example:
 
-`<speaker> wait_start : <speaker> wait_stop`
+`<speaker> wait_start : <speaker> wait_stop : <speaker> vol 50`
 
-### Waiting until Playback has Stopped for <duration>: `wait_stopped_for` Action
+### Waiting until Playback has Stopped for <duration>: the `wait_stopped_for` Action
 
 **Experimental Feature**
 
-The **`<speaker> wait_stopped_for <duration>`** (or **`wsf`**) action will wait until a speaker has stopped playback for <duration> (which uses the same parameter format as the `wait` action). If the speaker stops playback, but then restarts (any number of times) during <duration>, the timer will be reset. Processing continues once the speaker has been stopped for a continuous period of <duration> or greater.
+The **`<speaker> wait_stopped_for <duration>`** (or **`wsf`**) action will wait until a speaker has stopped playback for <duration> (which uses the same time parameter formats as the `wait` action). If the speaker stops playback, but then restarts (any number of times) during `<duration>`, the timer will be reset to zero each time. Processing continues once the speaker has been stopped for a continuous period equalling the <duration>.
+
+This function is useful if one wants to perform an action on a speaker (such as ungrouping it) only once its use has definitely stopped, as opposed to it just being temporarily paused, or stopped while switched to a different audio source. For example:
+
+```
+sonos Study wait_stopped_for 30m : Study line_in on : Study play
+```
 
 ### Looping: The `loop` Action
 
 **Experimental Feature**
 
-The **`loop`** action loops back to the beginning of the list of commands and executes the sequence again. In the absence of errors, looping will continue indefinitely until manually stopped.
+The **`loop`** action loops back to the beginning of a sequence of commands and executes the sequence again. In the absence of errors, looping will continue indefinitely until manually stopped. It does not require a speaker name.
 
 To loop a specific number of times, use **`loop <iterations>`**, giving an integer number of iterations before command processing continues.
 
-If using multiple `loop <iterations>` actions, note that command execution returns to the command after the most recent previous `loop` action, i.e., the loop executes the commands between the current `loop` action and the previous one.
+If using multiple `loop <iterations>` actions in a command sequence, note that command execution returns to the command after the most recent one, i.e., the loop executes the commands between the current `loop` or `loop <iterations>` action and the previous `loop <iterations>` action.
+
+Examples:
+
+```
+sonos Study wait_start : Study wait_stopped_for 10m : Study volume 25 : loop
+sonos wait_until 22:00 : Bedroom play_fav "Radio 4" : Bedroom sleep 30m : wait 5m : loop 3
+```
 
 ## Alternative Discovery
 

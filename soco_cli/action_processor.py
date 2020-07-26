@@ -16,6 +16,9 @@ from . import speaker_info
 
 pp = pprint.PrettyPrinter(width=120)
 sonos_max_items = 66000
+# ToDo: Understand why a hard stop is required to exit 'wait_stopped_for'
+#       and revert the variable below. Events related?
+hard_stop = False
 
 # Error handling functions 3.7
 def error_and_exit(msg):
@@ -861,6 +864,11 @@ def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
         try:
             event = sub.events.get(timeout=1.0)
             if event.variables["transport_state"] != "PLAYING":
+                logging.info(
+                    "Speaker '{}' in state '{}'".format(
+                        speaker.player_name, event.variables["transport_state"]
+                    )
+                )
                 sub.unsubscribe()
                 return True
         except Empty:
@@ -879,23 +887,26 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
             event = sub.events.get(timeout=1.0)
             if event.variables["transport_state"] != "PLAYING":
                 sub.unsubscribe()
+                global hard_stop
+                hard_stop = True
                 # Poll for changes; count down reset timer
                 # ToDo: Polling is not ideal; should be redesigned using events
+                # ToDO: Use actual timestamps, not accumulated poll_intervals
                 elapsed = 0.0
                 total_elapsed_since_first_state_change = 0.0
-                poll_increment = 10.0
+                poll_interval = 10.0
                 logging.info(
-                    "Checking for not PLAYING, increment = {}s".format(poll_increment)
+                    "Checking for not PLAYING, increment = {}s".format(poll_interval)
                 )
                 while duration > elapsed:
-                    time.sleep(poll_increment)
-                    total_elapsed_since_first_state_change += poll_increment
+                    time.sleep(poll_interval)
+                    total_elapsed_since_first_state_change += poll_interval
                     state = speaker.get_current_transport_info()[
                         "current_transport_state"
                     ]
                     logging.info("Transport state = '{}'".format(state))
                     if state != "PLAYING":
-                        elapsed += poll_increment
+                        elapsed += poll_interval
                     else:
                         elapsed = 0
                     logging.info(
@@ -903,8 +914,10 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                             elapsed, total_elapsed_since_first_state_change
                         )
                     )
+                hard_stop = False
                 return True
         except:
+            hard_stop = False
             pass
 
 
@@ -915,6 +928,11 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
         try:
             event = sub.events.get(timeout=1.0)
             if event.variables["transport_state"] == "PLAYING":
+                logging.info(
+                    "Speaker '{}' in state '{}'".format(
+                        speaker.player_name, event.variables["transport_state"]
+                    )
+                )
                 sub.unsubscribe()
                 return True
         except Empty:
@@ -1068,10 +1086,10 @@ actions = {
     "shares": SonosFunction(list_libraries, "list_library_shares"),
     "sysinfo": SonosFunction(system_info, ""),
     "sleep_at": SonosFunction(sleep_at, ""),
-    "afq": SonosFunction(add_favourite_to_queue, "add_to_queue"),
-    "add_fav_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
     "add_favourite_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
     "add_favorite_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
+    "add_fav_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
+    "afq": SonosFunction(add_favourite_to_queue, "add_to_queue"),
     "list_playlist_tracks": SonosFunction(list_playlist_tracks, "list_tracks"),
     "lpt": SonosFunction(list_playlist_tracks, "list_tracks"),
     "list_all_playlist_tracks": SonosFunction(list_all_playlist_tracks, ""),

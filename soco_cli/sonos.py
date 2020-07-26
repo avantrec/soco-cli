@@ -3,7 +3,7 @@ import soco
 import argparse
 import os
 import sys
-from signal import signal, SIGINT
+from signal import signal, SIGINT, SIGKILL
 import pprint
 import time
 import logging
@@ -29,7 +29,13 @@ def handler(signal_received, frame):
     # Exit silently without stack dump
     logging.info("Caught signal, exiting.")
     print(" CTRL-C ... exiting.")
-    exit(0)
+    # ToDo: Temporary for now; hard kill required to get out of 'wait_for_stopped'
+    #       Need to understand this.
+    #       Not tested on Windows
+    if ap.hard_stop:
+        os.kill(os.getpid(), SIGKILL)
+    else:
+        exit(0)
 
 
 def convert_to_seconds(time_str):
