@@ -1,3 +1,4 @@
+v0.1.22_1 - Revert use of SIGKILL (Breaking Windows use)
 v0.1.22   - Add 'wait_stopped_for' action (experimental)
           - Add 'loop' and 'loop <iterations>' actions (experimental)
           - Fix 100 track display limit on 'list_playlist_tracks'
