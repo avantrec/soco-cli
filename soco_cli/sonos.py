@@ -228,7 +228,9 @@ def main():
     rewindable_sequences = utils.RewindableList(sequences)
     loop_iterator = None
     sequence_pointer = 0
-    loop_pointer = -1  # There is a notional 'loop' action before the first command sequence
+    loop_pointer = (
+        -1
+    )  # There is a notional 'loop' action before the first command sequence
     for sequence in rewindable_sequences:
         try:
             speaker_name = sequence[0]
@@ -241,7 +243,9 @@ def main():
                             loop_iterator = int(sequence[1])
                             if loop_iterator <= 0:
                                 raise ValueError
-                            logging.info("Looping for {} iteration(s)".format(loop_iterator))
+                            logging.info(
+                                "Looping for {} iteration(s)".format(loop_iterator)
+                            )
                         except ValueError:
                             error_and_exit(
                                 "Action 'loop' takes no parameters, or a number of iterations (> 0)"
