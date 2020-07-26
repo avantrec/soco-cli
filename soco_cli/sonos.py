@@ -3,7 +3,7 @@ import soco
 import argparse
 import os
 import sys
-from signal import signal, SIGINT, SIGKILL
+from signal import signal, SIGINT
 import pprint
 import time
 import logging
@@ -33,7 +33,8 @@ def handler(signal_received, frame):
     #       Need to understand this.
     #       Not tested on Windows
     if ap.hard_stop:
-        os.kill(os.getpid(), SIGKILL)
+        # os.kill(os.getpid(), SIGKILL)
+        exit(0)
     else:
         exit(0)
 
