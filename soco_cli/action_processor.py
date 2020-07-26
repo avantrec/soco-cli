@@ -15,7 +15,7 @@ from . import sonos
 from . import speaker_info
 
 pp = pprint.PrettyPrinter(width=120)
-
+sonos_max_items = 66000
 
 # Error handling functions 3.7
 def error_and_exit(msg):
@@ -225,7 +225,7 @@ def no_args_one_output(speaker, action, args, soco_function, use_local_speaker_l
 
 @zero_parameters
 def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
-    queue = speaker.get_queue(max_items=1000)
+    queue = speaker.get_queue(max_items=sonos_max_items)
     print_tracks(queue)
     return True
 
@@ -632,7 +632,7 @@ def list_playlist_tracks(speaker, action, args, soco_function, use_local_speaker
     if playlist:
         print("Sonos Playlist: {}".format(playlist.title))
         tracks = speaker.music_library.browse_by_idstring(
-            "sonos_playlists", playlist.item_id
+            "sonos_playlists", playlist.item_id, max_items=sonos_max_items
         )
         print_tracks(tracks)
         return True

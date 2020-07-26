@@ -262,9 +262,19 @@ Note that if a speaker is already playing, `wait_start` will continue immediatel
 
 ### Waiting until Playback has Stopped for <duration>: `wait_stopped_for` Action
 
-**Note: This action is experimental.**
+**Experimental Feature**
 
 The **`<speaker> wait_stopped_for <duration>`** (or **`wsf`**) action will wait until a speaker has stopped playback for <duration> (which uses the same parameter format as the `wait` action). If the speaker stops playback, but then restarts (any number of times) during <duration>, the timer will be reset. Processing continues once the speaker has been stopped for a continuous period of <duration> or greater.
+
+### Looping: The `loop` Action
+
+**Experimental Feature**
+
+The **`loop`** action loops back to the beginning of the list of commands and executes the sequence again. In the absence of errors, looping will continue indefinitely until manually stopped.
+
+To loop a specific number of times, use **`loop <iterations>`**, giving an integer number of iterations before command processing continues.
+
+If using multiple `loop <iterations>` actions, note that command execution returns to the command after the most recent previous `loop` action, i.e., the loop executes the commands between the current `loop` action and the previous one.
 
 ## Alternative Discovery
 

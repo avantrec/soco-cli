@@ -11,6 +11,7 @@ import logging
 from . import speakers
 from . import __version__
 from . import action_processor as ap
+from . import utils
 
 # Globals
 speaker_list = None
@@ -218,18 +219,43 @@ def main():
 
     # Loop through processing command sequences
     logging.info("Found {} action sequence(s): {}".format(len(sequences), sequences))
-    for sequence in sequences:
+    rewindable_sequences = utils.RewindableList(sequences)
+    loop_iterator = None
+    sequence_pointer = 0
+    loop_pointer = -1  # There is a notional 'loop' action before the first command sequence
+    for sequence in rewindable_sequences:
         try:
-            if len(sequence) < 2:
-                error_and_exit("At least two arguments required")
-            speaker = None
             speaker_name = sequence[0]
-            action = sequence[1].lower()
-            # Special case of a "wait" command
-            # Assume there aren't any speakers called 'wait':
+
+            # Special case: the 'loop' action
+            if speaker_name.lower() == "loop":
+                if len(sequence) == 2:
+                    if loop_iterator is None:
+                        try:
+                            loop_iterator = int(sequence[1])
+                            if loop_iterator <= 0:
+                                raise ValueError
+                            logging.info("Looping for {} iteration(s)".format(loop_iterator))
+                        except ValueError:
+                            error_and_exit(
+                                "Action 'loop' takes no parameters, or a number of iterations (> 0)"
+                            )
+                    loop_iterator -= 1
+                    if loop_iterator <= 0:
+                        loop_iterator = None
+                        loop_pointer = sequence_pointer + 1
+                        sequence_pointer += 1
+                        continue
+                logging.info("Rewinding to command number {}".format(loop_pointer + 2))
+                rewindable_sequences.rewind_to(loop_pointer + 1)
+                sequence_pointer = loop_pointer
+                continue
+
+            # Special case: the 'wait' action
             if speaker_name in ["wait"]:
                 if len(sequence) != 2:
                     error_and_exit("Action 'wait' requires 1 parameter")
+                action = sequence[1].lower()
                 duration = convert_to_seconds(action)
                 if duration is not None:
                     logging.info("Waiting for {}s".format(duration))
@@ -239,10 +265,13 @@ def main():
                         "'wait' requires number hours, seconds or minutes + 'h/m/s', or HH:MM(:SS)"
                     )
                 continue
+
+            # Special case: the 'wait_until' action
             elif speaker_name in ["wait_until"]:
                 if len(sequence) != 2:
                     error_and_exit("'wait_until' requires 1 parameter")
                 try:
+                    action = sequence[1].lower()
                     duration = ap.seconds_until(action)
                     logging.info("Waiting for {}s".format(duration))
                     time.sleep(duration)
@@ -251,6 +280,8 @@ def main():
                         "'wait_until' requires parameter: time in 24hr HH:MM(:SS) format"
                     )
                 continue
+
+            action = sequence[1].lower()
             args = sequence[2:]
             speaker = get_speaker(speaker_name, use_local_speaker_list)
             if not speaker:
@@ -261,8 +292,11 @@ def main():
                         action, list(ap.actions.keys())
                     )
                 )
+
         except Exception as e:
             error_and_exit(str(e))
+        sequence_pointer += 1
+
     exit(0)
 
 
