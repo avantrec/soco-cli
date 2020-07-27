@@ -22,8 +22,8 @@
       * [Multiple Sequential Commands](#multiple-sequential-commands)
          * [Chaining Commands Using the : Separator](#chaining-commands-using-the--separator)
          * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
-         * [Waiting Until Playback has Started/Stopped:wait_start and wait_stop](#waiting-until-playback-has-startedstoppedwait_start-and-wait_stop)
-            * [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
+         * [Waiting Until Playback has Started/Stopped: wait_start and wait_stop](#waiting-until-playback-has-startedstopped-wait_start-and-wait_stop)
+         * [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
          * [Repeating Commands: The loop Actions](#repeating-commands-the-loop-actions)
       * [Conditional Command Execution](#conditional-command-execution)
       * [Alternative Discovery](#alternative-discovery)
@@ -36,11 +36,7 @@
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
 
-<<<<<<< Updated upstream
-<!-- Added by: pwt, at: Mon Jul 27 14:31:24 BST 2020 -->
-=======
-<!-- Added by: pwt, at: Mon Jul 27 14:25:06 BST 2020 -->
->>>>>>> Stashed changes
+<!-- Added by: pwt, at: Mon Jul 27 14:35:56 BST 2020 -->
 
 <!--te-->
 

@@ -987,7 +987,11 @@ def if_stopped(speaker, action, args, soco_function, use_local_speaker_list):
     else:
         action = args[0]
         args = args[1:]
-        logging.info("Action invoked: '{} {}'".format(action, args))
+        logging.info(
+            "Action invoked: '{} {} {}'".format(
+                speaker.player_name, action, " ".join(args)
+            )
+        )
         return process_action(speaker, action, args, use_local_speaker_list)
 
 
@@ -1003,7 +1007,11 @@ def if_playing(speaker, action, args, soco_function, use_local_speaker_list):
     else:
         action = args[0]
         args = args[1:]
-        logging.info("Action invoked: '{} {}'".format(action, args))
+        logging.info(
+            "Action invoked: '{} {} {}'".format(
+                speaker.player_name, action, " ".join(args)
+            )
+        )
         return process_action(speaker, action, args, use_local_speaker_list)
 
 
@@ -1168,5 +1176,5 @@ actions = {
     "wait_stopped_for": SonosFunction(wait_stopped_for, ""),
     "wsf": SonosFunction(wait_stopped_for, ""),
     "if_stopped": SonosFunction(if_stopped, ""),
-    "if_playing": SonosFunction(if_playing, "")
+    "if_playing": SonosFunction(if_playing, ""),
 }
