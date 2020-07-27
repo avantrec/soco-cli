@@ -924,27 +924,26 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
 
                 # Poll for changes; count down reset timer
                 # ToDo: Polling is not ideal; should be redesigned using events
-                # ToDO: Use actual timestamps, not accumulated poll_intervals
-                elapsed = 0.0
-                total_elapsed_since_first_state_change = 0.0
+                original_start_time = start_time = current_time = time.time()
                 poll_interval = 10.0
                 logging.info(
                     "Checking for not PLAYING, increment = {}s".format(poll_interval)
                 )
-                while duration > elapsed:
+                while (current_time - start_time) < duration:
                     time.sleep(poll_interval)
-                    total_elapsed_since_first_state_change += poll_interval
                     state = speaker.get_current_transport_info()[
                         "current_transport_state"
                     ]
                     logging.info("Transport state = '{}'".format(state))
+                    current_time = time.time()
                     if state != "PLAYING":
-                        elapsed += poll_interval
+                        pass
                     else:
-                        elapsed = 0
+                        start_time = current_time
                     logging.info(
                         "Elapsed since not 'PLAYING' = {}s, Total elapsed = {}s".format(
-                            elapsed, total_elapsed_since_first_state_change
+                            int(current_time - start_time),
+                            int(current_time - original_start_time),
                         )
                     )
                 use_sigkill = False
