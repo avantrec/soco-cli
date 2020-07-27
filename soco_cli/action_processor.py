@@ -991,6 +991,22 @@ def if_stopped(speaker, action, args, soco_function, use_local_speaker_list):
         return process_action(speaker, action, args, use_local_speaker_list)
 
 
+@one_or_more_parameters
+def if_playing(speaker, action, args, soco_function, use_local_speaker_list):
+    """Perform the action only if the speaker is currently not playing
+    """
+    state = speaker.get_current_transport_info()["current_transport_state"]
+    logging.info("Speaker '{}' is in state '{}'".format(speaker.player_name, state))
+    if state != "PLAYING":
+        logging.info("Action suppressed")
+        return True
+    else:
+        action = args[0]
+        args = args[1:]
+        logging.info("Action invoked: '{} {}'".format(action, args))
+        return process_action(speaker, action, args, use_local_speaker_list)
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -1152,4 +1168,5 @@ actions = {
     "wait_stopped_for": SonosFunction(wait_stopped_for, ""),
     "wsf": SonosFunction(wait_stopped_for, ""),
     "if_stopped": SonosFunction(if_stopped, ""),
+    "if_playing": SonosFunction(if_playing, "")
 }

@@ -36,7 +36,7 @@
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Mon Jul 27 14:16:22 BST 2020 -->
+<!-- Added by: pwt, at: Mon Jul 27 14:31:24 BST 2020 -->
 
 <!--te-->
 
@@ -316,11 +316,14 @@ sonos wait_until 22:00 : Bedroom play_fav "Radio 4" : Bedroom sleep 30m : loop 3
 
 ```
 sonos <speaker> if_stopped <action> <parameters>
+sonos <speaker> if_playing <action> <parameters>
 ```
 
 The `if_stopped` modifier will execute the action that follows it only if the speaker is not currently playing. If the speaker is playing, the action will be skipped, and the next command in the sequence (if applicable) will be executed immediately. For example, to set the volume of a speaker back to a default value only if the speaker is not playing, use:
 
 `sonos <speaker> if_stopped volume 25`
+
+Similarly, the `if_playing` modifier will execute the action that follows it only if the speaker is currently playing.
 
 ## Alternative Discovery
 
