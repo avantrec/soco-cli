@@ -22,10 +22,10 @@
       * [Multiple Sequential Commands](#multiple-sequential-commands)
          * [Chaining Commands Using the : Separator](#chaining-commands-using-the--separator)
          * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
-         * [Waiting Until Playback has Started or Stopped: the wait_start and wait_stop Actions](#waiting-until-playback-has-started-or-stopped-the-wait_start-and-wait_stop-actions)
-         * [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
-         * [Looping: loop Actions](#looping-loop-actions)
-      * [Conditional Execution](#conditional-execution)
+         * [Waiting Until Playback has Started/Stopped:wait_start and wait_stop](#waiting-until-playback-has-startedstoppedwait_start-and-wait_stop)
+            * [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
+         * [Repeating Commands: The loop Actions](#repeating-commands-the-loop-actions)
+      * [Conditional Command Execution](#conditional-command-execution)
       * [Alternative Discovery](#alternative-discovery)
          * [Usage](#usage)
          * [Speaker Naming](#speaker-naming)
@@ -36,7 +36,11 @@
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
 
+<<<<<<< Updated upstream
 <!-- Added by: pwt, at: Mon Jul 27 14:31:24 BST 2020 -->
+=======
+<!-- Added by: pwt, at: Mon Jul 27 14:25:06 BST 2020 -->
+>>>>>>> Stashed changes
 
 <!--te-->
 
@@ -257,7 +261,7 @@ Examples:
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`**
 - **`sonos Bedroom volume 0 : Bedroom play_favourite "Radio 4" : Bedroom ramp 40 : wait 1h : Bedroom ramp 0 : Bedroom stop`**
 
-### Waiting Until Playback has Started or Stopped: the `wait_start` and `wait_stop` Actions
+### Waiting Until Playback has Started/Stopped: `wait_start` and `wait_stop`
 
 ```
 sonos <speaker> wait_start
@@ -288,7 +292,7 @@ This function is useful if one wants to perform an action on a speaker (such as 
 sonos Study wait_stopped_for 30m : Study line_in on : Study play
 ```
 
-### Looping: `loop` Actions
+### Repeating Commands: The `loop` Actions
 
 **Experimental Feature**
 
@@ -310,7 +314,7 @@ sonos Study wait_start : Study wait_stopped_for 10m : Study volume 25 : loop
 sonos wait_until 22:00 : Bedroom play_fav "Radio 4" : Bedroom sleep 30m : loop 3
 ```
 
-## Conditional Execution
+## Conditional Command Execution
 
 **Experimental Feature**
 
@@ -322,6 +326,8 @@ sonos <speaker> if_playing <action> <parameters>
 The `if_stopped` modifier will execute the action that follows it only if the speaker is not currently playing. If the speaker is playing, the action will be skipped, and the next command in the sequence (if applicable) will be executed immediately. For example, to set the volume of a speaker back to a default value only if the speaker is not playing, use:
 
 `sonos <speaker> if_stopped volume 25`
+
+No action will be taken if the speaker is playing, and the command will terminate immediately.
 
 Similarly, the `if_playing` modifier will execute the action that follows it only if the speaker is currently playing.
 
