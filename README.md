@@ -34,9 +34,10 @@
          * [The sonos-discover Command](#the-sonos-discover-command)
          * [Options for the sonos-discover Command](#options-for-the-sonos-discover-command)
       * [Resources](#resources)
+      * [Known Issues](#known-issues)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Mon Jul 27 14:35:56 BST 2020 -->
+<!-- Added by: pwt, at: Mon Jul 27 18:47:22 BST 2020 -->
 
 <!--te-->
 
@@ -337,7 +338,7 @@ Similarly, the `if_playing` modifier will execute the action that follows it onl
 
 ## Alternative Discovery
 
-Soco CLI depends on the speaker discovery mechanisms in SoCo, which uses the native Sonos SSDP multicast process to discover Sonos devices, and then to look up speakers by their name.
+By default, Soco CLI uses the speaker discovery mechanisms in SoCo, which uses the native Sonos SSDP multicast process to discover Sonos devices, and then to look up speakers by their name.
 
 Soco CLI also provides an alternative discovery process, which works by scanning the network(s) to which your device is attached, and generating and saving a list of Sonos speaker names and other speaker information.
 
@@ -406,6 +407,12 @@ Other options:
 
 [1] https://github.com/SoCo/SoCo \
 [2] https://pypi.org/project/soco-cli
+
+## Known Issues
+
+- It's not possible to have two event listeners on the same host due to port 1400 collisions. This error is encountered if using more than one instance of soco-cli using `wait_start`, `wait_stop` or `wait_stopped_for` on a single host. This is a SoCo issue that will be fixed in SoCo v0.20: https://github.com/SoCo/SoCo/pull/724.
+- An error will be thrown when podcasts are listed as part of the queue or playists (`Error: Unknown UPnP class: object.item.audioItem.podcast`): this is a SoCo issue for which there is a pending fix: https://github.com/SoCo/SoCo/pull/735.
+- Stereo pairing operations do not work. As the error message indicates, pairing support arrives in SoCo v0.20.
 
 ## Acknowledgments
 
