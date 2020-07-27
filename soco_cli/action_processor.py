@@ -20,6 +20,7 @@ sonos_max_items = 66000
 #       and revert the variable below. Events related?
 use_sigkill = False
 
+
 # Error handling functions 3.7
 def error_and_exit(msg):
     # Print to stderror
@@ -162,11 +163,11 @@ def convert_true_false(true_or_false, conversion="YesOrNo"):
 
 
 def print_playlist_header(playlist_name):
-        spacer = "  "
-        title = "Sonos Playlist: {}".format(playlist_name)
-        underline = "=" * (len(title))
-        print(spacer + title)
-        print(spacer + underline)
+    spacer = "  "
+    title = "Sonos Playlist: {}".format(playlist_name)
+    underline = "=" * (len(title))
+    print(spacer + title)
+    print(spacer + underline)
 
 
 def print_tracks(tracks):
@@ -858,7 +859,7 @@ def list_all_playlist_tracks(
 ):
     playlists = speaker.get_sonos_playlists(complete_result=True)
     print()
-    for playlist in sorted(playlists):
+    for playlist in playlists:
         print_playlist_header(playlist.title)
         tracks = speaker.music_library.browse_by_idstring(
             "sonos_playlists", playlist.item_id
@@ -891,6 +892,7 @@ def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_list):
+    global use_sigkill
     duration = sonos.convert_to_seconds(args[0])
     if not duration:
         parameter_type_error(action, "Time h/m/s or HH:MM:SS")
@@ -901,12 +903,14 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
         error_and_exit("Exception {}".format(e))
     while True:
         try:
+            # ToDo: Remove temporary fix for CTRL-C not exiting
+            use_sigkill = True
             event = sub.events.get(timeout=1.0)
             if event.variables["transport_state"] != "PLAYING":
                 sub.unsubscribe()
-                # ToDo: Remove temporary fix for CTRL-C not exiting
-                global use_sigkill
-                use_sigkill = True
+                # ToDo: Should really return here and do this some other way ...
+                #       this is what's requiring the SIGKILL
+
                 # Poll for changes; count down reset timer
                 # ToDo: Polling is not ideal; should be redesigned using events
                 # ToDO: Use actual timestamps, not accumulated poll_intervals
@@ -990,6 +994,7 @@ actions = {
     "dialogue_mode": SonosFunction(on_off_action, "dialog_mode"),
     "dialogue": SonosFunction(on_off_action, "dialog_mode"),
     "play": SonosFunction(no_args_no_output, "play"),
+    "start": SonosFunction(no_args_no_output, "play"),
     "stop": SonosFunction(no_args_no_output, "stop"),
     "pause": SonosFunction(no_args_no_output, "pause"),
     "next": SonosFunction(no_args_no_output, "next"),

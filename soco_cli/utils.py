@@ -1,15 +1,13 @@
-from collections.abc import MutableSequence
+from collections.abc import Sequence
 
 
-class RewindableList(MutableSequence):
+class RewindableList(Sequence):
     """This is a just-enough-implementation class to provide a list
-    that can be rewound to the start during iteration. It is not fully
-    functional.
+    that can be rewound during iteration.
     """
 
     def __init__(self, items):
         self._items = items
-        self._length = len(items)
         self._index = 0
 
     def __iter__(self):
@@ -22,7 +20,7 @@ class RewindableList(MutableSequence):
         return len(self._items)
 
     def __next__(self):
-        if self._index < self._length:
+        if self._index < len(self._items):
             item = self._items[self._index]
             self._index += 1
             return item
@@ -37,14 +35,3 @@ class RewindableList(MutableSequence):
             self._index = index
         else:
             raise IndexError
-
-    # Fail in in your duties ...
-    # The following methods should never be called
-    def __delitem__(self, key):
-        assert False
-
-    def __setitem__(self, key, value):
-        assert False
-
-    def insert(self, x, y):
-        assert False

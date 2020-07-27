@@ -5,6 +5,7 @@ import os
 import sys
 import platform
 from signal import signal, SIGINT
+
 if not "Windows" in platform.platform():
     from signal import SIGKILL
 import pprint
