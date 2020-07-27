@@ -18,7 +18,7 @@ pp = pprint.PrettyPrinter(width=120)
 sonos_max_items = 66000
 # ToDo: Understand why a hard stop is required to exit 'wait_stopped_for'
 #       and revert the variable below. Events related?
-hard_stop = False
+use_sigkill = False
 
 # Error handling functions 3.7
 def error_and_exit(msg):
@@ -161,6 +161,14 @@ def convert_true_false(true_or_false, conversion="YesOrNo"):
         return "on" if true_or_false is True else "off"
 
 
+def print_playlist_header(playlist_name):
+        spacer = "  "
+        title = "Sonos Playlist: {}".format(playlist_name)
+        underline = "=" * (len(title))
+        print(spacer + title)
+        print(spacer + underline)
+
+
 def print_tracks(tracks):
     item_number = 1
     for track in tracks:
@@ -177,7 +185,7 @@ def print_tracks(tracks):
         except:
             title = ""
         print(
-            "{:5d}: Artist: {} | Album: {} | Title: {}".format(
+            "{:7d}: Artist: {} | Album: {} | Title: {}".format(
                 item_number, artist, album, title
             )
         )
@@ -633,11 +641,13 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
 def list_playlist_tracks(speaker, action, args, soco_function, use_local_speaker_list):
     playlist = get_playlist(speaker, args[0])
     if playlist:
-        print("Sonos Playlist: {}".format(playlist.title))
+        print()
+        print_playlist_header(playlist.title)
         tracks = speaker.music_library.browse_by_idstring(
             "sonos_playlists", playlist.item_id, max_items=sonos_max_items
         )
         print_tracks(tracks)
+        print()
         return True
     else:
         error_and_exit("Playlist '{}' not found".format(args[0]))
@@ -847,8 +857,9 @@ def list_all_playlist_tracks(
     speaker, action, args, soco_function, use_local_speaker_list
 ):
     playlists = speaker.get_sonos_playlists(complete_result=True)
-    for playlist in playlists:
-        print("Sonos Playlist: {}".format(playlist.title))
+    print()
+    for playlist in sorted(playlists):
+        print_playlist_header(playlist.title)
         tracks = speaker.music_library.browse_by_idstring(
             "sonos_playlists", playlist.item_id
         )
@@ -859,7 +870,10 @@ def list_all_playlist_tracks(
 
 @zero_parameters
 def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
-    sub = speaker.avTransport.subscribe(auto_renew=True)
+    try:
+        sub = speaker.avTransport.subscribe(auto_renew=True)
+    except Exception as e:
+        error_and_exit("Exception {}".format(e))
     while True:
         try:
             event = sub.events.get(timeout=1.0)
@@ -881,14 +895,18 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
     if not duration:
         parameter_type_error(action, "Time h/m/s or HH:MM:SS")
     logging.info("Waiting until playback stopped for {}s".format(duration))
-    sub = speaker.avTransport.subscribe(auto_renew=True)
+    try:
+        sub = speaker.avTransport.subscribe(auto_renew=True)
+    except Exception as e:
+        error_and_exit("Exception {}".format(e))
     while True:
         try:
             event = sub.events.get(timeout=1.0)
             if event.variables["transport_state"] != "PLAYING":
                 sub.unsubscribe()
-                global hard_stop
-                hard_stop = True
+                # ToDo: Remove temporary fix for CTRL-C not exiting
+                global use_sigkill
+                use_sigkill = True
                 # Poll for changes; count down reset timer
                 # ToDo: Polling is not ideal; should be redesigned using events
                 # ToDO: Use actual timestamps, not accumulated poll_intervals
@@ -914,16 +932,19 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                             elapsed, total_elapsed_since_first_state_change
                         )
                     )
-                hard_stop = False
+                use_sigkill = False
                 return True
         except:
-            hard_stop = False
+            use_sigkill = False
             pass
 
 
 @zero_parameters
 def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
-    sub = speaker.avTransport.subscribe(auto_renew=True)
+    try:
+        sub = speaker.avTransport.subscribe(auto_renew=True)
+    except Exception as e:
+        error_and_exit("Exception {}".format(e))
     while True:
         try:
             event = sub.events.get(timeout=1.0)

@@ -3,7 +3,10 @@ import soco
 import argparse
 import os
 import sys
+import platform
 from signal import signal, SIGINT
+if not "Windows" in platform.platform():
+    from signal import SIGKILL
 import pprint
 import time
 import logging
@@ -32,9 +35,8 @@ def handler(signal_received, frame):
     # ToDo: Temporary for now; hard kill required to get out of 'wait_for_stopped'
     #       Need to understand this.
     #       Not tested on Windows
-    if ap.hard_stop:
-        # os.kill(os.getpid(), SIGKILL)
-        exit(0)
+    if not "Windows" in platform.platform() and ap.use_sigkill:
+        os.kill(os.getpid(), SIGKILL)
     else:
         exit(0)
 

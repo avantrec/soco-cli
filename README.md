@@ -22,9 +22,9 @@
       * [Multiple Sequential Commands](#multiple-sequential-commands)
          * [Chaining Commands Using the : Separator](#chaining-commands-using-the--separator)
          * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
-         * [Waiting Until Playback has Started or Stopped: wait_start and wait_stop Actions](#waiting-until-playback-has-started-or-stopped-wait_start-and-wait_stop-actions)
+         * [Waiting Until Playback has Started or Stopped: the wait_start and wait_stop Actions](#waiting-until-playback-has-started-or-stopped-the-wait_start-and-wait_stop-actions)
          * [Waiting until Playback has Stopped for : the wait_stopped_for Action](#waiting-until-playback-has-stopped-for--the-wait_stopped_for-action)
-         * [Looping: The loop Action](#looping-the-loop-action)
+         * [Looping: loop Actions](#looping-loop-actions)
       * [Alternative Discovery](#alternative-discovery)
          * [Usage](#usage)
          * [Speaker Naming](#speaker-naming)
@@ -35,7 +35,7 @@
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Sun Jul 26 18:13:01 BST 2020 -->
+<!-- Added by: pwt, at: Mon Jul 27 09:01:35 BST 2020 -->
 
 <!--te-->
 
@@ -43,7 +43,7 @@
 
 Soco CLI is a command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. Soco CLI is written entirely in Python and is portable across platforms.
 
-A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands.
+A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays and wait states between commands.
 
 Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
@@ -70,7 +70,7 @@ sonos SPEAKER ACTION <parameters>
 - `SPEAKER` identifies the speaker to operate on, and can be the speaker's Sonos Room (Zone) name or its IPv4 address in dotted decimal format. Note that the speaker name is case sensitive (unless using 'alternative discovery', discussed below).
 - `ACTION` is the operation to perform on the speaker. It can take zero or more parameters depending on the operation.
 
-Arguments containing spaces must be surrounded by quotes: double quotes work on all OS platforms, while Linux and macOS also support single quotes.
+As usual, command line arguments containing spaces must be surrounded by quotes: double quotes work on all OS platforms, while Linux and macOS also support single quotes.
 
 Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking any user confirmation; please bear this in mind when manipulating the queue, playlists, etc.!
 
@@ -176,7 +176,7 @@ sonos <speaker_name> play_from_queue 24
 - **`seek <HH:MM:SS>`**: Seek to a point within a track (if applicable for the audio source).
 - **`sleep_timer` (or `sleep`)**: Returns the current sleep timer remaining time in seconds; 0 if no sleep timer is active.
 - **`sleep_timer <duration | off | cancel>` (or `sleep`)**: Set the sleep timer to `<duration>`, which can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed. The time duration formats HH:MM and HH:MM:SS can also be used. To **cancel** a sleep timer, use `off` or `cancel` instead of a duration.
-- **`sleep_at <HH:MM:SS>`** Sets the sleep timer to sleep at a time up to 24 hours in the future. For example, to set the speaker to sleep at 4pm, use `sleep_at 16:00`.
+- **`sleep_at <HH:MM:SS>`**: Sets the sleep timer to sleep at a time up to 24 hours in the future. For example, to set the speaker to sleep at 4pm, use `sleep_at 16:00`.
 - **`stop`**: Stop playback.
 - **`track`**: Return information about the currently playing track.
 
@@ -256,17 +256,26 @@ Examples:
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`**
 - **`sonos Bedroom volume 0 : Bedroom play_favourite "Radio 4" : Bedroom ramp 40 : wait 1h : Bedroom ramp 0 : Bedroom stop`**
 
-### Waiting Until Playback has Started or Stopped: `wait_start` and `wait_stop` Actions
+### Waiting Until Playback has Started or Stopped: the `wait_start` and `wait_stop` Actions
+
+```
+sonos <speaker> wait_start
+sonos <speaker> wait_stop
+```
 
 The **`<speaker> wait_start`** and **`<speaker> wait_stop`** actions are used to pause execution of the sequence of `sonos` commands until a speaker has either started or stopped playback. For example, to reset the volume back to `25` only after the `Bedroom` speaker has stopped playing, use the following command sequence:
 
 `sonos Bedroom wait_stop : Bedroom volume 25`
 
-Note that if a speaker is already playing, `wait_start` will continue immediately, and if a speaker is already stopped, `wait_stop` will continue immediately. If the behaviour you want is to continue **after** the **next** piece of audio ends, then you can chain commands as shown in the following example:
+Note that if a speaker is already playing, `wait_start` will proceed immediately, and if a speaker is already stopped, `wait_stop` will proceed immediately. If the behaviour you want is to continue **after** the **next** piece of audio ends, then you can chain commands as shown in the following example:
 
-`<speaker> wait_start : <speaker> wait_stop : <speaker> vol 50`
+`sonos <speaker> wait_start : <speaker> wait_stop : <speaker> vol 50`
 
 ### Waiting until Playback has Stopped for <duration>: the `wait_stopped_for` Action
+
+```
+sonos <speaker> wait_stopped_for <duration>
+```
 
 **Experimental Feature**
 
@@ -278,21 +287,26 @@ This function is useful if one wants to perform an action on a speaker (such as 
 sonos Study wait_stopped_for 30m : Study line_in on : Study play
 ```
 
-### Looping: The `loop` Action
+### Looping: `loop` Actions
 
 **Experimental Feature**
 
-The **`loop`** action loops back to the beginning of a sequence of commands and executes the sequence again. In the absence of errors, looping will continue indefinitely until manually stopped. It does not require a speaker name.
+```
+loop
+loop <iterations>
+```
 
-To loop a specific number of times, use **`loop <iterations>`**, giving an integer number of iterations before command processing continues.
+The **`loop`** action loops back to the beginning of a sequence of commands and executes the sequence again. Do not supply a speaker name. In the absence of errors, `loop` will continue indefinitely until manually stopped.
 
-If using multiple `loop <iterations>` actions in a command sequence, note that command execution returns to the command after the most recent one, i.e., the loop executes the commands between the current `loop` or `loop <iterations>` action and the previous `loop <iterations>` action.
+To loop a specific number of times, use **`loop <iterations>`**, giving an integer number of iterations to perform before command processing continues.
+
+If using multiple `loop <iterations>` actions in a command sequence, note that command execution returns to the command immediately after the most recent `loop`, i.e., the loop executes the commands between the current `loop <iterations>` action and the previous one.  Note that `loop 1` can be considered a null loop action, but can be useful in restricting the scope of a subsequent `loop` action.
 
 Examples:
 
 ```
 sonos Study wait_start : Study wait_stopped_for 10m : Study volume 25 : loop
-sonos wait_until 22:00 : Bedroom play_fav "Radio 4" : Bedroom sleep 30m : wait 5m : loop 3
+sonos wait_until 22:00 : Bedroom play_fav "Radio 4" : Bedroom sleep 30m : loop 3
 ```
 
 ## Alternative Discovery
@@ -305,13 +319,13 @@ There are three reasons why you might want to use this alternative mechanism:
 
 1. On some networks, particularly when using WiFi, multicast forwarding does not work properly. This blocks normal SoCo speaker discovery.
 
-2. If you have two Sonos systems on the same network, for example when there is a 'split' S1/S2 system, normal SoCo discovery will find only one of the systems (randomly), which may not be the system that includes the speaker you want to control. In this case, discovery will fail.
+2. If there are two Sonos systems on the same network, for example when there is a 'split' S1/S2 system, normal SoCo discovery will find only one of the systems (randomly), which may not be the system that includes the speaker to be controlled. In this case, discovery will fail.
 
 3. It's often faster and more convenient to use the local cached speaker list. For example, in terms of convenience, speaker name matches can be case insensitive and can match on substrings.
 
 The disadvantage of using the alternative discovery mechanism is that the speaker list can become stale, requiring a manual refresh.
 
-Note that it's always possible to avoid any kind of discovery step by simply using a speaker's IP address directly.
+Note that it's always possible to avoid any kind of discovery step simply by using a speaker's IP address directly.
 
 ### Usage
 
