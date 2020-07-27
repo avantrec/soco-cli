@@ -95,6 +95,17 @@ def two_parameters(f):
     return wrapper
 
 
+def one_or_more_parameters(f):
+    def wrapper(*args, **kwargs):
+        if len(args[2]) < 1:
+            parameter_number_error(args[1], "1 or more")
+            return False
+        else:
+            return f(*args, **kwargs)
+
+    return wrapper
+
+
 # Utility functions
 def seconds_until(time_str):
     # target_time = datetime.time.fromisoformat(time_str)
@@ -964,6 +975,22 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
             pass
 
 
+@one_or_more_parameters
+def if_stopped(speaker, action, args, soco_function, use_local_speaker_list):
+    """Perform the action only if the speaker is currently not playing
+    """
+    state = speaker.get_current_transport_info()["current_transport_state"]
+    logging.info("Speaker '{}' is in state '{}'".format(speaker.player_name, state))
+    if state == "PLAYING":
+        logging.info("Action suppressed")
+        return True
+    else:
+        action = args[0]
+        args = args[1:]
+        logging.info("Action invoked: '{} {}'".format(action, args))
+        return process_action(speaker, action, args, use_local_speaker_list)
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -1124,4 +1151,5 @@ actions = {
     "wait_start": SonosFunction(wait_start, ""),
     "wait_stopped_for": SonosFunction(wait_stopped_for, ""),
     "wsf": SonosFunction(wait_stopped_for, ""),
+    "if_stopped": SonosFunction(if_stopped, ""),
 }

@@ -23,8 +23,9 @@
          * [Chaining Commands Using the : Separator](#chaining-commands-using-the--separator)
          * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
          * [Waiting Until Playback has Started or Stopped: the wait_start and wait_stop Actions](#waiting-until-playback-has-started-or-stopped-the-wait_start-and-wait_stop-actions)
-         * [Waiting until Playback has Stopped for : the wait_stopped_for Action](#waiting-until-playback-has-stopped-for--the-wait_stopped_for-action)
+         * [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
          * [Looping: loop Actions](#looping-loop-actions)
+      * [Conditional Execution](#conditional-execution)
       * [Alternative Discovery](#alternative-discovery)
          * [Usage](#usage)
          * [Speaker Naming](#speaker-naming)
@@ -35,7 +36,7 @@
       * [Resources](#resources)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Mon Jul 27 09:01:35 BST 2020 -->
+<!-- Added by: pwt, at: Mon Jul 27 14:16:22 BST 2020 -->
 
 <!--te-->
 
@@ -271,7 +272,7 @@ Note that if a speaker is already playing, `wait_start` will proceed immediately
 
 `sonos <speaker> wait_start : <speaker> wait_stop : <speaker> vol 50`
 
-### Waiting until Playback has Stopped for <duration>: the `wait_stopped_for` Action
+### The `wait_stopped_for <duration>` Action
 
 ```
 sonos <speaker> wait_stopped_for <duration>
@@ -308,6 +309,18 @@ Examples:
 sonos Study wait_start : Study wait_stopped_for 10m : Study volume 25 : loop
 sonos wait_until 22:00 : Bedroom play_fav "Radio 4" : Bedroom sleep 30m : loop 3
 ```
+
+## Conditional Execution
+
+**Experimental Feature**
+
+```
+sonos <speaker> if_stopped <action> <parameters>
+```
+
+The `if_stopped` modifier will execute the action that follows it only if the speaker is not currently playing. If the speaker is playing, the action will be skipped, and the next command in the sequence (if applicable) will be executed immediately. For example, to set the volume of a speaker back to a default value only if the speaker is not playing, use:
+
+`sonos <speaker> if_stopped volume 25`
 
 ## Alternative Discovery
 
