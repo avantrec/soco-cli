@@ -1,6 +1,6 @@
 v0.1.23   - Add conditional modifiers 'if_playing' and 'if_stopped'
           _ Add actions 'loop_for' and 'loop_until'
-          - Reintroduce SIGKILL support for non-Windows platforms
+          - Reintroduce SIGKILL workaround for non-Windows platforms
 v0.1.22_1 - Revert use of SIGKILL (Breaking Windows use)
 v0.1.22   - Add 'wait_stopped_for' action (experimental)
           - Add 'loop' and 'loop <iterations>' actions (experimental)

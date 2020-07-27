@@ -303,7 +303,7 @@ The **`loop`** action loops back to the beginning of a sequence of commands and 
 
 To loop a specific number of times, use **`loop <iterations>`**, giving an integer number of iterations to perform before command processing continues.
 
-To loop for a specific period of time, use `loop_for <duration>`, where the format for `<duration>` follows the same rules as `wait_for`.
+To loop for a specific period of time, use `loop_for <duration>`, where the format for `<duration>` follows the same rules as `wait`.
 
 To loop until a specific time, use `loop_until <time>`, where the format for `<time>` follows the same rules as `wait_until`.
 
