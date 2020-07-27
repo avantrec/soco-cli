@@ -10,6 +10,7 @@ if not "Windows" in platform.platform():
     from signal import SIGKILL
 import pprint
 import time
+import datetime
 import logging
 
 from . import speakers
@@ -213,6 +214,8 @@ def main():
                     "sleep_timer",
                     "sleep_at",
                     "wait_stopped_for",
+                    "loop_for",
+                    "loop_until",
                 ]
                 or ":/" in arg
             ):
@@ -235,6 +238,7 @@ def main():
     loop_pointer = (
         -1
     )  # There is a notional 'loop' action before the first command sequence
+    loop_start_time = None
     for sequence in rewindable_sequences:
         try:
             speaker_name = sequence[0]
@@ -259,6 +263,47 @@ def main():
                         loop_iterator = None
                         loop_pointer = sequence_pointer + 1
                         sequence_pointer += 1
+                        continue
+                logging.info("Rewinding to command number {}".format(loop_pointer + 2))
+                rewindable_sequences.rewind_to(loop_pointer + 1)
+                sequence_pointer = loop_pointer
+                continue
+
+            # Special case: the 'loop_for' action
+            if speaker_name.lower() == "loop_for":
+                if len(sequence) != 2:
+                    error_and_exit("Action 'loop_for' requires one parameter (duration)")
+                if loop_start_time is None:
+                    loop_start_time = time.time()
+                    loop_duration = convert_to_seconds(sequence[1])
+                    if not loop_duration:
+                        error_and_exit("Action 'loop_for' requires one parameter (duration)")
+                    logging.info("Starting action 'loop_for' for duration {}s".format(loop_duration))
+                else:
+                    if time.time() - loop_start_time >= loop_duration:
+                        logging.info("Ending action 'loop_for' after duration {}s".format(loop_duration))
+                        loop_start_time = None
+                        continue
+                logging.info("Rewinding to command number {}".format(loop_pointer + 2))
+                rewindable_sequences.rewind_to(loop_pointer + 1)
+                sequence_pointer = loop_pointer
+                continue
+
+            # Special case: the 'loop_until' action
+            if speaker_name.lower() == "loop_until":
+                if len(sequence) != 2:
+                    error_and_exit("Action 'loop_until' requires one parameter (stop time)")
+                if loop_start_time is None:
+                    loop_start_time = time.time()
+                    try:
+                        loop_duration = ap.seconds_until(sequence[1])
+                    except Exception as e:
+                        error_and_exit("Action 'loop_until' requires one parameter (stop time)")
+                    logging.info("Starting action 'loop_until' for duration {}s".format(loop_duration))
+                else:
+                    if time.time() - loop_start_time >= loop_duration:
+                        logging.info("Ending action 'loop_until' after duration {}s".format(loop_duration))
+                        loop_start_time = None
                         continue
                 logging.info("Rewinding to command number {}".format(loop_pointer + 2))
                 rewindable_sequences.rewind_to(loop_pointer + 1)

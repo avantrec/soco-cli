@@ -295,19 +295,27 @@ sonos Study wait_stopped_for 30m : Study line_in on : Study play
 ```
 loop
 loop <iterations>
+loop_for <duration>
+loop_until <time>
 ```
 
 The **`loop`** action loops back to the beginning of a sequence of commands and executes the sequence again. Do not supply a speaker name. In the absence of errors, `loop` will continue indefinitely until manually stopped.
 
 To loop a specific number of times, use **`loop <iterations>`**, giving an integer number of iterations to perform before command processing continues.
 
-If using multiple `loop <iterations>` actions in a command sequence, note that command execution returns to the command immediately after the most recent `loop`, i.e., the loop executes the commands between the current `loop <iterations>` action and the previous one.  Note that `loop 1` can be considered a null loop action, but can be useful in restricting the scope of a subsequent `loop` action.
+To loop for a specific period of time, use `loop_for <duration>`, where the format for `<duration>` follows the same rules as `wait_for`.
+
+To loop until a specific time, use `loop_until <time>`, where the format for `<time>` follows the same rules as `wait_until`.
+
+If using multiple `loop` actions in a command sequence, note that command execution returns to the command immediately after the most recent `loop`, i.e., the loop executes the commands between the current `loop` action and the previous one.  Note that `loop 1` can be considered a null loop action, but can be useful in restricting the scope of a subsequent `loop` action.
 
 Examples:
 
 ```
 sonos Study wait_start : Study wait_stopped_for 10m : Study volume 25 : loop
 sonos wait_until 22:00 : Bedroom play_fav "Radio 4" : Bedroom sleep 30m : loop 3
+sonos Bedroom play_fav Jazz24 : Bedroom sleep 30m : wait 1h : loop_for 3h
+sonos wait_until 08:00 : Kitchen play_fav "World Service" : Kitchen sleep 10m : wait 1h : loop_until 12:01
 ```
 
 ## Conditional Command Execution
