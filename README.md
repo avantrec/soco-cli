@@ -394,12 +394,11 @@ These options only have an effect when combined with the `-l` **and** `-r` optio
 
 ### Options for the `sonos-discover` Command
 
-Without options, `sonos-discover` will execute the discovery process and complete silently. It will create a speaker cache file, or replace it if already present.
+Without options, `sonos-discover` will execute the discovery process and print out its results. It will create a speaker cache file, or replace it if already present.
 
 Other options:
 
-- **`--print, -p`**: Print the results after discovery, including the networks that were searched.
-- **`--show-local-speaker-cache, -s`**: Read and print the current contents of the speaker cache file, then exit.
+- **`--print, -p`**: Print the the current contents of the speaker cache file
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache file.
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s; increase this if sonos-discover is not finding all of your Sonos devices.

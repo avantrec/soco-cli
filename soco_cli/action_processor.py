@@ -212,7 +212,7 @@ def print_info(speaker, action, args, soco_function, use_local_speaker_list):
     output = getattr(speaker, soco_function)()
     for item in sorted(output):
         if item not in ["metadata", "uri", "album_art"]:
-            print("  {}: {}".format(item, output[item]))
+            print("  {}: {}".format(item.capitalize(), output[item]))
     return True
 
 

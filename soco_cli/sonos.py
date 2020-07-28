@@ -133,6 +133,7 @@ def main():
                 # Reset pointers, rewind and continue
                 loop_pointer = -1
                 sequence_pointer = 0
+                logging.info("Rewind to start of command sequences")
                 rewindable_sequences.rewind()
                 continue
 

@@ -141,6 +141,7 @@ class Speakers:
     def remove_save_file(self):
         """Removes the saved speaker list file"""
         os.remove(self.save_pathname)
+        return self.save_pathname
 
     @staticmethod
     def is_ipv4_address(ip_address):

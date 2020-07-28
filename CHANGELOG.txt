@@ -1,4 +1,4 @@
-v0.1.25   -
+v0.1.25   - sonos-discover behaviour change: '-p' now prints the current data
 v0.1.24   - Add 'loop_to_start' action
           - Allow CTRL-C to break out of 'wait_stopped_for' state on Windows (SIGTERM)
           - Add 'soco' synonym for 'sonos' command
