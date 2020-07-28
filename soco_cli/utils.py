@@ -10,6 +10,8 @@ from .speakers import Speakers
 
 if "Windows" not in platform.platform():
     from signal import SIGKILL
+else:
+    from signal import SIGTERM
 
 
 # Error handling
@@ -199,7 +201,7 @@ def sig_handler(signal_received, frame):
     if "Windows" not in platform.platform() and use_sigkill:
         os.kill(os.getpid(), SIGKILL)
     else:
-        exit(0)
+        os.kill(os.getpid(), SIGTERM)
 
 
 class RewindableList(Sequence):

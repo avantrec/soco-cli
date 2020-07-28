@@ -32,6 +32,7 @@ setuptools.setup(
     entry_points={
         "console_scripts": [
             "sonos=soco_cli.sonos:main",
+            "soco=soco_cli.sonos:main",
             "sonos-discover=soco_cli.sonos_discover:main",
         ]
     },
