@@ -1,3 +1,4 @@
+v0.1.25   -
 v0.1.24   - Add 'loop_to_start' action
           - Allow CTRL-C to break out of 'wait_stopped_for' state on Windows (SIGTERM)
           - Add 'soco' synonym for 'sonos' command
@@ -5,7 +6,7 @@ v0.1.24   - Add 'loop_to_start' action
 v0.1.23   - Add conditional modifiers 'if_playing' and 'if_stopped'
           _ Add actions 'loop_for' and 'loop_until'
           - Reintroduce SIGKILL workaround for non-Windows platforms
-v0.1.22_1 - Revert use of SIGKILL (Breaking Windows use)
+v0.1.22_1 - Revert use of SIGKILL (was preventing running on Windows)
 v0.1.22   - Add 'wait_stopped_for' action (experimental)
           - Add 'loop' and 'loop <iterations>' actions (experimental)
           - Fix 100 track display limit on 'list_playlist_tracks'

@@ -286,3 +286,35 @@ def get_speaker(name, local=False):
     else:
         logging.info("Using SoCo speaker discovery")
         return soco.discovery.by_name(name)
+
+
+# Argument processing
+def configure_common_args(parser):
+    """Set up the optional arguments common across the command line programs"""
+    parser.add_argument(
+        "--network-discovery-threads",
+        "-t",
+        type=int,
+        default=128,
+        help="Maximum number of threads used for Sonos network discovery",
+    )
+    parser.add_argument(
+        "--network-discovery-timeout",
+        "-n",
+        type=float,
+        default=2.0,
+        help="Network timeout for Sonos device scan (seconds)",
+    )
+    parser.add_argument(
+        "--version",
+        "-v",
+        action="store_true",
+        default=False,
+        help="Print the soco-cli and SoCo versions and exit",
+    )
+    parser.add_argument(
+        "--log",
+        type=str,
+        default="NONE",
+        help="Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
+    )

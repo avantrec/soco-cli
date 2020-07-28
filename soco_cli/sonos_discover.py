@@ -1,6 +1,6 @@
 import argparse
 
-from .utils import error_and_exit, configure_logging, version
+from .utils import error_and_exit, configure_logging, version, configure_common_args
 from .speakers import Speakers
 
 
@@ -19,20 +19,6 @@ def main():
         help="Print the discovery results",
     )
     parser.add_argument(
-        "--network-discovery-threads",
-        "-t",
-        type=int,
-        default=128,
-        help="Maximum number of threads used for Sonos network discovery",
-    )
-    parser.add_argument(
-        "--network-discovery-timeout",
-        "-n",
-        type=float,
-        default=2.0,
-        help="Network timeout for Sonos device scan (seconds)",
-    )
-    parser.add_argument(
         "--delete-local-speaker-cache",
         "-d",
         action="store_true",
@@ -46,19 +32,8 @@ def main():
         default=False,
         help="Show contents of the local speaker cache",
     )
-    parser.add_argument(
-        "--version",
-        "-v",
-        action="store_true",
-        default=False,
-        help="Show the soco-cli and SoCo version, and exit.",
-    )
-    parser.add_argument(
-        "--log",
-        type=str,
-        default="NONE",
-        help="Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
-    )
+    # The rest of the optional args are common
+    configure_common_args(parser)
 
     # Parse the command line
     args = parser.parse_args()

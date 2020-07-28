@@ -18,6 +18,7 @@ from .utils import (
     seconds_until,
     get_speaker,
     set_speaker_list,
+    configure_common_args,
 )
 
 # Globals
@@ -53,33 +54,9 @@ def main():
         default=False,
         help="Refresh the local speaker list",
     )
-    parser.add_argument(
-        "--network-discovery-threads",
-        "-t",
-        type=int,
-        default=128,
-        help="Maximum number of threads used for Sonos network discovery",
-    )
-    parser.add_argument(
-        "--network-discovery-timeout",
-        "-n",
-        type=float,
-        default=2.0,
-        help="Network timeout for Sonos device scan (seconds)",
-    )
-    parser.add_argument(
-        "--version",
-        "-v",
-        action="store_true",
-        default=False,
-        help="Print the soco-cli and SoCo versions and exit",
-    )
-    parser.add_argument(
-        "--log",
-        type=str,
-        default="NONE",
-        help="Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
-    )
+    # The rest of the optional args are common
+    configure_common_args(parser)
+
     # Parse the command line
     args = parser.parse_args()
 
@@ -230,7 +207,7 @@ def main():
                     loop_start_time = time.time()
                     try:
                         loop_duration = seconds_until(sequence[1])
-                    except Exception as e:
+                    except:
                         error_and_exit(
                             "Action 'loop_until' requires one parameter (stop time)"
                         )
