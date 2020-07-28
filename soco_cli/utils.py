@@ -198,10 +198,13 @@ def sig_handler(signal_received, frame):
     # ToDo: Temporary for now; hard kill required to get out of 'wait_for_stopped'
     #       Need to understand this.
     #       Not tested on Windows
-    if "Windows" not in platform.platform() and use_sigkill:
-        os.kill(os.getpid(), SIGKILL)
+    if use_sigkill:
+        if "Windows" not in platform.platform():
+            os.kill(os.getpid(), SIGKILL)
+        else:
+            os.kill(os.getpid(), SIGTERM)
     else:
-        os.kill(os.getpid(), SIGTERM)
+        exit(0)
 
 
 class RewindableList(Sequence):
