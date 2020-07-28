@@ -1,17 +1,12 @@
 import datetime
 import logging
 import os
-import platform
 import sys
+from signal import SIGTERM
 from collections.abc import Sequence
 import soco
 from .__init__ import __version__
 from .speakers import Speakers
-
-if "Windows" not in platform.platform():
-    from signal import SIGKILL
-else:
-    from signal import SIGTERM
 
 
 # Error handling
@@ -182,13 +177,13 @@ def version():
     print("soco version:     {}".format(soco.__version__))
 
 
-# ToDo: Remove with SIGKILL fix
-use_sigkill = False
+# ToDo: Remove with SIGTERM fix
+use_sigterm = False
 
 
-def set_sigkill(sigkill):
-    global use_sigkill
-    use_sigkill = sigkill
+def set_sigterm(sigterm):
+    global use_sigterm
+    use_sigterm = sigterm
 
 
 def sig_handler(signal_received, frame):
@@ -198,11 +193,8 @@ def sig_handler(signal_received, frame):
     # ToDo: Temporary for now; hard kill required to get out of 'wait_for_stopped'
     #       Need to understand this.
     #       Not tested on Windows
-    if use_sigkill:
-        if "Windows" not in platform.platform():
-            os.kill(os.getpid(), SIGKILL)
-        else:
-            os.kill(os.getpid(), SIGTERM)
+    if use_sigterm:
+        os.kill(os.getpid(), SIGTERM)
     else:
         exit(0)
 

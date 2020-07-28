@@ -21,7 +21,7 @@ from .utils import (
     seconds_until,
     convert_true_false,
     convert_to_seconds,
-    set_sigkill,
+    set_sigterm,
     get_speaker,
 )
 
@@ -797,7 +797,7 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
     while True:
         try:
             # ToDo: Remove temporary fix for CTRL-C not exiting
-            set_sigkill(True)
+            set_sigterm(True)
             event = sub.events.get(timeout=1.0)
             if event.variables["transport_state"] != "PLAYING":
                 sub.unsubscribe()
@@ -829,10 +829,10 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                         )
                     )
                     time.sleep(poll_interval)
-                set_sigkill(False)
+                set_sigterm(False)
                 return True
         except:
-            set_sigkill(False)
+            set_sigterm(False)
             pass
 
 
