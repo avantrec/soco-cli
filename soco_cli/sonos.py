@@ -6,11 +6,10 @@ import sys
 import platform
 from signal import signal, SIGINT
 
-if not "Windows" in platform.platform():
+if "Windows" not in platform.platform():
     from signal import SIGKILL
 import pprint
 import time
-import datetime
 import logging
 
 from . import speakers
@@ -24,7 +23,7 @@ pp = pprint.PrettyPrinter(width=100)
 
 
 def error_and_exit(msg):
-    # Print to stderror
+    # Print to stderr
     print("Error:", msg, file=sys.stderr)
     # Use os._exit() to avoid the catch-all 'except'
     os._exit(1)
@@ -289,9 +288,9 @@ def main():
                 if loop_start_time is None:
                     loop_start_time = time.time()
                     loop_duration = convert_to_seconds(sequence[1])
-                    if not loop_duration:
+                    if loop_duration is None or loop_duration < 0:
                         error_and_exit(
-                            "Action 'loop_for' requires one parameter (duration)"
+                            "Action 'loop_for' requires one parameter (duration >= 0)"
                         )
                     logging.info(
                         "Starting action 'loop_for' for duration {}s".format(
@@ -376,6 +375,8 @@ def main():
                 continue
 
             # General action processing
+            if len(sequence) < 2:
+                error_and_exit("At least 2 parameters required in action sequence '{}'".format(sequence))
             action = sequence[1].lower()
             args = sequence[2:]
             speaker = get_speaker(speaker_name, use_local_speaker_list)

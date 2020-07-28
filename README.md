@@ -309,7 +309,7 @@ To loop for a specific period of time, use **`loop_for <duration>`**, where the 
 
 To loop until a specific time, use **`loop_until <time>`**, where the format for `<time>` follows the same rules as `wait_until`.
 
-If using multiple `loop` actions in a command sequence, note that command execution returns to the command immediately after the most recent `loop`, i.e., the loop executes the commands between the current `loop` action and the previous one.  Note that `loop 1` can be considered a null loop action, and can be useful in restricting the scope of a subsequent `loop` action.
+Multiple `loop` statements can be used in `sonos` command sequence. For any given `loop` statement, command execution returns to the command immediately after the most recent `loop`, i.e., the loop executes the commands between the current `loop` action and the previous one.  Note that `loop 1` can be considered a null loop action, and can be useful in restricting the scope of a subsequent `loop` action.
 
 The **`loop_to_start`** action will loop back to the very start of a command sequence. It takes no parameters.
 

@@ -248,7 +248,9 @@ def no_args_one_output(speaker, action, args, soco_function, use_local_speaker_l
 @zero_parameters
 def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
     queue = speaker.get_queue(max_items=sonos_max_items)
+    print()
     print_tracks(queue)
+    print()
     return True
 
 
@@ -268,10 +270,12 @@ def list_numbered_things(speaker, action, args, soco_function, use_local_speaker
     for thing in things:
         things_list.append(thing.title)
     things_list.sort()
+    print()
     index = 0
     for thing in things_list:
         index += 1
         print("{:5d}: {}".format(index, thing))
+    print()
     return True
 
 
@@ -843,6 +847,7 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
         "Recurrence",
         "Include Grouped",
     ]
+    print()
     print(tabulate.tabulate(sorted(details), headers, numalign="center"))
     return True
 
@@ -931,14 +936,13 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                     )
                 )
                 while (current_time - start_time) < duration:
-                    time.sleep(poll_interval)
                     state = speaker.get_current_transport_info()[
                         "current_transport_state"
                     ]
                     logging.info("Transport state = '{}'".format(state))
                     current_time = time.time()
                     if state == "PLAYING":
-                        # Reset the timer
+                        # Restart the timer
                         start_time = current_time
                     logging.info(
                         "Elapsed since not 'PLAYING' = {}s, Total elapsed = {}s".format(
@@ -946,6 +950,7 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                             int(current_time - original_start_time),
                         )
                     )
+                    time.sleep(poll_interval)
                 use_sigkill = False
                 return True
         except:
