@@ -303,15 +303,15 @@ loop_to_start
 
 The **`loop`** action loops back to the beginning of a sequence of commands and executes the sequence again. Do not supply a speaker name. In the absence of errors, `loop` will continue indefinitely until manually stopped.
 
-To loop a specific number of times, use **`loop <iterations>`**, giving an integer number of iterations to perform before command processing continues.
+To loop a specific number of times, use **`loop <iterations>`**, giving an integer number of iterations to perform before command processing continues. The number of iterations includes the one just performed, i.e., in the sequence `sonos <speaker> vol 25: wait 1h : loop 2`, the commands preceding the `loop 2` action will be performed twice in total.
 
-To loop for a specific period of time, use `loop_for <duration>`, where the format for `<duration>` follows the same rules as `wait`.
+To loop for a specific period of time, use **`loop_for <duration>`**, where the format for `<duration>` follows the same rules as `wait`. Note that timer starts from the point when the `loop` statement is reached, not from the overall start of command execution.
 
-To loop until a specific time, use `loop_until <time>`, where the format for `<time>` follows the same rules as `wait_until`.
+To loop until a specific time, use **`loop_until <time>`**, where the format for `<time>` follows the same rules as `wait_until`.
 
-If using multiple `loop` actions in a command sequence, note that command execution returns to the command immediately after the most recent `loop`, i.e., the loop executes the commands between the current `loop` action and the previous one.  Note that `loop 1` can be considered a null loop action, but can be useful in restricting the scope of a subsequent `loop` action.
+If using multiple `loop` actions in a command sequence, note that command execution returns to the command immediately after the most recent `loop`, i.e., the loop executes the commands between the current `loop` action and the previous one.  Note that `loop 1` can be considered a null loop action, and can be useful in restricting the scope of a subsequent `loop` action.
 
-The **`loop_to_start`** action will loop back to the very start of the command sequence.
+The **`loop_to_start`** action will loop back to the very start of a command sequence. It takes no parameters.
 
 Examples:
 
