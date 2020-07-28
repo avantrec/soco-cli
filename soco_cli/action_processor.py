@@ -8,7 +8,6 @@ import tabulate
 import datetime
 import time
 from collections import namedtuple
-from soco.events import event_listener
 from queue import Empty
 
 from . import sonos
@@ -925,9 +924,11 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                 # Poll for changes; count down reset timer
                 # ToDo: Polling is not ideal; should be redesigned using events
                 original_start_time = start_time = current_time = time.time()
-                poll_interval = 10.0
+                poll_interval = 10
                 logging.info(
-                    "Checking for not PLAYING, increment = {}s".format(poll_interval)
+                    "Checking for not PLAYING, poll interval = {}s".format(
+                        poll_interval
+                    )
                 )
                 while (current_time - start_time) < duration:
                     time.sleep(poll_interval)
@@ -936,9 +937,8 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                     ]
                     logging.info("Transport state = '{}'".format(state))
                     current_time = time.time()
-                    if state != "PLAYING":
-                        pass
-                    else:
+                    if state == "PLAYING":
+                        # Reset the timer
                         start_time = current_time
                     logging.info(
                         "Elapsed since not 'PLAYING' = {}s, Total elapsed = {}s".format(

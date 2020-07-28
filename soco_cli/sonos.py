@@ -243,6 +243,16 @@ def main():
         try:
             speaker_name = sequence[0]
 
+            # Special case: the 'loop_to_start' action
+            if speaker_name.lower() == "loop_to_start":
+                if len(sequence) != 1:
+                    error_and_exit("Action 'loop_to_start' takes no parameters")
+                # Reset pointers, rewind and continue
+                loop_pointer = -1
+                sequence_pointer = 0
+                rewindable_sequences.rewind()
+                continue
+
             # Special case: the 'loop' action
             if speaker_name.lower() == "loop":
                 if len(sequence) == 2:
@@ -259,6 +269,7 @@ def main():
                                 "Action 'loop' takes no parameters, or a number of iterations (> 0)"
                             )
                     loop_iterator -= 1
+                    logging.info("Loop iterator countdown = {}".format(loop_iterator))
                     if loop_iterator <= 0:
                         loop_iterator = None
                         loop_pointer = sequence_pointer + 1
@@ -364,17 +375,14 @@ def main():
                     )
                 continue
 
+            # General action processing
             action = sequence[1].lower()
             args = sequence[2:]
             speaker = get_speaker(speaker_name, use_local_speaker_list)
             if not speaker:
                 error_and_exit("Speaker '{}' not found".format(speaker_name))
             if not ap.process_action(speaker, action, args, use_local_speaker_list):
-                error_and_exit(
-                    "Action '{}' not found. \n\nAvailable actions are: {} and 'wait', 'wait_until'.\n".format(
-                        action, list(ap.actions.keys())
-                    )
-                )
+                error_and_exit("Action '{}' not found".format(action))
 
         except Exception as e:
             error_and_exit(str(e))

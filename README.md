@@ -37,7 +37,7 @@
       * [Known Issues](#known-issues)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Mon Jul 27 18:47:22 BST 2020 -->
+<!-- Added by: pwt, at: Tue Jul 28 10:02:49 BST 2020 -->
 
 <!--te-->
 
@@ -298,6 +298,7 @@ loop
 loop <iterations>
 loop_for <duration>
 loop_until <time>
+loop_to_start
 ```
 
 The **`loop`** action loops back to the beginning of a sequence of commands and executes the sequence again. Do not supply a speaker name. In the absence of errors, `loop` will continue indefinitely until manually stopped.
@@ -309,6 +310,8 @@ To loop for a specific period of time, use `loop_for <duration>`, where the form
 To loop until a specific time, use `loop_until <time>`, where the format for `<time>` follows the same rules as `wait_until`.
 
 If using multiple `loop` actions in a command sequence, note that command execution returns to the command immediately after the most recent `loop`, i.e., the loop executes the commands between the current `loop` action and the previous one.  Note that `loop 1` can be considered a null loop action, but can be useful in restricting the scope of a subsequent `loop` action.
+
+The **`loop_to_start`** action will loop back to the very start of the command sequence.
 
 Examples:
 
