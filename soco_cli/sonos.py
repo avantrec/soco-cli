@@ -177,13 +177,14 @@ def main():
                     loop_iterator -= 1
                     logging.info("Loop iterator countdown = {}".format(loop_iterator))
                     if loop_iterator <= 0:
+                        # Reset variables, stop iteration and continue
                         loop_iterator = None
-                        loop_pointer = sequence_pointer + 1
+                        loop_pointer = sequence_pointer
                         sequence_pointer += 1
                         continue
                 logging.info("Rewinding to command number {}".format(loop_pointer + 2))
                 rewindable_sequences.rewind_to(loop_pointer + 1)
-                sequence_pointer = loop_pointer
+                sequence_pointer = loop_pointer + 1
                 continue
 
             # Special case: the 'loop_for' action
