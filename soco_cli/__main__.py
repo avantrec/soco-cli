@@ -1,4 +1,4 @@
-from soco_cli import sonos
+from .sonos import main
 
 if __name__ == "__main__":
-    sonos.main()
+    main()

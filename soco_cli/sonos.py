@@ -1,103 +1,32 @@
 #!/usr/bin/env python3
 import soco
 import argparse
-import os
-import sys
-import platform
 from signal import signal, SIGINT
-
-if "Windows" not in platform.platform():
-    from signal import SIGKILL
 import pprint
 import time
 import logging
 
-from . import speakers
-from . import __version__
-from . import action_processor as ap
-from . import utils
+from .speakers import Speakers
+from .action_processor import process_action
+from .utils import (
+    error_and_exit,
+    convert_to_seconds,
+    version,
+    sig_handler,
+    configure_logging,
+    RewindableList,
+    seconds_until,
+    get_speaker,
+    set_speaker_list,
+)
 
 # Globals
-speaker_list = None
 pp = pprint.PrettyPrinter(width=100)
-
-
-def error_and_exit(msg):
-    # Print to stderr
-    print("Error:", msg, file=sys.stderr)
-    # Use os._exit() to avoid the catch-all 'except'
-    os._exit(1)
-
-
-def handler(signal_received, frame):
-    # Exit silently without stack dump
-    logging.info("Caught signal, exiting.")
-    print(" CTRL-C ... exiting.")
-    # ToDo: Temporary for now; hard kill required to get out of 'wait_for_stopped'
-    #       Need to understand this.
-    #       Not tested on Windows
-    if not "Windows" in platform.platform() and ap.use_sigkill:
-        os.kill(os.getpid(), SIGKILL)
-    else:
-        exit(0)
-
-
-def convert_to_seconds(time_str):
-    """Convert a time string to seconds.
-    time_str can be one of Nh, Nm or Ns, or of the form HH:MM:SS
-    """
-    logging.info("Converting '{}' to a number of seconds".format(time_str))
-    time_str = time_str.lower()
-    try:
-        if ":" in time_str:  # Assume form is HH:MM:SS or HH:MM
-            parts = time_str.split(":")
-            if len(parts) == 3:  # HH:MM:SS
-                if 0 <= int(parts[1]) <= 59 and 0 <= int(parts[2]) <= 59:
-                    duration = float(
-                        int(parts[0]) * 60 * 60 + int(parts[1]) * 60 + int(parts[2])
-                    )
-                else:
-                    duration = None
-            else:  # HH:MM
-                if 0 <= int(parts[1]) <= 59:
-                    duration = float(int(parts[0]) * 60 * 60 + int(parts[1]) * 60)
-                else:
-                    duration = None
-        elif time_str.endswith("s"):  # Seconds (explicit)
-            duration = float(time_str[:-1])
-        elif time_str.endswith("m"):  # Minutes
-            duration = float(time_str[:-1]) * 60
-        elif time_str.endswith("h"):  # Hours
-            duration = float(time_str[:-1]) * 60 * 60
-        else:  # Seconds (default)
-            duration = float(time_str)
-        return duration
-    except ValueError:
-        # Catch cast failures
-        return None
-
-
-def get_speaker(name, local=False):
-    # Allow the use of an IP address even if 'local' is specified
-    if speakers.Speakers.is_ipv4_address(name):
-        logging.info("Using IP address instead of speaker name")
-        return soco.SoCo(name)
-    if local:
-        logging.info("Using local speaker list")
-        return speaker_list.find(name)
-    else:
-        logging.info("Using SoCo speaker discovery")
-        return soco.discovery.by_name(name)
-
-
-def version():
-    print("soco-cli version: {}".format(__version__))
-    print("soco version:     {}".format(soco.__version__))
 
 
 def main():
     # Handle SIGINT
-    signal(SIGINT, handler)
+    signal(SIGINT, sig_handler)
 
     # Create the argument parser
     parser = argparse.ArgumentParser(
@@ -158,34 +87,11 @@ def main():
         version()
         exit(0)
 
-    # Set up logging
-    log_level = args.log.lower()
-    if log_level == "none":
-        # Disables all logging (i.e., CRITICAL and below)
-        logging.disable(logging.CRITICAL)
-    else:
-        log_format = (
-            "%(asctime)s %(filename)s:%(lineno)s - %(funcName)s() - %(message)s"
-        )
-        if log_level == "debug":
-            logging.basicConfig(format=log_format, level=logging.DEBUG)
-        elif log_level == "info":
-            logging.basicConfig(format=log_format, level=logging.INFO)
-        elif log_level == "warning":
-            logging.basicConfig(format=log_format, level=logging.WARNING)
-        elif log_level == "error":
-            logging.basicConfig(format=log_format, level=logging.ERROR)
-        elif log_level == "critical":
-            logging.basicConfig(format=log_format, level=logging.CRITICAL)
-        else:
-            error_and_exit(
-                "--log takes one of: NONE, DEBUG, INFO, WARN, ERROR, CRITICAL"
-            )
+    configure_logging(args.log)
 
     use_local_speaker_list = args.use_local_speaker_list
     if use_local_speaker_list:
-        global speaker_list
-        speaker_list = speakers.Speakers(
+        speaker_list = Speakers(
             network_threads=args.network_discovery_threads,
             network_timeout=args.network_discovery_timeout,
         )
@@ -193,6 +99,7 @@ def main():
             logging.info("Start speaker discovery")
             speaker_list.discover()
             speaker_list.save()
+        set_speaker_list(speaker_list)
 
     # Break up the command line into command sequences, observing the separator.
     command_line_separator = ":"
@@ -231,7 +138,7 @@ def main():
 
     # Loop through processing command sequences
     logging.info("Found {} action sequence(s): {}".format(len(sequences), sequences))
-    rewindable_sequences = utils.RewindableList(sequences)
+    rewindable_sequences = RewindableList(sequences)
     loop_iterator = None
     sequence_pointer = 0
     loop_pointer = (
@@ -320,7 +227,7 @@ def main():
                 if loop_start_time is None:
                     loop_start_time = time.time()
                     try:
-                        loop_duration = ap.seconds_until(sequence[1])
+                        loop_duration = seconds_until(sequence[1])
                     except Exception as e:
                         error_and_exit(
                             "Action 'loop_until' requires one parameter (stop time)"
@@ -365,7 +272,7 @@ def main():
                     error_and_exit("'wait_until' requires 1 parameter")
                 try:
                     action = sequence[1].lower()
-                    duration = ap.seconds_until(action)
+                    duration = seconds_until(action)
                     logging.info("Waiting for {}s".format(duration))
                     time.sleep(duration)
                 except ValueError:
@@ -376,13 +283,17 @@ def main():
 
             # General action processing
             if len(sequence) < 2:
-                error_and_exit("At least 2 parameters required in action sequence '{}'".format(sequence))
+                error_and_exit(
+                    "At least 2 parameters required in action sequence '{}'".format(
+                        sequence
+                    )
+                )
             action = sequence[1].lower()
             args = sequence[2:]
             speaker = get_speaker(speaker_name, use_local_speaker_list)
             if not speaker:
                 error_and_exit("Speaker '{}' not found".format(speaker_name))
-            if not ap.process_action(speaker, action, args, use_local_speaker_list):
+            if not process_action(speaker, action, args, use_local_speaker_list):
                 error_and_exit("Action '{}' not found".format(action))
 
         except Exception as e:

@@ -1,16 +1,7 @@
-import os
-import sys
 import argparse
-import logging
-from . import speakers
-from . import sonos
 
-
-def error_and_exit(msg):
-    # Print to stderror
-    print("Error:", msg, file=sys.stderr)
-    # Use os._exit() to avoid the catch-all 'except'
-    os._exit(1)
+from .utils import error_and_exit, configure_logging, version
+from .speakers import Speakers
 
 
 def main():
@@ -73,34 +64,12 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        sonos.version()
+        version()
         exit(0)
 
-    # Set up logging
-    log_level = args.log.lower()
-    if log_level == "none":
-        # Disables all logging (i.e., CRITICAL and below)
-        logging.disable(logging.CRITICAL)
-    else:
-        log_format = (
-            "%(asctime)s %(filename)s:%(lineno)s - %(funcName)s() - %(message)s"
-        )
-        if log_level == "debug":
-            logging.basicConfig(format=log_format, level=logging.DEBUG)
-        elif log_level == "info":
-            logging.basicConfig(format=log_format, level=logging.INFO)
-        elif log_level == "warning":
-            logging.basicConfig(format=log_format, level=logging.WARNING)
-        elif log_level == "error":
-            logging.basicConfig(format=log_format, level=logging.ERROR)
-        elif log_level == "critical":
-            logging.basicConfig(format=log_format, level=logging.CRITICAL)
-        else:
-            error_and_exit(
-                "--log takes one of: NONE, DEBUG, INFO, WARN, ERROR, CRITICAL"
-            )
+    configure_logging(args.log)
 
-    speaker_list = speakers.Speakers()
+    speaker_list = Speakers()
 
     if args.show_local_speaker_cache:
         if speaker_list.load():

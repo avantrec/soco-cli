@@ -1,149 +1,33 @@
-import os
-import sys
 import logging
 import soco
 import soco.alarms
 import pprint
 import tabulate
-import datetime
 import time
 from collections import namedtuple
 from queue import Empty
 
-from . import sonos
-from . import speaker_info
+from .speaker_info import print_speaker_table
+from .utils import (
+    error_and_exit,
+    parameter_type_error,
+    parameter_number_error,
+    zero_parameters,
+    one_parameter,
+    zero_or_one_parameter,
+    one_or_two_parameters,
+    two_parameters,
+    one_or_more_parameters,
+    seconds_until,
+    convert_true_false,
+    convert_to_seconds,
+    set_sigkill,
+    get_speaker,
+)
+
 
 pp = pprint.PrettyPrinter(width=120)
 sonos_max_items = 66000
-# ToDo: Understand why a hard stop is required to exit 'wait_stopped_for'
-#       and revert the variable below. Events related?
-use_sigkill = False
-
-
-# Error handling functions 3.7
-def error_and_exit(msg):
-    # Print to stderror
-    print("Error:", msg, file=sys.stderr)
-    # Use os._exit() to avoid the catch-all 'except'
-    os._exit(1)
-
-
-def parameter_type_error(action, required_params):
-    msg = "Action '{}' takes parameter(s): {}".format(action, required_params)
-    error_and_exit(msg)
-
-
-def parameter_number_error(action, parameter_number):
-    msg = "Action '{}' takes {} parameter(s)".format(action, parameter_number)
-    error_and_exit(msg)
-
-
-# Parameter checking decorators
-def zero_parameters(f):
-    def wrapper(*args, **kwargs):
-        if len(args[2]) != 0:
-            parameter_number_error(args[1], "no")
-            return False
-        else:
-            return f(*args, **kwargs)
-
-    return wrapper
-
-
-def one_parameter(f):
-    def wrapper(*args, **kwargs):
-        if len(args[2]) != 1:
-            parameter_number_error(args[1], "1")
-            return False
-        else:
-            return f(*args, **kwargs)
-
-    return wrapper
-
-
-def zero_or_one_parameter(f):
-    def wrapper(*args, **kwargs):
-        if len(args[2]) not in [0, 1]:
-            parameter_number_error(args[1], "0 or 1")
-            return False
-        else:
-            return f(*args, **kwargs)
-
-    return wrapper
-
-
-def one_or_two_parameters(f):
-    def wrapper(*args, **kwargs):
-        if len(args[2]) not in [1, 2]:
-            parameter_number_error(args[1], "1 or 2")
-            return False
-        else:
-            return f(*args, **kwargs)
-
-    return wrapper
-
-
-def two_parameters(f):
-    def wrapper(*args, **kwargs):
-        if len(args[2]) != 2:
-            parameter_number_error(args[1], "2")
-            return False
-        else:
-            return f(*args, **kwargs)
-
-    return wrapper
-
-
-def one_or_more_parameters(f):
-    def wrapper(*args, **kwargs):
-        if len(args[2]) < 1:
-            parameter_number_error(args[1], "1 or more")
-            return False
-        else:
-            return f(*args, **kwargs)
-
-    return wrapper
-
-
-# Utility functions
-def seconds_until(time_str):
-    # target_time = datetime.time.fromisoformat(time_str)
-    target_time = create_time_from_str(time_str)
-    if not target_time:
-        raise ValueError
-    now_time = datetime.datetime.now().time()
-    delta_target = datetime.timedelta(
-        hours=target_time.hour, minutes=target_time.minute, seconds=target_time.second
-    )
-    delta_now = datetime.timedelta(
-        hours=now_time.hour, minutes=now_time.minute, seconds=now_time.second
-    )
-    diff = int((delta_target - delta_now).total_seconds())
-    # Ensure 'past' times are treated as future times by adding 24hr
-    return diff if diff > 0 else diff + 24 * 60 * 60
-
-
-def create_time_from_str(time_str):
-    """Process times in HH:MM(:SS) format. Return a 'time' object."""
-    if ":" not in time_str:
-        return None
-    parts = time_str.split(":")
-    if len(parts) not in [2, 3]:
-        return None
-    try:
-        hours = int(parts[0])
-        minutes = int(parts[1])
-        if len(parts) == 3:
-            seconds = int(parts[2])
-        else:
-            seconds = 0
-    except ValueError:
-        return None
-    # Accept time strings from 00:00:00 to 23:59:59
-    if 0 <= hours <= 23 and 0 <= minutes <= 59 and 0 <= seconds <= 59:
-        return datetime.time(hour=hours, minute=minutes, second=seconds)
-    else:
-        return None
 
 
 def get_playlist(speaker, name):
@@ -163,13 +47,6 @@ def get_playlist(speaker, name):
             logging.info("Found playlist '{}' using fuzzy match".format(playlist.title))
             return playlist
     return None
-
-
-def convert_true_false(true_or_false, conversion="YesOrNo"):
-    if conversion == "YesOrNo":
-        return "Yes" if true_or_false is True else "No"
-    if conversion == "onoroff":
-        return "on" if true_or_false is True else "off"
 
 
 def print_playlist_header(playlist_name):
@@ -516,7 +393,7 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
             logging.info("Cancelling sleep timer")
             speaker.set_sleep_timer(None)
         else:
-            duration = sonos.convert_to_seconds(args[0])
+            duration = convert_to_seconds(args[0])
             if duration is None:
                 parameter_type_error(
                     action,
@@ -553,7 +430,7 @@ def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
     if soco_function == "create_stereo_pair" and float(soco.__version__) < 0.20:
         error_and_exit("Pairing operations require SoCo v0.20 or greater")
         return False
-    speaker2 = sonos.get_speaker(args[0], use_local_speaker_list)
+    speaker2 = get_speaker(args[0], use_local_speaker_list)
     getattr(speaker, soco_function)(speaker2)
     return True
 
@@ -696,7 +573,7 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
         if args[0].lower() == "on":
             speaker.switch_to_line_in()
         else:
-            line_in_source = sonos.get_speaker(args[0], use_local_speaker_list)
+            line_in_source = get_speaker(args[0], use_local_speaker_list)
             if not line_in_source:
                 error_and_exit("Speaker '{}' not found".format(args[0]))
                 return False
@@ -864,7 +741,7 @@ def list_libraries(speaker, action, args, soco_function, use_local_speaker_list)
 
 @zero_parameters
 def system_info(speaker, action, args, soco_function, use_local_speaker_list):
-    speaker_info.print_speaker_table(speaker)
+    print_speaker_table(speaker)
     return True
 
 
@@ -907,8 +784,7 @@ def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_list):
-    global use_sigkill
-    duration = sonos.convert_to_seconds(args[0])
+    duration = convert_to_seconds(args[0])
     if not duration:
         parameter_type_error(action, "Time h/m/s or HH:MM:SS")
     logging.info("Waiting until playback stopped for {}s".format(duration))
@@ -919,7 +795,7 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
     while True:
         try:
             # ToDo: Remove temporary fix for CTRL-C not exiting
-            use_sigkill = True
+            set_sigkill(True)
             event = sub.events.get(timeout=1.0)
             if event.variables["transport_state"] != "PLAYING":
                 sub.unsubscribe()
@@ -951,10 +827,10 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                         )
                     )
                     time.sleep(poll_interval)
-                use_sigkill = False
+                set_sigkill(False)
                 return True
         except:
-            use_sigkill = False
+            set_sigkill(False)
             pass
 
 
