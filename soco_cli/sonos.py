@@ -195,8 +195,9 @@ def main():
                     )
                 if loop_start_time is None:
                     loop_start_time = time.time()
-                    loop_duration = convert_to_seconds(sequence[1])
-                    if loop_duration is None or loop_duration < 0:
+                    try:
+                        loop_duration = convert_to_seconds(sequence[1])
+                    except ValueError:
                         error_and_exit(
                             "Action 'loop_for' requires one parameter (duration >= 0)"
                         )
@@ -257,14 +258,14 @@ def main():
                 if len(sequence) != 2:
                     error_and_exit("Action 'wait' requires 1 parameter")
                 action = sequence[1].lower()
-                duration = convert_to_seconds(action)
-                if duration is not None:
-                    logging.info("Waiting for {}s".format(duration))
-                    time.sleep(duration)
-                else:
+                try:
+                    duration = convert_to_seconds(action)
+                except ValueError:
                     error_and_exit(
-                        "'wait' requires number hours, seconds or minutes + 'h/m/s', or HH:MM(:SS)"
+                        "Action 'wait' requires positive number of hours, seconds or minutes + 'h/m/s', or HH:MM(:SS)"
                     )
+                logging.info("Waiting for {}s".format(duration))
+                time.sleep(duration)
                 continue
 
             # Special case: the 'wait_until' action

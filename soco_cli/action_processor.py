@@ -393,8 +393,9 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
             logging.info("Cancelling sleep timer")
             speaker.set_sleep_timer(None)
         else:
-            duration = convert_to_seconds(args[0])
-            if duration is None:
+            try:
+                duration = convert_to_seconds(args[0])
+            except ValueError:
                 parameter_type_error(
                     action,
                     "number of hours, seconds or minutes + 'h/m/s', or off|cancel",
@@ -784,8 +785,9 @@ def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_list):
-    duration = convert_to_seconds(args[0])
-    if not duration:
+    try:
+        duration = convert_to_seconds(args[0])
+    except ValueError:
         parameter_type_error(action, "Time h/m/s or HH:MM:SS")
     logging.info("Waiting until playback stopped for {}s".format(duration))
     try:

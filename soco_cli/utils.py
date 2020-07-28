@@ -101,8 +101,6 @@ def one_or_more_parameters(f):
 def seconds_until(time_str):
     # target_time = datetime.time.fromisoformat(time_str)
     target_time = create_time_from_str(time_str)
-    if not target_time:
-        raise ValueError
     now_time = datetime.datetime.now().time()
     delta_target = datetime.timedelta(
         hours=target_time.hour, minutes=target_time.minute, seconds=target_time.second
@@ -118,59 +116,55 @@ def seconds_until(time_str):
 def create_time_from_str(time_str):
     """Process times in HH:MM(:SS) format. Return a 'time' object."""
     if ":" not in time_str:
-        return None
+        raise ValueError
     parts = time_str.split(":")
     if len(parts) not in [2, 3]:
-        return None
-    try:
-        hours = int(parts[0])
-        minutes = int(parts[1])
-        if len(parts) == 3:
-            seconds = int(parts[2])
-        else:
-            seconds = 0
-    except ValueError:
-        return None
+        raise ValueError
+    hours = int(parts[0])
+    minutes = int(parts[1])
+    if len(parts) == 3:
+        seconds = int(parts[2])
+    else:
+        seconds = 0
     # Accept time strings from 00:00:00 to 23:59:59
     if 0 <= hours <= 23 and 0 <= minutes <= 59 and 0 <= seconds <= 59:
         return datetime.time(hour=hours, minute=minutes, second=seconds)
     else:
-        return None
+        raise ValueError
 
 
 def convert_to_seconds(time_str):
     """Convert a time string to seconds.
     time_str can be one of Nh, Nm or Ns, or of the form HH:MM:SS
+    :raises ValueError
     """
     logging.info("Converting '{}' to a number of seconds".format(time_str))
     time_str = time_str.lower()
-    try:
-        if ":" in time_str:  # Assume form is HH:MM:SS or HH:MM
-            parts = time_str.split(":")
-            if len(parts) == 3:  # HH:MM:SS
-                if 0 <= int(parts[1]) <= 59 and 0 <= int(parts[2]) <= 59:
-                    duration = float(
-                        int(parts[0]) * 60 * 60 + int(parts[1]) * 60 + int(parts[2])
-                    )
-                else:
-                    duration = None
-            else:  # HH:MM
-                if 0 <= int(parts[1]) <= 59:
-                    duration = float(int(parts[0]) * 60 * 60 + int(parts[1]) * 60)
-                else:
-                    duration = None
-        elif time_str.endswith("s"):  # Seconds (explicit)
-            duration = float(time_str[:-1])
-        elif time_str.endswith("m"):  # Minutes
-            duration = float(time_str[:-1]) * 60
-        elif time_str.endswith("h"):  # Hours
-            duration = float(time_str[:-1]) * 60 * 60
-        else:  # Seconds (default)
-            duration = float(time_str)
-        return duration
-    except ValueError:
-        # Catch cast failures
-        return None
+    if ":" in time_str:  # Assume form is HH:MM:SS or HH:MM
+        parts = time_str.split(":")
+        if len(parts) == 3:  # HH:MM:SS
+            if 0 <= int(parts[1]) <= 59 and 0 <= int(parts[2]) <= 59:
+                duration = float(
+                    int(parts[0]) * 60 * 60 + int(parts[1]) * 60 + int(parts[2])
+                )
+            else:
+                duration = None
+        else:  # HH:MM
+            if 0 <= int(parts[1]) <= 59:
+                duration = float(int(parts[0]) * 60 * 60 + int(parts[1]) * 60)
+            else:
+                duration = None
+    elif time_str.endswith("s"):  # Seconds (explicit)
+        duration = float(time_str[:-1])
+    elif time_str.endswith("m"):  # Minutes
+        duration = float(time_str[:-1]) * 60
+    elif time_str.endswith("h"):  # Hours
+        duration = float(time_str[:-1]) * 60 * 60
+    else:  # Seconds (default)
+        duration = float(time_str)
+        if duration < 0:
+            raise ValueError
+    return duration
 
 
 # Miscellaneous
