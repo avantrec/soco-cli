@@ -1,7 +1,8 @@
 v0.1.25   - Add music library functions: 'list_artists', 'list_albums',
             'search_library', 'search_artists', 'search_albums'
-            'search_tracks', 'tracks_in_albums'
-          - sonos-discover behaviour change: '-p' now prints the current data
+            'search_tracks', 'tracks_in_albums', 'queue_album'
+          - sonos-discover behaviour change: '-p' now prints the current speaker
+            data then exits, and '-s' has been removed.
 v0.1.24   - Add 'loop_to_start' action
           - Allow CTRL-C to break out of 'wait_stopped_for' state on Windows (SIGTERM)
           - Add 'soco' synonym for 'sonos' command

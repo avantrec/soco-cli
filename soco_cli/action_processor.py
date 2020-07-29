@@ -883,32 +883,6 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
             pass
 
 
-@one_or_more_parameters
-def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speaker_list):
-    """Perform the action only if the speaker is currently in the desired playback state
-    """
-    state = speaker.get_current_transport_info()["current_transport_state"]
-    logging.info(
-        "Condition: '{}': Speaker '{}' is in state '{}'".format(
-            action, speaker.player_name, state
-        )
-    )
-    if (state != "PLAYING" and action == "if_playing") or (
-        state == "PLAYING" and action == "if_stopped"
-    ):
-        logging.info("Action suppressed")
-        return True
-    else:
-        action = args[0]
-        args = args[1:]
-        logging.info(
-            "Action invoked: '{} {} {}'".format(
-                speaker.player_name, action, " ".join(args)
-            )
-        )
-        return process_action(speaker, action, args, use_local_speaker_list)
-
-
 @one_parameter
 def search_artists(speaker, action, args, soco_function, use_local_speaker_list):
     ml = speaker.music_library
@@ -918,17 +892,18 @@ def search_artists(speaker, action, args, soco_function, use_local_speaker_list)
     )
     for artist in artists:
         print()
-        print_list_header("Sonos Music Library Albums with Artist:", artist.title)
+        print_list_header("Sonos Music Library Albums including Artist:", artist.title)
         albums = ml.get_music_library_information(
             "artists", subcategories=[artist.title], max_items=sonos_max_items
         )
         print_albums(albums, omit_first=True)  # Omit the first (empty) entry
         print()
-        print_list_header("Sonos Music Library Tracks with Artist:", artist.title)
-        tracks = ml.search_track(artist.title)
-        # tracks = ml.get_music_library_information("artists", subcategories=[name, ""], complete_result=True)
-        print_tracks(tracks)
-        print()
+        # ToDo: Debating whether to include lists of all the tracks that feature the artist...
+        # print_list_header("Sonos Music Library Tracks with Artist:", artist.title)
+        # tracks = ml.search_track(artist.title)
+        # # tracks = ml.get_music_library_information("artists", subcategories=[name, ""], complete_result=True)
+        # print_tracks(tracks)
+        # print()
     return True
 
 
@@ -1000,6 +975,7 @@ def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list
     albums = ml.get_music_library_information(
         "albums", search_term=name, complete_result=True
     )
+    logging.info("Found {} album(s) matching '{}'".format(len(albums), name))
     print(albums)
     for album in albums:
         tracks = ml.get_music_library_information(
@@ -1010,6 +986,46 @@ def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list
         print_tracks(tracks)
         print()
     return True
+
+
+@one_parameter
+def queue_album(speaker, action, args, soco_function, use_local_speaker_list):
+    """Add an album to the queue. If there are multiple matches, only the first
+    will be added.
+    :returns The position in the queue of the first track in the album
+    """
+    albums = speaker.music_library.get_music_library_information(
+        "albums", search_term=args[0], complete_result=True
+    )
+    for album in albums:
+        print(speaker.add_to_queue(album))
+        return True
+
+
+@one_or_more_parameters
+def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speaker_list):
+    """Perform the action only if the speaker is currently in the desired playback state
+    """
+    state = speaker.get_current_transport_info()["current_transport_state"]
+    logging.info(
+        "Condition: '{}': Speaker '{}' is in state '{}'".format(
+            action, speaker.player_name, state
+        )
+    )
+    if (state != "PLAYING" and action == "if_playing") or (
+        state == "PLAYING" and action == "if_stopped"
+    ):
+        logging.info("Action suppressed")
+        return True
+    else:
+        action = args[0]
+        args = args[1:]
+        logging.info(
+            "Action invoked: '{} {} {}'".format(
+                speaker.player_name, action, " ".join(args)
+            )
+        )
+        return process_action(speaker, action, args, use_local_speaker_list)
 
 
 def process_action(speaker, action, args, use_local_speaker_list):
@@ -1121,6 +1137,7 @@ actions = {
     "ql": SonosFunction(no_args_one_output, "queue_size"),
     "add_playlist_to_queue": SonosFunction(playlist_operations, "add_to_queue"),
     "add_pl_to_queue": SonosFunction(playlist_operations, "add_to_queue"),
+    "queue_playlist": SonosFunction(playlist_operations, "add_to_queue"),
     "apq": SonosFunction(playlist_operations, "add_to_queue"),
     "pause_all": SonosFunction(operate_on_all, "pause"),
     "seek": SonosFunction(seek, "seek"),
@@ -1186,4 +1203,6 @@ actions = {
     "albums": SonosFunction(list_albums, ""),
     "list_artists": SonosFunction(list_artists, ""),
     "artists": SonosFunction(list_artists, ""),
+    "queue_album": SonosFunction(queue_album, ""),
+    "qa": SonosFunction(queue_album, ""),
 }

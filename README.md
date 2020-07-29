@@ -120,7 +120,7 @@ As with radio stations, add single tracks from local libraries and music service
 
 ### Albums and Playlists
 
-Albums and playlists from local libraries or music services should be added to your Sonos Playlists. They can then be played by adding them to the queue, and playing from the queue. For example:
+Albums and playlists from local libraries or music services can be added to your Sonos Playlists, and then played by adding them to the queue, and playing from the queue. For example:
 
 `sonos <speaker_name> clear_queue : <speaker_name> add_playlist_to_queue <playlist> : <speaker_name> play_from_queue`
 
@@ -131,6 +131,8 @@ sonos <speaker_name> add_playlist_to_queue <playlist>
 24 <-- Returns queue position of the first playlist track
 sonos <speaker_name> play_from_queue 24
 ```
+
+Albums from the local music libraries can be added to the queue using `sonos <speaker> queue_album <album_name>`. The action returns the queue position of the first track in the album, which can then be played as in the example above.
 
 ## Available Actions
 
@@ -185,10 +187,11 @@ sonos <speaker_name> play_from_queue 24
 
 ### Queue Actions
 
-- **`add_playlist_to_queue <playlist_name>`** (or **`add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. The number in the queue of the first track in the playlist will be returned. To start playback, follow with action `play_from_queue`, optionally followed by the track number.
+- **`add_playlist_to_queue <playlist_name>`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. The number in the queue of the first track in the playlist will be returned. To start playback, follow with action `play_from_queue`, optionally followed by the track number.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
 - **`play_from_queue <track_number>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue.
+- **`queue_album <album_name>`** (or **`qa`**): Add `<album_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the album name, the first match will be chosen. The queue position of the first track in the album will be returned.
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
 - **`remove_from_queue <track_number>`** (or **`rfq`, `rq`**): Remove `<track_number>` from the queue. Track numbers start from 1.
 - **`save_queue <title>`** (or **`sq`**): Save the current queue as a Sonos playlist called `<title>`.
