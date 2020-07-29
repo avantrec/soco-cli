@@ -49,9 +49,9 @@ def get_playlist(speaker, name):
     return None
 
 
-def print_playlist_header(playlist_name):
+def print_list_header(prefix, name):
     spacer = "  "
-    title = "Sonos Playlist: {}".format(playlist_name)
+    title = "{} {}".format(prefix, name)
     underline = "=" * (len(title))
     print(spacer + title)
     print(spacer + underline)
@@ -78,6 +78,25 @@ def print_tracks(tracks):
             )
         )
         item_number += 1
+    return True
+
+
+def print_albums(albums, omit_first=False):
+    item_number = 1
+    for album in albums:
+        try:
+            artist = album.creator
+        except:
+            artist = ""
+        try:
+            title = album.title
+        except:
+            title = ""
+        if item_number == 1 and omit_first:
+            omit_first = False
+        else:
+            print("{:7d}: Artist: {} | Album: {}".format(item_number, artist, title))
+            item_number += 1
     return True
 
 
@@ -535,7 +554,7 @@ def list_playlist_tracks(speaker, action, args, soco_function, use_local_speaker
     playlist = get_playlist(speaker, args[0])
     if playlist:
         print()
-        print_playlist_header(playlist.title)
+        print_list_header("Sonos Playlist:", playlist.title)
         tracks = speaker.music_library.browse_by_idstring(
             "sonos_playlists", playlist.item_id, max_items=sonos_max_items
         )
@@ -753,7 +772,7 @@ def list_all_playlist_tracks(
     playlists = speaker.get_sonos_playlists(complete_result=True)
     print()
     for playlist in playlists:
-        print_playlist_header(playlist.title)
+        print_list_header("Sonos Playlist:", playlist.title)
         tracks = speaker.music_library.browse_by_idstring(
             "sonos_playlists", playlist.item_id
         )
@@ -881,6 +900,87 @@ def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speake
             )
         )
         return process_action(speaker, action, args, use_local_speaker_list)
+
+
+@one_parameter
+def search_artists(speaker, action, args, soco_function, use_local_speaker_list):
+    ml = speaker.music_library
+    name = args[0]
+    artists = ml.get_music_library_information(
+        "artists", search_term=name, complete_result=True
+    )
+    for artist in artists:
+        print()
+        print_list_header("Sonos Music Library Albums with Artist:", artist.title)
+        albums = ml.get_music_library_information(
+            "artists", subcategories=[artist.title], max_items=sonos_max_items
+        )
+        print_albums(albums, omit_first=True)  # Omit the first (empty) entry
+        print()
+        print_list_header("Sonos Music Library Tracks with Artist:", artist.title)
+        tracks = ml.search_track(artist.title)
+        # tracks = ml.get_music_library_information("artists", subcategories=[name, ""], complete_result=True)
+        print_tracks(tracks)
+        print()
+    return True
+
+
+@one_parameter
+def search_albums(speaker, action, args, soco_function, use_local_speaker_list):
+    ml = speaker.music_library
+    name = args[0]
+    albums = ml.get_music_library_information(
+        "albums", search_term=name, complete_result=True
+    )
+    if len(albums):
+        print()
+        print_list_header("Sonos Music Library Album Search:", name)
+        print_albums(albums)
+        print()
+    return True
+
+
+@one_parameter
+def search_tracks(speaker, action, args, soco_function, use_local_speaker_list):
+    ml = speaker.music_library
+    name = args[0]
+    tracks = ml.get_music_library_information(
+        "tracks", search_term=name, complete_result=True
+    )
+    if len(tracks):
+        print()
+        print_list_header("Sonos Music Library Track Search:", name)
+        print_tracks(tracks)
+        print()
+    return True
+
+
+@one_parameter
+def search_library(speaker, action, args, soco_function, use_local_speaker_list):
+    search_artists(speaker, action, args, soco_function, use_local_speaker_list)
+    search_albums(speaker, action, args, soco_function, use_local_speaker_list)
+    search_tracks(speaker, action, args, soco_function, use_local_speaker_list)
+    return True
+
+
+@one_parameter
+def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list):
+    ml = speaker.music_library
+    name = args[0]
+    # tracks = ml.get_music_library_information("tracks", subcategories=[name], max_items=sonos_max_items)
+    albums = ml.get_music_library_information(
+        "albums", search_term=name, complete_result=True
+    )
+    print(albums)
+    for album in albums:
+        tracks = ml.get_music_library_information(
+            "artists", subcategories=["", album.title], complete_result=True
+        )
+        print()
+        print_list_header("Sonos Music Library Tracks in Album:", album.title)
+        print_tracks(tracks)
+        print()
+    return True
 
 
 def process_action(speaker, action, args, use_local_speaker_list):
@@ -1045,4 +1145,14 @@ actions = {
     "wsf": SonosFunction(wait_stopped_for, ""),
     "if_stopped": SonosFunction(if_stopped_or_playing, ""),
     "if_playing": SonosFunction(if_stopped_or_playing, ""),
+    "search_library": SonosFunction(search_library, ""),
+    "sl": SonosFunction(search_library, ""),
+    "search_artists": SonosFunction(search_artists, ""),
+    "sart": SonosFunction(search_artists, ""),
+    "search_albums": SonosFunction(search_albums, ""),
+    "salb": SonosFunction(search_albums, ""),
+    "search_tracks": SonosFunction(search_tracks, ""),
+    "st": SonosFunction(search_tracks, ""),
+    "tracks_in_album": SonosFunction(tracks_in_album, ""),
+    "tia": SonosFunction(tracks_in_album, ""),
 }

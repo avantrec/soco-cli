@@ -231,6 +231,16 @@ The following has issues and requires further development. For example, it's cur
 - **`sysinfo`**: Prints a table of information about all speakers in the system.
 - **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Returns the room names (and associated IP addresses) that are visible in the Sonos controller apps. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
 
+### Music Library Search Functions
+
+The actions below search the Sonos Music library.
+
+- **`search_albums <album_name>`** (or **`salb`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of matching albums.
+-  **`search_artists <artist_name>`** (or **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the lists of albums and tracks featuring any artists that match the search.
+- **`search_library <name>`** (or **`salb`**): Searches the titles in your music library for a fuzzy match with `<name>` against artists, albums and tracks. Prints out the lists of matches. This action is a superset of `search_artists`, `search_albums`, and `search_tracks`, i.e., it searches across all categories.
+- **`search_tracks <track_name>`** (or **`st`**): Searches the tracks in your music library for a fuzzy match with `<track_name>`. Prints out the list of matching tracks.
+- **`tracks_in_album <album_name>`** (or **`tia`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list tracks in each matching album.
+
 ## Multiple Sequential Commands
 
 ### Chaining Commands Using the `:` Separator
@@ -254,9 +264,9 @@ The **`wait_until <time>`** action pauses sonos command line execution until the
 
 Examples:
 
-- **`sonos Bedroom group Study : Study group_volume 50 : Study play : wait 10m : Study stop : Study ungroup`**
-- **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`**
-- **`sonos Bedroom volume 0 : Bedroom play_favourite "Radio 4" : Bedroom ramp 40 : wait 1h : Bedroom ramp 0 : Bedroom stop`**
+- `sonos Bedroom group Study : Study group_volume 50 : Study play : wait 10m : Study stop : Study ungroup`
+- `sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`
+- `sonos Bedroom volume 0 : Bedroom play_favourite "Radio 4" : Bedroom ramp 40 : wait 1h : Bedroom ramp 0 : Bedroom stop`
 
 ### Waiting Until Playback has Started/Stopped: `wait_start` and `wait_stop`
 
