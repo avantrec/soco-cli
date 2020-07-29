@@ -19,6 +19,7 @@
          * [Favourites and Playlists](#favourites-and-playlists)
          * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
          * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
+         * [Music Library Search Functions](#music-library-search-functions)
       * [Multiple Sequential Commands](#multiple-sequential-commands)
          * [Chaining Commands Using the : Separator](#chaining-commands-using-the--separator)
          * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
@@ -37,7 +38,7 @@
       * [Known Issues](#known-issues)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Tue Jul 28 16:26:26 BST 2020 -->
+<!-- Added by: pwt, at: Wed Jul 29 14:45:08 BST 2020 -->
 
 <!--te-->
 
@@ -235,11 +236,13 @@ The following has issues and requires further development. For example, it's cur
 
 The actions below search the Sonos Music library.
 
+- **`list_albums`** (or **`albums`**): Lists all the albums in the music library.
+- **`list_artists`** (or **`artists`**): Lists all the artists in the music library.
 - **`search_albums <album_name>`** (or **`salb`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of matching albums.
 -  **`search_artists <artist_name>`** (or **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the lists of albums and tracks featuring any artists that match the search.
 - **`search_library <name>`** (or **`salb`**): Searches the titles in your music library for a fuzzy match with `<name>` against artists, albums and tracks. Prints out the lists of matches. This action is a superset of `search_artists`, `search_albums`, and `search_tracks`, i.e., it searches across all categories.
 - **`search_tracks <track_name>`** (or **`st`**): Searches the tracks in your music library for a fuzzy match with `<track_name>`. Prints out the list of matching tracks.
-- **`tracks_in_album <album_name>`** (or **`tia`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list tracks in each matching album.
+- **`tracks_in_album <album_name>`** (or **`tia`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of tracks in each matching album.
 
 ## Multiple Sequential Commands
 

@@ -95,8 +95,17 @@ def print_albums(albums, omit_first=False):
         if item_number == 1 and omit_first:
             omit_first = False
         else:
-            print("{:7d}: Artist: {} | Album: {}".format(item_number, artist, title))
+            print("{:7d}: Album: {} | Artist: {}".format(item_number, title, artist))
             item_number += 1
+    return True
+
+
+def print_artists(artists):
+    item_number = 1
+    for artist in artists:
+        artist_name = artist.title
+        print("{:7d}: {}".format(item_number, artist_name))
+        item_number += 1
     return True
 
 
@@ -155,9 +164,7 @@ def list_numbered_things(speaker, action, args, soco_function, use_local_speaker
     if soco_function in [
         "get_sonos_favorites",
         "get_favorite_radio_stations",
-        "get_albums",
-        "get_artists",
-        "get_tracks",
+        # "get_tracks",
     ]:
         things = getattr(speaker.music_library, soco_function)(complete_result=True)
     else:
@@ -925,6 +932,28 @@ def search_artists(speaker, action, args, soco_function, use_local_speaker_list)
     return True
 
 
+@zero_parameters
+def list_artists(speaker, action, args, soco_function, use_local_speaker_list):
+    ml = speaker.music_library
+    artists = ml.get_artists(complete_result=True)
+    print()
+    print_list_header("Sonos Music Library Artists", "")
+    print_artists(artists)
+    print()
+    return True
+
+
+@zero_parameters
+def list_albums(speaker, action, args, soco_function, use_local_speaker_list):
+    ml = speaker.music_library
+    artists = ml.get_albums(complete_result=True)
+    print()
+    print_list_header("Sonos Music Library Albums", "")
+    print_albums(artists)
+    print()
+    return True
+
+
 @one_parameter
 def search_albums(speaker, action, args, soco_function, use_local_speaker_list):
     ml = speaker.music_library
@@ -1123,9 +1152,7 @@ actions = {
     "play_favourite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
     "play_favorite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
     "pfrs": SonosFunction(play_favourite_radio, "play_uri"),
-    "albums": SonosFunction(list_numbered_things, "get_albums"),
-    "artists": SonosFunction(list_numbered_things, "get_artists"),
-    "tracks": SonosFunction(list_numbered_things, "get_tracks"),
+    # "tracks": SonosFunction(list_numbered_things, "get_tracks"),
     "alarms": SonosFunction(list_alarms, "get_alarms"),
     "libraries": SonosFunction(list_libraries, "list_library_shares"),
     "shares": SonosFunction(list_libraries, "list_library_shares"),
@@ -1155,4 +1182,8 @@ actions = {
     "st": SonosFunction(search_tracks, ""),
     "tracks_in_album": SonosFunction(tracks_in_album, ""),
     "tia": SonosFunction(tracks_in_album, ""),
+    "list_albums": SonosFunction(list_albums, ""),
+    "albums": SonosFunction(list_albums, ""),
+    "list_artists": SonosFunction(list_artists, ""),
+    "artists": SonosFunction(list_artists, ""),
 }
