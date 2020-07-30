@@ -164,7 +164,9 @@ def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
         try:
             track_number = int(args[0])
             if not (0 < track_number <= len(queue)):
-                error_and_exit("Track number {} is out of queue range".format(track_number))
+                error_and_exit(
+                    "Track number {} is out of queue range".format(track_number)
+                )
             queue = [queue[track_number - 1]]
         except ValueError:
             parameter_type_error(action, "integer")
