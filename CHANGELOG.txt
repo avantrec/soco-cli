@@ -1,4 +1,5 @@
 v0.1.26   - Add 'queue_track' action
+          - Add 'list_queue <track_number>' action
 v0.1.25   - Add music library functions: 'list_artists', 'list_albums',
             'search_library', 'search_artists', 'search_albums'
             'search_tracks', 'tracks_in_albums', 'queue_album'

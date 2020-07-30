@@ -58,8 +58,11 @@ def print_list_header(prefix, name):
     print(spacer + underline)
 
 
-def print_tracks(tracks):
-    item_number = 1
+def print_tracks(tracks, single_track=False, track_number=None):
+    if single_track:
+        item_number = track_number
+    else:
+        item_number = 1
     for track in tracks:
         try:
             artist = track.creator
@@ -151,11 +154,25 @@ def no_args_one_output(speaker, action, args, soco_function, use_local_speaker_l
     return True
 
 
-@zero_parameters
+@zero_or_one_parameter
 def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
     queue = speaker.get_queue(max_items=sonos_max_items)
+    if len(queue) == 0:
+        print("Queue is empty")
+        return True
+    if len(args) == 1:
+        try:
+            track_number = int(args[0])
+            if not (0 < track_number <= len(queue)):
+                error_and_exit("Track number {} is out of queue range".format(track_number))
+            queue = [queue[track_number - 1]]
+        except ValueError:
+            parameter_type_error(action, "integer")
     print()
-    print_tracks(queue)
+    if len(args) == 1:
+        print_tracks(queue, single_track=True, track_number=track_number)
+    else:
+        print_tracks(queue)
     print()
     return True
 

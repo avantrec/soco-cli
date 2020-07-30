@@ -190,6 +190,7 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 - **`add_playlist_to_queue <playlist_name>`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. The number in the queue of the first track in the playlist will be returned. To start playback, follow with action `play_from_queue`, optionally followed by the track number.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
+- **`list_queue <track_number>`** (or **`lq`, `q`**): List the track in the queue at position `<track_number>`
 - **`play_from_queue <track_number>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue.
 - **`queue_album <album_name>`** (or **`qa`**): Add `<album_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the album name, a random match will be chosen. The queue position of the first track in the album will be returned.
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
