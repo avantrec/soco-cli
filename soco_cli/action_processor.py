@@ -6,6 +6,7 @@ import tabulate
 import time
 from collections import namedtuple
 from queue import Empty
+from random import randint
 
 from .speaker_info import print_speaker_table
 from .utils import (
@@ -990,36 +991,36 @@ def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list
 
 @one_parameter
 def queue_album(speaker, action, args, soco_function, use_local_speaker_list):
-    """Add an album to the queue. If there are multiple matches, only the first
-    will be added.
-    :returns The position in the queue of the first track in the album
+    """Add an album to the queue. If there are multiple matches, a random
+    match will be selected.
+    :returns: The position in the queue of the first track in the album
     """
+    name = args[0]
     albums = speaker.music_library.get_music_library_information(
-        "albums", search_term=args[0], complete_result=True
+        "albums", search_term=name, complete_result=True
     )
     if len(albums):
-        for album in albums:
-            print(speaker.add_to_queue(album))
-            return True
+        album = albums[randint(0, len(albums) - 1)]
+        print(speaker.add_to_queue(album))
+        return True
     else:
-        error_and_exit("Album '{}' not found".format(args[0]))
+        error_and_exit("Album '{}' not found".format(name))
 
 
 @one_parameter
 def queue_track(speaker, action, args, soco_function, use_local_speaker_list):
-    """Add a track to the queue. If there are multiple matches, only the first
-    will be added.
-    :returns The position in the queue of the track
+    """Add a track to the queue. If there are multiple matches, a random match
+    will be selected.
+    :returns: The position in the queue of the track
     """
-    ml = speaker.music_library
     name = args[0]
-    tracks = ml.get_music_library_information(
+    tracks = speaker.music_library.get_music_library_information(
         "tracks", search_term=name, complete_result=True
     )
     if len(tracks):
-        for track in tracks:
-            print(speaker.add_to_queue(track))
-            return True
+        track = tracks[randint(0, len(tracks) - 1)]
+        print(speaker.add_to_queue(track))
+        return True
     else:
         error_and_exit("Track '{}' not found".format(name))
 
