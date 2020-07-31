@@ -169,7 +169,7 @@ def main():
             if speaker_name.lower() == "loop_for":
                 if len(sequence) != 2:
                     error_and_exit(
-                        "Action 'loop_for' requires one parameter (duration)"
+                        "Action 'loop_for' requires one parameter (check spaces around the ':' separator)"
                     )
                 if loop_start_time is None:
                     loop_start_time = time.time()
@@ -202,7 +202,7 @@ def main():
             if speaker_name.lower() == "loop_until":
                 if len(sequence) != 2:
                     error_and_exit(
-                        "Action 'loop_until' requires one parameter (stop time)"
+                        "Action 'loop_until' requires one parameter (check spaces around the ':' separator)"
                     )
                 if loop_start_time is None:
                     loop_start_time = time.time()
@@ -234,7 +234,7 @@ def main():
             # Special case: the 'wait' action
             if speaker_name in ["wait"]:
                 if len(sequence) != 2:
-                    error_and_exit("Action 'wait' requires 1 parameter")
+                    error_and_exit("Action 'wait' requires 1 parameter (check spaces around the ':' separator)")
                 action = sequence[1].lower()
                 try:
                     duration = convert_to_seconds(action)
@@ -249,7 +249,7 @@ def main():
             # Special case: the 'wait_until' action
             elif speaker_name in ["wait_until"]:
                 if len(sequence) != 2:
-                    error_and_exit("'wait_until' requires 1 parameter")
+                    error_and_exit("'wait_until' requires 1 parameter (check spaces around the ':' separator)")
                 try:
                     action = sequence[1].lower()
                     duration = seconds_until(action)
