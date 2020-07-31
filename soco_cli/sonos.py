@@ -91,6 +91,7 @@ def main():
                 and sequence[-1]
                 in [
                     "wait",
+                    "wait_for",
                     "wait_until",
                     "seek",
                     "sleep",
@@ -232,7 +233,7 @@ def main():
                 continue
 
             # Special case: the 'wait' action
-            if speaker_name in ["wait"]:
+            if speaker_name in ["wait", "wait_for"]:
                 if len(sequence) != 2:
                     error_and_exit("Action 'wait' requires 1 parameter (check spaces around the ':' separator)")
                 action = sequence[1].lower()
