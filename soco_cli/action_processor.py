@@ -7,6 +7,7 @@ import time
 from collections import namedtuple
 from queue import Empty
 from random import randint
+from distutils.version import StrictVersion
 
 from .speaker_info import print_speaker_table
 from .utils import (
@@ -137,7 +138,9 @@ def on_off_action(speaker, action, args, soco_function, use_local_speaker_list):
 
 @zero_parameters
 def no_args_no_output(speaker, action, args, soco_function, use_local_speaker_list):
-    if soco_function == "separate_stereo_pair" and float(soco.__version__) < 0.20:
+    if soco_function == "separate_stereo_pair" and StrictVersion(
+        soco.__version__
+    ) < StrictVersion("0.20"):
         error_and_exit("Pairing operations require SoCo v0.20 or greater")
         return False
     getattr(speaker, soco_function)()
@@ -474,7 +477,9 @@ def sleep_at(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
-    if soco_function == "create_stereo_pair" and float(soco.__version__) < 0.20:
+    if soco_function == "create_stereo_pair" and StrictVersion(
+        soco.__version__
+    ) < StrictVersion("0.20"):
         error_and_exit("Pairing operations require SoCo v0.20 or greater")
         return False
     speaker2 = get_speaker(args[0], use_local_speaker_list)

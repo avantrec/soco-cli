@@ -118,6 +118,8 @@ As with radio stations, add single tracks from local libraries and music service
 
 `sonos <speaker_name> play_fav <favourite_name>`
 
+Tracks from local music libraries can also be added to the queue using `sonos <speaker> queue_track <track_name>`, which returns the queue position of the track. It can then be played using `sonos <speaker> play_from_queue <track_number>`.
+
 ### Albums and Playlists
 
 Albums and playlists from local libraries or music services can be added to your Sonos Playlists, and then played by adding them to the queue, and playing from the queue. For example:
@@ -132,7 +134,7 @@ sonos <speaker_name> add_playlist_to_queue <playlist>
 sonos <speaker_name> play_from_queue 24
 ```
 
-Albums from local music libraries can also be added to the queue using `sonos <speaker> queue_album <album_name>`. The action returns the queue position of the first track in the album, which can then be played as in the example above. Tracks from local music libraries can be added to the queue using `sonos <speaker> queue_track <track_name>`, which returns the queue position of the track.
+Albums from local music libraries can also be added to the queue using `sonos <speaker> queue_album <album_name>`. The action returns the queue position of the first track in the album, which can then be played as in the example above:
 
 ## Available Actions
 
@@ -220,7 +222,7 @@ The following has issues and requires further development. For example, it's cur
 
 - **`group <master_speaker>`(or `g`**): Groups the speaker with `<master_speaker>`.
 - **`pair <right_hand_speaker`**: Creates a stereo pair, where the target speaker becomes the left-hand speaker of the pair and `<right_hand_speaker>` becomes the right-hand of the pair. Can be used to pair dissimilar Sonos devices (e.g., to stereo-pair a Play:1 with a One).
-- **`party_mode` (or `party`)**: Adds all speakers in the system into a single group. The target speaker becomes the group coordinator. Remove speakers individually using `ungroup`.
+- **`party_mode` (or `party`)**: Adds all speakers in the system into a single group. The target speaker becomes the group coordinator. Remove speakers individually using `ungroup`, or use `ungroup_all`.
 - **`ungroup` (or `ug`, `u`)**: Removes the speaker from a group.
 - **`ungroup_all`**: Removes all speakers in the target speaker's household from all groups.
 - **`unpair`**: Separate a stereo pair. Can be applied to either speaker in the pair.
