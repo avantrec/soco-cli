@@ -864,7 +864,7 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                         poll_interval
                     )
                 )
-                while (current_time - start_time) < duration:
+                while (current_time - start_time) <= duration:
                     state = speaker.get_current_transport_info()[
                         "current_transport_state"
                     ]
