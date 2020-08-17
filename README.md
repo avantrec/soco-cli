@@ -96,7 +96,7 @@ If you experience any issues with finding your speakers, or if you have multiple
 The following options are for use with the alternative discovery mechanism:
 
 - **`--use-local-speaker-list, -l`**: Use the local speaker list instead of SoCo discovery. The speaker list will first be created and saved if it doesn't already exist.
-- **`--refresh-local-speaker-list, -l`**: In conjunction with the `-l` option, the speaker list will be regenerated and saved.
+- **`--refresh-local-speaker-list, -r`**: In conjunction with the `-l` option, the speaker list will be regenerated and saved.
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s.
 
