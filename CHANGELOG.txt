@@ -1,3 +1,7 @@
+v0.1.27   - Add 'wait_for' synonym for 'wait'
+          - Fix minor timer expiry logic issue in 'wait_stopped_for'
+          - Improve Soco version check
+          - Improve some error messages regarding use of ':'
 v0.1.26   - Add 'queue_track' action
           - Add 'list_queue <track_number>' action
 v0.1.25   - Add music library functions: 'list_artists', 'list_albums',
