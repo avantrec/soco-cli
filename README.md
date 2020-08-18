@@ -154,9 +154,9 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 - **`loudness`**: Returns the loudness setting of the speaker, 'on' or 'off'.
 - **`loudness <on|off>`**: Sets the loudness setting of the speaker to 'on' or 'off'.
 - **`mute`**: Returns the mute setting of the speaker, 'on' or 'off'.
+- **`mute <on|off>`**: Sets the mute setting of the speaker to 'on' or 'off'.
 - **`night_mode <on|off>`** (or **`night`**): Sets the night mode setting of the speaker to 'on' or 'off' (if applicable).
 - **`night_mode`** (or **`night`**): Returns the night mode setting of the speaker, 'on' or 'off' (if applicable).
-- **`mute <on|off>`**: Sets the mute setting of the speaker to 'on' or 'off'.
 - **`ramp_to_volume <volume>` (or `ramp`)**: Gently raise or reduce the volume to `<volume>`, which is between 0 and 100. Returns the number of seconds to complete the ramp.
 - **`relative_volume <adjustment>` (or `rel_vol`, `rv`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
 - **`treble`**: Returns the treble setting of the speaker, from -10 to 10.
