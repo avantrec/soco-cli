@@ -1081,7 +1081,7 @@ def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     Preserve the mute state
     """
     if not speaker.is_coordinator:
-        error_and_exit("Action {} can only be applied to a coordinator".format(action))
+        error_and_exit("Action '{}' can only be applied to a coordinator".format(action))
         return False
     unmute = False
     unmute_group = False
