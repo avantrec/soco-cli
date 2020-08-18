@@ -333,7 +333,7 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
             speaker.play_from_queue(index, start=True)
             return True
         except Exception as e2:
-            error_and_exit("1: {} | 2:{}".format(str(e1), str(e2)))
+            error_and_exit("1: {} | 2: {}".format(str(e1), str(e2)))
             return False
     error_and_exit("Favourite '{}' not found".format(args[0]))
     return False
@@ -1075,6 +1075,31 @@ def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speake
         return process_action(speaker, action, args, use_local_speaker_list)
 
 
+@one_parameter
+def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
+    """Shortcut to mute, play favourite, stop favourite, and unmute.
+    Preserve the mute state
+    """
+    if not speaker.is_coordinator:
+        error_and_exit("Action {} can only be applied to a coordinator".format(action))
+        return False
+    unmute = False
+    unmute_group = False
+    if not speaker.mute:
+        speaker.mute = True
+        unmute = True
+    if not speaker.group.mute:
+        speaker.group.mute = True
+        unmute_group = True
+    play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
+    speaker.stop()
+    if unmute:
+        speaker.mute = False
+    if unmute_group:
+        speaker.group.mute = False
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -1254,4 +1279,7 @@ actions = {
     "qa": SonosFunction(queue_album, ""),
     "queue_track": SonosFunction(queue_track, ""),
     "qt": SonosFunction(queue_track, ""),
+    "cue_favourite": SonosFunction(cue_favourite, ""),
+    "cue_favorite": SonosFunction(cue_favourite, ""),
+    "cf": SonosFunction(cue_favourite, ""),
 }
