@@ -331,7 +331,7 @@ def play_favourite_core(speaker, favourite):
             logging.info("Trying 'add_to_queue()'")
             index = speaker.add_to_queue(the_fav, as_next=True)
             speaker.play_from_queue(index, start=True)
-            return True
+            return True, ""
         except Exception as e2:
             msg = "1: {} | 2: {}".format(str(e1), str(e2))
             return False, msg
