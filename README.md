@@ -208,7 +208,7 @@ The following has issues and requires further development. For example, it's cur
 
 - **`clear_playlist <playlist>`**: Clear the Sonos playlist named `<playlist>`.
 - **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`.
-- **`cue_favourite <favourite_name>`** (or **`cue_favorite`, `cf`**): Cues up a Sonos favourite for playback. This is a convenience action that issues the sequence: `mute, play_favourite, stop, unmute`. It's useful for silently setting a speaker to a state where it's ready to play the nominated favourite. Mute and group mute states are preserved. 
+- **`cue_favourite <favourite_name>`** (or **`cue_favorite`, `cue_fav`, `cf`**): Cues up a Sonos favourite for playback. This is a convenience action that issues the sequence: `mute, play_favourite, stop, unmute`. It's useful for silently setting a speaker to a state where it's ready to play the nominated favourite. Mute and group mute states are preserved. 
 - **`delete_playlist <playlist>`** (or **`remove_playlist`**): Delete the Sonos playlist named `<playlist>`.
 - **`favourite_radio_stations`** (or **`favorite_radio_stations`**): List the favourite radio stations.
 - **`list_all_playlist_tracks`** (or **`lapt`**): Lists all tracks in all Sonos Playlists.

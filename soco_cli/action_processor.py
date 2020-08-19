@@ -1294,5 +1294,6 @@ actions = {
     "qt": SonosFunction(queue_track, ""),
     "cue_favourite": SonosFunction(cue_favourite, ""),
     "cue_favorite": SonosFunction(cue_favourite, ""),
+    "cue_fav": SonosFunction(cue_favourite, ""),
     "cf": SonosFunction(cue_favourite, ""),
 }
