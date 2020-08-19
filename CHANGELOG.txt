@@ -1,3 +1,4 @@
+v0.1.28   - Add 'cue_favourite' action
 v0.1.27   - Add 'wait_for' synonym for 'wait'
           - Fix minor timer expiry logic issue in 'wait_stopped_for'
           - Improve Soco version check

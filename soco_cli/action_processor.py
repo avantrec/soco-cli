@@ -291,9 +291,9 @@ def transport_state(speaker, action, args, soco_function, use_local_speaker_list
     return True
 
 
-@one_parameter
-def play_favourite(speaker, action, args, soco_function, use_local_speaker_list):
-    favourite = args[0]
+def play_favourite_core(speaker, favourite):
+    """Core of the play_favourite action, but doesn't exit on failure
+    """
     fs = speaker.music_library.get_sonos_favorites(complete_result=True)
     the_fav = None
     # Strict match
@@ -321,7 +321,7 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
                 "Trying 'play_uri()': URI={}, Metadata={}".format(uri, metadata)
             )
             speaker.play_uri(uri=uri, meta=metadata)
-            return True
+            return True, ""
         except Exception as e:
             e1 = e
             pass
@@ -331,12 +331,22 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
             logging.info("Trying 'add_to_queue()'")
             index = speaker.add_to_queue(the_fav, as_next=True)
             speaker.play_from_queue(index, start=True)
-            return True
+            return True, ""
         except Exception as e2:
-            error_and_exit("1: {} | 2:{}".format(str(e1), str(e2)))
-            return False
-    error_and_exit("Favourite '{}' not found".format(args[0]))
-    return False
+            msg = "1: {} | 2: {}".format(str(e1), str(e2))
+            return False, msg
+    msg = "Favourite '{}' not found".format(favourite)
+    return False, msg
+
+
+@one_parameter
+def play_favourite(speaker, action, args, soco_function, use_local_speaker_list):
+    result, msg = play_favourite_core(speaker, args[0])
+    if not result:
+        error_and_exit(msg)
+        return False
+    else:
+        return True
 
 
 @one_parameter
@@ -1075,6 +1085,36 @@ def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speake
         return process_action(speaker, action, args, use_local_speaker_list)
 
 
+@one_parameter
+def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
+    """Shortcut to mute, play favourite, stop favourite, and unmute.
+    Preserve the mute state
+    """
+    if not speaker.is_coordinator:
+        error_and_exit(
+            "Action '{}' can only be applied to a coordinator".format(action)
+        )
+        return False
+    unmute = False
+    unmute_group = False
+    if not speaker.mute:
+        speaker.mute = True
+        unmute = True
+    if not speaker.group.mute:
+        speaker.group.mute = True
+        unmute_group = True
+    result, msg = play_favourite_core(speaker, args[0])
+    speaker.stop()
+    if unmute:
+        speaker.mute = False
+    if unmute_group:
+        speaker.group.mute = False
+    if not result:
+        error_and_exit(msg)
+        return False
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -1254,4 +1294,8 @@ actions = {
     "qa": SonosFunction(queue_album, ""),
     "queue_track": SonosFunction(queue_track, ""),
     "qt": SonosFunction(queue_track, ""),
+    "cue_favourite": SonosFunction(cue_favourite, ""),
+    "cue_favorite": SonosFunction(cue_favourite, ""),
+    "cue_fav": SonosFunction(cue_favourite, ""),
+    "cf": SonosFunction(cue_favourite, ""),
 }
