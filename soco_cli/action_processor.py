@@ -291,9 +291,9 @@ def transport_state(speaker, action, args, soco_function, use_local_speaker_list
     return True
 
 
-@one_parameter
-def play_favourite(speaker, action, args, soco_function, use_local_speaker_list):
-    favourite = args[0]
+def play_favourite_core(speaker, favourite):
+    """Core of the play_favourite action, but doesn't exit on failure
+    """
     fs = speaker.music_library.get_sonos_favorites(complete_result=True)
     the_fav = None
     # Strict match
@@ -321,7 +321,7 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
                 "Trying 'play_uri()': URI={}, Metadata={}".format(uri, metadata)
             )
             speaker.play_uri(uri=uri, meta=metadata)
-            return True
+            return True, ""
         except Exception as e:
             e1 = e
             pass
@@ -333,10 +333,20 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
             speaker.play_from_queue(index, start=True)
             return True
         except Exception as e2:
-            error_and_exit("1: {} | 2: {}".format(str(e1), str(e2)))
-            return False
-    error_and_exit("Favourite '{}' not found".format(args[0]))
-    return False
+            msg = "1: {} | 2: {}".format(str(e1), str(e2))
+            return False, msg
+    msg = "Favourite '{}' not found".format(favourite)
+    return False, msg
+
+
+@one_parameter
+def play_favourite(speaker, action, args, soco_function, use_local_speaker_list):
+    result, msg = play_favourite_core(speaker, args[0])
+    if not result:
+        error_and_exit(msg)
+        return False
+    else:
+        return True
 
 
 @one_parameter
@@ -1091,12 +1101,15 @@ def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     if not speaker.group.mute:
         speaker.group.mute = True
         unmute_group = True
-    play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
+    result, msg = play_favourite_core(speaker, args[0])
     speaker.stop()
     if unmute:
         speaker.mute = False
     if unmute_group:
         speaker.group.mute = False
+    if not result:
+        error_and_exit(msg)
+        return False
     return True
 
 
