@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import soco
 import argparse
 from signal import signal, SIGINT
 import pprint

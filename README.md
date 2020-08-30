@@ -38,7 +38,7 @@
       * [Known Issues](#known-issues)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Wed Aug 19 11:00:12 BST 2020 -->
+<!-- Added by: pwt, at: Sun Aug 30 11:03:34 BST 2020 -->
 
 <!--te-->
 
@@ -174,7 +174,7 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 - **`pause`**: Pause playback (if applicable for the audio source).
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
 - **`play`** (or **`start`**): Start playback.
-- **`playback`** (or **`state`**): Returns the current playback state for the speaker.
+- **`playback`** (or **`state`, `status`**): Returns the current playback state for the speaker.
 - **`play_from_queue <track>`** (or **`play_queue`, `pfq`, `pq`**): Play track number `<track>` from the queue. Tracks begin at 1. If `<track>` is omitted, the first item in the queue is played.
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE` or `SHUFFLE_NOREPEAT`.
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.

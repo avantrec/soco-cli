@@ -1,7 +1,9 @@
+v0.1.29   - Updated logic fix for 'wait_stopped_for'
+          - Add 'status' synomym for 'playback'
 v0.1.28   - Add 'cue_favourite' action
 v0.1.27   - Add 'wait_for' synonym for 'wait'
           - Fix minor timer expiry logic issue in 'wait_stopped_for'
-          - Improve Soco version check
+          - Improve SoCo version check
           - Improve some error messages regarding use of ':'
 v0.1.26   - Add 'queue_track' action
           - Add 'list_queue <track_number>' action

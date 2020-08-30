@@ -832,7 +832,7 @@ def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
     while True:
         try:
             event = sub.events.get(timeout=1.0)
-            if event.variables["transport_state"] != "PLAYING":
+            if event.variables["transport_state"] not in ["PLAYING", "TRANSITIONING"]:
                 logging.info(
                     "Speaker '{}' in state '{}'".format(
                         speaker.player_name, event.variables["transport_state"]
@@ -860,7 +860,13 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
             # ToDo: Remove temporary fix for CTRL-C not exiting
             set_sigterm(True)
             event = sub.events.get(timeout=1.0)
-            if event.variables["transport_state"] != "PLAYING":
+            logging.info(
+                "Event received: transport_state = '{}'".format(
+                    event.variables["transport_state"]
+                )
+            )
+            if event.variables["transport_state"] not in ["PLAYING", "TRANSITIONING"]:
+                logging.info("Speaker is not 'PLAYING' or 'TRANSITIONING'")
                 sub.unsubscribe()
                 # ToDo: Should really return here and do this some other way ...
                 #       this is what's requiring the SIGKILL
@@ -874,12 +880,11 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                         poll_interval
                     )
                 )
-                while (current_time - start_time) <= duration:
+                while (current_time - start_time) < duration:
                     state = speaker.get_current_transport_info()[
                         "current_transport_state"
                     ]
                     logging.info("Transport state = '{}'".format(state))
-                    current_time = time.time()
                     if state == "PLAYING":
                         # Restart the timer
                         start_time = current_time
@@ -890,6 +895,13 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                         )
                     )
                     time.sleep(poll_interval)
+                    current_time = time.time()
+                logging.info(
+                    "Timer expired after not 'PLAYING' for {}s, total elapsed = {}s".format(
+                        int(current_time - start_time),
+                        int(current_time - original_start_time),
+                    )
+                )
                 set_sigterm(False)
                 return True
         except:
@@ -1182,6 +1194,7 @@ actions = {
     "playback_state": SonosFunction(transport_state, "get_current_transport_info"),
     "playback": SonosFunction(transport_state, "get_current_transport_info"),
     "state": SonosFunction(transport_state, "get_current_transport_info"),
+    "status": SonosFunction(transport_state, "get_current_transport_info"),
     "play_favourite": SonosFunction(play_favourite, "play_favorite"),
     "play_favorite": SonosFunction(play_favourite, "play_favorite"),
     "favourite": SonosFunction(play_favourite, "play_favorite"),
