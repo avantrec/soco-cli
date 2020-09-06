@@ -1128,6 +1128,23 @@ def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@one_parameter
+def transfer_playback(speaker, action, args, soco_function, use_local_speaker_list):
+    """Transfer playback from one speaker to another, by grouping and ungrouping.
+    """
+    if not speaker.is_coordinator:
+        error_and_exit("Speaker '{}' is not a coordinator".format(speaker.player_name))
+        return False
+    speaker2 = get_speaker(args[0], use_local_speaker_list)
+    if speaker2:
+        speaker2.join(speaker)
+        speaker.unjoin()
+        return True
+    else:
+        error_and_exit("Speaker '{}' not found".format(args[0]))
+        return False
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -1312,4 +1329,6 @@ actions = {
     "cue_favorite": SonosFunction(cue_favourite, ""),
     "cue_fav": SonosFunction(cue_favourite, ""),
     "cf": SonosFunction(cue_favourite, ""),
+    "transfer_playback": SonosFunction(transfer_playback, ""),
+    "transfer": SonosFunction(transfer_playback, ""),
 }

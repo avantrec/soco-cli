@@ -1,4 +1,5 @@
 v0.1.30   - Added 'SHUFFLE_REPEAT_ONE' playback mode
+          - Add 'transfer_playback' action
 v0.1.29   - Updated logic fix for 'wait_stopped_for'
           - Add 'status' synomym for 'playback'
 v0.1.28   - Add 'cue_favourite' action
