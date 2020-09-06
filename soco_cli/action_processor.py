@@ -274,6 +274,7 @@ def playback_mode(speaker, action, args, soco_function, use_local_speaker_list):
         "repeat_one",
         "shuffle",
         "shuffle_norepeat",
+        "shuffle_repeat_one",
     ]
     if np == 0:
         print(speaker.play_mode)
