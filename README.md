@@ -301,8 +301,6 @@ Note that if a speaker is already playing, `wait_start` will proceed immediately
 sonos <speaker> wait_stopped_for <duration>
 ```
 
-**Experimental Feature**
-
 The **`<speaker> wait_stopped_for <duration>`** (or **`wsf`**) action will wait until a speaker has stopped playback for `<duration>` (which uses the same time parameter formats as the `wait` action). If the speaker stops playback, but then restarts (any number of times) during `<duration>`, the timer will be reset to zero each time. Processing continues once the speaker has been stopped for a continuous period equalling the `<duration>`.
 
 This function is useful if one wants to perform an action on a speaker (such as ungrouping it) only once its use has definitely stopped, as opposed to it just being temporarily paused, or stopped while switched to a different audio source. For example:
@@ -312,8 +310,6 @@ sonos Study wait_stopped_for 30m : Study line_in on : Study play
 ```
 
 ### Repeating Commands: The `loop` Actions
-
-**Experimental Feature**
 
 ```
 loop
@@ -345,8 +341,6 @@ sonos wait_until 08:00 : Kitchen play_fav "World Service" : Kitchen sleep 10m : 
 ```
 
 ## Conditional Command Execution
-
-**Experimental Feature**
 
 ```
 sonos <speaker> if_stopped <action> <parameters>
