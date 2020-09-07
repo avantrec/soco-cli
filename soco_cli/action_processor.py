@@ -1330,5 +1330,6 @@ actions = {
     "cue_fav": SonosFunction(cue_favourite, ""),
     "cf": SonosFunction(cue_favourite, ""),
     "transfer_playback": SonosFunction(transfer_playback, ""),
+    "transfer_to": SonosFunction(transfer_playback, ""),
     "transfer": SonosFunction(transfer_playback, ""),
 }
