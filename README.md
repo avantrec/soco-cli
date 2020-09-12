@@ -44,11 +44,11 @@
 
 ## Overview
 
-Soco CLI is a command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. Soco CLI is written entirely in Python and is portable across platforms.
+SoCo CLI is a command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. SoCo CLI is written entirely in Python and is portable across platforms.
 
 A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays and wait states between commands.
 
-Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
+SoCo CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
 ## Supported Environments
 
@@ -261,6 +261,8 @@ Multiple commands can be run as part of the same `sonos` invocation by using the
 
 An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
 
+Example: `sonos Kitchen volume 25 : Kitchen play`
+
 ### Inserting Delays: `wait` and `wait_until`
 
 ```
@@ -393,7 +395,7 @@ Note that if you have speakers with the same names in multiple Sonos systems (Ho
 
 ### Refreshing the Local Speaker List
 
-If your speakers change in some way (e.g., they are renamed, are assigned different IP addresses, or you add/remove speakers), you can refresh the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option. You can also use the `sonos-discover` command (below)
+If your speakers change in some way (e.g., they are renamed, are assigned different IP addresses, or you add/remove speakers), you can refresh the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option. You can also use the `sonos-discover` command (below).
 
 **Example**: **`sonos -lr "living room" volume 50`** will refresh the discovery cache before executing the `sonos` command.
 
