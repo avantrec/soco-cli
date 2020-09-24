@@ -44,11 +44,11 @@
 
 ## Overview
 
-Soco CLI is a command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. Soco CLI is written entirely in Python and is portable across platforms.
+SoCo CLI is a command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. SoCo CLI is written entirely in Python and is portable across platforms.
 
 A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays and wait states between commands.
 
-Sonos CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
+SoCo CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
 ## Supported Environments
 
@@ -198,7 +198,7 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
 - **`queue_track <track_name>`** (or **`qt`**): Add `<track_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the track name, a random match will be chosen. The queue position of the track will be returned.
 - **`remove_from_queue <track_number>`** (or **`rfq`, `rq`**): Remove `<track_number>` from the queue. Track numbers start from 1.
-- **`save_queue <title>`** (or **`sq`**): Save the current queue as a Sonos playlist called `<title>`.
+- **`save_queue <title>`** (or **`sq`, `create_playlist_from_queue`**): Save the current queue as a Sonos playlist called `<title>`.
 
 The following has issues and requires further development. For example, it's currently possible to add radio stations to the queue!
 
@@ -207,7 +207,7 @@ The following has issues and requires further development. For example, it's cur
 ### Favourites and Playlists
 
 - **`clear_playlist <playlist>`**: Clear the Sonos playlist named `<playlist>`.
-- **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`.
+- **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`. (See also `save_queue` above).
 - **`cue_favourite <favourite_name>`** (or **`cue_favorite`, `cue_fav`, `cf`**): Cues up a Sonos favourite for playback. This is a convenience action that issues the sequence: `mute, play_favourite, stop, unmute`. It's useful for silently setting a speaker to a state where it's ready to play the nominated favourite. Mute and group mute states are preserved. 
 - **`delete_playlist <playlist>`** (or **`remove_playlist`**): Delete the Sonos playlist named `<playlist>`.
 - **`favourite_radio_stations`** (or **`favorite_radio_stations`**): List the favourite radio stations.
@@ -260,6 +260,8 @@ The actions below search the Sonos Music library.
 Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. **The `:` separator must be surrounded by spaces** to disambiguate from other uses of `:` in sonos actions.
 
 An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
+
+Example: `sonos Kitchen volume 25 : Kitchen play`
 
 ### Inserting Delays: `wait` and `wait_until`
 
@@ -387,7 +389,7 @@ Note that if you have speakers with the same names in multiple Sonos systems (Ho
 
 ### Refreshing the Local Speaker List
 
-If your speakers change in some way (e.g., they are renamed, are assigned different IP addresses, or you add/remove speakers), you can refresh the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option. You can also use the `sonos-discover` command (below)
+If your speakers change in some way (e.g., they are renamed, are assigned different IP addresses, or you add/remove speakers), you can refresh the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option. You can also use the `sonos-discover` command (below).
 
 **Example**: **`sonos -lr "living room" volume 50`** will refresh the discovery cache before executing the `sonos` command.
 

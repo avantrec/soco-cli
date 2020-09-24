@@ -1251,6 +1251,7 @@ actions = {
     "group_mute": SonosFunction(on_off_action, "group_mute"),
     "save_queue": SonosFunction(save_queue, "create_sonos_playlist_from_queue"),
     "sq": SonosFunction(save_queue, "create_sonos_playlist_from_queue"),
+    "create_playlist_from_queue": SonosFunction(save_queue, "create_sonos_playlist_from_queue"),
     "queue_length": SonosFunction(no_args_one_output, "queue_size"),
     "ql": SonosFunction(no_args_one_output, "queue_size"),
     "add_playlist_to_queue": SonosFunction(playlist_operations, "add_to_queue"),
