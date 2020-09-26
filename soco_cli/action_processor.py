@@ -1019,12 +1019,10 @@ def search_library(speaker, action, args, soco_function, use_local_speaker_list)
 def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list):
     ml = speaker.music_library
     name = args[0]
-    # tracks = ml.get_music_library_information("tracks", subcategories=[name], max_items=sonos_max_items)
     albums = ml.get_music_library_information(
         "albums", search_term=name, complete_result=True
     )
     logging.info("Found {} album(s) matching '{}'".format(len(albums), name))
-    print(albums)
     for album in albums:
         tracks = ml.get_music_library_information(
             "artists", subcategories=["", album.title], complete_result=True
