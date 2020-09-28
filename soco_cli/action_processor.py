@@ -1019,12 +1019,10 @@ def search_library(speaker, action, args, soco_function, use_local_speaker_list)
 def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list):
     ml = speaker.music_library
     name = args[0]
-    # tracks = ml.get_music_library_information("tracks", subcategories=[name], max_items=sonos_max_items)
     albums = ml.get_music_library_information(
         "albums", search_term=name, complete_result=True
     )
     logging.info("Found {} album(s) matching '{}'".format(len(albums), name))
-    print(albums)
     for album in albums:
         tracks = ml.get_music_library_information(
             "artists", subcategories=["", album.title], complete_result=True
@@ -1251,6 +1249,9 @@ actions = {
     "group_mute": SonosFunction(on_off_action, "group_mute"),
     "save_queue": SonosFunction(save_queue, "create_sonos_playlist_from_queue"),
     "sq": SonosFunction(save_queue, "create_sonos_playlist_from_queue"),
+    "create_playlist_from_queue": SonosFunction(
+        save_queue, "create_sonos_playlist_from_queue"
+    ),
     "queue_length": SonosFunction(no_args_one_output, "queue_size"),
     "ql": SonosFunction(no_args_one_output, "queue_size"),
     "add_playlist_to_queue": SonosFunction(playlist_operations, "add_to_queue"),
@@ -1330,5 +1331,6 @@ actions = {
     "cue_fav": SonosFunction(cue_favourite, ""),
     "cf": SonosFunction(cue_favourite, ""),
     "transfer_playback": SonosFunction(transfer_playback, ""),
+    "transfer_to": SonosFunction(transfer_playback, ""),
     "transfer": SonosFunction(transfer_playback, ""),
 }

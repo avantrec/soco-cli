@@ -38,7 +38,7 @@
       * [Known Issues](#known-issues)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Sun Aug 30 11:03:34 BST 2020 -->
+<!-- Added by: pwt, at: Mon Sep 28 11:51:27 BST 2020 -->
 
 <!--te-->
 
@@ -104,7 +104,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 ## Guidelines on Playing Content
 
-Currently, **soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. You should add content to these lists in order to facilitate playback. Content can be from local libraries, streaming services, or streaming radio stations.
+**soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. Add content to these collections in order to facilitate playback. Content can be from local libraries, streaming services, or streaming radio stations. You can also add content (e.g., from the local libraries) to the queue for playback.
 
 ### Radio Stations
 
@@ -198,7 +198,7 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
 - **`queue_track <track_name>`** (or **`qt`**): Add `<track_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the track name, a random match will be chosen. The queue position of the track will be returned.
 - **`remove_from_queue <track_number>`** (or **`rfq`, `rq`**): Remove `<track_number>` from the queue. Track numbers start from 1.
-- **`save_queue <title>`** (or **`sq`**): Save the current queue as a Sonos playlist called `<title>`.
+- **`save_queue <title>`** (or **`sq`, `create_playlist_from_queue`**): Save the current queue as a Sonos playlist called `<title>`.
 
 The following has issues and requires further development. For example, it's currently possible to add radio stations to the queue!
 
@@ -207,7 +207,7 @@ The following has issues and requires further development. For example, it's cur
 ### Favourites and Playlists
 
 - **`clear_playlist <playlist>`**: Clear the Sonos playlist named `<playlist>`.
-- **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`.
+- **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`. (See also `save_queue` above).
 - **`cue_favourite <favourite_name>`** (or **`cue_favorite`, `cue_fav`, `cf`**): Cues up a Sonos favourite for playback. This is a convenience action that issues the sequence: `mute, play_favourite, stop, unmute`. It's useful for silently setting a speaker to a state where it's ready to play the nominated favourite. Mute and group mute states are preserved. 
 - **`delete_playlist <playlist>`** (or **`remove_playlist`**): Delete the Sonos playlist named `<playlist>`.
 - **`favourite_radio_stations`** (or **`favorite_radio_stations`**): List the favourite radio stations.
@@ -224,7 +224,7 @@ The following has issues and requires further development. For example, it's cur
 - **`group <master_speaker>`(or `g`)**: Groups the speaker with `<master_speaker>`.
 - **`pair <right_hand_speaker`**: Creates a stereo pair, where the target speaker becomes the left-hand speaker of the pair and `<right_hand_speaker>` becomes the right-hand of the pair. Can be used to pair dissimilar Sonos devices (e.g., to stereo-pair a Play:1 with a One).
 - **`party_mode` (or `party`)**: Adds all speakers in the system into a single group. The target speaker becomes the group coordinator. Remove speakers individually using `ungroup`, or use `ungroup_all`.
-- **`transfer_playback <target_speaker>` (or `transfer`)**: Transfers playback to <target_speaker>. This is achieved by grouping and ungrouping the speakers, and swapping the group coordinator. It's a convenience shortcut for `speaker1 group speaker2 : speaker1 ungroup`.
+- **`transfer_playback <target_speaker>` (or `transfer_to`, `transfer`)**: Transfers playback to <target_speaker>. This is achieved by grouping and ungrouping the speakers, and swapping the group coordinator. It's a convenience shortcut for `speaker1 group speaker2 : speaker1 ungroup`.
 - **`ungroup` (or `ug`, `u`)**: Removes the speaker from a group.
 - **`ungroup_all`**: Removes all speakers in the target speaker's household from all groups.
 - **`unpair`**: Separate a stereo pair. Can be applied to either speaker in the pair.
@@ -303,8 +303,6 @@ Note that if a speaker is already playing, `wait_start` will proceed immediately
 sonos <speaker> wait_stopped_for <duration>
 ```
 
-**Experimental Feature**
-
 The **`<speaker> wait_stopped_for <duration>`** (or **`wsf`**) action will wait until a speaker has stopped playback for `<duration>` (which uses the same time parameter formats as the `wait` action). If the speaker stops playback, but then restarts (any number of times) during `<duration>`, the timer will be reset to zero each time. Processing continues once the speaker has been stopped for a continuous period equalling the `<duration>`.
 
 This function is useful if one wants to perform an action on a speaker (such as ungrouping it) only once its use has definitely stopped, as opposed to it just being temporarily paused, or stopped while switched to a different audio source. For example:
@@ -314,8 +312,6 @@ sonos Study wait_stopped_for 30m : Study line_in on : Study play
 ```
 
 ### Repeating Commands: The `loop` Actions
-
-**Experimental Feature**
 
 ```
 loop
@@ -347,8 +343,6 @@ sonos wait_until 08:00 : Kitchen play_fav "World Service" : Kitchen sleep 10m : 
 ```
 
 ## Conditional Command Execution
-
-**Experimental Feature**
 
 ```
 sonos <speaker> if_stopped <action> <parameters>
