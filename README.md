@@ -38,7 +38,7 @@
       * [Known Issues](#known-issues)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Sun Aug 30 11:03:34 BST 2020 -->
+<!-- Added by: pwt, at: Mon Sep 28 11:51:27 BST 2020 -->
 
 <!--te-->
 
@@ -104,7 +104,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 ## Guidelines on Playing Content
 
-Currently, **soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. You should add content to these lists in order to facilitate playback. Content can be from local libraries, streaming services, or streaming radio stations.
+**soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. Add content to these collections in order to facilitate playback. Content can be from local libraries, streaming services, or streaming radio stations. You can also add content (e.g., from the local libraries) to the queue for playback.
 
 ### Radio Stations
 
