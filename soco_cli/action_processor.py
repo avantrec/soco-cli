@@ -329,7 +329,7 @@ def repeat(speaker, action, args, soco_function, use_local_speaker_list):
             print("one")
     elif np == 1:
         mode = speaker.play_mode.lower()
-        if args[0].lower() == "off":
+        if args[0].lower() in ["off", "none"]:
             if mode in ["repeat_all", "repeat_one"]:
                 speaker.play_mode = "normal"
             elif mode in ["shuffle", "shuffle_repeat_one"]:
