@@ -1,3 +1,4 @@
+v0.1.32   - Add 'shuffle' action for direct inspection and control of shuffle mode
 v0.1.31   - Add 'transfer_to' synonym for 'transfer_playback'
           - Add 'create_playlist_from_queue' synonym for 'save_queue'
           - Remove erroneous printout in 'tracks_in_albums'
