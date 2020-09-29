@@ -249,7 +249,7 @@ def relative_volume(speaker, action, args, soco_function, use_local_speaker_list
         parameter_type_error(action, "integer from -100 to 100")
         return False
     if -100 <= vol <= 100:
-        speaker.volume += vol
+        speaker.set_relative_volume(vol)
     else:
         parameter_type_error(action, "integer from -100 to 100")
         return False
