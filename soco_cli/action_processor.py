@@ -316,6 +316,42 @@ def shuffle(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_or_one_parameter
+def repeat(speaker, action, args, soco_function, use_local_speaker_list):
+    np = len(args)
+    if np == 0:
+        mode = speaker.play_mode.lower()
+        if mode in ["shuffle", "repeat_all"]:
+            print("all")
+        elif mode in ["shuffle_norepeat", "normal"]:
+            print("off")
+        elif mode in ["shuffle_repeat_one", "repeat_one"]:
+            print("one")
+    elif np == 1:
+        mode = speaker.play_mode.lower()
+        if args[0].lower() == "off":
+            if mode in ["repeat_all", "repeat_one"]:
+                speaker.play_mode = "normal"
+            elif mode in ["shuffle", "shuffle_repeat_one"]:
+                speaker.play_mode = "shuffle_norepeat"
+        elif args[0].lower() == "one":
+            if mode in ["shuffle_norepeat", "shuffle"]:
+                speaker.play_mode = "shuffle_repeat_one"
+            elif mode in ["normal", "repeat_all"]:
+                speaker.play_mode = "repeat_one"
+        elif args[0].lower() == "all":
+            if mode in ["shuffle_repeat_one", "shuffle_norepeat"]:
+                speaker.play_mode = "shuffle"
+            elif mode in ["normal", "repeat_one"]:
+                speaker.play_mode = "repeat_all"
+        else:
+            error_and_exit(
+                "Action '{}' takes parameter 'off', 'one', or 'all'".format(action)
+            )
+            return False
+    return True
+
+
 @zero_parameters
 def transport_state(speaker, action, args, soco_function, use_local_speaker_list):
     print(speaker.get_current_transport_info()["current_transport_state"])
@@ -1365,4 +1401,6 @@ actions = {
     "transfer": SonosFunction(transfer_playback, ""),
     "shuffle": SonosFunction(shuffle, ""),
     "sh": SonosFunction(shuffle, ""),
+    "repeat": SonosFunction(repeat, ""),
+    "rpt": SonosFunction(repeat, ""),
 }

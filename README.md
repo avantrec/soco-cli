@@ -180,6 +180,8 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
 - **`play_uri <uri> <title>` (or `uri`, `pu`)**: Plays the audio object given by the `<uri>` parameter (e.g., a radio stream URL). `<title>` is optional, and if present will be used for the title of the audio stream.
 - **`previous` (or `prev`)**: Move to the previous track (if applicable for the audio source).
+- **`repeat` (or `rpt`)**: Returns the repeat mode state: 'off', 'one', or 'all'.
+- **`repeat <off|one|all>` (or `rpt`)**: Sets the repeat mode state.
 - **`seek <HH:MM:SS>`**: Seek to a point within a track (if applicable for the audio source).
 - **`shuffle` (or `sh`)**: Returns 'on' if shuffle is enabled, 'off' if not.
 - **`shuffle <on|off>` (or `sh`)**: Enables or disables shuffle mode.
