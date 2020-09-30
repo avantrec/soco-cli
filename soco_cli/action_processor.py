@@ -621,13 +621,17 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
         if "-" in index:
             rng = index.split("-")
             if len(rng) != 2:
-                parameter_type_error(action, "two integers and a '-', e.g., '3-7' when using a range")
+                parameter_type_error(
+                    action, "two integers and a '-', e.g., '3-7' when using a range"
+                )
                 return False
             try:
                 index_1 = int(rng[0])
                 index_2 = int(rng[1])
             except ValueError:
-                parameter_type_error(action, "two integers and a '-', e.g., '3-7' when using a range")
+                parameter_type_error(
+                    action, "two integers and a '-', e.g., '3-7' when using a range"
+                )
                 return False
             if 1 <= index_1 <= len(queue) and 1 <= index_2 <= len(queue):
                 if index_1 > index_2:
@@ -637,7 +641,9 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
                     queue[i] = 0
             else:
                 error_and_exit(
-                    "Queue index(es) must be between 1 and the queue length ({})".format(len(queue))
+                    "Queue index(es) must be between 1 and the queue length ({})".format(
+                        len(queue)
+                    )
                 )
                 return False
         else:
