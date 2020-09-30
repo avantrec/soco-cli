@@ -608,17 +608,41 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
 
 @one_parameter
 def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_list):
-    try:
-        index = int(args[0])
-    except:
-        parameter_type_error(action, "integer")
-        return False
-    qs = speaker.queue_size
-    if 1 <= index <= qs:
-        speaker.remove_from_queue(index - 1)
-    else:
-        error_and_exit("Queue index must be between 1 and {}".format(qs))
-        return False
+    # Generate a list that represents which tracks to remove, denoted by '0'
+    # Initially mark each track as '1' (retain)
+    queue = []
+    for _ in range(speaker.queue_size):
+        queue.append(1)
+    # Split out comma separated terms into a list (possibly just one item)
+    items = args[0].split(",")
+    for index in items:
+        try:
+            index = int(index)
+        except ValueError:
+            parameter_type_error(
+                action,
+                "integer, or comma-separated integers without spaces (e.g., 3,7,4)",
+            )
+            return False
+        if 1 <= index <= len(queue):
+            queue[index - 1] = 0
+        else:
+            error_and_exit(
+                "Queue index(es) must be between 1 and {}".format(len(queue))
+            )
+            return False
+    logging.info("Created list of queue items to delete (==0) {}".format(queue))
+    # Walk though the list of tracks from position 1, removing items marked '0'
+    # Account for removed items
+    count_removed = 0
+    for item in range(len(queue)):
+        if queue[item] == 0:
+            updated_index = item - count_removed
+            speaker.remove_from_queue(updated_index)
+            logging.info(
+                "Removing queue item (adjusted) index {}".format(updated_index + 1)
+            )
+            count_removed += 1
     return True
 
 
