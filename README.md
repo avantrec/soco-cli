@@ -180,13 +180,13 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
 - **`play_uri <uri> <title>` (or `uri`, `pu`)**: Plays the audio object given by the `<uri>` parameter (e.g., a radio stream URL). `<title>` is optional, and if present will be used for the title of the audio stream.
 - **`previous` (or `prev`)**: Move to the previous track (if applicable for the audio source).
-- **`repeat` (or `rpt`)**: Returns the repeat mode state: 'off', 'one', or 'all'.
-- **`repeat <off|one|all>` (or `rpt`)**: Sets the repeat mode state.
+- **`repeat` (or `rpt`)**: Returns the repeat mode state: 'off' (or 'none'), 'one', or 'all'.
+- **`repeat <off|none|one|all>` (or `rpt`)**: Sets the repeat mode state.
 - **`seek <HH:MM:SS>`**: Seek to a point within a track (if applicable for the audio source).
 - **`shuffle` (or `sh`)**: Returns 'on' if shuffle is enabled, 'off' if not.
 - **`shuffle <on|off>` (or `sh`)**: Enables or disables shuffle mode.
 - **`sleep_timer` (or `sleep`)**: Returns the current sleep timer remaining time in seconds; 0 if no sleep timer is active.
-- **`sleep_timer <duration | off | cancel>` (or `sleep`)**: Set the sleep timer to `<duration>`, which can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed. The time duration formats HH:MM and HH:MM:SS can also be used. To **cancel** a sleep timer, use `off` or `cancel` instead of a duration.
+- **`sleep_timer <duration|off|cancel>` (or `sleep`)**: Set the sleep timer to `<duration>`, which can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed. The time duration formats HH:MM and HH:MM:SS can also be used. To **cancel** a sleep timer, use `off` or `cancel` instead of a duration.
 - **`sleep_at <HH:MM:SS>`**: Sets the sleep timer to sleep at a time up to 24 hours in the future. For example, to set the speaker to sleep at 4pm, use `sleep_at 16:00`.
 - **`stop`**: Stop playback.
 - **`track`**: Return information about the currently playing track.
