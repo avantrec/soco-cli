@@ -167,7 +167,7 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 ### Playback Control
 
 - **`cross_fade`** (or **`crossfade`**): Returns the cross fade setting of the speaker, 'on' or 'off'.
-- **`cross_fade <on|off>`** (or **`crossfade`**): Sets the cross fade setting of the speaker to 'on' or 'off'.
+- **`cross_fade <on|off>`** (or **`crossfade`, `fade`**): Sets the cross fade setting of the speaker to 'on' or 'off'.
 - **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise.
 - **`line_in <on or line_in_speaker>`**: Switch a speaker to its own Line-In input (`<on>`), **or** the Line-In input of `<line_in_speaker>` (if applicable). Note that this does not start Line_in playback; issue the `play` action to start Line-In playback. (For the case where there is a stereo pair of Play:5 or Five speakers, the **left hand** speaker's Line-In source is the one that's used. In the event that the right hand source is required, the IP Address of the right hand speaker must be used instead of its name.)
 - **`next`**: Move to the next track (if applicable for the current audio source).

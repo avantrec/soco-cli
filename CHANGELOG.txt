@@ -1,3 +1,4 @@
+v0.1.34   - Add 'fade' synonym for 'cross_fade'
 v0.1.33   - Add 'none' as a synonym for 'off', in the 'repeat' action
           - Add the ability to use sequences and ranges with 'remove_from_queue'
 v0.1.32   - Add 'shuffle' action for direct inspection and control of shuffle mode

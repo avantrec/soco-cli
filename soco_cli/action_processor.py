@@ -1284,6 +1284,7 @@ actions = {
     "mute": SonosFunction(on_off_action, "mute"),
     "cross_fade": SonosFunction(on_off_action, "cross_fade"),
     "crossfade": SonosFunction(on_off_action, "cross_fade"),
+    "fade": SonosFunction(on_off_action, "cross_fade"),
     "loudness": SonosFunction(on_off_action, "loudness"),
     "status_light": SonosFunction(on_off_action, "status_light"),
     "light": SonosFunction(on_off_action, "status_light"),
