@@ -1,4 +1,5 @@
 v0.1.33   - Add 'none' as a synonym for 'off', in the 'repeat' action
+          - Add the ability to use sequences and ranges with 'remove_from_queue'
 v0.1.32   - Add 'shuffle' action for direct inspection and control of shuffle mode
           - Add 'repeat' action for direct inspection and control of repeat mode
 v0.1.31   - Add 'transfer_to' synonym for 'transfer_playback'
