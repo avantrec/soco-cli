@@ -613,67 +613,55 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
     queue = []
     for _ in range(speaker.queue_size):
         queue.append(1)
-
-    # Check for a list of items to remove
-    items = args[0].split(",")
-    for index in items:
-        # Check for a range ('x-y') instead of a single integer
-        if "-" in index:
-            rng = index.split("-")
-            if len(rng) != 2:
-                parameter_type_error(
-                    action, "two integers and a '-', e.g., '3-7' when using a range"
-                )
-                return False
-            try:
+    # Catch exceptions at the end
+    try:
+        # Create a list of items to remove based on the input args
+        # Mark these as '0'
+        items = args[0].split(",")
+        for index in items:
+            # Check for a range ('x-y') instead of a single integer
+            if "-" in index:
+                rng = index.split("-")
+                if len(rng) != 2:
+                    parameter_type_error(
+                        action, "two integers and a '-', e.g., '3-7' when using a range"
+                    )
+                    return False
                 index_1 = int(rng[0])
                 index_2 = int(rng[1])
-            except ValueError:
-                parameter_type_error(
-                    action, "two integers and a '-', e.g., '3-7' when using a range"
-                )
-                return False
-            if 1 <= index_1 <= len(queue) and 1 <= index_2 <= len(queue):
                 if index_1 > index_2:
                     # Reverse the indices
                     index_2, index_1 = index_1, index_2
                 for i in range(index_1 - 1, index_2):
                     queue[i] = 0
             else:
-                error_and_exit(
-                    "Queue index(es) must be between 1 and the queue length ({})".format(
-                        len(queue)
-                    )
-                )
-                return False
-        else:
-            try:
                 index = int(index)
-            except ValueError:
-                parameter_type_error(
-                    action,
-                    "integer, or comma-separated integers without spaces (e.g., 3,7,4)",
-                )
-                return False
-            if 1 <= index <= len(queue):
                 queue[index - 1] = 0
-            else:
-                error_and_exit(
-                    "Queue index(es) must be between 1 and {}".format(len(queue))
+        logging.info("Created list of queue items to delete (==0) {}".format(queue))
+        # Walk though the list of tracks from position 1, removing items marked '0'
+        # Account for the queue shift by keeping count of those deleted
+        count_removed = 0
+        for item in range(len(queue)):
+            if queue[item] == 0:
+                updated_index = item - count_removed
+                speaker.remove_from_queue(updated_index)
+                logging.info(
+                    "Removing queue item (adjusted) index {}".format(updated_index + 1)
                 )
-                return False
-    logging.info("Created list of queue items to delete (==0) {}".format(queue))
-    # Walk though the list of tracks from position 1, removing items marked '0'
-    # Account for the queue shift by keeping count of those deleted
-    count_removed = 0
-    for item in range(len(queue)):
-        if queue[item] == 0:
-            updated_index = item - count_removed
-            speaker.remove_from_queue(updated_index)
-            logging.info(
-                "Removing queue item (adjusted) index {}".format(updated_index + 1)
-            )
-            count_removed += 1
+                count_removed += 1
+    # Exception handling
+    # Catch any non-integer input values
+    except ValueError:
+        parameter_type_error(
+            action, "integer, or comma-separated integers without spaces (e.g., 3,7,4)",
+        )
+        return False
+    # Catch any out-of-range values
+    except IndexError:
+        error_and_exit(
+            "Queue index(es) must be between 1 and {} (inclusive)".format(len(queue))
+        )
+        return False
     return True
 
 
