@@ -38,7 +38,7 @@
       * [Known Issues](#known-issues)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Thu Oct  1 14:16:56 BST 2020 -->
+<!-- Added by: pwt, at: Thu Oct  1 18:34:09 BST 2020 -->
 
 <!--te-->
 
@@ -74,6 +74,8 @@ sonos SPEAKER ACTION <parameters>
 - `ACTION` is the operation to perform on the speaker. It can take zero or more parameters depending on the operation.
 
 As usual, command line arguments containing spaces must be surrounded by quotes: double quotes work on all OS platforms, while Linux and macOS also support single quotes.
+
+The `soco` command is also added to the PATH, and can be used as an alias for the `sonos` command if preferred.
 
 Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking any user confirmation; please bear this in mind when manipulating the queue, playlists, etc.!
 
@@ -209,7 +211,7 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 
 The following has issues and requires further development. For example, it's currently possible to add radio stations to the queue!
 
-- **`add_favourite_to_queue <play_next|next>` (or **`add_favorite_to_queue`, `add_fav_to_queue`, `afq`)**: Add a Sonos Favourite to the queue. Optionally, `play_next` or `next` can be added to add the favourite as the next track or playlist to be played. Returns the queue position of the favourite.
+- **`add_favourite_to_queue <play_next|next>` (or `add_favorite_to_queue`, `add_fav_to_queue`, `afq`)**: Add a Sonos Favourite to the queue. Optionally, `play_next` or `next` can be added to add the favourite as the next track or playlist to be played. Returns the queue position of the favourite.
 
 ### Favourites and Playlists
 

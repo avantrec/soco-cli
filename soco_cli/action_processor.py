@@ -444,7 +444,16 @@ def add_favourite_to_queue(
                 error_and_exit(
                     "If supplied, second parameter must be 'play_next' or 'next'"
                 )
-            position = int(speaker.get_current_track_info()["playlist_position"]) + 1
+            if (
+                speaker.get_current_transport_info()["current_transport_state"]
+                == "PLAYING"
+            ):
+                offset = 1
+            else:
+                offset = 0
+            position = (
+                int(speaker.get_current_track_info()["playlist_position"]) + offset
+            )
         try:
             # Print the queue position and return
             print(speaker.add_to_queue(the_fav, position=position))
@@ -747,13 +756,20 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
         if soco_function == "add_to_queue":
             position = 0
             if len(args) == 2:
-                if args[1] not in ["next", "play_next"]:
+                if args[1].lower() not in ["next", "play_next"]:
                     error_and_exit(
                         "If supplied, second parameter must be 'play_next' or 'next'"
                     )
                     return False
+                if (
+                    speaker.get_current_transport_info()["current_transport_state"]
+                    == "PLAYING"
+                ):
+                    offset = 1
+                else:
+                    offset = 0
                 position = (
-                    int(speaker.get_current_track_info()["playlist_position"]) + 1
+                    int(speaker.get_current_track_info()["playlist_position"]) + offset
                 )
             result = speaker.add_to_queue(playlist, position=position)
             print(result)
@@ -1223,8 +1239,15 @@ def queue_album(speaker, action, args, soco_function, use_local_speaker_list):
         position = 0
         if len(args) == 2:
             if args[1].lower() in ["play_next", "next"]:
+                if (
+                    speaker.get_current_transport_info()["current_transport_state"]
+                    == "PLAYING"
+                ):
+                    offset = 1
+                else:
+                    offset = 0
                 position = (
-                    int(speaker.get_current_track_info()["playlist_position"]) + 1
+                    int(speaker.get_current_track_info()["playlist_position"]) + offset
                 )
             else:
                 error_and_exit(
@@ -1255,8 +1278,15 @@ def queue_track(speaker, action, args, soco_function, use_local_speaker_list):
         position = 0
         if len(args) == 2:
             if args[1].lower() in ["play_next", "next"]:
+                if (
+                    speaker.get_current_transport_info()["current_transport_state"]
+                    == "PLAYING"
+                ):
+                    offset = 1
+                else:
+                    offset = 0
                 position = (
-                    int(speaker.get_current_track_info()["playlist_position"]) + 1
+                    int(speaker.get_current_track_info()["playlist_position"]) + offset
                 )
             else:
                 error_and_exit(
