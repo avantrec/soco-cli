@@ -637,18 +637,6 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
             else:
                 index = int(index)
                 queue[index - 1] = 0
-        logging.info("Created list of queue items to delete (==0) {}".format(queue))
-        # Walk though the list of tracks from position 1, removing items marked '0'
-        # Account for the queue shift by keeping count of those deleted
-        count_removed = 0
-        for item in range(len(queue)):
-            if queue[item] == 0:
-                updated_index = item - count_removed
-                speaker.remove_from_queue(updated_index)
-                logging.info(
-                    "Removing queue item (adjusted) index {}".format(updated_index + 1)
-                )
-                count_removed += 1
     # Exception handling
     # Catch any non-integer input values
     except ValueError:
@@ -662,6 +650,18 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
             "Queue index(es) must be between 1 and {} (inclusive)".format(len(queue))
         )
         return False
+    # Walk though the list of tracks from position 1, removing items marked '0'
+    # Account for the queue shift by keeping count of those deleted
+    logging.info("Created map of queue items to delete (==0) {}".format(queue))
+    count_removed = 0
+    for item in range(len(queue)):
+        if queue[item] == 0:
+            updated_index = item - count_removed
+            speaker.remove_from_queue(updated_index)
+            logging.info(
+                "Removing queue item at (adjusted) index {}".format(updated_index + 1)
+            )
+            count_removed += 1
     return True
 
 
