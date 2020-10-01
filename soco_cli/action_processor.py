@@ -669,6 +669,16 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
     return True
 
 
+@zero_parameters
+def remove_current_track_from_queue(speaker, action, args, soco_function, use_local_speaker_list):
+    if speaker.queue_size == 0:
+        error_and_exit("No tracks in queue")
+        return False
+    current_track = int(speaker.get_current_track_info()["playlist_position"])
+    speaker.remove_from_queue(current_track - 1)
+    return True
+
+
 @one_parameter
 def save_queue(speaker, action, args, soco_function, use_local_speaker_list):
     speaker.create_sonos_playlist_from_queue(args[0])
@@ -1451,4 +1461,6 @@ actions = {
     "sh": SonosFunction(shuffle, ""),
     "repeat": SonosFunction(repeat, ""),
     "rpt": SonosFunction(repeat, ""),
+    "remove_current_track_from_queue": SonosFunction(remove_current_track_from_queue, ""),
+    "rctfq": SonosFunction(remove_current_track_from_queue, ""),
 }
