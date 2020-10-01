@@ -1297,6 +1297,12 @@ def transfer_playback(speaker, action, args, soco_function, use_local_speaker_li
         return False
 
 
+@zero_parameters
+def queue_position(speaker, action, args, soco_function, use_local_speaker_list):
+    print(speaker.get_current_track_info()["playlist_position"])
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -1498,4 +1504,6 @@ actions = {
     "rctfq": SonosFunction(remove_current_track_from_queue, ""),
     "remove_last_track_from_queue": SonosFunction(remove_last_track_from_queue, ""),
     "rltfq": SonosFunction(remove_last_track_from_queue, ""),
+    "queue_position": SonosFunction(queue_position, ""),
+    "qp": SonosFunction(queue_position, ""),
 }
