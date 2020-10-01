@@ -1,6 +1,7 @@
 v0.1.35   - Add 'queue_position' action
           - Add 'play_next' option to 'queue_track' and 'queue_album'
           - Add 'play_next' option for 'add_playlist_to_queue'
+          - Add 'play_next' option for 'add_favourite_to_queue'
 v0.1.34   - Add 'fade' synonym for 'cross_fade'
           - Add 'remove_current_track_from_queue' action
           - Add 'remove_last_track_from_queue' action

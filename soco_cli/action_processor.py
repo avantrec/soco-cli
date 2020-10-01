@@ -416,7 +416,7 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
         return True
 
 
-@one_parameter
+@one_or_two_parameters
 def add_favourite_to_queue(
     speaker, action, args, soco_function, use_local_speaker_list
 ):
@@ -438,9 +438,16 @@ def add_favourite_to_queue(
                 the_fav = f
                 break
     if the_fav:
+        position = 0
+        if len(args) == 2:
+            if args[1].lower() not in ["play_next", "next"]:
+                error_and_exit(
+                    "If supplied, second parameter must be 'play_next' or 'next'"
+                )
+            position = int(speaker.get_current_track_info()["playlist_position"]) + 1
         try:
             # Print the queue position and return
-            print(speaker.add_to_queue(the_fav))
+            print(speaker.add_to_queue(the_fav, position=position))
             return True
         except Exception as e:
             error_and_exit("{}".format(str(e)))

@@ -209,7 +209,7 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 
 The following has issues and requires further development. For example, it's currently possible to add radio stations to the queue!
 
-- **`add_favourite_to_queue`** (or **`add_favorite_to_queue`, `add_fav_to_queue`, `afq`**): Add a Sonos Favourite to the queue.
+- **`add_favourite_to_queue <play_next|next>` (or **`add_favorite_to_queue`, `add_fav_to_queue`, `afq`)**: Add a Sonos Favourite to the queue. Optionally, `play_next` or `next` can be added to add the favourite as the next track or playlist to be played. Returns the queue position of the favourite.
 
 ### Favourites and Playlists
 
