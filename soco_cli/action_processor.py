@@ -726,7 +726,7 @@ def seek(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-@one_parameter
+@one_or_two_parameters
 def playlist_operations(speaker, action, args, soco_function, use_local_speaker_list):
     name = args[0]
     if soco_function == "create_sonos_playlist":
@@ -737,9 +737,21 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
         return True
     playlist = get_playlist(speaker, name)
     if playlist is not None:
-        result = getattr(speaker, soco_function)(playlist)
-        if soco_function in ["add_to_queue"]:
+        if soco_function == "add_to_queue":
+            position = 0
+            if len(args) == 2:
+                if args[1] not in ["next", "play_next"]:
+                    error_and_exit(
+                        "If supplied, second parameter must be 'play_next' or 'next'"
+                    )
+                    return False
+                position = (
+                    int(speaker.get_current_track_info()["playlist_position"]) + 1
+                )
+            result = speaker.add_to_queue(playlist, position=position)
             print(result)
+        else:
+            result = getattr(speaker, soco_function)(playlist)
     else:
         error_and_exit("Playlist '{}' not found".format(args[0]))
         return False
