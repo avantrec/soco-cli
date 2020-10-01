@@ -670,12 +670,43 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
 
 
 @zero_parameters
-def remove_current_track_from_queue(speaker, action, args, soco_function, use_local_speaker_list):
+def remove_current_track_from_queue(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
     if speaker.queue_size == 0:
         error_and_exit("No tracks in queue")
         return False
     current_track = int(speaker.get_current_track_info()["playlist_position"])
+    logging.info("Removing track {}".format(current_track))
     speaker.remove_from_queue(current_track - 1)
+    return True
+
+
+@zero_or_one_parameter
+def remove_last_track_from_queue(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
+    queue_size = speaker.queue_size
+    logging.info("Queue size is {}".format(queue_size))
+    if queue_size == 0:
+        error_and_exit("No tracks in queue")
+        return False
+    if len(args) == 1:
+        try:
+            count = int(args[0])
+        except ValueError:
+            parameter_type_error(action, "an integer > 1")
+        if not 1 <= count <= queue_size:
+            error_and_exit("parameter must be between 1 and {}".format(queue_size))
+            return False
+    else:
+        count = 1
+    logging.info("Removing the last {} tracks from the queue".format(count))
+    while count > 0:
+        logging.info("Removing track {}".format(queue_size))
+        speaker.remove_from_queue(queue_size - 1)
+        queue_size -= 1
+        count -= 1
     return True
 
 
@@ -1461,6 +1492,10 @@ actions = {
     "sh": SonosFunction(shuffle, ""),
     "repeat": SonosFunction(repeat, ""),
     "rpt": SonosFunction(repeat, ""),
-    "remove_current_track_from_queue": SonosFunction(remove_current_track_from_queue, ""),
+    "remove_current_track_from_queue": SonosFunction(
+        remove_current_track_from_queue, ""
+    ),
     "rctfq": SonosFunction(remove_current_track_from_queue, ""),
+    "remove_last_track_from_queue": SonosFunction(remove_last_track_from_queue, ""),
+    "rltfq": SonosFunction(remove_last_track_from_queue, ""),
 }
