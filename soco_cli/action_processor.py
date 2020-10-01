@@ -943,6 +943,7 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
     ]
     print()
     print(tabulate.tabulate(sorted(details), headers, numalign="center"))
+    print()
     return True
 
 
@@ -1188,10 +1189,11 @@ def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list
     return True
 
 
-@one_parameter
+@one_or_two_parameters
 def queue_album(speaker, action, args, soco_function, use_local_speaker_list):
     """Add an album to the queue. If there are multiple matches, a random
-    match will be selected.
+    match will be selected. If 'play_next' is provided as the second argument,
+    this will play the album next.
     :returns: The position in the queue of the first track in the album
     """
     name = args[0]
@@ -1199,17 +1201,31 @@ def queue_album(speaker, action, args, soco_function, use_local_speaker_list):
         "albums", search_term=name, complete_result=True
     )
     if len(albums):
+        position = 0
+        if len(args) == 2:
+            if args[1].lower() in ["play_next", "next"]:
+                position = (
+                    int(speaker.get_current_track_info()["playlist_position"]) + 1
+                )
+            else:
+                error_and_exit(
+                    "If supplied, second parameter for '{}' must be 'next/play_next'".format(
+                        action
+                    )
+                )
+                return False
         album = albums[randint(0, len(albums) - 1)]
-        print(speaker.add_to_queue(album))
+        print(speaker.add_to_queue(album, position=position))
         return True
     else:
         error_and_exit("Album '{}' not found".format(name))
 
 
-@one_parameter
+@one_or_two_parameters
 def queue_track(speaker, action, args, soco_function, use_local_speaker_list):
     """Add a track to the queue. If there are multiple matches, a random match
-    will be selected.
+    will be selected. If 'play_next' is provided as the second argument, this
+    will play the track next.
     :returns: The position in the queue of the track
     """
     name = args[0]
@@ -1217,8 +1233,21 @@ def queue_track(speaker, action, args, soco_function, use_local_speaker_list):
         "tracks", search_term=name, complete_result=True
     )
     if len(tracks):
+        position = 0
+        if len(args) == 2:
+            if args[1].lower() in ["play_next", "next"]:
+                position = (
+                    int(speaker.get_current_track_info()["playlist_position"]) + 1
+                )
+            else:
+                error_and_exit(
+                    "If supplied, second parameter for '{}' must be 'next/play_next'".format(
+                        action
+                    )
+                )
+                return False
         track = tracks[randint(0, len(tracks) - 1)]
-        print(speaker.add_to_queue(track))
+        print(speaker.add_to_queue(track, position=position))
         return True
     else:
         error_and_exit("Track '{}' not found".format(name))
