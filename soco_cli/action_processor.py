@@ -629,6 +629,8 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
                     return False
                 index_1 = int(rng[0])
                 index_2 = int(rng[1])
+                if index_1 < 1 or index_2 < 1:
+                    raise IndexError
                 if index_1 > index_2:
                     # Reverse the indices
                     index_2, index_1 = index_1, index_2
@@ -636,6 +638,8 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
                     queue[i] = 0
             else:
                 index = int(index)
+                if index < 1:
+                    raise IndexError
                 queue[index - 1] = 0
     # Exception handling
     # Catch any non-integer input values
