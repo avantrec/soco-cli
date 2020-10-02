@@ -1,5 +1,3 @@
-v0.1.36   - Slight change to the queue position logic when using 'play_next':
-            if the device is not playing, 'play_next' adds at current pos.
 v0.1.35   - Add 'queue_position' action
           - Add 'play_next' option to 'queue_track' and 'queue_album'
           - Add 'play_next' option for 'add_playlist_to_queue'
