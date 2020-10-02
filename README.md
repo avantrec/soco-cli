@@ -106,7 +106,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 ## Guidelines on Playing Content
 
-SoCo-CLI enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. Add content to these collections in order to facilitate playback. Content can be from local libraries, streaming services, or streaming radio stations. You can also add content (e.g., from the local libraries) to the queue for playback.
+SoCo-CLI enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections, and from any **local libraries**.
 
 ### Radio Stations
 
