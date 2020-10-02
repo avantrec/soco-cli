@@ -1,7 +1,7 @@
-# SoCo CLI: Control Sonos Systems from the Command Line
+# SoCo-CLI: Control Sonos Systems from the Command Line
 
 <!--ts-->
-   * [SoCo CLI: Control Sonos Systems from the Command Line](#soco-cli-control-sonos-systems-from-the-command-line)
+   * [SoCo-CLI: Control Sonos Systems from the Command Line](#soco-cli-control-sonos-systems-from-the-command-line)
       * [Overview](#overview)
       * [Supported Environments](#supported-environments)
       * [Installation](#installation)
@@ -44,11 +44,11 @@
 
 ## Overview
 
-SoCo CLI is a powerful command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. SoCo CLI is written entirely in Python and is portable across platforms.
+SoCo-CLI is a powerful command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. SoCo-CLI is written entirely in Python and is portable across platforms.
 
 A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays and wait states between commands.
 
-SoCo CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
+SoCo-CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
 ## Supported Environments
 
@@ -77,7 +77,7 @@ As usual, command line arguments containing spaces must be surrounded by quotes:
 
 The `soco` command is also added to the PATH, and can be used as an alias for the `sonos` command if preferred.
 
-Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking any user confirmation; please bear this in mind when manipulating the queue, playlists, etc.!
+Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking any user confirmation; please bear this in mind when manipulating the queue, playlists, etc.
 
 If you experience any issues with finding your speakers, or if you have multiple Sonos systems ('Households') on your network, please take a look at the [Alternative Discovery](#alternative-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it can be more convenient.
 
@@ -368,9 +368,9 @@ Similarly, the `if_playing` modifier will execute the action that follows it onl
 
 ## Alternative Discovery
 
-By default, Soco CLI uses the speaker discovery mechanisms in SoCo, which uses the native Sonos SSDP multicast process to discover Sonos devices, and then to look up speakers by their name.
+By default, SoCo-CLI uses the speaker discovery mechanisms in SoCo, which uses the native Sonos SSDP multicast process to discover Sonos devices, and then to look up speakers by their name.
 
-Soco CLI also provides an alternative discovery process, which works by scanning the network(s) to which your device is attached, and generating and saving a list of Sonos speaker names and other speaker information.
+SoCo-CLI also provides an alternative discovery process, which works by scanning the network(s) to which your device is attached, and generating and saving a list of Sonos speaker names and other speaker information.
 
 There are three reasons why you might want to use this alternative mechanism:
 
