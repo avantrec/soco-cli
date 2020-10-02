@@ -92,7 +92,7 @@ If you experience any issues with finding your speakers, or if you have multiple
 
 ### Options for the `sonos` Command
 
-- **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
+- **`--version, -v`**: Print the versions of SoCo-CLI and SoCo, and exit.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
 The following options are for use with the alternative discovery mechanism:
@@ -106,7 +106,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 ## Guidelines on Playing Content
 
-**soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. Add content to these collections in order to facilitate playback. Content can be from local libraries, streaming services, or streaming radio stations. You can also add content (e.g., from the local libraries) to the queue for playback.
+SoCo-CLI enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. Add content to these collections in order to facilitate playback. Content can be from local libraries, streaming services, or streaming radio stations. You can also add content (e.g., from the local libraries) to the queue for playback.
 
 ### Radio Stations
 
@@ -429,7 +429,7 @@ Other options:
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache file.
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s; increase this if sonos-discover is not finding all of your Sonos devices.
-- **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
+- **`--version, -v`**: Print the versions of SoCo-CLI and SoCo, and exit.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
 ## Resources
