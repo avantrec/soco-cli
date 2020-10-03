@@ -1,5 +1,5 @@
-v0.1.36   - Add ability to select track from previous search results in 'queue_track'
-          - Add ability to select album from previous search results in 'queue_album'
+v0.1.36   - Add 'last_search' action
+          - Add 'queue_last_search_number' action
 v0.1.35   - Add 'queue_position' action
           - Add 'play_next' option to 'queue_track' and 'queue_album'
           - Add 'play_next' option for 'add_playlist_to_queue'
