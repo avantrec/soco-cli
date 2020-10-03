@@ -1138,6 +1138,7 @@ def search_artists(speaker, action, args, soco_function, use_local_speaker_list)
         )
         print_albums(albums, omit_first=True)  # Omit the first (empty) entry
         print()
+        save_search(albums)
         # ToDo: Debating whether to include lists of all the tracks that feature the artist...
         # print_list_header("Sonos Music Library Tracks with Artist:", artist.title)
         # tracks = ml.search_track(artist.title)
@@ -1361,6 +1362,8 @@ def last_search(speaker, action, args, soco_function, use_local_speaker_list):
             print_list_header("Sonos Music Library: Saved {} Search".format(items.search_type.capitalize()), "")
             if items.search_type == "albums":
                 print_albums(items)
+            elif items.search_type == "artists":
+                print_albums(items, True)
             elif items.search_type == "tracks":
                 print_tracks(items)
             print()
