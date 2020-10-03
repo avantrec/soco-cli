@@ -25,6 +25,8 @@ from .utils import (
     convert_to_seconds,
     set_sigterm,
     get_speaker,
+    save_search,
+    read_search,
 )
 
 
@@ -1194,6 +1196,7 @@ def search_tracks(speaker, action, args, soco_function, use_local_speaker_list):
         print_list_header("Sonos Music Library Track Search:", name)
         print_tracks(tracks)
         print()
+        save_search(tracks)
     return True
 
 
@@ -1270,10 +1273,18 @@ def queue_track(speaker, action, args, soco_function, use_local_speaker_list):
     will play the track next.
     :returns: The position in the queue of the track
     """
-    name = args[0]
-    tracks = speaker.music_library.get_music_library_information(
-        "tracks", search_term=name, complete_result=True
-    )
+    saved_search_number = None
+    try:
+        saved_search_number = int(args[0])
+        tracks = read_search()
+        if not tracks:
+            error_and_exit("No saved search")
+            return False
+    except ValueError:
+        name = args[0]
+        tracks = speaker.music_library.get_music_library_information(
+            "tracks", search_term=name, complete_result=True
+        )
     if len(tracks):
         position = 0
         if len(args) == 2:
@@ -1295,7 +1306,15 @@ def queue_track(speaker, action, args, soco_function, use_local_speaker_list):
                     )
                 )
                 return False
-        track = tracks[randint(0, len(tracks) - 1)]
+        if saved_search_number:
+            # Select the track number from the saved search
+            if 1 <= saved_search_number <= len(tracks):
+                track = tracks[saved_search_number - 1]
+            else:
+                error_and_exit("Track search index must be between 1 and {}".format(len(tracks)))
+        else:
+            # Select a random entry from the list
+            track = tracks[randint(0, len(tracks) - 1)]
         print(speaker.add_to_queue(track, position=position))
         return True
     else:

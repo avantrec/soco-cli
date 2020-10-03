@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 import sys
+import pickle
 from signal import SIGTERM
 from collections.abc import Sequence
 import soco
@@ -313,3 +314,24 @@ def configure_common_args(parser):
         default="NONE",
         help="Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
     )
+
+
+path = os.path.expanduser("~") + "/.soco-cli/"
+filename = "saved_search.pickle"
+pathname = path + filename
+
+
+def save_search(result):
+    if not os.path.exists(path):
+        os.mkdir(path)
+    pickle.dump(result, open(pathname, "wb"))
+    return True
+
+
+def read_search():
+    if os.path.exists(pathname):
+        try:
+            return pickle.load(open(pathname, "rb"))
+        except:
+            pass
+    return None
