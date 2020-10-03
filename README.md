@@ -92,7 +92,7 @@ If you experience any issues with finding your speakers, or if you have multiple
 
 ### Options for the `sonos` Command
 
-- **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
+- **`--version, -v`**: Print the versions of SoCo-CLI and SoCo, and exit.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
 The following options are for use with the alternative discovery mechanism:
@@ -106,7 +106,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 ## Guidelines on Playing Content
 
-**soco-cli** enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections. Add content to these collections in order to facilitate playback. Content can be from local libraries, streaming services, or streaming radio stations. You can also add content (e.g., from the local libraries) to the queue for playback.
+SoCo-CLI enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections, and from any **local libraries**.
 
 ### Radio Stations
 
@@ -197,12 +197,14 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 
 - **`add_playlist_to_queue <playlist_name> <play_next|next>`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. The number in the queue of the first track in the playlist will be returned. Optionally, `play_next` or `next` can be added to insert the playlist at the next queue position. To start playback, follow with action `play_from_queue`, optionally followed by the track number.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
+- **`last_search`** (or **`ls`**): Prints the results of the last search performed.
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
 - **`list_queue <track_number>`** (or **`lq`, `q`**): List the track in the queue at position `<track_number>`
 - **`play_from_queue <track_number>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue.
 - **`queue_album <album_name> <play_next|next>`** (or **`qa`**): Add `<album_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the album name, a random match will be chosen. Optionally, `next` or `play_next` can be added to insert the album at the next_play position in the queue. The queue position of the first track in the album will be returned.
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
 - **`queue_position`** (or **`qp`**): Return the current queue position.
+- **`queue_search_result_number <search_index_number> <play_next|next>`** (or **`queue_search_number`**, **`qsn`**): Play the item (track or album) at `<search_index_number>` from the last search performed. Optionally, `next` or `play_next` can be added to insert the item at the next_play position in the queue. The queue position of the item will be returned.
 - **`queue_track <track_name> <play_next|next>`** (or **`qt`**): Add `<track_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the track name, a random match will be chosen. Optionally, `next` or `play_next` can be added to insert the track at the next_play position in the queue. The queue position of the track will be returned.
 - **`remove_current_track_from_queue` (or `rctfq`)**: Remove from the queue the track at the current queue position. If the track is playing, this will have the effect of stopping playback and starting to play the next track. (If the last track in the queue is playing, playback will stop and the previous track will start to play.)
 - **`remove_last_track_from_queue <count>` (or `rltfq`)**: Removes the last `<count>` tracks from the queue. If `<count>` is omitted, the last track is removed.
@@ -429,7 +431,7 @@ Other options:
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache file.
 - **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s; increase this if sonos-discover is not finding all of your Sonos devices.
-- **`--version, -v`**: Print the versions of soco-cli and SoCo, and exit.
+- **`--version, -v`**: Print the versions of SoCo-CLI and SoCo, and exit.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
 ## Resources

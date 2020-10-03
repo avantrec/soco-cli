@@ -25,6 +25,8 @@ from .utils import (
     convert_to_seconds,
     set_sigterm,
     get_speaker,
+    save_search,
+    read_search,
 )
 
 
@@ -1179,6 +1181,7 @@ def search_albums(speaker, action, args, soco_function, use_local_speaker_list):
         print_list_header("Sonos Music Library Album Search:", name)
         print_albums(albums)
         print()
+        save_search(albums)
     return True
 
 
@@ -1194,6 +1197,7 @@ def search_tracks(speaker, action, args, soco_function, use_local_speaker_list):
         print_list_header("Sonos Music Library Track Search:", name)
         print_tracks(tracks)
         print()
+        save_search(tracks)
     return True
 
 
@@ -1224,18 +1228,12 @@ def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list
     return True
 
 
-@one_or_two_parameters
-def queue_album(speaker, action, args, soco_function, use_local_speaker_list):
-    """Add an album to the queue. If there are multiple matches, a random
-    match will be selected. If 'play_next' is provided as the second argument,
-    this will play the album next.
-    :returns: The position in the queue of the first track in the album
-    """
+def queue_item_core(speaker, action, args, type):
     name = args[0]
-    albums = speaker.music_library.get_music_library_information(
-        "albums", search_term=name, complete_result=True
+    items = speaker.music_library.get_music_library_information(
+        type, search_term=name, complete_result=True
     )
-    if len(albums):
+    if len(items):
         position = 0
         if len(args) == 2:
             if args[1].lower() in ["play_next", "next"]:
@@ -1256,50 +1254,23 @@ def queue_album(speaker, action, args, soco_function, use_local_speaker_list):
                     )
                 )
                 return False
-        album = albums[randint(0, len(albums) - 1)]
-        print(speaker.add_to_queue(album, position=position))
+        # Select a random entry from the list
+        item = items[randint(0, len(items) - 1)]
+        print(speaker.add_to_queue(item, position=position))
         return True
     else:
-        error_and_exit("Album '{}' not found".format(name))
+        error_and_exit("'{}' not found".format(name))
+        return False
+
+
+@one_or_two_parameters
+def queue_album(speaker, action, args, soco_function, use_local_speaker_list):
+    return queue_item_core(speaker, action, args, "albums")
 
 
 @one_or_two_parameters
 def queue_track(speaker, action, args, soco_function, use_local_speaker_list):
-    """Add a track to the queue. If there are multiple matches, a random match
-    will be selected. If 'play_next' is provided as the second argument, this
-    will play the track next.
-    :returns: The position in the queue of the track
-    """
-    name = args[0]
-    tracks = speaker.music_library.get_music_library_information(
-        "tracks", search_term=name, complete_result=True
-    )
-    if len(tracks):
-        position = 0
-        if len(args) == 2:
-            if args[1].lower() in ["play_next", "next"]:
-                if (
-                    speaker.get_current_transport_info()["current_transport_state"]
-                    == "PLAYING"
-                ):
-                    offset = 1
-                else:
-                    offset = 0
-                position = (
-                    int(speaker.get_current_track_info()["playlist_position"]) + offset
-                )
-            else:
-                error_and_exit(
-                    "If supplied, second parameter for '{}' must be 'next/play_next'".format(
-                        action
-                    )
-                )
-                return False
-        track = tracks[randint(0, len(tracks) - 1)]
-        print(speaker.add_to_queue(track, position=position))
-        return True
-    else:
-        error_and_exit("Track '{}' not found".format(name))
+    return queue_item_core(speaker, action, args, "tracks")
 
 
 @one_or_more_parameters
@@ -1379,6 +1350,72 @@ def transfer_playback(speaker, action, args, soco_function, use_local_speaker_li
 def queue_position(speaker, action, args, soco_function, use_local_speaker_list):
     print(speaker.get_current_track_info()["playlist_position"])
     return True
+
+
+@zero_parameters
+def last_search(speaker, action, args, soco_function, use_local_speaker_list):
+    items = read_search()
+    if items:
+        if len(items):
+            print()
+            print_list_header("Sonos Music Library: Saved {} Search".format(items.search_type.capitalize()), "")
+            if items.search_type == "albums":
+                print_albums(items)
+            elif items.search_type == "tracks":
+                print_tracks(items)
+            print()
+    else:
+        error_and_exit("No saved search")
+        return False
+    return True
+
+
+@one_or_two_parameters
+def queue_search_result_number(speaker, action, args, soco_function, use_local_speaker_list):
+    try:
+        saved_search_number = int(args[0])
+    except ValueError:
+        parameter_type_error(action, "An integer index from the previous search results")
+        return False
+        items = read_search()
+        if not items:
+            error_and_exit("No saved search")
+            return False
+    items = read_search()
+    if not items:
+        error_and_exit("No saved search")
+        return False
+    if len(items):
+        position = 0
+        if len(args) == 2:
+            if args[1].lower() in ["play_next", "next"]:
+                if (
+                    speaker.get_current_transport_info()["current_transport_state"]
+                    == "PLAYING"
+                ):
+                    offset = 1
+                else:
+                    offset = 0
+                position = (
+                    int(speaker.get_current_track_info()["playlist_position"]) + offset
+                )
+            else:
+                error_and_exit(
+                    "If supplied, second parameter for '{}' must be 'next/play_next'".format(
+                        action
+                    )
+                )
+                return False
+        # Select the item number from the saved search
+        if 1 <= saved_search_number <= len(items):
+            item = items[saved_search_number - 1]
+        else:
+            error_and_exit("Item search index must be between 1 and {}".format(len(items)))
+        print(speaker.add_to_queue(item, position=position))
+        return True
+    else:
+        error_and_exit("Item '{}' not found".format(name))
+        return False
 
 
 def process_action(speaker, action, args, use_local_speaker_list):
@@ -1584,4 +1621,9 @@ actions = {
     "rltfq": SonosFunction(remove_last_track_from_queue, ""),
     "queue_position": SonosFunction(queue_position, ""),
     "qp": SonosFunction(queue_position, ""),
+    "last_search": SonosFunction(last_search, ""),
+    "ls": SonosFunction(last_search, ""),
+    "queue_search_result_number": SonosFunction(queue_search_result_number, ""),
+    "queue_search_number": SonosFunction(queue_search_result_number, ""),
+    "qsn": SonosFunction(queue_search_result_number, ""),
 }
