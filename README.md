@@ -36,9 +36,10 @@
          * [Options for the sonos-discover Command](#options-for-the-sonos-discover-command)
       * [Resources](#resources)
       * [Known Issues](#known-issues)
+      * [Uninstalling](#uninstalling)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Thu Oct  1 18:34:09 BST 2020 -->
+<!-- Added by: pwt, at: Sun Oct  4 10:08:26 BST 2020 -->
 
 <!--te-->
 
@@ -444,6 +445,11 @@ Other options:
 - It's not possible to have two event listeners on the same host due to port 1400 collisions. This error is encountered if using more than one instance of soco-cli using `wait_start`, `wait_stop` or `wait_stopped_for` on a single host. This is a SoCo issue that will be fixed in SoCo v0.20: https://github.com/SoCo/SoCo/pull/724.
 - An error will be thrown when podcasts are listed as part of the queue or playists (`Error: Unknown UPnP class: object.item.audioItem.podcast`): this is a SoCo issue for which there is a pending fix: https://github.com/SoCo/SoCo/pull/735.
 - Stereo pairing operations do not work. As the error message indicates, pairing support arrives in SoCo v0.20.
+
+## Uninstalling
+
+- Use the normal pip approach to uninstall the SoCo-CLI package. 
+- You may also need to remove the directory `.soco-cli` and its contents from your home directory.
 
 ## Acknowledgments
 
