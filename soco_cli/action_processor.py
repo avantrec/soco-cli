@@ -1396,41 +1396,39 @@ def queue_search_result_number(
     if not items:
         error_and_exit("No saved search")
         return False
-    if len(items):
-        position = 0
-        if len(args) == 2:
-            if args[1].lower() in ["play_next", "next"]:
-                # Check if currently playing from the queue
-                if (
-                    speaker.get_current_transport_info()["current_transport_state"]
-                    == "PLAYING"
-                    and speaker.get_current_track_info()["position"]
-                    != "NOT_IMPLEMENTED"
-                ):
-                    offset = 1
-                else:
-                    offset = 0
-                position = (
-                    int(speaker.get_current_track_info()["playlist_position"]) + offset
-                )
+    position = 0
+    if len(args) == 2:
+        if args[1].lower() in ["play_next", "next"]:
+            # Check if currently playing from the queue
+            if (
+                speaker.get_current_transport_info()["current_transport_state"]
+                == "PLAYING"
+                and speaker.get_current_track_info()["position"] != "NOT_IMPLEMENTED"
+            ):
+                offset = 1
             else:
-                error_and_exit(
-                    "If supplied, second parameter for '{}' must be 'next/play_next'".format(
-                        action
-                    )
-                )
-                return False
-        # Select the item number from the saved search
-        if 1 <= saved_search_number <= len(items):
-            item = items[saved_search_number - 1]
+                offset = 0
+            position = (
+                int(speaker.get_current_track_info()["playlist_position"]) + offset
+            )
         else:
             error_and_exit(
-                "Item search index must be between 1 and {}".format(len(items))
+                "If supplied, second parameter for '{}' must be 'next/play_next'".format(
+                    action
+                )
             )
+            return False
+    # Select the item number from the saved search
+    if 1 <= saved_search_number <= len(items):
+        # Need to omit the first item in the items list for 'artists' searches
+        if items.search_type == "artists":
+            item = items[saved_search_number]
+        else:
+            item = items[saved_search_number - 1]
         print(speaker.add_to_queue(item, position=position))
         return True
     else:
-        error_and_exit("Item '{}' not found".format(name))
+        error_and_exit("Item search index must be between 1 and {}".format(len(items)))
         return False
 
 
