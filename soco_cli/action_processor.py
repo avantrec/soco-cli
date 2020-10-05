@@ -1393,17 +1393,22 @@ def queue_search_result_number(
     if not items:
         error_and_exit("No saved search")
         return False
+    logging.info("Loaded saved search")
     position = 0
     if len(args) == 2:
         if args[1].lower() in ["play_next", "next"]:
             # Check if currently playing from the queue
+            # If so, add at the next track position
             if (
                 speaker.get_current_transport_info()["current_transport_state"]
                 == "PLAYING"
                 and speaker.get_current_track_info()["position"] != "NOT_IMPLEMENTED"
             ):
+                logging.info("Currently playing from queue; add as next track")
                 offset = 1
+            # Otherwise use the current position
             else:
+                logging.info("Not currently playing; add at current queue position")
                 offset = 0
             position = (
                 int(speaker.get_current_track_info()["playlist_position"]) + offset

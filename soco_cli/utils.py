@@ -325,11 +325,13 @@ def save_search(result):
     if not os.path.exists(path):
         os.mkdir(path)
     pickle.dump(result, open(pathname, "wb"))
+    logging.info("Saved search results at {}".format(pathname))
     return True
 
 
 def read_search():
     if os.path.exists(pathname):
+        logging.info("Loading search results at {}".format(pathname))
         try:
             return pickle.load(open(pathname, "rb"))
         except:
