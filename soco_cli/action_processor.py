@@ -1369,8 +1369,6 @@ def last_search(speaker, action, args, soco_function, use_local_speaker_list):
             )
             if items.search_type == "albums":
                 print_albums(items)
-            elif items.search_type == "artists":
-                print_albums(items, True)
             elif items.search_type == "tracks":
                 print_tracks(items)
             print()
