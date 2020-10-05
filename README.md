@@ -258,7 +258,7 @@ The actions below search the Sonos Music library.
 
 - **`list_albums`** (or **`albums`**): Lists all the albums in the music library.
 - **`list_artists`** (or **`artists`**): Lists all the artists in the music library.
-- **`last_search`** (or **`ls`**): Prints the results of the last album, artist or track search performed.
+- **`last_search`** (or **`ls`**): Prints the results of the last album or track search performed.
 - **`search_albums <album_name>`** (or **`salb`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of matching albums.
 -  **`search_artists <artist_name>`** (or **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the list of albums featuring any artists that match the search.
 - **`search_library <name>`** (or **`sl`**): Searches the titles in your music library for a fuzzy match with `<name>` against artists, albums and tracks. Prints out the lists of matches. This action is a superset of `search_artists`, `search_albums`, and `search_tracks`, i.e., it searches across all categories.

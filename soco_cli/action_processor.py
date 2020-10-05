@@ -1138,7 +1138,6 @@ def search_artists(speaker, action, args, soco_function, use_local_speaker_list)
         )
         print_albums(albums, omit_first=True)  # Omit the first (empty) entry
         print()
-        save_search(albums)
         # ToDo: Debating whether to include lists of all the tracks that feature the artist...
         # print_list_header("Sonos Music Library Tracks with Artist:", artist.title)
         # tracks = ml.search_track(artist.title)
@@ -1420,11 +1419,7 @@ def queue_search_result_number(
             return False
     # Select the item number from the saved search
     if 1 <= saved_search_number <= len(items):
-        # Need to omit the first item in the items list for 'artists' searches
-        if items.search_type == "artists":
-            item = items[saved_search_number]
-        else:
-            item = items[saved_search_number - 1]
+        item = items[saved_search_number - 1]
         print(speaker.add_to_queue(item, position=position))
         return True
     else:
