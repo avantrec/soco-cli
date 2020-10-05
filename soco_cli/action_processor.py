@@ -1237,9 +1237,12 @@ def queue_item_core(speaker, action, args, type):
         position = 0
         if len(args) == 2:
             if args[1].lower() in ["play_next", "next"]:
+                # Check if currently playing from the queue
                 if (
                     speaker.get_current_transport_info()["current_transport_state"]
                     == "PLAYING"
+                    and speaker.get_current_track_info()["position"]
+                    != "NOT_IMPLEMENTED"
                 ):
                     offset = 1
                 else:
@@ -1358,9 +1361,16 @@ def last_search(speaker, action, args, soco_function, use_local_speaker_list):
     if items:
         if len(items):
             print()
-            print_list_header("Sonos Music Library: Saved {} Search".format(items.search_type.capitalize()), "")
+            print_list_header(
+                "Sonos Music Library: Saved {} Search".format(
+                    items.search_type.capitalize()
+                ),
+                "",
+            )
             if items.search_type == "albums":
                 print_albums(items)
+            elif items.search_type == "artists":
+                print_albums(items, True)
             elif items.search_type == "tracks":
                 print_tracks(items)
             print()
@@ -1371,50 +1381,49 @@ def last_search(speaker, action, args, soco_function, use_local_speaker_list):
 
 
 @one_or_two_parameters
-def queue_search_result_number(speaker, action, args, soco_function, use_local_speaker_list):
+def queue_search_result_number(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
     try:
         saved_search_number = int(args[0])
     except ValueError:
-        parameter_type_error(action, "An integer index from the previous search results")
+        parameter_type_error(
+            action, "An integer index from the previous search results"
+        )
         return False
-        items = read_search()
-        if not items:
-            error_and_exit("No saved search")
-            return False
     items = read_search()
     if not items:
         error_and_exit("No saved search")
         return False
-    if len(items):
-        position = 0
-        if len(args) == 2:
-            if args[1].lower() in ["play_next", "next"]:
-                if (
-                    speaker.get_current_transport_info()["current_transport_state"]
-                    == "PLAYING"
-                ):
-                    offset = 1
-                else:
-                    offset = 0
-                position = (
-                    int(speaker.get_current_track_info()["playlist_position"]) + offset
-                )
+    position = 0
+    if len(args) == 2:
+        if args[1].lower() in ["play_next", "next"]:
+            # Check if currently playing from the queue
+            if (
+                speaker.get_current_transport_info()["current_transport_state"]
+                == "PLAYING"
+                and speaker.get_current_track_info()["position"] != "NOT_IMPLEMENTED"
+            ):
+                offset = 1
             else:
-                error_and_exit(
-                    "If supplied, second parameter for '{}' must be 'next/play_next'".format(
-                        action
-                    )
-                )
-                return False
-        # Select the item number from the saved search
-        if 1 <= saved_search_number <= len(items):
-            item = items[saved_search_number - 1]
+                offset = 0
+            position = (
+                int(speaker.get_current_track_info()["playlist_position"]) + offset
+            )
         else:
-            error_and_exit("Item search index must be between 1 and {}".format(len(items)))
+            error_and_exit(
+                "If supplied, second parameter for '{}' must be 'next/play_next'".format(
+                    action
+                )
+            )
+            return False
+    # Select the item number from the saved search
+    if 1 <= saved_search_number <= len(items):
+        item = items[saved_search_number - 1]
         print(speaker.add_to_queue(item, position=position))
         return True
     else:
-        error_and_exit("Item '{}' not found".format(name))
+        error_and_exit("Item search index must be between 1 and {}".format(len(items)))
         return False
 
 
