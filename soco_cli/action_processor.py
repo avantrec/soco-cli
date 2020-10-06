@@ -267,6 +267,22 @@ def print_info(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
+def track(speaker, action, args, soco_function, use_local_speaker_list):
+    if speaker.is_playing_line_in:
+        print("Speaker is playing from Line In")
+    else:
+        output = speaker.get_current_track_info()
+        if output["duration"] == "0:00:00":
+            # Assume it's a radio station
+            print("Playing {}".format(output["title"]))
+        else:
+            for item in sorted(output):
+                if item not in ["metadata", "uri", "album_art"]:
+                    print("  {}: {}".format(item.capitalize(), output[item]))
+    return True
+
+
 @zero_or_one_parameter
 def playback_mode(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
@@ -1502,7 +1518,7 @@ actions = {
     "group_relative_volume": SonosFunction(relative_volume, "group_relative_volume"),
     "group_rel_vol": SonosFunction(relative_volume, "group_relative_volume"),
     "grv": SonosFunction(relative_volume, "group_relative_volume"),
-    "track": SonosFunction(print_info, "get_current_track_info"),
+    "track": SonosFunction(track, ""),
     "play_mode": SonosFunction(playback_mode, "play_mode"),
     "mode": SonosFunction(playback_mode, "play_mode"),
     "playback_state": SonosFunction(transport_state, "get_current_transport_info"),
