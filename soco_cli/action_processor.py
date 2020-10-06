@@ -361,8 +361,7 @@ def transport_state(speaker, action, args, soco_function, use_local_speaker_list
 
 
 def play_favourite_core(speaker, favourite):
-    """Core of the play_favourite action, but doesn't exit on failure
-    """
+    """Core of the play_favourite action, but doesn't exit on failure"""
     fs = speaker.music_library.get_sonos_favorites(complete_result=True)
     the_fav = None
     # Strict match
@@ -516,7 +515,9 @@ def play_uri(speaker, action, args, soco_function, use_local_speaker_list):
     force_radio = True if args[0][:4].lower() == "http" else False
     if len(args) == 2:
         speaker.play_uri(
-            args[0], title=args[1], force_radio=force_radio,
+            args[0],
+            title=args[1],
+            force_radio=force_radio,
         )
     else:
         speaker.play_uri(args[0], force_radio=force_radio)
@@ -663,7 +664,8 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
     # Catch any non-integer input values
     except ValueError:
         parameter_type_error(
-            action, "integer, or comma-separated integers without spaces (e.g., 3,7,4)",
+            action,
+            "integer, or comma-separated integers without spaces (e.g., 3,7,4)",
         )
         return False
     # Catch any out-of-range values
@@ -928,7 +930,8 @@ def groups(speaker, action, args, soco_function, use_local_speaker_list):
             print("[{}] : ".format(group.short_label), end="")
             for member in group.members:
                 print(
-                    "{} ({}) ".format(member.player_name, member.ip_address), end="",
+                    "{} ({}) ".format(member.player_name, member.ip_address),
+                    end="",
                 )
             print()
     return True
@@ -1278,8 +1281,7 @@ def queue_track(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_or_more_parameters
 def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speaker_list):
-    """Perform the action only if the speaker is currently in the desired playback state
-    """
+    """Perform the action only if the speaker is currently in the desired playback state"""
     state = speaker.get_current_transport_info()["current_transport_state"]
     logging.info(
         "Condition: '{}': Speaker '{}' is in state '{}'".format(
@@ -1334,8 +1336,7 @@ def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def transfer_playback(speaker, action, args, soco_function, use_local_speaker_list):
-    """Transfer playback from one speaker to another, by grouping and ungrouping.
-    """
+    """Transfer playback from one speaker to another, by grouping and ungrouping."""
     if not speaker.is_coordinator:
         error_and_exit("Speaker '{}' is not a coordinator".format(speaker.player_name))
         return False
@@ -1434,7 +1435,11 @@ def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
         return sonos_function.processing_function(
-            speaker, action, args, sonos_function.soco_function, use_local_speaker_list,
+            speaker,
+            action,
+            args,
+            sonos_function.soco_function,
+            use_local_speaker_list,
         )
     else:
         return False
@@ -1442,7 +1447,12 @@ def process_action(speaker, action, args, use_local_speaker_list):
 
 # Type for holding action processing functions
 SonosFunction = namedtuple(
-    "SonosFunction", ["processing_function", "soco_function",], rename=False,
+    "SonosFunction",
+    [
+        "processing_function",
+        "soco_function",
+    ],
+    rename=False,
 )
 
 # Actions and associated processing functions

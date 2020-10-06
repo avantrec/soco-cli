@@ -331,7 +331,7 @@ def save_search(result):
 
 def read_search():
     if os.path.exists(pathname):
-        logging.info("Loading search results at {}".format(pathname))
+        logging.info("Loading search results from {}".format(pathname))
         try:
             return pickle.load(open(pathname, "rb"))
         except:

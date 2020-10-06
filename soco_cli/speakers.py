@@ -113,8 +113,7 @@ class Speakers:
         self._network_timeout = timeout
 
     def save(self):
-        """Saves the speaker list as a pickle file.
-        """
+        """Saves the speaker list as a pickle file."""
         if self._speakers:
             if not os.path.exists(self._save_directory):
                 os.mkdir(self._save_directory)
