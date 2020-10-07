@@ -71,6 +71,7 @@ def main():
         speaker_list.discover()
         speaker_list.save()
         speaker_list.print()
+        print("Saved speaker data at: {}\n".format(speaker_list.save_pathname))
     except Exception as e:
         error_and_exit(str(e))
 

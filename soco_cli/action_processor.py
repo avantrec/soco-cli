@@ -270,7 +270,7 @@ def print_info(speaker, action, args, soco_function, use_local_speaker_list):
 @zero_parameters
 def track(speaker, action, args, soco_function, use_local_speaker_list):
     if speaker.is_playing_line_in:
-        print("Speaker is playing from Line In")
+        print("Playing from Line In")
     else:
         output = speaker.get_current_track_info()
         if output["duration"] == "0:00:00":
