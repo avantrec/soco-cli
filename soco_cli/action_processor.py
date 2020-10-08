@@ -1188,6 +1188,7 @@ def list_albums(speaker, action, args, soco_function, use_local_speaker_list):
     print_list_header("Sonos Music Library Albums", "")
     print_albums(artists)
     print()
+    save_search(artists)
     return True
 
 
