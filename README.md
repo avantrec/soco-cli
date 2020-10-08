@@ -12,12 +12,12 @@
          * [Radio Stations](#radio-stations)
          * [Single Tracks](#single-tracks)
          * [Albums and Playlists](#albums-and-playlists)
-      * [Available Actions](#available-actions)
+      * [Complete List of Available Actions](#complete-list-of-available-actions)
          * [Volume and EQ Control](#volume-and-eq-control)
          * [Playback Control](#playback-control)
          * [Queue Actions](#queue-actions)
          * [Favourites and Playlists](#favourites-and-playlists)
-         * [Radio Station Favourites](#radio-station-favourites)
+         * [TuneIn Radio Station Favourites](#tunein-radio-station-favourites)
          * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
          * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
          * [Music Library Search Functions](#music-library-search-functions)
@@ -40,7 +40,7 @@
       * [Uninstalling](#uninstalling)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Thu Oct  8 13:01:50 BST 2020 -->
+<!-- Added by: pwt, at: Thu Oct  8 17:56:23 BST 2020 -->
 
 <!--te-->
 
@@ -108,7 +108,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 ## Guidelines on Playing Content
 
-SoCo-CLI enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections, from **local libraries**, and from **TuneIn 'My Radio Stations'**
+SoCo-CLI enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections, from **local libraries**, and from the **TuneIn 'My Radio Stations'** list.
 
 ### Radio Stations
 
@@ -138,7 +138,7 @@ sonos <speaker_name> play_from_queue 24
 
 Albums from local music libraries can also be added to the queue using `sonos <speaker> queue_album <album_name>`. The action returns the queue position of the first track in the album, which can then be played as in the example above:
 
-## Available Actions
+## Complete List of Available Actions
 
 ### Volume and EQ Control
 
@@ -264,12 +264,12 @@ The actions below search the Sonos Music library.
 
 - **`list_albums`** (or **`albums`**): Lists all the albums in the music library.
 - **`list_artists`** (or **`artists`**): Lists all the artists in the music library.
-- **`last_search`** (or **`ls`**): Prints the results of the last album or track search performed.
+- **`last_search`** (or **`ls`**): Prints the results of the last album or track search performed, or the last use of `tracks_in_album`.
 - **`search_albums <album_name>`** (or **`salb`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of matching albums.
 -  **`search_artists <artist_name>`** (or **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the list of albums featuring any artists that match the search.
 - **`search_library <name>`** (or **`sl`**): Searches the titles in your music library for a fuzzy match with `<name>` against artists, albums and tracks. Prints out the lists of matches. This action is a superset of `search_artists`, `search_albums`, and `search_tracks`, i.e., it searches across all categories.
 - **`search_tracks <track_name>`** (or **`st`**): Searches the tracks in your music library for a fuzzy match with `<track_name>`. Prints out the list of matching tracks.
-- **`tracks_in_album <album_name>`** (or **`tia`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of tracks in each matching album.
+- **`tracks_in_album <album_name>`** (or **`tia`**, **`lta`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of tracks in each matching album.
 
 ## Multiple Sequential Commands
 

@@ -1247,6 +1247,7 @@ def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list
         print_list_header("Sonos Music Library Tracks in Album:", album.title)
         print_tracks(tracks)
         print()
+        save_search(tracks)
     return True
 
 
@@ -1395,7 +1396,9 @@ def last_search(speaker, action, args, soco_function, use_local_speaker_list):
             )
             if items.search_type == "albums":
                 print_albums(items)
-            elif items.search_type == "tracks":
+            # 'artists' search_type is used for tracks when 'tracks_in_album' has
+            #  been used for the search
+            elif items.search_type in ["tracks", "artists"]:
                 print_tracks(items)
             print()
     else:
@@ -1649,6 +1652,7 @@ actions = {
     "st": SonosFunction(search_tracks, ""),
     "tracks_in_album": SonosFunction(tracks_in_album, ""),
     "tia": SonosFunction(tracks_in_album, ""),
+    "lta": SonosFunction(tracks_in_album, ""),
     "list_albums": SonosFunction(list_albums, ""),
     "albums": SonosFunction(list_albums, ""),
     "list_artists": SonosFunction(list_artists, ""),
