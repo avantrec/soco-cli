@@ -1341,7 +1341,7 @@ def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     if not speaker.group.mute:
         speaker.group.mute = True
         unmute_group = True
-    if action in ["cfrs", "cue_favourite_radio_station"]:
+    if action in ["cfrs", "cue_favourite_radio_station", "cue_favorite_radio_station"]:
         result = play_favourite_radio(
             speaker, action, args, soco_function, use_local_speaker_list
         )
