@@ -1,7 +1,6 @@
 0. Start on branch 'next_version'; when changes are ready to be released:
    Update the CHANGELOG
-   make isort
-   make black
+   make format
    make toc
    git commit -a -m "<What's Changed?>"
    git checkout master
