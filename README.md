@@ -108,13 +108,11 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 ## Guidelines on Playing Content
 
-SoCo-CLI enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections, and from any **local libraries**.
+SoCo-CLI enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections, from **local libraries**, and from **TuneIn 'My Radio Stations'**
 
 ### Radio Stations
 
-The best way to play a radio station is to add it to your general list of Sonos Favourites (**not** the radio station favourites), then play it using:
-
-`sonos <speaker_name> play_fav <favourite_name>`
+Radio stations can be played by adding them to your Sonos Favourites, and then starting playback using `play_fav`. Alternatively, stations can be added to the TuneIn 'My Radio Stations' list, and played using `play_favourite_radio_station`.
 
 ### Single Tracks
 
@@ -126,7 +124,7 @@ Tracks from local music libraries can also be added to the queue using `sonos <s
 
 ### Albums and Playlists
 
-Albums and playlists from local libraries or music services can be added to your Sonos Playlists, and then played by adding them to the queue, and playing from the queue. For example:
+Albums and playlists from local libraries or music services can be added to your Sonos Playlists, and then played by adding them to the queue, followed by playing from the queue. For example:
 
 `sonos <speaker_name> clear_queue : <speaker_name> add_playlist_to_queue <playlist> : <speaker_name> play_from_queue`
 
@@ -230,7 +228,7 @@ The following has issues and requires further development. For example, it's cur
 - **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station in TuneIn's 'My Stations' list.
 - **`remove_from_playlist <playlist_name> <track_number>`** (or **`rfp`**): Remove a track from a Sonos playlist.
 
-### Radio Station Favourites
+### TuneIn Radio Station Favourites
 
 The following operate on the stations in TuneIn's 'My Radio Stations' list.
 
