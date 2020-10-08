@@ -1615,6 +1615,7 @@ actions = {
         list_numbered_things, "get_favorite_radio_stations"
     ),
     "frs": SonosFunction(list_numbered_things, "get_favorite_radio_stations"),
+    "lfrs": SonosFunction(list_numbered_things, "get_favorite_radio_stations"),
     "play_favourite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
     "play_favorite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
     "pfrs": SonosFunction(play_favourite_radio, "play_uri"),
