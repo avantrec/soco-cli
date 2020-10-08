@@ -1,7 +1,7 @@
 import argparse
 
 from .speakers import Speakers
-from .utils import configure_common_args, configure_logging, error_and_exit, version
+from .utils import configure_common_args, configure_logging, docs, error_and_exit, version
 
 
 def main():
@@ -33,6 +33,10 @@ def main():
 
     if args.version:
         version()
+        exit(0)
+
+    if args.docs:
+        docs()
         exit(0)
 
     configure_logging(args.log)

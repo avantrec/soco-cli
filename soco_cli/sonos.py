@@ -12,6 +12,7 @@ from .utils import (
     configure_common_args,
     configure_logging,
     convert_to_seconds,
+    docs,
     error_and_exit,
     get_speaker,
     seconds_until,
@@ -61,6 +62,10 @@ def main():
 
     if args.version:
         version()
+        exit(0)
+
+    if args.docs:
+        docs()
         exit(0)
 
     configure_logging(args.log)

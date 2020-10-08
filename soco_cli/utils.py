@@ -180,6 +180,11 @@ def version():
     print("soco version:     {}".format(soco.__version__))
 
 
+def docs():
+    url = "https://github.com/avantrec/soco-cli/blob/v{}/README.md".format(__version__)
+    print("Online documentation: {}".format(url))
+
+
 # ToDo: Remove with SIGTERM fix
 use_sigterm = False
 
@@ -315,6 +320,12 @@ def configure_common_args(parser):
         type=str,
         default="NONE",
         help="Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
+    )
+    parser.add_argument(
+        "--docs",
+        action="store_true",
+        default=False,
+        help="Print the URL to the online documentation",
     )
 
 
