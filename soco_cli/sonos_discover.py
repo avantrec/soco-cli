@@ -1,7 +1,7 @@
 import argparse
 
-from .utils import error_and_exit, configure_logging, version, configure_common_args
 from .speakers import Speakers
+from .utils import configure_common_args, configure_logging, error_and_exit, version
 
 
 def main():

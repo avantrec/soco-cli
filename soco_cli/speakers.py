@@ -1,14 +1,14 @@
+import ipaddress
+import logging
 import os
 import pickle
-import ipaddress
 import socket
-import soco
-import ifaddr
 import threading
-import logging
-import tabulate
 from collections import namedtuple
 
+import ifaddr
+import soco
+import tabulate
 
 # Type for holding speaker details
 SonosDevice = namedtuple(

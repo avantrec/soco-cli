@@ -1,5 +1,6 @@
-import tabulate
 import datetime
+
+import tabulate
 
 # Collect speaker information from each speaker in turn
 speakers = []

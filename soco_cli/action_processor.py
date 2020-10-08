@@ -1,34 +1,34 @@
 import logging
-import soco
-import soco.alarms
 import pprint
-import tabulate
 import time
 from collections import namedtuple
+from distutils.version import StrictVersion
 from queue import Empty
 from random import randint
-from distutils.version import StrictVersion
+
+import soco
+import soco.alarms
+import tabulate
 
 from .speaker_info import print_speaker_table
 from .utils import (
-    error_and_exit,
-    parameter_type_error,
-    parameter_number_error,
-    zero_parameters,
-    one_parameter,
-    zero_or_one_parameter,
-    one_or_two_parameters,
-    two_parameters,
-    one_or_more_parameters,
-    seconds_until,
-    convert_true_false,
     convert_to_seconds,
-    set_sigterm,
+    convert_true_false,
+    error_and_exit,
     get_speaker,
-    save_search,
+    one_or_more_parameters,
+    one_or_two_parameters,
+    one_parameter,
+    parameter_number_error,
+    parameter_type_error,
     read_search,
+    save_search,
+    seconds_until,
+    set_sigterm,
+    two_parameters,
+    zero_or_one_parameter,
+    zero_parameters,
 )
-
 
 pp = pprint.PrettyPrinter(width=120)
 sonos_max_items = 66000

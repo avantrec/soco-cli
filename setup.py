@@ -1,6 +1,7 @@
-import setuptools
 import io
 import re
+
+import setuptools
 
 with open("PYPI_README.md", "r") as fh:
     long_description = fh.read()

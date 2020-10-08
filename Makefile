@@ -21,6 +21,9 @@ uninstall:
 black: $(SRC)
 	black setup.py soco_cli/*.py
 
+isort: $(SRC)
+	isort setup.py soco_cli/*.py
+
 pypi_upload: clean build
 	python -m twine upload --repository pypi dist/*
 

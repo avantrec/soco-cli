@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 import argparse
-from signal import signal, SIGINT
+import logging
 import pprint
 import time
-import logging
+from signal import SIGINT, signal
 
-from .speakers import Speakers
 from .action_processor import process_action
+from .speakers import Speakers
 from .utils import (
-    error_and_exit,
-    convert_to_seconds,
-    version,
-    sig_handler,
-    configure_logging,
     RewindableList,
-    seconds_until,
-    get_speaker,
-    set_speaker_list,
     configure_common_args,
+    configure_logging,
+    convert_to_seconds,
+    error_and_exit,
+    get_speaker,
+    seconds_until,
+    set_speaker_list,
+    sig_handler,
+    version,
 )
 
 # Globals

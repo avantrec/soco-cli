@@ -1,11 +1,13 @@
 import datetime
 import logging
 import os
-import sys
 import pickle
-from signal import SIGTERM
+import sys
 from collections.abc import Sequence
+from signal import SIGTERM
+
 import soco
+
 from .__init__ import __version__
 from .speakers import Speakers
 
