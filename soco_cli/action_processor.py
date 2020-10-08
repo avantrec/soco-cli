@@ -1341,7 +1341,13 @@ def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     if not speaker.group.mute:
         speaker.group.mute = True
         unmute_group = True
-    result, msg = play_favourite_core(speaker, args[0])
+    if action in ["cfrs", "cue_favourite_radio_station"]:
+        result = play_favourite_radio(
+            speaker, action, args, soco_function, use_local_speaker_list
+        )
+        msg = ""
+    else:
+        result, msg = play_favourite_core(speaker, args[0])
     speaker.stop()
     if unmute:
         speaker.mute = False
@@ -1448,6 +1454,12 @@ def queue_search_result_number(
     else:
         error_and_exit("Item search index must be between 1 and {}".format(len(items)))
         return False
+
+
+def cue_favourite_radio_station(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
+    return cue_favourite(speaker, action, args, soco_function, use_local_speaker_list)
 
 
 def process_action(speaker, action, args, use_local_speaker_list):
@@ -1668,4 +1680,7 @@ actions = {
     "queue_search_result_number": SonosFunction(queue_search_result_number, ""),
     "queue_search_number": SonosFunction(queue_search_result_number, ""),
     "qsn": SonosFunction(queue_search_result_number, ""),
+    "cue_favourite_radio_station": SonosFunction(cue_favourite_radio_station, ""),
+    "cue_favorite_radio_station": SonosFunction(cue_favourite_radio_station, ""),
+    "cfrs": SonosFunction(cue_favourite_radio_station, ""),
 }
