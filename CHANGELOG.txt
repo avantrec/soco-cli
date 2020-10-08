@@ -2,6 +2,7 @@ v0.1.38   - Add search caching and indexed playback for 'tracks_in_album'
           - Add search caching and indexed playback for 'list_albums'
           - Add search caching and indexed playback for 'search_artists'
           - Add '--docs' option to print URL to online documentation
+          - Add 'soco-discover' synonym for 'sonos-discover'
 v0.1.37   - Fix 'play_favourite_radio_station'
           - Improve output from 'track' action for non-queue items
           - Add 'cue_favourite_radio_station' action
