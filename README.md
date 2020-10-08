@@ -17,6 +17,7 @@
          * [Playback Control](#playback-control)
          * [Queue Actions](#queue-actions)
          * [Favourites and Playlists](#favourites-and-playlists)
+         * [Radio Station Favourites](#radio-station-favourites)
          * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
          * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
          * [Music Library Search Functions](#music-library-search-functions)
@@ -39,7 +40,7 @@
       * [Uninstalling](#uninstalling)
       * [Acknowledgments](#acknowledgments)
 
-<!-- Added by: pwt, at: Sun Oct  4 10:08:26 BST 2020 -->
+<!-- Added by: pwt, at: Thu Oct  8 13:01:50 BST 2020 -->
 
 <!--te-->
 
@@ -221,14 +222,20 @@ The following has issues and requires further development. For example, it's cur
 - **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`. (See also `save_queue` above).
 - **`cue_favourite <favourite_name>`** (or **`cue_favorite`, `cue_fav`, `cf`**): Cues up a Sonos favourite for playback. This is a convenience action that issues the sequence: `mute, play_favourite, stop, unmute`. It's useful for silently setting a speaker to a state where it's ready to play the nominated favourite. Mute and group mute states are preserved. 
 - **`delete_playlist <playlist>`** (or **`remove_playlist`**): Delete the Sonos playlist named `<playlist>`.
-- **`favourite_radio_stations`** (or **`favorite_radio_stations`**): List the favourite radio stations.
 - **`list_all_playlist_tracks`** (or **`lapt`**): Lists all tracks in all Sonos Playlists.
 - **`list_favs`** (or **`list_favorites`, `list_favourites`, `lf`**): Lists all Sonos favourites.
 - **`list_playlists`** (or **`playlists`, `lp`**): Lists the Sonos playlists.
 - **`list_playlist_tracks <playlist_name>`** (or **`lpt`**): List the tracks in a given Sonos Playlist.
 - **`play_favourite <favourite_name>` (or `play_favorite`, `favourite`, `favorite`, `fav`, `pf`, `play_fav`)**: Plays the Sonos favourite identified by `<favourite_name>`. The name is loosely matched; if `<favourite_name>` is a (case insensitive) substring of a Sonos favourite, it will match. In the case of duplicates, the first match encountered will be used. If a queueable item, the favourite will be added to the end of the current queue and played. **Note: this currently works only for certain types of favourite: local library tracks and playlists, radio stations, single Spotify tracks, etc.**
-- **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station. Note that this action doesn't work well: it's better to add radio stations as normal Sonos favourites, and play them using `favourite`.
+- **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station in TuneIn's 'My Stations' list.
 - **`remove_from_playlist <playlist_name> <track_number>`** (or **`rfp`**): Remove a track from a Sonos playlist.
+
+### Radio Station Favourites
+
+The following operate on the stations in TuneIn's 'My Stations' list.
+
+- **`favourite_radio_stations`** (or **`favorite_radio_stations`**, **`frs`**): List the favourite radio stations.
+- **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station.
 
 ### Grouping and Stereo Pairing
 

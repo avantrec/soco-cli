@@ -485,7 +485,9 @@ def add_favourite_to_queue(
 @one_parameter
 def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker_list):
     favourite = args[0]
-    fs = speaker.music_library.get_favorite_radio_stations()
+    preset = 0
+    limit = 99
+    fs = speaker.music_library.get_favorite_radio_stations(preset, limit)
     the_fav = None
     # Strict match
     for f in fs:
@@ -502,28 +504,29 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
                 the_fav = f
                 break
     if the_fav:
-        # play_uri works for some favourites
-        try:
-            uri = the_fav.get_uri()
-            metadata = the_fav.resource_meta_data
-            "Trying 'play_uri()': URI={}, Metadata={}".format(uri, metadata)
-            speaker.play_uri(uri=uri, meta=metadata)
-            return True
-        except Exception as e:
-            e1 = e
-            pass
-        # Other favourites will be added to the queue, then played
-        try:
-            # Add to the end of the current queue and play
-            index = speaker.add_to_queue(the_fav, as_next=True)
-            logging.info("Used'add_to_queue() [at {}], then play'".format(index))
-            speaker.play_from_queue(index, start=True)
-            return True
-        except Exception as e2:
-            error_and_exit("1: {} | 2:{}".format(str(e1), str(e2)))
-            return False
-    error_and_exit("Favourite '{}' not found".format(args[0]))
-    return False
+        uri = the_fav.get_uri()
+        meta_template = """
+        <DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/"
+            xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"
+            xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/"
+            xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">
+            <item id="R:0/0/0" parentID="R:0/0" restricted="true">
+                <dc:title>{title}</dc:title>
+                <upnp:class>object.item.audioItem.audioBroadcast</upnp:class>
+                <desc id="cdudn" nameSpace="urn:schemas-rinconnetworks-com:metadata-1-0/">
+                    {service}
+                </desc>
+            </item>
+        </DIDL-Lite>' """
+        tunein_service = "SA_RINCON65031_"
+        uri = uri.replace("&", "&amp;")
+        metadata = meta_template.format(title=the_fav.title, service=tunein_service)
+        logging.info("Trying 'play_uri()': URI={}, Metadata={}".format(uri, metadata))
+        speaker.play_uri(uri=uri, meta=metadata)
+        return True
+    else:
+        error_and_exit("Favourite '{}' not found".format(args[0]))
+        return False
 
 
 @one_or_two_parameters
@@ -1599,6 +1602,7 @@ actions = {
     "favourite_radio_stations": SonosFunction(
         list_numbered_things, "get_favorite_radio_stations"
     ),
+    "frs": SonosFunction(list_numbered_things, "get_favorite_radio_stations"),
     "play_favourite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
     "play_favorite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
     "pfrs": SonosFunction(play_favourite_radio, "play_uri"),
