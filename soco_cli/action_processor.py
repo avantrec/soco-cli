@@ -1152,6 +1152,7 @@ def search_artists(speaker, action, args, soco_function, use_local_speaker_list)
     artists = ml.get_music_library_information(
         "artists", search_term=name, complete_result=True
     )
+    albums = []
     for artist in artists:
         print()
         print_list_header("Sonos Music Library Albums including Artist:", artist.title)
@@ -1166,6 +1167,12 @@ def search_artists(speaker, action, args, soco_function, use_local_speaker_list)
         # # tracks = ml.get_music_library_information("artists", subcategories=[name, ""], complete_result=True)
         # print_tracks(tracks)
         # print()
+    if len(artists) == 1:
+        # Remove the first (redundant) element from the list before saving
+        albums.pop(0)
+        save_search(albums)
+    elif len(artists) > 1:
+        print("Note: multiple artists found ... search not saved\n")
     return True
 
 
