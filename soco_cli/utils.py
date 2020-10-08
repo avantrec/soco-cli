@@ -181,8 +181,12 @@ def version():
 
 
 def docs():
-    url = "https://github.com/avantrec/soco-cli/blob/v{}/README.md".format(__version__)
-    print("Online documentation: {}".format(url))
+    version = "v{}".format(__version__)
+    if __version__.endswith("+"):
+        url = "https://github.com/avantrec/soco-cli/blob/next_version/README.md"
+    else:
+        url = "https://github.com/avantrec/soco-cli/blob/{}/README.md".format(version)
+    print("Online documentation for {}: {}".format(version, url))
 
 
 # ToDo: Remove with SIGTERM fix
