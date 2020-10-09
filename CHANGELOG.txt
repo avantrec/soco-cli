@@ -3,11 +3,11 @@ v0.1.38   - Add search caching and indexed playback for 'tracks_in_album'
           - Add search caching and indexed playback for 'search_artists'
           - Add '--docs' option to print URL to online documentation
           - Add 'soco-discover' synonym for 'sonos-discover'
+          - Add line_in 'right_input' parameter for stereo paired P:5/Fives
           - Behaviour change: Line-In starts playback after being selected
 v0.1.37   - Fix 'play_favourite_radio_station'
           - Improve output from 'track' action for non-queue items
           - Add 'cue_favourite_radio_station' action
-          - Allow line_in 'right_input' parameter for stereo paired P:5/Fives
 v0.1.36   - Add 'last_search' action to cache track and album searches
           - Add 'queue_last_search_number' action
 v0.1.35   - Add 'queue_position' action

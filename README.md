@@ -171,8 +171,8 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 
 - **`cross_fade`** (or **`crossfade`, `fade`**): Returns the cross fade setting of the speaker, 'on' or 'off'.
 - **`cross_fade <on|off>`** (or **`crossfade`, `fade`**): Sets the cross fade setting of the speaker to 'on' or 'off'.
-- **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise.
-- **`line_in <on or line_in_speaker or left_input, right_input>`**: Switch a speaker to its own Line-In input (`<on>`), **or** the Line-In input of another `<line_in_speaker>` (if applicable). For the case where there is a stereo pair of Play:5 or Five speakers, the **left hand** speaker's Line-In source is selected using `left_input`, and the right-hand speaker's Line-In input is selected using `right_input`. Playback is started automatically once the Line-In input has been selected.
+- **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise. (Use `state` to check whether the Line-In is actually playing.)
+- **`line_in <on | line_in_speaker | left_input, right_input | line_in_speaker right_input>`**: Switch a speaker to a Line-In input. Playback is started automatically. A speaker can be switched to its own Line-In input (`<on>`), **or** the Line-In input of another `<line_in_speaker>` (if applicable). For the case where there is a stereo pair of Play:5 or Five speakers, the left hand speaker's Line-In source is selected using `left_input` (default), and the right-hand speaker's Line-In input is selected using `right_input`. (Complicated example: `sonos Bedroom line_in Lounge right_input`, switches the Bedroom to the right-hand input of stereo pair in the Lounge, and starts playback.)
 - **`next`**: Move to the next track (if applicable for the current audio source).
 - **`pause`**: Pause playback (if applicable for the audio source).
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)

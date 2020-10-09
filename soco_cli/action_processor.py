@@ -27,6 +27,7 @@ from .utils import (
     seconds_until,
     set_sigterm,
     two_parameters,
+    zero_one_or_two_parameters,
     zero_or_one_parameter,
     zero_parameters,
 )
@@ -839,7 +840,7 @@ def remove_from_playlist(speaker, action, args, soco_function, use_local_speaker
         return False
 
 
-@zero_or_one_parameter
+@zero_one_or_two_parameters
 def line_in(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if np == 0:
@@ -860,9 +861,23 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
                 line_in_source = get_right_hand_speaker(speaker)
             else:
                 # We want to use another speaker's input
-                line_in_source = get_speaker(args[0], use_local_speaker_list)
+                if np == 2:  # Want to select the input of a stereo pair
+                    the_input = args[1].lower()
+                    if the_input == "right_input":
+                        left_speaker = get_speaker(source, use_local_speaker_list)
+                        line_in_source = get_right_hand_speaker(left_speaker)
+                    elif the_input == "left_input":
+                        line_in_source = get_speaker(source, use_local_speaker_list)
+                    else:
+                        parameter_type_error(
+                            action,
+                            "second parameter (if present) must be 'left_input' or 'right_input'",
+                        )
+                        return False
+                else:
+                    line_in_source = get_speaker(source, use_local_speaker_list)
             if not line_in_source:
-                error_and_exit("Speaker '{}' not found".format(source))
+                error_and_exit("Speaker or input '{}' not found".format(source))
                 return False
             speaker.switch_to_line_in(line_in_source)
             speaker.play()
