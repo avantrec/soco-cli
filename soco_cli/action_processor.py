@@ -15,6 +15,7 @@ from .utils import (
     convert_to_seconds,
     convert_true_false,
     error_and_exit,
+    get_right_hand_speaker,
     get_speaker,
     one_or_more_parameters,
     one_or_two_parameters,
@@ -845,12 +846,22 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
         state = "on" if speaker.is_playing_line_in else "off"
         print(state)
     else:
-        if args[0].lower() == "on":
+        source = args[0]
+        if source.lower() == "off":
+            speaker.stop()
+        elif source.lower() in ["on", "left_input"]:
+            # Switch to the speaker's own line_in
             speaker.switch_to_line_in()
         else:
-            line_in_source = get_speaker(args[0], use_local_speaker_list)
+            line_in_source = None
+            if source.lower() == "right_input":
+                # We want the right-hand speaker of the stereo pair
+                line_in_source = get_right_hand_speaker(speaker, use_local_speaker_list)
+            else:
+                # We want to use another speaker's input
+                line_in_source = get_speaker(args[0], use_local_speaker_list)
             if not line_in_source:
-                error_and_exit("Speaker '{}' not found".format(args[0]))
+                error_and_exit("Speaker '{}' not found".format(source))
                 return False
             speaker.switch_to_line_in(line_in_source)
     return True

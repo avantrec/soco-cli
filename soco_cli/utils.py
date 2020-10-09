@@ -295,6 +295,26 @@ def get_speaker(name, local=False):
         return soco.discovery.by_name(name)
 
 
+def get_right_hand_speaker(left_hand_speaker, local=False):
+    # Get the right-hand speaker of a stereo pair when the
+    # left-hand speaker name/IP is supplied
+    if not left_hand_speaker.is_visible:
+        # If not visible, this is already the RH speaker
+        return left_hand_speaker
+    else:
+        # Find the speaker which is not visible, for which this
+        # the left-hand speaker is the coordinator
+        for zone in left_hand_speaker.all_zones:
+            # Test for correct coordinator, not visible, not Sub
+            if (
+                zone.group.coordinator.ip_address == left_hand_speaker.ip_address
+                and not zone.is_visible
+                and "sub" not in zone.get_speaker_info()["model_name"].lower()
+            ):
+                return zone
+        return None
+
+
 # Argument processing
 def configure_common_args(parser):
     """Set up the optional arguments common across the command line programs"""
