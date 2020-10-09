@@ -311,6 +311,7 @@ def get_right_hand_speaker(left_hand_speaker):
     # left-hand speaker name/IP is supplied
     if not left_hand_speaker.is_visible:
         # If not visible, this is not a left-hand speaker
+        logging.info("Speaker is not a left-hand speaker")
         return None
     else:
         # Find the speaker which is not visible, for which the
@@ -321,7 +322,13 @@ def get_right_hand_speaker(left_hand_speaker):
                 and not rh_speaker.is_visible
                 and "sub" not in rh_speaker.get_speaker_info()["model_name"].lower()
             ):
+                logging.info(
+                    "Found right-hand speaker: {} / {}".format(
+                        rh_speaker.player_name, rh_speaker.ip_address
+                    )
+                )
                 return rh_speaker
+        logging.info("Right-hand speaker not found")
         return None
 
 
