@@ -172,7 +172,7 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 - **`cross_fade`** (or **`crossfade`, `fade`**): Returns the cross fade setting of the speaker, 'on' or 'off'.
 - **`cross_fade <on|off>`** (or **`crossfade`, `fade`**): Sets the cross fade setting of the speaker to 'on' or 'off'.
 - **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise.
-- **`line_in <on or line_in_speaker or 'right_input'>`**: Switch a speaker to its own Line-In input (`<on>`), **or** the Line-In input of `<line_in_speaker>` (if applicable). Note that this does not start Line-In playback; issue the `play` action to start Line-In playback. For the case where there is a stereo pair of Play:5 or Five speakers, the **left hand** speaker's Line-In source is the default; to use the right-hand speaker's Line-In input, use `right_input` as the parameter.
+- **`line_in <on or line_in_speaker or left_input, right_input>`**: Switch a speaker to its own Line-In input (`<on>`), **or** the Line-In input of another `<line_in_speaker>` (if applicable). For the case where there is a stereo pair of Play:5 or Five speakers, the **left hand** speaker's Line-In source is selected using `left_input`, and the right-hand speaker's Line-In input is selected using `right_input`. Playback is started automatically once the Line-In input has been selected.
 - **`next`**: Move to the next track (if applicable for the current audio source).
 - **`pause`**: Pause playback (if applicable for the audio source).
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)

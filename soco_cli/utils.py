@@ -295,23 +295,22 @@ def get_speaker(name, local=False):
         return soco.discovery.by_name(name)
 
 
-def get_right_hand_speaker(left_hand_speaker, local=False):
+def get_right_hand_speaker(left_hand_speaker):
     # Get the right-hand speaker of a stereo pair when the
     # left-hand speaker name/IP is supplied
     if not left_hand_speaker.is_visible:
-        # If not visible, this is already the RH speaker
-        return left_hand_speaker
+        # If not visible, this is not a left-hand speaker
+        return None
     else:
-        # Find the speaker which is not visible, for which this
-        # the left-hand speaker is the coordinator
-        for zone in left_hand_speaker.all_zones:
-            # Test for correct coordinator, not visible, not Sub
+        # Find the speaker which is not visible, for which the
+        # left-hand speaker is the coordinator, and not a Sub
+        for rh_speaker in left_hand_speaker.all_zones:
             if (
-                zone.group.coordinator.ip_address == left_hand_speaker.ip_address
-                and not zone.is_visible
-                and "sub" not in zone.get_speaker_info()["model_name"].lower()
+                rh_speaker.group.coordinator.ip_address == left_hand_speaker.ip_address
+                and not rh_speaker.is_visible
+                and "sub" not in rh_speaker.get_speaker_info()["model_name"].lower()
             ):
-                return zone
+                return rh_speaker
         return None
 
 
