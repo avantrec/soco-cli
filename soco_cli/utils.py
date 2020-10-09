@@ -89,7 +89,7 @@ def two_parameters(f):
 def zero_one_or_two_parameters(f):
     def wrapper(*args, **kwargs):
         if len(args[2]) > 2:
-            parameter_number_error(args[1], "Zero, one or two")
+            parameter_number_error(args[1], "zero, one or two")
             return False
         else:
             return f(*args, **kwargs)
