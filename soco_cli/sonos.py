@@ -60,6 +60,10 @@ def main():
     # Parse the command line
     args = parser.parse_args()
 
+    if len(args.parameters) == 0:
+        print("No parameters. Use 'sonos --help' for usage information")
+        exit(0)
+
     if args.version:
         version()
         exit(0)
