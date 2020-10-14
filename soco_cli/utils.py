@@ -308,10 +308,10 @@ def get_speaker(name, local=False):
 
 def get_right_hand_speaker(left_hand_speaker):
     # Get the right-hand speaker of a stereo pair when the
-    # left-hand speaker name/IP is supplied
+    # left-hand speaker is supplied
     if not left_hand_speaker.is_visible:
         # If not visible, this is not a left-hand speaker
-        logging.info("Speaker is not a left-hand speaker")
+        logging.info("Speaker is visible: not a left-hand speaker")
         return None
     else:
         # Find the speaker which is not visible, for which the

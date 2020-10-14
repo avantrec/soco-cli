@@ -2,7 +2,7 @@
    Update the CHANGELOG
    make format
    make toc
-   git commit -a -m "<What's Changed?>"
+   git commit -a -m "Ready for release"
    git checkout master
    git merge next_version
 

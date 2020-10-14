@@ -127,9 +127,10 @@ def main():
     rewindable_sequences = RewindableList(sequences)
     loop_iterator = None
     sequence_pointer = 0
-    loop_pointer = (
-        -1
-    )  # There is a notional 'loop' action before the first command sequence
+
+    # There is a notional 'loop' action before the first command sequence
+    loop_pointer = -1
+
     loop_start_time = None
     for sequence in rewindable_sequences:
         try:
