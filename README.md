@@ -450,9 +450,7 @@ Other options:
 
 ## Known Issues
 
-- It's not possible to have two event listeners on the same host due to port 1400 collisions. This error is encountered if using more than one instance of soco-cli using `wait_start`, `wait_stop` or `wait_stopped_for` on a single host. This is a SoCo issue that will be fixed in SoCo v0.20: https://github.com/SoCo/SoCo/pull/724.
 - An error will be thrown when podcasts are listed as part of the queue or playists (`Error: Unknown UPnP class: object.item.audioItem.podcast`): this is a SoCo issue for which there is a pending fix: https://github.com/SoCo/SoCo/pull/735.
-- Stereo pairing operations do not work. As the error message indicates, pairing support arrives in SoCo v0.20.
 
 ## Uninstalling
 
