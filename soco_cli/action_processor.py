@@ -276,8 +276,14 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     else:
         output = speaker.get_current_track_info()
         if output["duration"] == "0:00:00":
-            # Assume it's a radio station
-            print("Playing {}".format(output["title"]))
+            if (
+                speaker.get_current_transport_info()["current_transport_state"]
+                != "PLAYING"
+            ):
+                print("Stream Stopped: No Track Playing")
+            else:
+                # Assume it's a radio stream
+                print("Playing Stream: {}".format(output["title"]))
         else:
             for item in sorted(output):
                 if item not in ["metadata", "uri", "album_art"]:

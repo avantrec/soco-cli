@@ -1,3 +1,4 @@
+v0.1.40   - Improve 'track' output when reporting a stopped stream
 v0.1.39   - Added 'search_album', 'search_artist', search_track' synonyms
           - Fix WARN(ING) setting for --log option
           - Require SoCo >= 0.20
