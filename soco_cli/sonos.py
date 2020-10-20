@@ -68,6 +68,10 @@ def main():
         docs()
         exit(0)
 
+    if len(args.parameters) == 0:
+        print("No parameters. Use 'sonos --help' for usage information")
+        exit(0)
+
     configure_logging(args.log)
 
     use_local_speaker_list = args.use_local_speaker_list
@@ -123,9 +127,10 @@ def main():
     rewindable_sequences = RewindableList(sequences)
     loop_iterator = None
     sequence_pointer = 0
-    loop_pointer = (
-        -1
-    )  # There is a notional 'loop' action before the first command sequence
+
+    # There is a notional 'loop' action before the first command sequence
+    loop_pointer = -1
+
     loop_start_time = None
     for sequence in rewindable_sequences:
         try:
@@ -176,6 +181,7 @@ def main():
                     error_and_exit(
                         "Action 'loop_for' requires one parameter (check spaces around the ':' separator)"
                     )
+                loop_duration = 0
                 if loop_start_time is None:
                     loop_start_time = time.time()
                     try:
@@ -205,6 +211,7 @@ def main():
 
             # Special case: the 'loop_until' action
             if speaker_name.lower() == "loop_until":
+                loop_duration = 0
                 if len(sequence) != 2:
                     error_and_exit(
                         "Action 'loop_until' requires one parameter (check spaces around the ':' separator)"
@@ -238,6 +245,7 @@ def main():
 
             # Special case: the 'wait' action
             if speaker_name in ["wait", "wait_for"]:
+                duration = 0
                 if len(sequence) != 2:
                     error_and_exit(
                         "Action 'wait' requires 1 parameter (check spaces around the ':' separator)"

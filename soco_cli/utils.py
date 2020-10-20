@@ -272,7 +272,7 @@ def configure_logging(log_level):
             logging.basicConfig(format=log_format, level=logging.DEBUG)
         elif log_level == "info":
             logging.basicConfig(format=log_format, level=logging.INFO)
-        elif log_level == "warning":
+        elif log_level in ["warn", "warning"]:
             logging.basicConfig(format=log_format, level=logging.WARNING)
         elif log_level == "error":
             logging.basicConfig(format=log_format, level=logging.ERROR)
@@ -280,7 +280,7 @@ def configure_logging(log_level):
             logging.basicConfig(format=log_format, level=logging.CRITICAL)
         else:
             error_and_exit(
-                "--log takes one of: NONE, DEBUG, INFO, WARN, ERROR, CRITICAL"
+                "--log takes one of: NONE, DEBUG, INFO, WARN(ING), ERROR, CRITICAL"
             )
 
 
@@ -308,9 +308,10 @@ def get_speaker(name, local=False):
 
 def get_right_hand_speaker(left_hand_speaker):
     # Get the right-hand speaker of a stereo pair when the
-    # left-hand speaker name/IP is supplied
+    # left-hand speaker is supplied
     if not left_hand_speaker.is_visible:
         # If not visible, this is not a left-hand speaker
+        logging.info("Speaker is visible: not a left-hand speaker")
         return None
     else:
         # Find the speaker which is not visible, for which the
@@ -321,7 +322,13 @@ def get_right_hand_speaker(left_hand_speaker):
                 and not rh_speaker.is_visible
                 and "sub" not in rh_speaker.get_speaker_info()["model_name"].lower()
             ):
+                logging.info(
+                    "Found right-hand speaker: {} / {}".format(
+                        rh_speaker.player_name, rh_speaker.ip_address
+                    )
+                )
                 return rh_speaker
+        logging.info("Right-hand speaker not found")
         return None
 
 

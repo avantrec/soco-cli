@@ -58,7 +58,7 @@ def get_playlist(speaker, name):
 def print_list_header(prefix, name):
     spacer = "  "
     title = "{} {}".format(prefix, name)
-    underline = "=" * (len(title))
+    underline = "=" * len(title)
     print(spacer + title)
     print(spacer + underline)
 
@@ -852,21 +852,26 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
             speaker.stop()
         elif source.lower() in ["on", "left_input"]:
             # Switch to the speaker's own line_in
+            logging.info("Switching to the speaker's own Line-In")
             speaker.switch_to_line_in()
             speaker.play()
         else:
             line_in_source = None
             if source.lower() == "right_input":
                 # We want the right-hand speaker of the stereo pair
+                logging.info("Looking for right-hand speaker")
                 line_in_source = get_right_hand_speaker(speaker)
             else:
                 # We want to use another speaker's input
                 if np == 2:  # Want to select the input of a stereo pair
                     the_input = args[1].lower()
                     if the_input == "right_input":
+                        logging.info("Using right-hand speaker's input")
+                        logging.info("Looking for right-hand speaker")
                         left_speaker = get_speaker(source, use_local_speaker_list)
                         line_in_source = get_right_hand_speaker(left_speaker)
                     elif the_input == "left_input":
+                        logging.info("Using left-hand speaker's input")
                         line_in_source = get_speaker(source, use_local_speaker_list)
                     else:
                         parameter_type_error(
@@ -875,10 +880,12 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
                         )
                         return False
                 else:
+                    logging.info("Using left-hand speaker's input")
                     line_in_source = get_speaker(source, use_local_speaker_list)
             if not line_in_source:
                 error_and_exit("Speaker or input '{}' not found".format(source))
                 return False
+            logging.info("Switching to Line-In and starting playback")
             speaker.switch_to_line_in(line_in_source)
             speaker.play()
     return True
@@ -1681,10 +1688,13 @@ actions = {
     "search_library": SonosFunction(search_library, ""),
     "sl": SonosFunction(search_library, ""),
     "search_artists": SonosFunction(search_artists, ""),
+    "search_artist": SonosFunction(search_artists, ""),
     "sart": SonosFunction(search_artists, ""),
     "search_albums": SonosFunction(search_albums, ""),
+    "search_album": SonosFunction(search_albums, ""),
     "salb": SonosFunction(search_albums, ""),
     "search_tracks": SonosFunction(search_tracks, ""),
+    "search_track": SonosFunction(search_tracks, ""),
     "st": SonosFunction(search_tracks, ""),
     "tracks_in_album": SonosFunction(tracks_in_album, ""),
     "tia": SonosFunction(tracks_in_album, ""),
