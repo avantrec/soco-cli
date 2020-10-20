@@ -35,12 +35,12 @@
          * [Discovery Options](#discovery-options)
          * [The sonos-discover Command](#the-sonos-discover-command)
          * [Options for the sonos-discover Command](#options-for-the-sonos-discover-command)
-      * [Resources](#resources)
       * [Known Issues](#known-issues)
       * [Uninstalling](#uninstalling)
       * [Acknowledgments](#acknowledgments)
+      * [Resources](#resources)
 
-<!-- Added by: pwt, at: Fri Oct  9 10:39:48 BST 2020 -->
+<!-- Added by: pwt, at: Tue Oct 20 15:32:15 BST 2020 -->
 
 <!--te-->
 
@@ -443,16 +443,9 @@ Other options:
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
-## Resources
-
-[1] https://github.com/SoCo/SoCo \
-[2] https://pypi.org/project/soco-cli
-
 ## Known Issues
 
-- It's not possible to have two event listeners on the same host due to port 1400 collisions. This error is encountered if using more than one instance of soco-cli using `wait_start`, `wait_stop` or `wait_stopped_for` on a single host. This is a SoCo issue that will be fixed in SoCo v0.20: https://github.com/SoCo/SoCo/pull/724.
-- An error will be thrown when podcasts are listed as part of the queue or playists (`Error: Unknown UPnP class: object.item.audioItem.podcast`): this is a SoCo issue for which there is a pending fix: https://github.com/SoCo/SoCo/pull/735.
-- Stereo pairing operations do not work. As the error message indicates, pairing support arrives in SoCo v0.20.
+None. Please do report any problems you find using GitHub.
 
 ## Uninstalling
 
@@ -462,3 +455,8 @@ Other options:
 ## Acknowledgments
 
 All trademarks acknowledged. Avantrec Ltd has no connection with Sonos Inc.
+
+## Resources
+
+[1] https://github.com/SoCo/SoCo \
+[2] https://pypi.org/project/soco-cli

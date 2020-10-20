@@ -58,7 +58,7 @@ def get_playlist(speaker, name):
 def print_list_header(prefix, name):
     spacer = "  "
     title = "{} {}".format(prefix, name)
-    underline = "=" * (len(title))
+    underline = "=" * len(title)
     print(spacer + title)
     print(spacer + underline)
 

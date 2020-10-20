@@ -272,7 +272,7 @@ def configure_logging(log_level):
             logging.basicConfig(format=log_format, level=logging.DEBUG)
         elif log_level == "info":
             logging.basicConfig(format=log_format, level=logging.INFO)
-        elif log_level == "warning":
+        elif log_level in ["warn", "warning"]:
             logging.basicConfig(format=log_format, level=logging.WARNING)
         elif log_level == "error":
             logging.basicConfig(format=log_format, level=logging.ERROR)
@@ -280,7 +280,7 @@ def configure_logging(log_level):
             logging.basicConfig(format=log_format, level=logging.CRITICAL)
         else:
             error_and_exit(
-                "--log takes one of: NONE, DEBUG, INFO, WARN, ERROR, CRITICAL"
+                "--log takes one of: NONE, DEBUG, INFO, WARN(ING), ERROR, CRITICAL"
             )
 
 
