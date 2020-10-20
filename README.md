@@ -35,12 +35,12 @@
          * [Discovery Options](#discovery-options)
          * [The sonos-discover Command](#the-sonos-discover-command)
          * [Options for the sonos-discover Command](#options-for-the-sonos-discover-command)
-      * [Resources](#resources)
       * [Known Issues](#known-issues)
       * [Uninstalling](#uninstalling)
       * [Acknowledgments](#acknowledgments)
+      * [Resources](#resources)
 
-<!-- Added by: pwt, at: Fri Oct  9 10:39:48 BST 2020 -->
+<!-- Added by: pwt, at: Tue Oct 20 15:32:15 BST 2020 -->
 
 <!--te-->
 
@@ -266,10 +266,10 @@ The actions below search the Sonos Music library.
 - **`list_albums`** (or **`albums`**): Lists all the albums in the music library.
 - **`list_artists`** (or **`artists`**): Lists all the artists in the music library.
 - **`last_search`** (or **`ls`**): Prints the results of the last album, track or artist search performed, or the last use of `tracks_in_album` or `list_albums`. Use with `queue_search_number` to add specific items to the queue.
-- **`search_albums <album_name>`** (or **`salb`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of matching albums.
--  **`search_artists <artist_name>`** (or **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the list of albums featuring any artists that match the search.
+- **`search_albums <album_name>`** (or **`search_album`**, **`salb`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of matching albums.
+-  **`search_artists <artist_name>`** (or **`search_artist`**, **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the list of albums featuring any artists that match the search.
 - **`search_library <name>`** (or **`sl`**): Searches the titles in your music library for a fuzzy match with `<name>` against artists, albums and tracks. Prints out the lists of matches. This action is a superset of `search_artists`, `search_albums`, and `search_tracks`, i.e., it searches across all categories.
-- **`search_tracks <track_name>`** (or **`st`**): Searches the tracks in your music library for a fuzzy match with `<track_name>`. Prints out the list of matching tracks.
+- **`search_tracks <track_name>`** (or **`search_track`**, **`st`**): Searches the tracks in your music library for a fuzzy match with `<track_name>`. Prints out the list of matching tracks.
 - **`tracks_in_album <album_name>`** (or **`tia`**, **`lta`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of tracks in each matching album.
 
 ## Multiple Sequential Commands
@@ -443,20 +443,21 @@ Other options:
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
-## Resources
-
-[1] https://github.com/SoCo/SoCo \
-[2] https://pypi.org/project/soco-cli
-
 ## Known Issues
 
-- An error will be thrown when podcasts are listed as part of the queue or playists (`Error: Unknown UPnP class: object.item.audioItem.podcast`): this is a SoCo issue for which there is a pending fix: https://github.com/SoCo/SoCo/pull/735.
+None. Please do report any problems you find using GitHub Issues [3].
 
 ## Uninstalling
 
-- Use the normal pip approach to uninstall the SoCo-CLI package. 
+- Use the normal Pip approach to uninstall the SoCo-CLI package: `pip uninstall soco-cli`. 
 - You may also need to remove the directory `.soco-cli` and its contents from your home directory.
 
 ## Acknowledgments
 
 All trademarks acknowledged. Avantrec Ltd has no connection with Sonos Inc.
+
+## Resources
+
+[1] https://github.com/SoCo/SoCo \
+[2] https://pypi.org/project/soco-cli \
+[3] https://github.com/avantrec/soco-cli/issues
