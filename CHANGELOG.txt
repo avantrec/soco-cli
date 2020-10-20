@@ -1,5 +1,6 @@
 v0.1.39   - Added 'search_album', 'search_artist', search_track' synonyms
-          - Fix WARN(ING) value for --log
+          - Fix WARN(ING) setting for --log option
+          - Require SoCo >= 0.20
 v0.1.38   - Add search caching and indexed playback for 'tracks_in_album'
           - Add search caching and indexed playback for 'list_albums'
           - Add search caching and indexed playback for 'search_artists'

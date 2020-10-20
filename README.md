@@ -40,7 +40,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Tue Oct 20 15:32:15 BST 2020 -->
+<!-- Added by: pwt, at: Tue Oct 20 21:29:55 BST 2020 -->
 
 <!--te-->
 
@@ -445,11 +445,11 @@ Other options:
 
 ## Known Issues
 
-None. Please do report any problems you find using GitHub.
+None. Please do report any problems you find using GitHub Issues [3].
 
 ## Uninstalling
 
-- Use the normal pip approach to uninstall the SoCo-CLI package. 
+- Use the normal Pip approach to uninstall the SoCo-CLI package: `pip uninstall soco-cli`. 
 - You may also need to remove the directory `.soco-cli` and its contents from your home directory.
 
 ## Acknowledgments
@@ -459,4 +459,5 @@ All trademarks acknowledged. Avantrec Ltd has no connection with Sonos Inc.
 ## Resources
 
 [1] https://github.com/SoCo/SoCo \
-[2] https://pypi.org/project/soco-cli
+[2] https://pypi.org/project/soco-cli \
+[3] https://github.com/avantrec/soco-cli/issues
