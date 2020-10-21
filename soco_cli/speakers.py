@@ -158,16 +158,22 @@ class Speakers:
         for adapter in adapters:
             for ip in adapter.ips:
                 if Speakers.is_ipv4_address(ip.ip):
-                    # Restrict to common domestic private IP ranges and sensible
-                    # netmasks. Experimental ... assumptions need to be tested.
-                    if (
-                        ip.ip.startswith("192.168.") or ip.ip.startswith("10.")
-                    ) and ip.network_prefix <= 24:
-                        nw = ipaddress.ip_network(
+                    network_ip = ipaddress.ip_network(ip.ip)
+                    if network_ip.is_private and not network_ip.is_loopback:
+                        # Constrain the size of network that will be searched
+                        if ip.network_prefix < 22:
+                            logging.info(
+                                "Constraining netmask={} to 22".format(
+                                    ip.network_prefix
+                                )
+                            )
+                            ip.network_prefix = 22
+                        network = ipaddress.ip_network(
                             ip.ip + "/" + str(ip.network_prefix), False
                         )
-                        ipv4_net_list.add(nw)
+                        ipv4_net_list.add(network)
         self._networks = list(ipv4_net_list)
+        logging.info("IPv4 networks to search: {}".format(ipv4_net_list))
         return ipv4_net_list
 
     def get_ip_search_list(self):
