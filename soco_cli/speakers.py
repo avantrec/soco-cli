@@ -208,8 +208,8 @@ class Speakers:
                 info["model_name"],
                 info["display_version"],
             )
-        except Exception as e:
-            # Probably not a Sonos device
+        except:
+            logging.info("Not a Sonos device: '{}'".format(ip_addr))
             return None
 
     @staticmethod
@@ -217,22 +217,28 @@ class Speakers:
         """Worker thread to pull IP addresses from a set, test if port 1400 is open,
         and if so pull down the Sonos device data. Return when the list is empty.
         """
-        while len(ip_set) > 0:
+        # Avoid possible race condition
+        try:
             ip_addr = ip_set.pop()
-            if Speakers.check_ip_and_port(str(ip_addr), 1400, socket_timeout):
-                device = Speakers.get_sonos_device_data(ip_addr, soco_timeout)
-                if device:
-                    sonos_devices.append(device)
-                    logging.info("Found Sonos device at: {}".format(device.ip_address))
+        except KeyError:
+            return
+        if Speakers.check_ip_and_port(str(ip_addr), 1400, socket_timeout):
+            device = Speakers.get_sonos_device_data(ip_addr, soco_timeout)
+            if device:
+                sonos_devices.append(device)
+                logging.info("Found Sonos device at: {}".format(device.ip_address))
 
     def discover(self):
         """Discover the Sonos speakers on the network(s) to which
         this host is attached."""
+
         ip_list = self.get_ip_search_list()
         thread_list = []
         self._speakers = []
+
         # Disable SoCo caching to prevent problems caused by multiple households
         soco.core.zone_group_state_shared_cache.enabled = False
+
         # Create parallel threads to scan the IP range
         threads = self._network_threads
         if threads > len(ip_list):
@@ -254,9 +260,12 @@ class Speakers:
             thread_list.append(thread)
             thread.start()
         logging.info("Created {} threads for network scan".format(len(thread_list)))
+
         # Wait for all threads to finish before returning
         for thread in thread_list:
             thread.join()
+        logging.info("All {} threads exited".format(len(thread_list)))
+
         # Finally, for each household ID, check that all zones have been recorded
         # using zone information obtained from Sonos
         households = []
