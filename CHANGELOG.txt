@@ -1,4 +1,5 @@
 v0.1.40   - Improve 'track' output when reporting a stopped stream
+          - Add 'min_netmask' option for alternative discovery
           - Improve network selection logic when using alternative discovery
           - Improve network timeout logic when using alternative discovery
 v0.1.39   - Added 'search_album', 'search_artist', search_track' synonyms

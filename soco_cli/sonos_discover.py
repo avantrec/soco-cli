@@ -2,6 +2,7 @@ import argparse
 
 from .speakers import Speakers
 from .utils import (
+    check_args,
     configure_common_args,
     configure_logging,
     docs,
@@ -47,6 +48,7 @@ def main():
 
     configure_logging(args.log)
 
+    # Create the Speakers object
     speaker_list = Speakers()
 
     if args.print:
@@ -64,18 +66,14 @@ def main():
         except Exception:
             error_and_exit("No current speaker data file")
 
-    # Parameter validation
-    if not 1 <= args.network_discovery_threads <= 1024:
-        error_and_exit(
-            "Value of 'threads' parameter should be an integer between 1 and 1024"
-        )
-    speaker_list.network_threads = args.network_discovery_threads
+    # Parameter validation for various args
+    message = check_args(args)
+    if message:
+        error_and_exit(message)
 
-    if not 0 <= args.network_discovery_timeout <= 60:
-        error_and_exit(
-            "Value of 'network_timeout' parameter should be a float between 0 and 60"
-        )
+    speaker_list.network_threads = args.network_discovery_threads
     speaker_list.network_timeout = args.network_discovery_timeout
+    speaker_list.min_netmask = args.min_netmask
 
     try:
         speaker_list.discover()

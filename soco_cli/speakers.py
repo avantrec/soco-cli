@@ -34,8 +34,9 @@ class Speakers:
         self,
         save_directory=None,
         save_file=None,
-        network_threads=128,
+        network_threads=256,
         network_timeout=0.1,
+        min_netmask=24,
     ):
         self._save_directory = (
             save_directory
@@ -46,6 +47,7 @@ class Speakers:
         self.remove_deprecated_pickle_files()
         self._network_threads = network_threads
         self._network_timeout = network_timeout
+        self._min_netmask = min_netmask
         self._speakers = []
         self._networks = []
 
@@ -112,6 +114,14 @@ class Speakers:
     def network_timeout(self, timeout):
         self._network_timeout = timeout
 
+    @property
+    def min_netmask(self):
+        return self._min_netmask
+
+    @min_netmask.setter
+    def min_netmask(self, min_netmask):
+        self._min_netmask = min_netmask
+
     def save(self):
         """Saves the speaker list as a pickle file."""
         if self._speakers:
@@ -151,7 +161,7 @@ class Speakers:
         except ValueError:
             return False
 
-    def find_ipv4_networks(self, min_netmask=22):
+    def find_ipv4_networks(self):
         """Returns a set of IPv4 networks to which this node is attached."""
         ipv4_net_list = set()
         adapters = ifaddr.get_adapters()
@@ -161,13 +171,13 @@ class Speakers:
                     network_ip = ipaddress.ip_network(ip.ip)
                     if network_ip.is_private and not network_ip.is_loopback:
                         # Constrain the size of network that will be searched
-                        if ip.network_prefix < min_netmask:
+                        if ip.network_prefix < self._min_netmask:
                             logging.info(
                                 "Constraining netmask={} to {}".format(
-                                    ip.network_prefix, min_netmask
+                                    ip.network_prefix, self._min_netmask
                                 )
                             )
-                            ip.network_prefix = min_netmask
+                            ip.network_prefix = self._min_netmask
                         network = ipaddress.ip_network(
                             ip.ip + "/" + str(ip.network_prefix), False
                         )
@@ -192,7 +202,11 @@ class Speakers:
         if s.connect_ex((ip, port)) == 0:
             return True
         else:
-            logging.debug("Socket connection to {}:{} timed out after {}s".format(ip, port, timeout))
+            logging.debug(
+                "Socket connection to {}:{} timed out after {}s".format(
+                    ip, port, timeout
+                )
+            )
             return False
 
     @staticmethod

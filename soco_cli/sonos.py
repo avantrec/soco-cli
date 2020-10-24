@@ -9,6 +9,7 @@ from .action_processor import process_action
 from .speakers import Speakers
 from .utils import (
     RewindableList,
+    check_args,
     configure_common_args,
     configure_logging,
     convert_to_seconds,
@@ -72,6 +73,10 @@ def main():
         print("No parameters. Use 'sonos --help' for usage information")
         exit(0)
 
+    message = check_args(args)
+    if message:
+        error_and_exit(message)
+
     configure_logging(args.log)
 
     use_local_speaker_list = args.use_local_speaker_list
@@ -79,6 +84,7 @@ def main():
         speaker_list = Speakers(
             network_threads=args.network_discovery_threads,
             network_timeout=args.network_discovery_timeout,
+            min_netmask=args.min_netmask,
         )
         if args.refresh_local_speaker_list or not speaker_list.load():
             logging.info("Start speaker discovery")

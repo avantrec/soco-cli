@@ -5,7 +5,7 @@
       * [Overview](#overview)
       * [Supported Environments](#supported-environments)
       * [Installation](#installation)
-      * [User Guide: the sonos Command](#user-guide-the-sonos-command)
+      * [User Guide: The sonos Command](#user-guide-the-sonos-command)
          * [Simple Usage Examples](#simple-usage-examples)
          * [Options for the sonos Command](#options-for-the-sonos-command)
       * [Guidelines on Playing Content](#guidelines-on-playing-content)
@@ -40,7 +40,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Tue Oct 20 21:29:55 BST 2020 -->
+<!-- Added by: pwt, at: Sat Oct 24 12:18:31 BST 2020 -->
 
 <!--te-->
 
@@ -102,8 +102,9 @@ The following options are for use with the alternative discovery mechanism:
 
 - **`--use-local-speaker-list, -l`**: Use the local speaker list instead of SoCo discovery. The speaker list will first be created and saved if it doesn't already exist.
 - **`--refresh-local-speaker-list, -r`**: In conjunction with the `-l` option, the speaker list will be regenerated and saved.
-- **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s.
+- **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up).
+- **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list.
 
@@ -425,9 +426,9 @@ These options only have an effect when combined with the `-l` **and** `-r` optio
 
 ### The `sonos-discover` Command
 
-**`sonos-discover`** is a standalone utility for creating/updating the local speaker cache, and for seeing the results of the discovery process. It's an alternative to using the `sonos -r` command. It accepts the same `-t` and `-n` options as the `sonos` command. 
+**`sonos-discover`** is a standalone utility for creating/updating the local speaker cache, and for seeing the results of the discovery process. It's an alternative to using the `sonos -r` command. It accepts the same `-t`, `-n` and `-m` options as the `sonos` command. 
 
-**Example**: **`sonos-discover -t 256 -n 1.0`** will run `sonos-discover` with a maximum of 256 threads, a network timeout of 1.0s, and will print the result.
+**Example**: **`sonos-discover -t 256 -n 1.0 -m 24`** will run `sonos-discover` with a maximum of 256 threads, a network timeout of 1.0s, a minimum netmask of 24 bits, and will print the result.
 
 ### Options for the `sonos-discover` Command
 
@@ -437,8 +438,9 @@ Other options:
 
 - **`--print, -p`**: Print the the current contents of the speaker cache file
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache file.
-- **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network. The default is 128.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). The default is 2.0s; increase this if sonos-discover is not finding all of your Sonos devices.
+- **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network.
+- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). Use this if `sonos-discover` is not finding all of your Sonos devices.
+- **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
 - **`--version, -v`**: Print the versions of SoCo-CLI and SoCo, and exit.
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
