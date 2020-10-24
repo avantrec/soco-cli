@@ -82,7 +82,7 @@ def main():
         if saved:
             print("Saved speaker data at: {}\n".format(speaker_list.save_pathname))
         else:
-            print("No speakers found")
+            print("No speakers found: no speaker data saved/overwritten")
     except Exception as e:
         error_and_exit(str(e))
 

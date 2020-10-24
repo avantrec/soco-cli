@@ -102,7 +102,7 @@ The following options are for use with the alternative discovery mechanism:
 
 - **`--use-local-speaker-list, -l`**: Use the local speaker list instead of SoCo discovery. The speaker list will first be created and saved if it doesn't already exist.
 - **`--refresh-local-speaker-list, -r`**: In conjunction with the `-l` option, the speaker list will be regenerated and saved.
-- **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network.
+- **`--network_discovery_threads, -t`**: The maximum number of parallel threads used to scan the local network.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up).
 - **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
 
@@ -438,7 +438,7 @@ Other options:
 
 - **`--print, -p`**: Print the the current contents of the speaker cache file
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache file.
-- **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network.
+- **`--network_discovery_threads, -t`**: The maximum number of parallel threads used to scan the local network.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). Use this if `sonos-discover` is not finding all of your Sonos devices.
 - **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
 - **`--version, -v`**: Print the versions of SoCo-CLI and SoCo, and exit.
