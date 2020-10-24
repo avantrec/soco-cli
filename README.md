@@ -64,7 +64,7 @@ Install the latest version from PyPI [2] using **`pip install -U soco-cli`**.
 
 Please see the CHANGELOG.txt file for a list of the user-facing changes in each release.
 
-## User Guide: the `sonos` Command
+## User Guide: The `sonos` Command
 
 The installer adds the `sonos` command to the PATH. All commands have the form:
 

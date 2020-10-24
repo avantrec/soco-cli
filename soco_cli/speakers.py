@@ -35,7 +35,7 @@ class Speakers:
         save_directory=None,
         save_file=None,
         network_threads=128,
-        network_timeout=2.0,
+        network_timeout=0.1,
     ):
         self._save_directory = (
             save_directory
@@ -195,11 +195,11 @@ class Speakers:
             return False
 
     @staticmethod
-    def get_sonos_device_data(ip_addr, soco_timeout):
+    def get_sonos_device_data(ip_addr):
         """Get information from a Sonos device"""
         try:
             speaker = soco.SoCo(str(ip_addr))
-            info = speaker.get_speaker_info(refresh=True, timeout=soco_timeout)
+            info = speaker.get_speaker_info(refresh=True)
             return SonosDevice(
                 speaker.household_id,
                 str(ip_addr),
@@ -223,7 +223,7 @@ class Speakers:
         except KeyError:
             return
         if Speakers.check_ip_and_port(str(ip_addr), 1400, socket_timeout):
-            device = Speakers.get_sonos_device_data(ip_addr, soco_timeout)
+            device = Speakers.get_sonos_device_data(ip_addr)
             if device:
                 sonos_devices.append(device)
                 logging.info("Found Sonos device at: {}".format(device.ip_address))
@@ -274,10 +274,8 @@ class Speakers:
                 households.append(speaker.household_id)
                 try:
                     for zone in soco.SoCo(speaker.ip_address).all_zones:
-                        device = Speakers.get_sonos_device_data(
-                            zone.ip_address, self._network_timeout
-                        )
-                        if not device in self._speakers:
+                        device = Speakers.get_sonos_device_data(zone.ip_address)
+                        if device not in self._speakers:
                             logging.info(
                                 "Group discovery found additional speaker at {}".format(
                                     device.ip_address
