@@ -346,7 +346,7 @@ def configure_common_args(parser):
         "--network-discovery-timeout",
         "-n",
         type=float,
-        default=2.0,
+        default=0.1,
         help="Network timeout for Sonos device scan (seconds)",
     )
     parser.add_argument(

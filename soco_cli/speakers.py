@@ -151,7 +151,7 @@ class Speakers:
         except ValueError:
             return False
 
-    def find_ipv4_networks(self):
+    def find_ipv4_networks(self, min_netmask=22):
         """Returns a set of IPv4 networks to which this node is attached."""
         ipv4_net_list = set()
         adapters = ifaddr.get_adapters()
@@ -161,13 +161,13 @@ class Speakers:
                     network_ip = ipaddress.ip_network(ip.ip)
                     if network_ip.is_private and not network_ip.is_loopback:
                         # Constrain the size of network that will be searched
-                        if ip.network_prefix < 22:
+                        if ip.network_prefix < min_netmask:
                             logging.info(
-                                "Constraining netmask={} to 22".format(
-                                    ip.network_prefix
+                                "Constraining netmask={} to {}".format(
+                                    ip.network_prefix, min_netmask
                                 )
                             )
-                            ip.network_prefix = 22
+                            ip.network_prefix = min_netmask
                         network = ipaddress.ip_network(
                             ip.ip + "/" + str(ip.network_prefix), False
                         )
@@ -192,6 +192,7 @@ class Speakers:
         if s.connect_ex((ip, port)) == 0:
             return True
         else:
+            logging.debug("Socket connection to {}:{} timed out after {}s".format(ip, port, timeout))
             return False
 
     @staticmethod
@@ -213,20 +214,21 @@ class Speakers:
             return None
 
     @staticmethod
-    def discovery_worker(ip_set, socket_timeout, soco_timeout, sonos_devices):
+    def discovery_worker(ip_set, socket_timeout, sonos_devices):
         """Worker thread to pull IP addresses from a set, test if port 1400 is open,
         and if so pull down the Sonos device data. Return when the list is empty.
         """
         # Avoid possible race condition
-        try:
-            ip_addr = ip_set.pop()
-        except KeyError:
-            return
-        if Speakers.check_ip_and_port(str(ip_addr), 1400, socket_timeout):
-            device = Speakers.get_sonos_device_data(ip_addr)
-            if device:
-                sonos_devices.append(device)
-                logging.info("Found Sonos device at: {}".format(device.ip_address))
+        while True:
+            try:
+                ip_addr = ip_set.pop()
+            except KeyError:
+                break
+            if Speakers.check_ip_and_port(str(ip_addr), 1400, socket_timeout):
+                device = Speakers.get_sonos_device_data(ip_addr)
+                if device:
+                    sonos_devices.append(device)
+                    logging.info("Found Sonos device at: {}".format(device.ip_address))
 
     def discover(self):
         """Discover the Sonos speakers on the network(s) to which
@@ -243,6 +245,11 @@ class Speakers:
         threads = self._network_threads
         if threads > len(ip_list):
             threads = len(ip_list)
+        logging.info("Searching {} IP addresses".format(len(ip_list)))
+        logging.info("Creating {} threads for network scan".format(threads))
+        logging.info(
+            "Using socket timeout of {}s for port scan".format(self._network_timeout)
+        )
         for _ in range(threads):
             try:
                 # Catch thread creation exceptions
@@ -251,15 +258,16 @@ class Speakers:
                     args=(
                         ip_list,
                         self._network_timeout,
-                        (self._network_timeout, self._network_timeout),
                         self._speakers,
                     ),
                 )
+                thread.start()
+                thread_list.append(thread)
             except RuntimeError:
+                logging.info(
+                    "Failed to start new thread no. {}".format(len(thread_list) + 1)
+                )
                 break
-            thread_list.append(thread)
-            thread.start()
-        logging.info("Created {} threads for network scan".format(len(thread_list)))
 
         # Wait for all threads to finish before returning
         for thread in thread_list:
