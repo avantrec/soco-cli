@@ -214,8 +214,6 @@ def sig_handler(signal_received, frame):
     logging.info("Caught signal, exiting.")
     print(" CTRL-C ... exiting.")
     # ToDo: Temporary for now; hard kill required to get out of 'wait_for_stopped'
-    #       Need to understand this.
-    #       Not tested on Windows
     if use_sigterm:
         os.kill(os.getpid(), SIGTERM)
     else:
