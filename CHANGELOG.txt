@@ -1,4 +1,8 @@
-v0.1.40   - Improve 'track' output when reporting a stopped stream
+v0.1.40   - Add 'seek_forward' action to jump ahead within a track
+          - Add 'seek_back' action to jump back within a track
+          - Action 'seek' now supports more flexible time formats
+          - Add 'seek_to' synonym for 'seek'
+          - Improve 'track' output when reporting a stopped stream
           - Add 'min_netmask' option for alternative discovery
           - Improve network selection logic when using alternative discovery
           - Improve network timeout logic when using alternative discovery

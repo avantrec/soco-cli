@@ -186,7 +186,9 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 - **`previous` (or `prev`)**: Move to the previous track (if applicable for the audio source).
 - **`repeat` (or `rpt`)**: Returns the repeat mode state: 'off', 'one', or 'all'.
 - **`repeat <off,none|one|all>` (or `rpt`)**: Sets the repeat mode state to one of: 'off' (or 'none'), 'one', or 'all'.
-- **`seek <HH:MM:SS>`**: Seek to a point within a track (if applicable for the audio source).
+- **`seek <time>` (or `seek_to`)**: Seek to a point within a track (if applicable for the audio source). `<time>` can be expressed using the same formats as used for `sleep_timer` below. 
+- **`seek_forward <time>` (or `sf`)**: Seek forward within a track (if applicable for the audio source). `<time>` can be expressed using the same formats as used for `sleep_timer` below.
+- **`seek_back <time>` (or `sb`)**: Seek backward within a track (if applicable for the audio source). `<time>` can be expressed using the same formats as used for `sleep_timer` below.
 - **`shuffle` (or `sh`)**: Returns 'on' if shuffle is enabled, 'off' if not.
 - **`shuffle <on|off>` (or `sh`)**: Enables or disables shuffle mode.
 - **`sleep_timer` (or `sleep`)**: Returns the current sleep timer remaining time in seconds; 0 if no sleep timer is active.

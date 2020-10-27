@@ -379,7 +379,9 @@ def check_args(args):
     """Check values of parameters. Returns None, or an error message."""
     message = ""
     if not 0 <= args.min_netmask <= 32:
-        message = message + "\n    Option 'min_netmask' must be an integer between 0 and 32"
+        message = (
+            message + "\n    Option 'min_netmask' must be an integer between 0 and 32"
+        )
     if not 0.0 <= args.network_discovery_timeout <= 60.0:
         message = message + "\n    Option 'network_timeout' must be between 0.0 and 60s"
     if not 1 <= args.network_discovery_threads <= 32000:
