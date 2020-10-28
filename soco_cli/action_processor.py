@@ -274,20 +274,30 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     if speaker.is_playing_line_in:
         print("Playing from Line In")
     else:
-        output = speaker.get_current_track_info()
-        if output["duration"] == "0:00:00":
+        track_info = speaker.get_current_track_info()
+        logging.info("Current track info:\n{}".format(track_info))
+        if track_info["duration"] == "0:00:00":
             if (
                 speaker.get_current_transport_info()["current_transport_state"]
                 != "PLAYING"
             ):
                 print("Stream Stopped: No Track Playing")
+            elif track_info["artist"] != "":
+                for item in sorted(track_info):
+                    if item not in [
+                        "metadata",
+                        "album_art",
+                        "duration",
+                        "playlist_position",
+                    ]:
+                        print("  {}: {}".format(item.capitalize(), track_info[item]))
             else:
                 # Assume it's a radio stream
-                print("Playing Stream: {}".format(output["title"]))
+                print("Playing Stream | Title = {}".format(track_info["title"]))
         else:
-            for item in sorted(output):
+            for item in sorted(track_info):
                 if item not in ["metadata", "uri", "album_art"]:
-                    print("  {}: {}".format(item.capitalize(), output[item]))
+                    print("  {}: {}".format(item.capitalize(), track_info[item]))
     return True
 
 

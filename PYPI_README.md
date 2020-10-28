@@ -16,7 +16,7 @@ SoCo-CLI aims for an orderly command structure and consistent return values, mak
 
 ## Installation
 
-Install from PyPI [2] using **`pip install soco-cli`**.
+Install from PyPI using **`pip install soco-cli`**.
 
 ## User Guide
 
