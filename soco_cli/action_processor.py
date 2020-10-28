@@ -1241,7 +1241,7 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                         "current_transport_state"
                     ]
                     logging.info("Transport state = '{}'".format(state))
-                    if state == "PLAYING":
+                    if state in ["PLAYING", "TRANSITIONING"]:
                         # Restart the timer
                         start_time = current_time
                     logging.info(
