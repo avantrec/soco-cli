@@ -1211,6 +1211,8 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
         sub = speaker.avTransport.subscribe(auto_renew=True)
     except Exception as e:
         error_and_exit("Exception {}".format(e))
+
+    playing_states = ["PLAYING", "TRANSITIONING"]
     while True:
         try:
             # ToDo: Remove temporary fix for CTRL-C not exiting
@@ -1221,8 +1223,8 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                     event.variables["transport_state"]
                 )
             )
-            if event.variables["transport_state"] not in ["PLAYING", "TRANSITIONING"]:
-                logging.info("Speaker is not 'PLAYING' or 'TRANSITIONING'")
+            if event.variables["transport_state"] not in playing_states:
+                logging.info("Speaker is not in states {}".format(playing_states))
                 sub.unsubscribe()
                 # ToDo: Should really return here and do this some other way ...
                 #       this is what's requiring the SIGKILL
@@ -1241,19 +1243,24 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
                         "current_transport_state"
                     ]
                     logging.info("Transport state = '{}'".format(state))
-                    if state in ["PLAYING", "TRANSITIONING"]:
+                    if state in playing_states:
                         # Restart the timer
                         start_time = current_time
+                    remaining_time = duration - (current_time - start_time)
                     logging.info(
-                        "Elapsed since not 'PLAYING' = {}s, Total elapsed = {}s".format(
+                        "Elapsed since last 'STOPPED' = {}s | total elapsed = {}s | remaining = {}s".format(
                             int(current_time - start_time),
                             int(current_time - original_start_time),
+                            int(remaining_time),
                         )
                     )
-                    time.sleep(poll_interval)
+                    if remaining_time <= poll_interval:
+                        time.sleep(remaining_time)
+                    else:
+                        time.sleep(poll_interval)
                     current_time = time.time()
                 logging.info(
-                    "Timer expired after not 'PLAYING' for {}s, total elapsed = {}s".format(
+                    "Timer expired after 'STOPPED' for {}s | total elapsed = {}s".format(
                         int(current_time - start_time),
                         int(current_time - original_start_time),
                     )
