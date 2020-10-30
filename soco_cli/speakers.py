@@ -171,15 +171,16 @@ class Speakers:
                     network_ip = ipaddress.ip_network(ip.ip)
                     if network_ip.is_private and not network_ip.is_loopback:
                         # Constrain the size of network that will be searched
-                        if ip.network_prefix < self._min_netmask:
+                        netmask = ip.network_prefix
+                        if netmask < self._min_netmask:
                             logging.info(
-                                "Constraining netmask={} to {}".format(
-                                    ip.network_prefix, self._min_netmask
+                                "{}: Constraining netmask={} to {}".format(
+                                    ip.ip, ip.network_prefix, self._min_netmask
                                 )
                             )
-                            ip.network_prefix = self._min_netmask
+                            netmask = self._min_netmask
                         network = ipaddress.ip_network(
-                            ip.ip + "/" + str(ip.network_prefix), False
+                            ip.ip + "/" + str(netmask), False
                         )
                         ipv4_net_list.add(network)
         self._networks = list(ipv4_net_list)
