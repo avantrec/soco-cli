@@ -2,6 +2,7 @@ import logging
 import pprint
 import time
 from collections import namedtuple
+from datetime import timedelta
 from distutils.version import StrictVersion
 from queue import Empty
 from random import randint
@@ -781,60 +782,48 @@ def save_queue(speaker, action, args, soco_function, use_local_speaker_list):
 @one_parameter
 def seek(speaker, action, args, soco_function, use_local_speaker_list):
     try:
-        time_point = int(convert_to_seconds(args[0]))
-        logging.info("Seek point is {}s".format(time_point))
-        hours = time_point // 3600
-        time_point = time_point - hours * 3600
-        minutes = time_point // 60
-        time_point = time_point - minutes * 60
-        seconds = time_point
-        seek_string = (
-            str(hours).zfill(2)
-            + ":"
-            + str(minutes).zfill(2)
-            + ":"
-            + str(seconds).zfill(2)
-        )
-        logging.info("Seek point is '{}'".format(seek_string))
-        speaker.seek(seek_string)
+        seconds = convert_to_seconds(args[0])
+    except ValueError:
+        parameter_type_error(action, "a valid time format")
+        return False
+    if seconds < 0:
+        parameter_type_error(action, "cannot seek to before start of track")
+        return False
+    seek_point = str(timedelta(seconds=seconds))
+    logging.info("Seek point is {}".format(seek_point))
+    try:
+        # seek() will handle out-of-bounds
+        speaker.seek(seek_point)
     except:
-        parameter_type_error(action, "time value on a seekable source")
+        parameter_type_error(action, "valid time value on a seekable source")
         return False
     return True
 
 
 @one_parameter
 def seek_forward(speaker, action, args, soco_function, use_local_speaker_list):
+    # Calculate the time increment
+    increment = int(convert_to_seconds(args[0]))  # Integer number of seconds
+    if increment < 0:
+        parameter_type_error(action, "a positive time increment")
+        return False
+    logging.info("Seeking forward by {}s".format(increment))
+
+    # Get the current position
+    current_position = speaker.get_current_track_info()["position"]
+    logging.info("Current playback position is '{}'".format(current_position))
+    h, m, s = [int(s) for s in current_position.split(":")]
+
+    td_current = timedelta(hours=h, minutes=m, seconds=s)
+    td_increment = timedelta(seconds=increment)
+    td_new_str = str(td_current + td_increment)
+    logging.info(
+        "Seeking forward to position '{}' ... note: might hit end of track".format(
+            td_new_str
+        )
+    )
     try:
-        # Calculate the time increment
-        increment = int(convert_to_seconds(args[0]))  # Integer number of seconds
-        logging.info("Seeking forward by {}s".format(increment))
-        current_position = speaker.get_current_track_info()["position"]
-        logging.info("Current playback position is '{}'".format(current_position))
-        inc_hours = increment // 3600
-        increment = increment - inc_hours * 3600
-        inc_minutes = increment // 60
-        increment = increment - inc_minutes * 60
-        inc_seconds = increment
-        current_position = current_position.split(":")
-        seconds = (int(current_position[2]) + inc_seconds) % 60
-        inc_minutes = inc_minutes + (int(current_position[2]) + inc_seconds) // 60
-        minutes = (int(current_position[1]) + inc_minutes) % 60
-        inc_hours = inc_hours + (int(current_position[1]) + inc_minutes) // 60
-        hours = int(current_position[0]) + inc_hours
-        seek_string = (
-            str(hours).zfill(2)
-            + ":"
-            + str(minutes).zfill(2)
-            + ":"
-            + str(seconds).zfill(2)
-        )
-        logging.info(
-            "Seeking forward to position '{}' ... might hit end of track".format(
-                seek_string
-            )
-        )
-        speaker.seek(seek_string)
+        speaker.seek(td_new_str)
     except:
         parameter_type_error(action, "time increment on a seekable source")
         return False
@@ -843,35 +832,28 @@ def seek_forward(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def seek_back(speaker, action, args, soco_function, use_local_speaker_list):
+    # Calculate the time increment
+    increment = int(convert_to_seconds(args[0]))  # Integer number of seconds
+    if increment < 0:
+        parameter_type_error(action, "a positive time increment")
+        return False
+    logging.info("Seeking backward by {}s".format(increment))
+
+    # Get the current position
+    current_position = speaker.get_current_track_info()["position"]
+    logging.info("Current playback position is '{}'".format(current_position))
+    h, m, s = [int(s) for s in current_position.split(":")]
+
+    td_current = timedelta(hours=h, minutes=m, seconds=s)
+    td_increment = timedelta(seconds=increment)
+    if td_current - td_increment < timedelta():
+        logging.info("Cannot seek beyond start of track ... seek to start instead")
+        td_new_str = "00:00:00"
+    else:
+        td_new_str = str(td_current - td_increment)
+    logging.info("Seeking backward to position '{}'".format(td_new_str))
     try:
-        increment = int(convert_to_seconds(args[0]))  # Integer number of seconds
-        current_position = speaker.get_current_track_info()["position"]
-        if increment > int(convert_to_seconds(current_position)):
-            logging.info("Cannot seek beyond start of track ... seek to start instead")
-            speaker.seek("00:00:00")
-            return True
-        logging.info("Current playback position is '{}'".format(current_position))
-        logging.info("Seeking backward by {}s".format(increment))
-        inc_hours = increment // 3600
-        increment = increment - inc_hours * 3600
-        inc_minutes = increment // 60
-        increment = increment - inc_minutes * 60
-        inc_seconds = increment
-        current_position = current_position.split(":")
-        seconds = (int(current_position[2]) - inc_seconds) % 60
-        inc_minutes = inc_minutes - (int(current_position[2]) - inc_seconds) // 60
-        minutes = (int(current_position[1]) - inc_minutes) % 60
-        inc_hours = inc_hours - (int(current_position[1]) - inc_minutes) // 60
-        hours = int(current_position[0]) - inc_hours
-        seek_string = (
-            str(hours).zfill(2)
-            + ":"
-            + str(minutes).zfill(2)
-            + ":"
-            + str(seconds).zfill(2)
-        )
-        logging.info("Seeking backward to position '{}'".format(seek_string))
-        speaker.seek(seek_string)
+        speaker.seek(td_new_str)
     except:
         parameter_type_error(action, "time increment on a seekable source")
         return False

@@ -151,31 +151,27 @@ def convert_to_seconds(time_str):
     """
     logging.info("Converting '{}' to a number of seconds".format(time_str))
     time_str = time_str.lower()
-    if ":" in time_str:  # Assume form is HH:MM:SS or HH:MM
-        parts = time_str.split(":")
-        if len(parts) == 3:  # HH:MM:SS
-            if 0 <= int(parts[1]) <= 59 and 0 <= int(parts[2]) <= 59:
-                duration = float(
-                    int(parts[0]) * 60 * 60 + int(parts[1]) * 60 + int(parts[2])
+    try:
+        if ":" in time_str:  # Assume form is HH:MM:SS or HH:MM
+            parts = time_str.split(":")
+            if len(parts) == 3:  # HH:MM:SS
+                td = datetime.timedelta(
+                    hours=int(parts[2]), minutes=int(parts[1]), seconds=(parts[0])
                 )
-            else:
-                duration = None
-        else:  # HH:MM
-            if 0 <= int(parts[1]) <= 59:
-                duration = float(int(parts[0]) * 60 * 60 + int(parts[1]) * 60)
-            else:
-                duration = None
-    elif time_str.endswith("s"):  # Seconds (explicit)
-        duration = float(time_str[:-1])
-    elif time_str.endswith("m"):  # Minutes
-        duration = float(time_str[:-1]) * 60
-    elif time_str.endswith("h"):  # Hours
-        duration = float(time_str[:-1]) * 60 * 60
-    else:  # Seconds (default)
-        duration = float(time_str)
-        if duration < 0:
-            raise ValueError
-    return duration
+            else:  # HH:MM
+                td = datetime.timedelta(hours=int(parts[2]), minutes=int(parts[1]))
+            return td.seconds
+        elif time_str.endswith("s"):  # Seconds (explicit)
+            duration = float(time_str[:-1])
+        elif time_str.endswith("m"):  # Minutes
+            duration = float(time_str[:-1]) * 60
+        elif time_str.endswith("h"):  # Hours
+            duration = float(time_str[:-1]) * 60 * 60
+        else:  # Seconds (default)
+            duration = float(time_str)
+        return duration
+    except:
+        raise ValueError
 
 
 # Miscellaneous
