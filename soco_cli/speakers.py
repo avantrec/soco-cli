@@ -198,17 +198,22 @@ class Speakers:
     @staticmethod
     def check_ip_and_port(ip, port, timeout):
         """Determine if a port is open"""
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(timeout)
-        if s.connect_ex((ip, port)) == 0:
-            return True
-        else:
-            logging.debug(
-                "Socket connection to {}:{} timed out after {}s".format(
-                    ip, port, timeout
+        _socket = None
+        try:
+            _socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            _socket.settimeout(timeout)
+            if _socket.connect_ex((ip, port)) == 0:
+                return True
+            else:
+                logging.debug(
+                    "Socket connection to {}:{} timed out after {}s".format(
+                        ip, port, timeout
+                    )
                 )
-            )
-            return False
+                return False
+        finally:
+            if _socket:
+                _socket.close()
 
     @staticmethod
     def get_sonos_device_data(ip_addr):
@@ -239,7 +244,14 @@ class Speakers:
                 ip_addr = ip_set.pop()
             except KeyError:
                 break
-            if Speakers.check_ip_and_port(str(ip_addr), 1400, socket_timeout):
+            try:
+                check = Speakers.check_ip_and_port(str(ip_addr), 1400, socket_timeout)
+            except OSError:
+                # Return the ip address to the set, and break out of this thread
+                logging.info("OSError exception from socket calls")
+                ip_set.add(ip_addr)
+                break
+            if check:
                 device = Speakers.get_sonos_device_data(ip_addr)
                 if device:
                     sonos_devices.append(device)
