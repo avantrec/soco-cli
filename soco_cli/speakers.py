@@ -198,11 +198,9 @@ class Speakers:
     @staticmethod
     def check_ip_and_port(ip, port, timeout):
         """Determine if a port is open"""
-        _socket = None
-        try:
-            _socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            _socket.settimeout(timeout)
-            if _socket.connect_ex((ip, port)) == 0:
+        with (socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as socket_:
+            socket_.settimeout(timeout)
+            if socket_.connect_ex((ip, port)) == 0:
                 return True
             else:
                 logging.debug(
@@ -211,9 +209,6 @@ class Speakers:
                     )
                 )
                 return False
-        finally:
-            if _socket:
-                _socket.close()
 
     @staticmethod
     def get_sonos_device_data(ip_addr):
