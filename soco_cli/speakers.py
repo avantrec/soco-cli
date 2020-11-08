@@ -127,7 +127,8 @@ class Speakers:
         if self._speakers:
             if not os.path.exists(self._save_directory):
                 os.mkdir(self._save_directory)
-            pickle.dump(self._speakers, open(self.save_pathname, "wb"))
+            with open(self.save_pathname, "wb") as f:
+                pickle.dump(self._speakers, f)
             return True
         else:
             return False
@@ -136,7 +137,8 @@ class Speakers:
         """Loads a saved speaker list"""
         if os.path.exists(self.save_pathname):
             try:
-                self._speakers = pickle.load(open(self.save_pathname, "rb"))
+                with open(self.save_pathname, "rb") as f:
+                    self._speakers = pickle.load(f)
             except:
                 return False
             return True
@@ -243,6 +245,7 @@ class Speakers:
                 check = Speakers.check_ip_and_port(str(ip_addr), 1400, socket_timeout)
             except OSError:
                 # Return the ip address to the set, and break out of this thread
+                # This has the effect of reducing the number of threads running
                 logging.info("OSError exception from socket calls")
                 ip_set.add(ip_addr)
                 break

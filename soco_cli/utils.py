@@ -396,7 +396,8 @@ pathname = path + filename
 def save_search(result):
     if not os.path.exists(path):
         os.mkdir(path)
-    pickle.dump(result, open(pathname, "wb"))
+    with open(pathname, "wb") as f:
+        pickle.dump(result, f)
     logging.info("Saved search results at {}".format(pathname))
     return True
 
@@ -405,7 +406,8 @@ def read_search():
     if os.path.exists(pathname):
         logging.info("Loading search results from {}".format(pathname))
         try:
-            return pickle.load(open(pathname, "rb"))
+            with open(pathname, "rb") as f:
+                return pickle.load(f)
         except:
             pass
     return None
