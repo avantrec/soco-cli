@@ -1,5 +1,6 @@
 v0.1.41   - Improve time resolution in 'wait_stopped_for'
           - Further changes to 'track' output for streams
+          - Add 'first/start' option to 'queue_search_number'
 v0.1.40   - Add 'seek_forward' action to jump ahead within a track
           - Add 'seek_back' action to jump back within a track
           - Action 'seek' now supports more flexible time formats

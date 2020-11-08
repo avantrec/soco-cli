@@ -1585,9 +1585,11 @@ def queue_search_result_number(
             position = (
                 int(speaker.get_current_track_info()["playlist_position"]) + offset
             )
+        elif args[1].lower() in ["first", "start"]:
+            position = 1
         else:
             error_and_exit(
-                "If supplied, second parameter for '{}' must be 'next/play_next'".format(
+                "If supplied, second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
                     action
                 )
             )
