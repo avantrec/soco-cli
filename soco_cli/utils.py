@@ -408,6 +408,7 @@ def read_search():
         try:
             with open(pathname, "rb") as f:
                 return pickle.load(f)
-        except:
+        except Exception as e:
+            logging.info("Failed to load search results: %s", e)
             pass
     return None

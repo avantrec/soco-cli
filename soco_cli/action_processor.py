@@ -910,6 +910,7 @@ def list_playlist_tracks(speaker, action, args, soco_function, use_local_speaker
         )
         print_tracks(tracks)
         print()
+        save_search(tracks)
         return True
     else:
         error_and_exit("Playlist '{}' not found".format(args[0]))
@@ -1541,7 +1542,7 @@ def last_search(speaker, action, args, soco_function, use_local_speaker_list):
                 print_albums(items)
             # 'artists' search_type is used for tracks when 'tracks_in_album' has
             #  been used for the search
-            elif items.search_type in ["tracks", "artists"]:
+            elif items.search_type in ["tracks", "artists", "browse"]:
                 print_tracks(items)
             print()
     else:
