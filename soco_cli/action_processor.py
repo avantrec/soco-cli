@@ -622,6 +622,9 @@ def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
         error_and_exit("Pairing operations require SoCo v0.20 or greater")
         return False
     speaker2 = get_speaker(args[0], use_local_speaker_list)
+    if speaker == speaker2:
+        error_and_exit("Speakers are the same")
+        return False
     getattr(speaker, soco_function)(speaker2)
     return True
 
@@ -1511,6 +1514,9 @@ def transfer_playback(speaker, action, args, soco_function, use_local_speaker_li
         error_and_exit("Speaker '{}' is not a coordinator".format(speaker.player_name))
         return False
     speaker2 = get_speaker(args[0], use_local_speaker_list)
+    if speaker == speaker2:
+        error_and_exit("Source and target speakers are the same")
+        return False
     if speaker2:
         speaker2.join(speaker)
         speaker.unjoin()
