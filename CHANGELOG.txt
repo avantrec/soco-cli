@@ -1,3 +1,4 @@
+v0.1.42   - TBD
 v0.1.41   - Improve time accuracy in 'wait_stopped_for'
           - Improve playback state detection in 'wait_stopped_for'
           - Further evolution of 'track' output for streams

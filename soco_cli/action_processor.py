@@ -635,7 +635,6 @@ def operate_on_all(speaker, action, args, soco_function, use_local_speaker_list)
     for zone in zones:
         if zone.is_visible:
             try:
-                # zone.unjoin()
                 getattr(zone, soco_function)()
             except:
                 # Ignore errors here; don't want to halt on

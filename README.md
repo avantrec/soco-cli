@@ -330,7 +330,7 @@ The **`<speaker> wait_stopped_for <duration>`** (or **`wsf`**) action will wait 
 This function is useful if one wants to perform an action on a speaker (such as ungrouping it) only once its use has definitely stopped, as opposed to it just being temporarily paused, or stopped while switched to a different audio source. For example:
 
 ```
-sonos Study wait_stopped_for 30m : Study line_in on : Study play
+sonos Study wait_stopped_for 5m : Study line_in on : Study play
 ```
 
 ### Repeating Commands: The `loop` Actions
@@ -449,7 +449,7 @@ Other options:
 
 ## Known Issues
 
-None. Please do report any problems you find using GitHub Issues [3].
+Please report any problems you find using GitHub Issues [3].
 
 ## Uninstalling
 
