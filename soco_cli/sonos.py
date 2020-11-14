@@ -22,13 +22,12 @@ from .utils import (
     version,
 )
 
-# Globals
-pp = pprint.PrettyPrinter(width=100)
-
-
 # Temporary Python 3.9 patch until SoCo 0.21 arrives
 from threading import Thread
 Thread.isAlive = Thread.is_alive
+
+# Globals
+pp = pprint.PrettyPrinter(width=100)
 
 
 def main():
