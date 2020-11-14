@@ -5,6 +5,9 @@ import pprint
 import time
 from signal import SIGINT, signal
 
+# Temporary Python 3.9 patch until SoCo 0.21 arrives
+from threading import Thread
+
 from .action_processor import process_action
 from .speakers import Speakers
 from .utils import (
@@ -22,8 +25,6 @@ from .utils import (
     version,
 )
 
-# Temporary Python 3.9 patch until SoCo 0.21 arrives
-from threading import Thread
 Thread.isAlive = Thread.is_alive
 
 # Globals

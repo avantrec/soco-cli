@@ -40,7 +40,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Mon Nov  9 09:46:54 GMT 2020 -->
+<!-- Added by: pwt, at: Sat Nov 14 14:32:14 GMT 2020 -->
 
 <!--te-->
 
@@ -253,6 +253,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 ### Speaker and Sonos System Information
 
 - **`alarms`**: List the alarms in the Sonos system.
+- **`battery`**: Shows the battery status for a Sonos Move speaker.
 - **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
 - **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
 - **`libraries`** (or **`shares`**): List the local music library shares.

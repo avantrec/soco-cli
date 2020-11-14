@@ -7,9 +7,11 @@ from distutils.version import StrictVersion
 from queue import Empty
 from random import randint
 
+import requests
 import soco
 import soco.alarms
 import tabulate
+import xmltodict
 
 from .speaker_info import print_speaker_table
 from .utils import (
@@ -1616,6 +1618,41 @@ def cue_favourite_radio_station(
     return cue_favourite(speaker, action, args, soco_function, use_local_speaker_list)
 
 
+def battery(speaker, action, args, soco_function, use_local_speaker_list):
+    info = speaker.get_speaker_info()
+    logging.info("Retrieved speaker info: {}".format(info))
+    if info["model_name"] not in ["Sonos Move"]:
+        error_and_exit(
+            "Speaker '{}' doesn't have a battery".format(speaker.player_name)
+        )
+        return False
+
+    # Retrieve information from the speaker's support URL
+    url = "http://" + speaker.ip_address + ":1400/support/review"
+    try:
+        response = requests.get(url)
+    except:
+        error_and_exit("Failed to retrieve speaker information")
+        return False
+    if response.status_code != 200:
+        error_and_exit("Failed to retrieve speaker information")
+        return False
+
+    # Traverse XML to obtain the battery information
+    try:
+        data = xmltodict.parse(response.text)
+        zp_list = data["ZPNetworkInfo"]["ZPSupportInfo"]
+        for zp in zp_list:
+            if zp["ZPInfo"]["IPAddress"] == speaker.ip_address:
+                battery_status = zp["LocalBatteryStatus"]["Data"]
+                for item in battery_status:
+                    print("  {}: {}".format(item["@name"], item["#text"]))
+                return True
+    except:
+        error_and_exit("Error in the information returned by the speaker")
+        return False
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -1847,4 +1884,5 @@ actions = {
     "cue_favourite_radio_station": SonosFunction(cue_favourite_radio_station, ""),
     "cue_favorite_radio_station": SonosFunction(cue_favourite_radio_station, ""),
     "cfrs": SonosFunction(cue_favourite_radio_station, ""),
+    "battery": SonosFunction(battery, ""),
 }
