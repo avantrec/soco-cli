@@ -263,6 +263,7 @@ class Speakers:
         thread_list = []
         self._speakers = []
 
+        # THIS WILL STOP WORKING IN SOCO 0.21+
         # Disable SoCo caching to prevent problems caused by multiple households
         soco.core.zone_group_state_shared_cache.enabled = False
 
