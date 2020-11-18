@@ -8,6 +8,7 @@
       * [User Guide: The sonos Command](#user-guide-the-sonos-command)
          * [Simple Usage Examples](#simple-usage-examples)
          * [Options for the sonos Command](#options-for-the-sonos-command)
+         * [Operating on All Speakers: Using _all_](#operating-on-all-speakers-using-_all_)
       * [Guidelines on Playing Content](#guidelines-on-playing-content)
          * [Radio Stations](#radio-stations)
          * [Single Tracks](#single-tracks)
@@ -40,7 +41,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Sat Nov 14 14:32:14 GMT 2020 -->
+<!-- Added by: pwt, at: Wed Nov 18 09:39:49 GMT 2020 -->
 
 <!--te-->
 
@@ -107,6 +108,14 @@ The following options are for use with the alternative discovery mechanism:
 - **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list.
+
+### Operating on All Speakers: Using `_all_`
+
+There is a limited set of operations where it can be desirable to operate on all speakers, e.g., muting every speaker in the house. This is done by using **`_all_`** as the speaker name. Operations will only be performed on devices that are coordinators (i.e.., the master speakers in any groups or bonded configurations).
+
+**Examples**: `sonos _all_ mute on` and `sonos _all_ relative_volume -10`.
+
+Note that `_all_` can be used with every `sonos` operation; no checking is performed to ensure that the use of `all` is appropriate, so use it with caution.
 
 ## Guidelines on Playing Content
 
@@ -284,7 +293,7 @@ Multiple commands can be run as part of the same `sonos` invocation by using the
 
 An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
 
-Example: `sonos Kitchen volume 25 : Kitchen play`
+**Example:** `sonos Kitchen volume 25 : Kitchen play`
 
 ### Inserting Delays: `wait` and `wait_until`
 
@@ -402,7 +411,7 @@ Note that it's always possible to avoid any kind of discovery step simply by usi
 
 To use this discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. A local speaker list is stored in `<your_home_directory>/.soco-cli/` for use with future invocations of the `sonos` command.
 
-**Example**: **`sonos -l "living room" volume 50`** uses the local speaker database to look up the "living room" speaker.
+**Example:** `sonos -l "living room" volume 50` uses the local speaker database to look up the "living room" speaker.
 
 ### Speaker Naming
 
@@ -414,7 +423,7 @@ Note that if you have speakers with the same names in multiple Sonos systems (Ho
 
 If your speakers change in some way (e.g., they are renamed, are assigned different IP addresses, or you add/remove speakers), you can refresh the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option. You can also use the `sonos-discover` command (below).
 
-**Example**: **`sonos -lr "living room" volume 50`** will refresh the discovery cache before executing the `sonos` command.
+**Example:** `sonos -lr "living room" volume 50` will refresh the discovery cache before executing the `sonos` command.
 
 ### Discovery Options
 
@@ -425,13 +434,13 @@ The following flags can be used to adjust network discovery behaviour if the dis
 
 These options only have an effect when combined with the `-l` **and** `-r` options.
 
-**Example**: **`sonos -lr -t 256 -n 1.0 "living room" volume 50`**
+**Example:** `sonos -lr -t 256 -n 1.0 "living room" volume 50`
 
 ### The `sonos-discover` Command
 
 **`sonos-discover`** is a standalone utility for creating/updating the local speaker cache, and for seeing the results of the discovery process. It's an alternative to using the `sonos -r` command. It accepts the same `-t`, `-n` and `-m` options as the `sonos` command. 
 
-**Example**: **`sonos-discover -t 256 -n 1.0 -m 24`** will run `sonos-discover` with a maximum of 256 threads, a network timeout of 1.0s, a minimum netmask of 24 bits, and will print the result.
+**Example:** `sonos-discover -t 256 -n 1.0 -m 24` will run `sonos-discover` with a maximum of 256 threads, a network timeout of 1.0s, a minimum netmask of 24 bits, and will print the result.
 
 ### Options for the `sonos-discover` Command
 

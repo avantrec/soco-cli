@@ -355,6 +355,18 @@ class Speakers:
                     return soco.SoCo(speaker.ip_address)
         return None
 
+    def get_all_speakers(self):
+        # THIS WILL STOP WORKING IN SOCO 0.21+
+        # Disable SoCo caching to prevent problems caused by multiple households
+        soco.core.zone_group_state_shared_cache.enabled = False
+        soco_speakers = []
+        for speaker in self._speakers:
+            soco_speakers.append(soco.SoCo(speaker.ip_address))
+        if soco_speakers:
+            return soco_speakers
+        else:
+            return None
+
     def print(self):
         if not self._speakers:
             return
