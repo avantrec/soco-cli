@@ -1079,12 +1079,14 @@ def info(speaker, action, args, soco_function, use_local_speaker_list):
 def groups(speaker, action, args, soco_function, use_local_speaker_list):
     for group in speaker.all_groups:
         if group.coordinator.is_visible:
-            print("[{}] : ".format(group.short_label), end="")
+            print("[{}] : ".format(group.coordinator.player_name), end="")
+            first = True
             for member in group.members:
-                print(
-                    "{} ({}) ".format(member.player_name, member.ip_address),
-                    end="",
-                )
+                if member.is_visible:
+                    if not first:
+                        print(", ", end="")
+                    print("{}".format(member.player_name), end="")
+                    first = False
             print()
     return True
 

@@ -311,7 +311,9 @@ def main():
                     speakers = soco.discovery.any_soco().all_zones
                 for speaker in speakers:
                     if speaker.is_visible and speaker.is_coordinator:
-                        if not process_action(speaker, action, args, use_local_speaker_list):
+                        if not process_action(
+                            speaker, action, args, use_local_speaker_list
+                        ):
                             error_and_exit("Action '{}' not found".format(action))
             else:
                 speaker = get_speaker(speaker_name, use_local_speaker_list)

@@ -1,6 +1,7 @@
+v0.1.43   - Add '_all_' option instead of targeting a named speaker
+          - Simplify the output of the 'groups' action
 v0.1.42   - Patch SoCo to provide full Python 3.9 support (until SoCo 0.21)
           - Add 'battery' action to print battery status for Sonos Move speakers
-          - Add experimental '_all_' option for speaker control
 v0.1.41   - Improve time accuracy in 'wait_stopped_for'
           - Improve playback state detection in 'wait_stopped_for'
           - Further evolution of 'track' output for streams
