@@ -309,8 +309,18 @@ def main():
                     speakers = speaker_list.get_all_speakers()
                 else:
                     speakers = soco.discovery.any_soco().all_zones
+                logging.info(
+                    "Performing action '{}' on all visible, coordinator speakers".format(
+                        action
+                    )
+                )
                 for speaker in speakers:
                     if speaker.is_visible and speaker.is_coordinator:
+                        logging.info(
+                            "Performing action '{}' on speaker '{}'".format(
+                                action, speaker.player_name
+                            )
+                        )
                         if not process_action(
                             speaker, action, args, use_local_speaker_list
                         ):
