@@ -331,6 +331,7 @@ def main():
                                 action, speaker.player_name
                             )
                         )
+                        print(speaker.player_name)
                         if not process_action(
                             speaker, action, args, use_local_speaker_list
                         ):
