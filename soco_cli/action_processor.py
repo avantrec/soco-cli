@@ -4,6 +4,7 @@ import time
 from collections import namedtuple
 from datetime import timedelta
 from distutils.version import StrictVersion
+from os import get_terminal_size
 from queue import Empty
 from random import randint
 
@@ -1678,6 +1679,42 @@ SonosFunction = namedtuple(
     ],
     rename=False,
 )
+
+
+def list_actions():
+    action_list = list(actions.keys())
+    additional_commands = [
+        "loop",
+        "loop_until",
+        "loop_for",
+        "loop_to_start",
+        "wait_until",
+        "wait",
+        "wait_for",
+    ]
+    action_list = action_list + additional_commands
+    action_list = sorted(action_list, reverse=True)
+
+    longest_command = len(max(action_list, key=len))
+    item_spacing = longest_command + 2
+    items_per_line = get_terminal_size().columns // item_spacing
+
+    current_line_position = 1
+    while True:
+        try:
+            command = action_list.pop()
+        except IndexError:
+            break
+        if current_line_position == items_per_line:
+            ending = "\n"
+            current_line_position = 1
+        else:
+            ending = " " * (item_spacing - len(command))
+            current_line_position += 1
+        print(command, end=ending)
+    if current_line_position != 1:
+        print()
+
 
 # Actions and associated processing functions
 actions = {

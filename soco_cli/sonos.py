@@ -3,12 +3,12 @@ import argparse
 import logging
 import pprint
 import time
-import soco
 from signal import SIGINT, signal
-
 from threading import Thread
 
-from .action_processor import process_action
+import soco
+
+from .action_processor import list_actions, process_action
 from .speakers import Speakers
 from .utils import (
     RewindableList,
@@ -61,6 +61,12 @@ def main():
         default=False,
         help="Refresh the local speaker list",
     )
+    parser.add_argument(
+        "--commands",
+        action="store_true",
+        default=False,
+        help="Print the list of available commands",
+    )
     # The rest of the optional args are common
     configure_common_args(parser)
 
@@ -73,6 +79,10 @@ def main():
 
     if args.docs:
         docs()
+        exit(0)
+
+    if args.commands:
+        list_actions()
         exit(0)
 
     if len(args.parameters) == 0:
