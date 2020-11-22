@@ -4,11 +4,11 @@ import logging
 import pprint
 import time
 from signal import SIGINT, signal
-
-# Temporary Python 3.9 patch until SoCo 0.21 arrives
 from threading import Thread
 
-from .action_processor import process_action
+import soco
+
+from .action_processor import list_actions, process_action
 from .speakers import Speakers
 from .utils import (
     RewindableList,
@@ -25,6 +25,7 @@ from .utils import (
     version,
 )
 
+# Temporary Python 3.9 patch until SoCo 0.21 arrives
 Thread.isAlive = Thread.is_alive
 
 # Globals
@@ -60,6 +61,12 @@ def main():
         default=False,
         help="Refresh the local speaker list",
     )
+    parser.add_argument(
+        "--commands",
+        action="store_true",
+        default=False,
+        help="Print the list of available commands",
+    )
     # The rest of the optional args are common
     configure_common_args(parser)
 
@@ -72,6 +79,10 @@ def main():
 
     if args.docs:
         docs()
+        exit(0)
+
+    if args.commands:
+        list_actions()
         exit(0)
 
     if len(args.parameters) == 0:
@@ -303,11 +314,34 @@ def main():
                 )
             action = sequence[1].lower()
             args = sequence[2:]
-            speaker = get_speaker(speaker_name, use_local_speaker_list)
-            if not speaker:
-                error_and_exit("Speaker '{}' not found".format(speaker_name))
-            if not process_action(speaker, action, args, use_local_speaker_list):
-                error_and_exit("Action '{}' not found".format(action))
+            if speaker_name.lower() == "_all_":
+                if use_local_speaker_list:
+                    speakers = speaker_list.get_all_speakers()
+                else:
+                    speakers = soco.discovery.any_soco().all_zones
+                logging.info(
+                    "Performing action '{}' on all visible, coordinator speakers".format(
+                        action
+                    )
+                )
+                for speaker in speakers:
+                    if speaker.is_visible and speaker.is_coordinator:
+                        logging.info(
+                            "Performing action '{}' on speaker '{}'".format(
+                                action, speaker.player_name
+                            )
+                        )
+                        print(speaker.player_name)
+                        if not process_action(
+                            speaker, action, args, use_local_speaker_list
+                        ):
+                            error_and_exit("Action '{}' not found".format(action))
+            else:
+                speaker = get_speaker(speaker_name, use_local_speaker_list)
+                if not speaker:
+                    error_and_exit("Speaker '{}' not found".format(speaker_name))
+                if not process_action(speaker, action, args, use_local_speaker_list):
+                    error_and_exit("Action '{}' not found".format(action))
 
         except Exception as e:
             error_and_exit(str(e))

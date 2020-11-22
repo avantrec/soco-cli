@@ -4,6 +4,7 @@ import time
 from collections import namedtuple
 from datetime import timedelta
 from distutils.version import StrictVersion
+from os import get_terminal_size
 from queue import Empty
 from random import randint
 
@@ -274,7 +275,7 @@ def print_info(speaker, action, args, soco_function, use_local_speaker_list):
 
 @zero_parameters
 def track(speaker, action, args, soco_function, use_local_speaker_list):
-    state = speaker.get_current_transport_info()["current_transport_state"].lower()
+    state = speaker.get_current_transport_info()["current_transport_state"]
     if speaker.is_playing_line_in:
         print("Using Line In (state: {})".format(state))
     else:
@@ -283,7 +284,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
         # Stream
         if track_info["duration"] == "0:00:00":
             if track_info["artist"] != "":
-                print("Stream is {}".format(state))
+                print("Playback state is '{}':".format(state))
                 for item in sorted(track_info):
                     if item not in [
                         "metadata",
@@ -296,13 +297,13 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
             else:
                 # Assume it's a radio stream
                 print(
-                    "Stream is {}:\n  Title = {}\n  URI = {}".format(
+                    "Playback state is '{}':\n  Title = {}\n  URI = {}".format(
                         state, track_info["title"], track_info["uri"]
                     )
                 )
         # Normal track
         else:
-            print("Track is {}:".format(state))
+            print("Playback state is '{}':".format(state))
             for item in sorted(track_info):
                 if item not in ["metadata", "uri", "album_art"]:
                     print("  {}: {}".format(item.capitalize(), track_info[item]))
@@ -1079,12 +1080,15 @@ def info(speaker, action, args, soco_function, use_local_speaker_list):
 def groups(speaker, action, args, soco_function, use_local_speaker_list):
     for group in speaker.all_groups:
         if group.coordinator.is_visible:
-            print("[{}] : ".format(group.short_label), end="")
+            print("{}: ".format(group.coordinator.player_name), end="")
+            first = True
             for member in group.members:
-                print(
-                    "{} ({}) ".format(member.player_name, member.ip_address),
-                    end="",
-                )
+                if member != group.coordinator:
+                    if member.is_visible:
+                        if not first:
+                            print(", ", end="")
+                        print("{}".format(member.player_name), end="")
+                        first = False
             print()
     return True
 
@@ -1676,6 +1680,42 @@ SonosFunction = namedtuple(
     ],
     rename=False,
 )
+
+
+def list_actions():
+    action_list = list(actions.keys())
+    additional_commands = [
+        "loop",
+        "loop_until",
+        "loop_for",
+        "loop_to_start",
+        "wait_until",
+        "wait",
+        "wait_for",
+    ]
+    action_list = action_list + additional_commands
+    action_list = sorted(action_list, reverse=True)
+
+    longest_command = len(max(action_list, key=len))
+    item_spacing = longest_command + 2
+    items_per_line = get_terminal_size().columns // item_spacing
+
+    current_line_position = 1
+    while True:
+        try:
+            command = action_list.pop()
+        except IndexError:
+            break
+        if current_line_position == items_per_line:
+            ending = "\n"
+            current_line_position = 1
+        else:
+            ending = " " * (item_spacing - len(command))
+            current_line_position += 1
+        print(command, end=ending)
+    if current_line_position != 1:
+        print()
+
 
 # Actions and associated processing functions
 actions = {
