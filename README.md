@@ -273,7 +273,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`status_light` (or `light`)**: Returns the state of the speaker's status light, 'on' or 'off'.
 - **`status_light <on|off>` (or `light`)**: Switch the speaker's status light on or off.
 - **`sysinfo`**: Prints a table of information about all speakers in the system.
-- **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Returns the room names (and associated IP addresses) that are visible in the Sonos controller apps. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
+- **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Prints a simple list of comma separated visible zone/room names, each in double quotes. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
 
 ### Music Library Search Functions
 

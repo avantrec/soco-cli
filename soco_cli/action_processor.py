@@ -649,8 +649,13 @@ def operate_on_all(speaker, action, args, soco_function, use_local_speaker_list)
 @zero_parameters
 def zones(speaker, action, args, soco_function, use_local_speaker_list):
     zones = speaker.all_zones if "all" in action else speaker.visible_zones
+    count = 1
     for zone in zones:
-        print("{} ({})".format(zone.player_name, zone.ip_address))
+        if 1 < count < len(zones) + 1:
+            print(", ", end="")
+        print("\"{}\"".format(zone.player_name), end="")
+        count += 1
+    print()
     return True
 
 
