@@ -653,7 +653,7 @@ def zones(speaker, action, args, soco_function, use_local_speaker_list):
     for zone in zones:
         if 1 < count < len(zones) + 1:
             print(", ", end="")
-        print("\"{}\"".format(zone.player_name), end="")
+        print('"{}"'.format(zone.player_name), end="")
         count += 1
     print()
     return True
@@ -1414,30 +1414,24 @@ def queue_item_core(speaker, action, args, type):
         type, search_term=name, complete_result=True
     )
     if len(items):
-        position = 0
+        position = 1
         if len(args) == 2:
-            if args[1].lower() in ["play_next", "next"]:
-                # Check if currently playing from the queue
-                if (
-                    speaker.get_current_transport_info()["current_transport_state"]
-                    == "PLAYING"
-                    and speaker.get_current_track_info()["position"]
-                    != "NOT_IMPLEMENTED"
-                ):
-                    offset = 1
+            if args[1].lower() in ["first", "start"]:
+                position = 1
+            elif args[1].lower() in ["play_next", "next"]:
+                current_position = speaker.get_current_track_info()["position"]
+                if current_position == "NOT_IMPLEMENTED":
+                    position = 1
                 else:
-                    offset = 0
-                position = (
-                    int(speaker.get_current_track_info()["playlist_position"]) + offset
-                )
+                    position = int(current_position) + 1
             else:
                 error_and_exit(
-                    "If supplied, second parameter for '{}' must be 'next/play_next'".format(
+                    "Second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
                         action
                     )
                 )
                 return False
-        # Select a random entry from the list
+        # Select a random entry from the list, in case there's more than one
         item = items[randint(0, len(items) - 1)]
         print(speaker.add_to_queue(item, position=position))
         return True
@@ -1606,7 +1600,7 @@ def queue_search_result_number(
             position = 1
         else:
             error_and_exit(
-                "If supplied, second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
+                "Second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
                     action
                 )
             )

@@ -1,4 +1,5 @@
 v0.1.43   - Simplify output format of 'zones' (etc.)
+          - Add 'first/start' option for various queue actions
 v0.1.43   - Add '_all_' option instead of targeting a named speaker
           - Simplify the output of the 'groups' action
           - Add 'commands' option to sonos, to print the list of available commands
