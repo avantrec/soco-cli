@@ -416,6 +416,10 @@ To use this discovery mechanism with `sonos`, use the `--use-local-speaker-list`
 
 **Example:** `sonos -l "living room" volume 50` uses the local speaker database to look up the "living room" speaker.
 
+When executing a sequence of commands, supply the `-l` option only for the first speaker and it will be used for all speaker lookups, e.g.:
+ 
+ `sonos -l kitchen wait_stop : kitchen vol 25 : study play_favourite "Radio 4"`
+
 ### Speaker Naming
 
 When using the local speaker list, speaker naming does not need to be exact, unlike when using standard discovery. Matching is case insensitive, and matching works on substrings. For example, if you have a speaker named `Front Reception`, then `"front reception"` or just `front` will match. (Be careful not to submit ambiguously matchable speaker names; the first hit will be matched, and may not be the speaker you intend.)
