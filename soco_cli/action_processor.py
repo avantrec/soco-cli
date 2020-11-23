@@ -484,20 +484,25 @@ def add_favourite_to_queue(
     if the_fav:
         position = 0
         if len(args) == 2:
-            if args[1].lower() not in ["play_next", "next"]:
-                error_and_exit(
-                    "If supplied, second parameter must be 'play_next' or 'next'"
-                )
-            if (
-                speaker.get_current_transport_info()["current_transport_state"]
-                == "PLAYING"
-            ):
-                offset = 1
-            else:
-                offset = 0
-            position = (
-                int(speaker.get_current_track_info()["playlist_position"]) + offset
-            )
+            position = 1
+            if len(args) == 2:
+                if args[1].lower() in ["first", "start"]:
+                    position = 1
+                elif args[1].lower() in ["play_next", "next"]:
+                    current_position = speaker.get_current_track_info()[
+                        "playlist_position"
+                    ]
+                    if current_position == "NOT_IMPLEMENTED":
+                        position = 1
+                    else:
+                        position = int(current_position) + 1
+                else:
+                    error_and_exit(
+                        "Second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
+                            action
+                        )
+                    )
+                    return False
         try:
             # Print the queue position and return
             print(speaker.add_to_queue(the_fav, position=position))
@@ -884,21 +889,26 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
         if soco_function == "add_to_queue":
             position = 0
             if len(args) == 2:
-                if args[1].lower() not in ["next", "play_next"]:
-                    error_and_exit(
-                        "If supplied, second parameter must be 'play_next' or 'next'"
-                    )
-                    return False
-                if (
-                    speaker.get_current_transport_info()["current_transport_state"]
-                    == "PLAYING"
-                ):
-                    offset = 1
-                else:
-                    offset = 0
-                position = (
-                    int(speaker.get_current_track_info()["playlist_position"]) + offset
-                )
+                position = 1
+                if len(args) == 2:
+                    if args[1].lower() in ["first", "start"]:
+                        position = 1
+                    elif args[1].lower() in ["play_next", "next"]:
+                        current_position = speaker.get_current_track_info()[
+                            "playlist_position"
+                        ]
+                        if current_position == "NOT_IMPLEMENTED":
+                            position = 1
+                        else:
+                            position = int(current_position) + 1
+                    else:
+                        error_and_exit(
+                            "Second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
+                                action
+                            )
+                        )
+                        return False
+
             result = speaker.add_to_queue(playlist, position=position)
             print(result)
         else:
@@ -1419,7 +1429,7 @@ def queue_item_core(speaker, action, args, type):
             if args[1].lower() in ["first", "start"]:
                 position = 1
             elif args[1].lower() in ["play_next", "next"]:
-                current_position = speaker.get_current_track_info()["position"]
+                current_position = speaker.get_current_track_info()["playlist_position"]
                 if current_position == "NOT_IMPLEMENTED":
                     position = 1
                 else:
