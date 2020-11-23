@@ -39,7 +39,7 @@ def main():
     # Create the argument parser
     parser = argparse.ArgumentParser(
         prog="sonos",
-        usage="%(prog)s SPEAKER_NAME_OR_IP ACTION <parameters> < : ...>",
+        usage="%(prog)s <options> SPEAKER_NAME_OR_IP ACTION <parameters> < : ...>",
         description="Command line utility for controlling Sonos speakers",
     )
     # A variable number of arguments depending on the action
