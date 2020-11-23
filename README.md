@@ -96,7 +96,7 @@ If you experience any issues with finding your speakers, or if you have multiple
 ### Options for the `sonos` Command
 
 - **`--version, -v`**: Print the versions of SoCo-CLI and SoCo.
-- **`--commands`**: Print the list of available commands.
+- **`--actions`**: Print the list of available actions.
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 

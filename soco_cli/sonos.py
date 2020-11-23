@@ -62,10 +62,10 @@ def main():
         help="Refresh the local speaker list",
     )
     parser.add_argument(
-        "--commands",
+        "--actions",
         action="store_true",
         default=False,
-        help="Print the list of available commands",
+        help="Print the list of available actions",
     )
     # The rest of the optional args are common
     configure_common_args(parser)
@@ -81,7 +81,7 @@ def main():
         docs()
         exit(0)
 
-    if args.commands:
+    if args.actions:
         list_actions()
         exit(0)
 
