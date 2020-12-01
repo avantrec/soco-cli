@@ -108,7 +108,7 @@ The following options are for use with the alternative discovery mechanism:
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up).
 - **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
 
-Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list.
+Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list. This is the recommended way of using alternative discovery: first run `sonos-discover` first to create the local speaker database, then use `sonos` with the `-l` option to use the local database.
 
 ### Operating on All Speakers: Using `_all_`
 
@@ -160,8 +160,8 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 - **`balance <balance_setting>`**: Sets the balance of the speaker to a value between -100 and +100, where -100 is left channel only, 0 is left and right set to the same volume, and +100 is right channel only. Intermediate values produce a mix of right/left channels.
 - **`bass`**: Returns the bass setting of the speaker, from -10 to 10.
 - **`bass <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.
-- **`dialog_mode <on|off>`** (or **`dialog`**): Sets the dialog mode setting of the speaker to 'on' of 'off' (if applicable).
-- **`dialog_mode`** (or **`dialog`**): Returns the dialog mode setting of the speaker, 'on' or 'off' (if applicable).
+- **`dialog_mode`** (or **`dialog`**, **`dialogue_mode`**, **`dialogue`**): Returns the dialog mode setting of the speaker, 'on' or 'off' (if applicable).
+- **`dialog_mode <on|off>`** (or **`dialog`**, **`dialogue_mode`**, **`dialogue`**): Sets the dialog mode setting of the speaker to 'on' of 'off' (if applicable).
 - **`group_mute`**: Returns the group mute state of a group of speakers, 'on' or 'off'.
 - **`group_mute <on|off>`**: Sets the group mute state of a group of speakers to 'on' or 'off'.
 - **`group_relative_volume <adjustment>` (or `group_rel_vol`, `grv`)**: Raises or lowers the group volume by `<adjustment>` which must be a number from -100 to 100.
@@ -424,7 +424,7 @@ When executing a sequence of commands, supply the `-l` option only for the first
 
 When using the local speaker list, speaker naming does not need to be exact, unlike when using standard discovery. Matching is case insensitive, and matching works on substrings. For example, if you have a speaker named `Front Reception`, then `"front reception"` or just `front` will match. (Be careful not to submit ambiguously matchable speaker names; the first hit will be matched, and may not be the speaker you intend.)
 
-Note that if you have speakers with the same names in multiple Sonos systems (Households), you will get inconsistent name matches. It's best to keep speaker names unique within a network.
+Note that if you have speakers with the same names in multiple Sonos systems (Households), you will get inconsistent name matches. It's best to keep speaker names unique within a network (or fall back on using IP addresses instead of speaker names).
 
 ### Refreshing the Local Speaker List
 
