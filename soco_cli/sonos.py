@@ -67,6 +67,12 @@ def main():
         default=False,
         help="Print the list of available actions",
     )
+    parser.add_argument(
+        "--commands",
+        action="store_true",
+        default=False,
+        help="Print the list of available actions",
+    )
     # The rest of the optional args are common
     configure_common_args(parser)
 
@@ -81,7 +87,7 @@ def main():
         docs()
         exit(0)
 
-    if args.actions:
+    if args.actions or args.commands:
         list_actions()
         exit(0)
 
