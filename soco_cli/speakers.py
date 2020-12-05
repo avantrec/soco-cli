@@ -171,7 +171,11 @@ class Speakers:
             for ip in adapter.ips:
                 if Speakers.is_ipv4_address(ip.ip):
                     network_ip = ipaddress.ip_network(ip.ip)
-                    if network_ip.is_private and not network_ip.is_loopback:
+                    if (
+                        network_ip.is_private
+                        and not network_ip.is_loopback
+                        and not network_ip.is_link_local
+                    ):
                         # Constrain the size of network that will be searched
                         netmask = ip.network_prefix
                         if netmask < self._min_netmask:
