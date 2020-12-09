@@ -270,6 +270,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
 - **`libraries`** (or **`shares`**): List the local music library shares.
 - **`reindex`**: Start a reindex of the local music libraries.
+- **`rename <new_name>`**: Rename the speaker.
 - **`status_light` (or `light`)**: Returns the state of the speaker's status light, 'on' or 'off'.
 - **`status_light <on|off>` (or `light`)**: Switch the speaker's status light on or off.
 - **`sysinfo`**: Prints a table of information about all speakers in the system.

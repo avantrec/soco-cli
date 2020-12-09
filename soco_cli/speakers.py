@@ -154,6 +154,22 @@ class Speakers:
         os.remove(self.save_pathname)
         return self.save_pathname
 
+    def rename(self, old_name, new_name):
+        for index, speaker in enumerate(self._speakers):
+            if old_name.replace("’", "'") == speaker.speaker_name.replace("’", "'"):
+                # Update old record, delete, replace with new
+                new_speaker = speaker._replace(speaker_name=new_name)
+                del self._speakers[index]
+                self._speakers.append(new_speaker)
+                logging.info(
+                    "Renamed speaker in cache: '{}' to '{}'".format(old_name, new_name)
+                )
+                self.save()
+                logging.info("Saved updated cache file")
+                return True
+        logging.info("Failed to find speaker '{}' for rename".format(old_name))
+        return False
+
     @staticmethod
     def is_ipv4_address(ip_address):
         """Tests for an IPv4 address"""

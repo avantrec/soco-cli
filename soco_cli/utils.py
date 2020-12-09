@@ -326,6 +326,10 @@ def get_right_hand_speaker(left_hand_speaker):
         return None
 
 
+def rename_speaker_in_cache(old_name, new_name):
+    return speaker_list.rename(old_name, new_name)
+
+
 # Argument processing
 def configure_common_args(parser):
     """Set up the optional arguments common across the command line programs"""

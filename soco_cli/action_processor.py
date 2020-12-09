@@ -27,6 +27,7 @@ from .utils import (
     parameter_number_error,
     parameter_type_error,
     read_search,
+    rename_speaker_in_cache,
     save_search,
     seconds_until,
     set_sigterm,
@@ -1631,6 +1632,7 @@ def cue_favourite_radio_station(
     return cue_favourite(speaker, action, args, soco_function, use_local_speaker_list)
 
 
+@zero_parameters
 def battery(speaker, action, args, soco_function, use_local_speaker_list):
     info = speaker.get_speaker_info()
     logging.info("Retrieved speaker info: {}".format(info))
@@ -1664,6 +1666,19 @@ def battery(speaker, action, args, soco_function, use_local_speaker_list):
     except:
         error_and_exit("Error in the information returned by the speaker")
         return False
+
+
+@one_parameter
+def rename(speaker, action, args, soco_function, use_local_speaker_list):
+    old_name = speaker.player_name
+    new_name = args[0]
+    if old_name == new_name:
+        error_and_exit("Current and new names are identical")
+        return False
+    speaker.player_name = new_name
+    if use_local_speaker_list:
+        rename_speaker_in_cache(old_name, new_name)
+    return True
 
 
 def process_action(speaker, action, args, use_local_speaker_list):
@@ -1934,4 +1949,5 @@ actions = {
     "cue_favorite_radio_station": SonosFunction(cue_favourite_radio_station, ""),
     "cfrs": SonosFunction(cue_favourite_radio_station, ""),
     "battery": SonosFunction(battery, ""),
+    "rename": SonosFunction(rename, ""),
 }
