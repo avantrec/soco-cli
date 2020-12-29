@@ -199,16 +199,26 @@ def docs():
 # ToDo: Remove with SIGTERM fix
 use_sigterm = False
 
+# Stop a stream if playing a local file
+speaker_playing_local_file = None
+
 
 def set_sigterm(sigterm):
     global use_sigterm
     use_sigterm = sigterm
 
 
+def set_speaker_playing_local_file(speaker):
+    global speaker_playing_local_file
+    speaker_playing_local_file = speaker
+
+
 def sig_handler(signal_received, frame):
     # Exit silently without stack dump
     logging.info("Caught signal, exiting.")
     print(" CTRL-C ... exiting.")
+    if speaker_playing_local_file:
+        speaker_playing_local_file.stop()
     # ToDo: Temporary for now; hard kill required to get out of 'wait_for_stopped'
     if use_sigterm:
         os.kill(os.getpid(), SIGTERM)

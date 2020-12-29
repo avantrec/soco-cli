@@ -14,6 +14,7 @@ import soco.alarms
 import tabulate
 import xmltodict
 
+from .play_local_file import play_local_file
 from .speaker_info import print_speaker_table
 from .utils import (
     convert_to_seconds,
@@ -1681,6 +1682,11 @@ def rename(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@one_parameter
+def play_file(speaker, action, args, soco_function, use_local_speaker_list):
+    return play_local_file(speaker, args[0])
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -1950,4 +1956,6 @@ actions = {
     "cfrs": SonosFunction(cue_favourite_radio_station, ""),
     "battery": SonosFunction(battery, ""),
     "rename": SonosFunction(rename, ""),
+    "play_file": SonosFunction(play_file, ""),
+    "play_local_file": SonosFunction(play_file, ""),
 }

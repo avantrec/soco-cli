@@ -13,6 +13,7 @@
          * [Radio Stations](#radio-stations)
          * [Single Tracks](#single-tracks)
          * [Albums and Playlists](#albums-and-playlists)
+         * [Local Audio Files (Experimental)](#local-audio-files-experimental)
       * [Complete List of Available Actions](#complete-list-of-available-actions)
          * [Volume and EQ Control](#volume-and-eq-control)
          * [Playback Control](#playback-control)
@@ -41,7 +42,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Wed Nov 18 09:39:49 GMT 2020 -->
+<!-- Added by: pwt, at: Tue Dec 29 14:57:31 GMT 2020 -->
 
 <!--te-->
 
@@ -152,6 +153,14 @@ sonos <speaker_name> play_from_queue 24
 
 Albums from local music libraries can also be added to the queue using `sonos <speaker> queue_album <album_name>`. The action returns the queue position of the first track in the album, which can then be played as in the example above:
 
+### Local Audio Files (Experimental)
+
+It's possible to play local audio files in supported audio formats directly on your Sonos speakers using the `play_file` (or `play_local_file`) action. This sets up a temporary local web server on the local host, from which Sonos can access the audio file and play it. The action will not terminate until playback has concluded. Example:
+
+`sonos Lounge play_file mozart.mp3`
+
+The host running soco-cli must remain switched on and connected to the network during playback. The web server is only active for the duration of the `play_file` action, and will only serve the specified audio file.
+
 ## Complete List of Available Actions
 
 ### Volume and EQ Control
@@ -191,6 +200,7 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
 - **`play`** (or **`start`**): Start playback.
 - **`playback`** (or **`state`, `status`**): Returns the current playback state for the speaker.
+- **`play_file <filename>`** (or **`play_local_file`**): Play an audio file from your computer.
 - **`play_from_queue <track>`** (or **`play_queue`, `pfq`, `pq`**): Play track number `<track>` from the queue. Tracks begin at 1. If `<track>` is omitted, the first item in the queue is played.
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE`, `SHUFFLE_REPEAT_ONE`, or `SHUFFLE_NOREPEAT`.
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
