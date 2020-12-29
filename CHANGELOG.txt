@@ -1,4 +1,5 @@
-v0.1.45   - Add 'play_file' action for playback of local audio files (experimental)
+v0.1.45   - Add 'play_file' action for playback of local audio files
+            (Experimental: currently works for MP3 and FLAC files)
 v0.1.44   - Simplify output format of 'zones' (etc.)
           - Add 'first/start' option for various queue actions
           - Add 'rename' action to rename speakers
