@@ -3,3 +3,4 @@ ifaddr
 tabulate
 requests
 xmltodict
+rangehttpserver

@@ -1,6 +1,7 @@
 import functools
 import logging
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import HTTPServer
+from RangeHTTPServer import RangeRequestHandler
 from ipaddress import IPv4Address, IPv4Network
 from os import path
 from queue import Empty
@@ -14,7 +15,7 @@ PORT_START = 54000
 PORT_END = 54099
 
 
-class MyHTTPHandler(SimpleHTTPRequestHandler):
+class MyHTTPHandler(RangeRequestHandler):
     filename = None
 
     def do_GET(self):
@@ -22,9 +23,7 @@ class MyHTTPHandler(SimpleHTTPRequestHandler):
 
         # Only serve the specific file requested on the command line
         if MyHTTPHandler.filename != self.path.replace("/", ""):
-            SimpleHTTPRequestHandler.send_error(
-                self, code=403, message="Access forbidden"
-            )
+            RangeRequestHandler.send_error(self, code=403, message="Access forbidden")
             logging.info("Access to '{}' forbidden".format(self.path))
             return
 
@@ -108,7 +107,7 @@ def play_local_file(speaker, pathname):
 
     directory, filename = path.split(pathname)
 
-    supported_types = ["MP3", "FLAC", "OGG", "WAV"]
+    supported_types = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WAV"]
     file_upper = filename.upper()
     for type in supported_types:
         if file_upper.endswith("." + type):
