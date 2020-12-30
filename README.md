@@ -8,6 +8,7 @@
       * [User Guide: The sonos Command](#user-guide-the-sonos-command)
          * [Simple Usage Examples](#simple-usage-examples)
          * [Options for the sonos Command](#options-for-the-sonos-command)
+         * [Firewall Rules](#firewall-rules)
          * [Operating on All Speakers: Using _all_](#operating-on-all-speakers-using-_all_)
       * [Guidelines on Playing Content](#guidelines-on-playing-content)
          * [Radio Stations](#radio-stations)
@@ -42,7 +43,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Tue Dec 29 14:57:31 GMT 2020 -->
+<!-- Added by: pwt, at: Wed Dec 30 13:42:54 GMT 2020 -->
 
 <!--te-->
 
@@ -110,6 +111,14 @@ The following options are for use with the alternative discovery mechanism:
 - **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list. This is the recommended way of using alternative discovery: first run `sonos-discover` first to create the local speaker database, then use `sonos` with the `-l` option to use the local database.
+
+### Firewall Rules
+
+If you're running on a host with its firewall enabled, some SoCo-CLI actions require the following incoming ports to be open: **TCP 1400-1499**, **TCP 54000-54099**, and **UDP 1900**.
+
+The 1400 range is used to receive notification events from Sonos players (used in the `wait_stop` action, etc.), the 54000 range is used for the built in web server when playing files from the local filesystem (the `play_file` action). When opening ports, SoCo-CLI will try port numbers in sequence until a free port is found within the range. This allows multiple invocations of SoCo-CLI to run in parallel on the same host.
+
+UDP port 1900 is used when discovering speakers by name using standard multicast discovery.
 
 ### Operating on All Speakers: Using `_all_`
 

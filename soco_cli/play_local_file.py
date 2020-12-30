@@ -11,7 +11,7 @@ from .utils import error_and_exit, set_speaker_playing_local_file
 
 # The port range to use
 PORT_START = 54000
-PORT_END = 54100
+PORT_END = 54099
 
 
 class MyHTTPHandler(SimpleHTTPRequestHandler):
