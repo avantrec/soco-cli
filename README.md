@@ -209,7 +209,7 @@ The host running soco-cli must remain switched on and connected to the network d
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
 - **`play`** (or **`start`**): Start playback.
 - **`playback`** (or **`state`, `status`**): Returns the current playback state for the speaker.
-- **`play_file <filename>`** (or **`play_local_file`**): Play an MP3, FLAC, OGG or WAV audio file from your computer.
+- **`play_file <filename>`** (or **`play_local_file`**): Play an MP3, M4A, MP4, FLAC, OGG, or WAV audio file from your computer.
 - **`play_from_queue <track>`** (or **`play_queue`, `pfq`, `pq`**): Play track number `<track>` from the queue. Tracks begin at 1. If `<track>` is omitted, the first item in the queue is played.
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE`, `SHUFFLE_REPEAT_ONE`, or `SHUFFLE_NOREPEAT`.
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
