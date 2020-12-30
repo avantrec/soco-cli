@@ -18,14 +18,16 @@ class MyHTTPHandler(SimpleHTTPRequestHandler):
     filename = None
 
     def do_GET(self):
-        # Only serve the specific file requested on the command line
         logging.info("Get request received by HTTP server")
+
+        # Only serve the specific file requested on the command line
         if MyHTTPHandler.filename != self.path.replace("/", ""):
             SimpleHTTPRequestHandler.send_error(
-                self, code=404, message="File not found"
+                self, code=403, message="Access forbidden"
             )
-            logging.info("Attempt to access non-specified file")
+            logging.info("Access to '{}' forbidden".format(self.path))
             return
+
         try:
             super().do_GET()
         except:
@@ -40,10 +42,13 @@ class MyHTTPHandler(SimpleHTTPRequestHandler):
 def http_server(server_ip, directory, filename):
     # Set the directory from which to serve files, in the handler
     handler = functools.partial(MyHTTPHandler, directory=directory)
+
     # Set up the only filename that will be served
     MyHTTPHandler.filename = filename
+    # MyHTTPHandler.extensions_map[".m4a"] = "audio/mp4"
+    # MyHTTPHandler.extensions_map[".aac"] = "audio/aac"
 
-    # Try ports within the range, in sequence
+    # Find an available port by trying ports in sequence
     for port in range(PORT_START, PORT_END + 1):
         try:
             httpd = HTTPServer((server_ip, port), handler)
@@ -53,6 +58,7 @@ def http_server(server_ip, directory, filename):
             logging.info("Web server started")
             return httpd
         except OSError:
+            # Assume this means that the port is in use
             continue
 
     return None
@@ -97,14 +103,29 @@ def play_local_file(speaker, pathname):
     if not path.exists(pathname):
         error_and_exit("File '{}' not found".format(pathname))
         return False
+
     directory, filename = path.split(pathname)
 
-    # Sanitise filename for URL
+    supported_types = ["MP3", "FLAC", "OGG", "WAV"]
+    file_upper = filename.upper()
+
+    for type in supported_types:
+        if file_upper.endswith("." + type):
+            # Supported file type
+            break
+    else:
+        # Unsupported file type
+        error_and_exit(
+            "Unsupported file type; must be one of: {}".format(supported_types)
+        )
+        return False
+
+    # Make filename compatible with URL naming
     url_filename = urllib.parse.quote(filename)
 
     server_ip = get_server_ip(speaker)
     if not server_ip:
-        error_and_exit("Can't determine the server_ip IP address")
+        error_and_exit("Can't determine an IP address for web server")
         return False
     logging.info("Using server IP address: {}".format(server_ip))
 
@@ -114,21 +135,22 @@ def play_local_file(speaker, pathname):
         error_and_exit("Cannot create HTTP server")
         return False
 
+    # Assemble the URI and play it
     uri = "http://" + server_ip + ":" + str(httpd.server_port) + "/" + url_filename
     logging.info("Playing file '{}' from directory '{}'".format(filename, directory))
     logging.info("Playback URI: {}".format(uri))
     speaker.play_uri(uri)
 
-    # Flag that playback is stopped in the event of a CTRL-C
     logging.info("Setting flag to stop playback on signal")
     set_speaker_playing_local_file(speaker)
 
-    # Wait until the track has finished, then shut down the
-    # web server
     logging.info("Waiting for playback to stop")
     wait_until_stopped(speaker)
+
     logging.info("Playback stopped ... terminating web server")
     httpd.shutdown()
+
     logging.info("Web server thread terminated")
     set_speaker_playing_local_file(None)
+
     return True
