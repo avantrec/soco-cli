@@ -217,8 +217,15 @@ def sig_handler(signal_received, frame):
     # Exit silently without stack dump
     logging.info("Caught signal, exiting.")
     print(" CTRL-C ... exiting.")
+
     if speaker_playing_local_file:
+        logging.info(
+            "Speaker '{}': 'play_file' active ... stopping".format(
+                speaker_playing_local_file.player_name
+            )
+        )
         speaker_playing_local_file.stop()
+
     # ToDo: Temporary for now; hard kill required to get out of 'wait_for_stopped'
     if use_sigterm:
         os.kill(os.getpid(), SIGTERM)

@@ -45,7 +45,9 @@ def http_server(server_ip, directory, filename):
 
     # Set up the only filename that will be served
     MyHTTPHandler.filename = filename
-    # MyHTTPHandler.extensions_map[".m4a"] = "audio/mp4"
+
+    # Set up MIME types
+    # MyHTTPHandler.extensions_map[".m4a"] = "audio/x-m4a"
     # MyHTTPHandler.extensions_map[".aac"] = "audio/aac"
 
     # Find an available port by trying ports in sequence
@@ -108,7 +110,6 @@ def play_local_file(speaker, pathname):
 
     supported_types = ["MP3", "FLAC", "OGG", "WAV"]
     file_upper = filename.upper()
-
     for type in supported_types:
         if file_upper.endswith("." + type):
             # Supported file type
@@ -135,13 +136,13 @@ def play_local_file(speaker, pathname):
         error_and_exit("Cannot create HTTP server")
         return False
 
-    # Assemble the URI and play it
+    # Assemble the URI and send to the speaker for playback
     uri = "http://" + server_ip + ":" + str(httpd.server_port) + "/" + url_filename
     logging.info("Playing file '{}' from directory '{}'".format(filename, directory))
     logging.info("Playback URI: {}".format(uri))
     speaker.play_uri(uri)
 
-    logging.info("Setting flag to stop playback on signal")
+    logging.info("Setting flag to stop playback on CTRL-C")
     set_speaker_playing_local_file(speaker)
 
     logging.info("Waiting for playback to stop")
