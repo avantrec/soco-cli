@@ -1,3 +1,4 @@
+v0.1.46   - Fix behaviour of 'play_uri' when playing file URLs
 v0.1.45   - Add 'play_file' action for playback of local audio files
             (Experimental: currently works for MP3, FLAC, OGG and WAV files)
 v0.1.44   - Simplify output format of 'zones' (etc.)
