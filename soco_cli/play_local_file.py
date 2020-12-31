@@ -114,7 +114,6 @@ def play_local_file(speaker, pathname):
             # Supported file type
             break
     else:
-        # Unsupported file type
         error_and_exit(
             "Unsupported file type; must be one of: {}".format(supported_types)
         )
@@ -134,6 +133,11 @@ def play_local_file(speaker, pathname):
     if not httpd:
         error_and_exit("Cannot create HTTP server")
         return False
+
+    # This ensures that other running invocations of 'play_file'
+    # receive their stop events, and terminate.
+    logging.info("Stopping speaker '{}'".format(speaker.player_name))
+    speaker.stop()
 
     # Assemble the URI and send to the speaker for playback
     uri = "http://" + server_ip + ":" + str(httpd.server_port) + "/" + url_filename

@@ -116,7 +116,9 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 If you're running on a host with its firewall enabled, some SoCo-CLI actions require the following incoming ports to be open: **TCP 1400-1499**, **TCP 54000-54099**, and **UDP 1900**.
 
-The TCP/1400 range is used to receive notification events from Sonos players (used in the `wait_stop` action, etc.), the TCP/54000 range is used for the built in web server when playing files from the local filesystem (the `play_file` action). When opening ports, SoCo-CLI will try port numbers in increasing sequence until a free port is found within the range. This allows multiple invocations of SoCo-CLI to run in parallel on the same host.
+The TCP/1400 range is used to receive notification events from Sonos players (used in the `wait_stop` action, etc.), the TCP/54000 range is used for the built in Python web server when playing files from the local filesystem (used in the `play_file` action).
+
+When opening ports, SoCo-CLI will try port numbers starting at the beginning of the range and incrementing by one until a free port is found, up to the limit of the range. This allows multiple invocations of SoCo-CLI to run in parallel on the same host.
 
 UDP port 1900 is used when discovering speakers by name using standard multicast discovery.
 
