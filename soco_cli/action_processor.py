@@ -566,29 +566,16 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
 @one_or_two_parameters
 def play_uri(speaker, action, args, soco_function, use_local_speaker_list):
     uri = args[0]
-    try:
-        # First try the simple case
-        if len(args) == 1:
-            speaker.play_uri(uri)
-        else:
-            # Note that 'title' parameter is ignored in the testing
-            # I've done, but try it anyway
-            speaker.play_uri(uri, title=args[1])
-    except:
-        # Now try setting to Radio
+    title = "" if len(args) == 1 else args[1]
+    for radio in [False, True]:
         try:
-            if len(args) == 1:
-                speaker.play_uri(uri, force_radio=True)
-            else:
-                speaker.play_uri(
-                    uri,
-                    title=args[1],
-                    force_radio=True,
-                )
+            speaker.play_uri(uri, title=title, force_radio=radio)
+            return True
         except:
-            error_and_exit("Failed to play URI: '{}'".format(uri))
-            return False
-    return True
+            continue
+
+    error_and_exit("Failed to play URI: '{}'".format(uri))
+    return False
 
 
 @zero_or_one_parameter
