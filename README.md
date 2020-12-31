@@ -14,7 +14,7 @@
          * [Radio Stations](#radio-stations)
          * [Single Tracks](#single-tracks)
          * [Albums and Playlists](#albums-and-playlists)
-         * [Local Audio Files (Experimental)](#local-audio-files-experimental)
+         * [Local Audio Files](#local-audio-files)
       * [Complete List of Available Actions](#complete-list-of-available-actions)
          * [Volume and EQ Control](#volume-and-eq-control)
          * [Playback Control](#playback-control)
@@ -43,7 +43,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Wed Dec 30 13:42:54 GMT 2020 -->
+<!-- Added by: pwt, at: Thu Dec 31 12:07:41 GMT 2020 -->
 
 <!--te-->
 
@@ -51,13 +51,13 @@
 
 SoCo-CLI is a powerful command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. SoCo-CLI is written entirely in Python and is portable across platforms.
 
-A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speaker states, and to create repeated action sequences using loops.
+A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speaker states, and to create repeated action sequences using loops. Audio files from the local filesystem can be played directly on Sonos.
 
 SoCo-CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
 ## Supported Environments
 
-- Requires Python 3.5 or greater, but Python 3.6+ is required for the `play_file` action.
+- Requires Python 3.5 or greater. (Python 3.6+ is required for the `play_file` action.)
 - Should run on all platforms supported by Python. Tested on various versions of Linux, macOS and Windows.
 - Works with Sonos 'S1' and 'S2' systems, as well as split S1/S2 systems.
 
@@ -82,7 +82,7 @@ As usual, command line arguments containing spaces must be surrounded by quotes:
 
 The `soco` command is also added to the PATH, and can be used as an alias for the `sonos` command if preferred.
 
-Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking any user confirmation; please bear this in mind when manipulating the queue, playlists, etc.
+Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking user confirmation; please bear this in mind when manipulating the queue, playlists, etc.
 
 If you experience any issues with finding your speakers, or if you have multiple Sonos systems ('Households') on your network, please take a look at the [Alternative Discovery](#alternative-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it can be more convenient.
 
@@ -116,7 +116,7 @@ Note that the `sonos-discover` utility (discussed below) can also be used to man
 
 If you're running on a host with its firewall enabled, some SoCo-CLI actions require the following incoming ports to be open: **TCP 1400-1499**, **TCP 54000-54099**, and **UDP 1900**.
 
-The 1400 range is used to receive notification events from Sonos players (used in the `wait_stop` action, etc.), the 54000 range is used for the built in web server when playing files from the local filesystem (the `play_file` action). When opening ports, SoCo-CLI will try port numbers in sequence until a free port is found within the range. This allows multiple invocations of SoCo-CLI to run in parallel on the same host.
+The TCP/1400 range is used to receive notification events from Sonos players (used in the `wait_stop` action, etc.), the TCP/54000 range is used for the built in web server when playing files from the local filesystem (the `play_file` action). When opening ports, SoCo-CLI will try port numbers in increasing sequence until a free port is found within the range. This allows multiple invocations of SoCo-CLI to run in parallel on the same host.
 
 UDP port 1900 is used when discovering speakers by name using standard multicast discovery.
 
@@ -162,7 +162,7 @@ sonos <speaker_name> play_from_queue 24
 
 Albums from local music libraries can also be added to the queue using `sonos <speaker> queue_album <album_name>`. The action returns the queue position of the first track in the album, which can then be played as in the example above:
 
-### Local Audio Files (Experimental)
+### Local Audio Files
 
 It's possible to play local audio files in **MP3, M4A, MP4, FLAC, OGG, and WAV** formats directly on your Sonos speakers using the `play_file` (or `play_local_file`) action. This sets up a temporary local web server on the local host, from which Sonos can access the audio file and play it. The action will not terminate until playback has concluded. Example:
 
@@ -189,8 +189,8 @@ The host running soco-cli must remain switched on and connected to the network d
 - **`loudness <on|off>`**: Sets the loudness setting of the speaker to 'on' or 'off'.
 - **`mute`**: Returns the mute setting of the speaker, 'on' or 'off'.
 - **`mute <on|off>`**: Sets the mute setting of the speaker to 'on' or 'off'.
-- **`night_mode <on|off>`** (or **`night`**): Sets the night mode setting of the speaker to 'on' or 'off' (if applicable).
 - **`night_mode`** (or **`night`**): Returns the night mode setting of the speaker, 'on' or 'off' (if applicable).
+- **`night_mode <on|off>`** (or **`night`**): Sets the night mode setting of the speaker to 'on' or 'off' (if applicable).
 - **`ramp_to_volume <volume>` (or `ramp`)**: Gently raise or reduce the volume to `<volume>`, which is between 0 and 100. Returns the number of seconds to complete the ramp.
 - **`relative_volume <adjustment>` (or `rel_vol`, `rv`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
 - **`treble`**: Returns the treble setting of the speaker, from -10 to 10.
@@ -203,7 +203,7 @@ The host running soco-cli must remain switched on and connected to the network d
 - **`cross_fade`** (or **`crossfade`, `fade`**): Returns the cross fade setting of the speaker, 'on' or 'off'.
 - **`cross_fade <on|off>`** (or **`crossfade`, `fade`**): Sets the cross fade setting of the speaker to 'on' or 'off'.
 - **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise. (Use `state` to check whether the Line-In is actually playing.)
-- **`line_in <on | line_in_speaker | left_input, right_input | line_in_speaker right_input>`**: Switch a speaker to a Line-In input. Playback is started automatically. A speaker can be switched to its own Line-In input (`<on>`), **or** the Line-In input of another `<line_in_speaker>` (if applicable). For the case where there is a stereo pair of Play:5 or Five speakers, the left hand speaker's Line-In source is selected using `left_input` (default), and the right-hand speaker's Line-In input is selected using `right_input`. (Complicated example: `sonos Bedroom line_in Lounge right_input`, switches the Bedroom to the right-hand input of stereo pair in the Lounge, and starts playback.)
+- **`line_in <on | line_in_speaker | left_input, right_input | line_in_speaker right_input>`**: Switch a speaker to a Line-In input. Playback is started automatically. A speaker can be switched to its own Line-In input (`<on>`), **or** the Line-In input of another `<line_in_speaker>` (if applicable). For the case where there is a stereo pair of Play:5 or Five speakers, the left hand speaker's Line-In source is selected using `left_input` (default), and the right-hand speaker's Line-In input is selected using `right_input`. (Complicated example: `sonos Bedroom line_in Lounge right_input`, switches the Bedroom to the right-hand input of the stereo pair in the Lounge, and starts playback.)
 - **`next`**: Move to the next track (if applicable for the current audio source).
 - **`pause`**: Pause playback (if applicable for the audio source).
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
