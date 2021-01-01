@@ -1696,6 +1696,12 @@ def play_m3u(speaker, action, args, soco_function, use_local_speaker_list):
     options = "" if len(args) == 1 else args[1]
     options = options.lower()
 
+    # Check for invalid options
+    invalid = set(options) - set("ps")
+    if invalid:
+        error_and_exit("Invalid option(s) '{}' supplied".format(invalid))
+        return False
+
     if not m3u_file.lower().endswith(".m3u"):
         error_and_exit(
             "Filename '{}' does not end in '.m3u' or '.M3U'".format(m3u_file)
