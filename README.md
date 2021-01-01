@@ -168,11 +168,11 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 
 It's possible to play local audio files in **MP3, M4A, MP4, FLAC, OGG, and WAV** formats directly on your Sonos speakers using the `play_file` (or `play_local_file`) action.
 
-SoCo-CLI establishes a temporary local HTTP server from which the specified audio file can be streamed, and then instructs the speaker to play it. The action will terminate once playback stops. Example:
+SoCo-CLI establishes a temporary internal HTTP server from which the specified audio file can be streamed, and then instructs the speaker to play it. The action will terminate once playback stops. Example:
 
 `sonos Lounge play_file mozart.mp3`
 
-The host running SoCo-CLI must remain switched on and connected to the network during playback. The HTTP server is only active for the duration of the `play_file` action, and will only serve the specified audio file.
+The host running SoCo-CLI must remain switched on and connected to the network during playback, in order to serve the file to the speaker. The internal HTTP server is active only for the duration of the `play_file` action. It will only serve the specified audio file, and only to the specified speaker.
 
 ## Complete List of Available Actions
 

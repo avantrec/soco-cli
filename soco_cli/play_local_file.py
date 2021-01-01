@@ -17,14 +17,23 @@ PORT_END = 54099
 
 class MyHTTPHandler(RangeRequestHandler):
     filename = None
+    speaker_ip = None
 
     def do_GET(self):
         logging.info("Get request received by HTTP server")
 
-        # Only serve the specific file requested on the command line
-        if MyHTTPHandler.filename != self.path.replace("/", ""):
+        # Only serve the specific file requested on the command line,
+        # and only to the specific Sonos speaker IP address
+        if (
+            MyHTTPHandler.filename != self.path.replace("/", "")
+            or self.client_address[0] != MyHTTPHandler.speaker_ip
+        ):
             RangeRequestHandler.send_error(self, code=403, message="Access forbidden")
-            logging.info("Access to '{}' forbidden".format(self.path))
+            logging.info(
+                "Access to '{}' from '{}' forbidden".format(
+                    self.path, self.client_address[0]
+                )
+            )
             return
 
         try:
@@ -38,12 +47,14 @@ class MyHTTPHandler(RangeRequestHandler):
         return
 
 
-def http_server(server_ip, directory, filename):
+def http_server(server_ip, directory, filename, speaker_ip):
     # Set the directory from which to serve files, in the handler
     handler = functools.partial(MyHTTPHandler, directory=directory)
 
-    # Set up the only filename that will be served
+    # Set up the only filename that will be served, and the only IP to which
+    # it will be served
     MyHTTPHandler.filename = filename
+    MyHTTPHandler.speaker_ip = speaker_ip
 
     # Set up MIME types
     # MyHTTPHandler.extensions_map[".m4a"] = "audio/x-m4a"
@@ -129,7 +140,7 @@ def play_local_file(speaker, pathname):
     logging.info("Using server IP address: {}".format(server_ip))
 
     # Start the webserver (runs in a daemon thread)
-    httpd = http_server(server_ip, directory, url_filename)
+    httpd = http_server(server_ip, directory, url_filename, speaker.ip_address)
     if not httpd:
         error_and_exit("Cannot create HTTP server")
         return False
