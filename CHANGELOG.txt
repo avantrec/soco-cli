@@ -1,3 +1,4 @@
+v0.1.47   - Add 'play_m3u' action to play local playlists
 v0.1.46   - Fix behaviour of 'play_uri' when playing file URLs
           - Add support for M4A and MP4 playback using 'play_file'
 v0.1.45   - Add 'play_file' action for playback of local audio files
