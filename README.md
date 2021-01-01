@@ -15,6 +15,7 @@
          * [Single Tracks](#single-tracks)
          * [Albums and Playlists](#albums-and-playlists)
          * [Audio Files on the Local Filesystem](#audio-files-on-the-local-filesystem)
+         * [Local Playlists (M3U Files)](#local-playlists-m3u-files)
       * [Complete List of Available Actions](#complete-list-of-available-actions)
          * [Volume and EQ Control](#volume-and-eq-control)
          * [Playback Control](#playback-control)
@@ -43,7 +44,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Fri Jan  1 09:20:54 GMT 2021 -->
+<!-- Added by: pwt, at: Fri Jan  1 15:20:12 GMT 2021 -->
 
 <!--te-->
 
@@ -172,7 +173,13 @@ SoCo-CLI establishes a temporary internal HTTP server from which the specified a
 
 `sonos Lounge play_file mozart.mp3`
 
-The host running SoCo-CLI must remain switched on and connected to the network during playback, in order to serve the file to the speaker. The internal HTTP server is active only for the duration of the `play_file` action. It will only serve the specified audio file, and only to the specified speaker.
+The host running SoCo-CLI must remain switched on and connected to the network during playback, in order to serve the file to the speaker. The internal HTTP server is active only for the duration of the `play_file` action. For security, it will only serve the specified audio file, and only to the specified speaker.
+
+### Local Playlists (M3U Files)
+
+The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U format. All files in the playlist must be available on the local filesystem.
+
+This feature works by invoking the `play_file` action for each file in the playlist in sequence, so the same rules apply as for `play_file`. Note that this does not create a Sonos queue on the speaker -- the 'queue' is managed locally by SoCo-CLI.
 
 ## Complete List of Available Actions
 
@@ -215,6 +222,7 @@ The host running SoCo-CLI must remain switched on and connected to the network d
 - **`playback`** (or **`state`, `status`**): Returns the current playback state for the speaker.
 - **`play_file <filename>`** (or **`play_local_file`**): Play an MP3, M4A, MP4, FLAC, OGG, or WAV audio file from your computer.
 - **`play_from_queue <track>`** (or **`play_queue`, `pfq`, `pq`**): Play track number `<track>` from the queue. Tracks begin at 1. If `<track>` is omitted, the first item in the queue is played.
+- **`play_m3u <m3u_file>`** (or **`play_local_m3u`**): Plays a local M3U playlist consisting of local audio files (in supported audio formats).  
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE`, `SHUFFLE_REPEAT_ONE`, or `SHUFFLE_NOREPEAT`.
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
 - **`play_uri <uri> <title>` (or `uri`, `pu`)**: Plays the audio object given by the `<uri>` parameter (e.g., a radio stream URL). `<title>` is optional, and if present will be used for the title of the audio stream.

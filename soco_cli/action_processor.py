@@ -4,7 +4,8 @@ import time
 from collections import namedtuple
 from datetime import timedelta
 from distutils.version import StrictVersion
-from os import get_terminal_size
+from os import chdir, get_terminal_size, path
+from pathlib import Path
 from queue import Empty
 from random import randint
 
@@ -14,6 +15,7 @@ import soco.alarms
 import tabulate
 import xmltodict
 
+from .m3u_parser import parse_m3u
 from .play_local_file import play_local_file
 from .speaker_info import print_speaker_table
 from .utils import (
@@ -1688,6 +1690,37 @@ def play_file(speaker, action, args, soco_function, use_local_speaker_list):
     return play_local_file(speaker, args[0])
 
 
+@one_parameter
+def play_m3u(speaker, action, args, soco_function, use_local_speaker_list):
+    m3u_file = args[0]
+    options = "" if len(args) == 1 else args[1]
+
+    if not m3u_file.lower().endswith(".m3u"):
+        error_and_exit("Filename '{}' does not end in '.m3u'".format(m3u_file))
+        return False
+
+    if not path.exists(m3u_file):
+        error_and_exit("File '{}' not found".format(m3u_file))
+        return False
+
+    logging.info("Parsing M3U file '{}'".format(m3u_file))
+    tracks = parse_m3u(m3u_file)
+    if not tracks:
+        error_and_exit("No tracks found in '{}'".format(m3u_file))
+
+    logging.info("Found {} tracks to play".format(len(tracks)))
+
+    directory, _ = path.split(m3u_file)
+    if directory != "":
+        chdir(directory)
+
+    for track in tracks:
+        abs_filename = Path(track.path).absolute()
+        play_local_file(speaker, abs_filename)
+
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -1959,4 +1992,6 @@ actions = {
     "rename": SonosFunction(rename, ""),
     "play_file": SonosFunction(play_file, ""),
     "play_local_file": SonosFunction(play_file, ""),
+    "play_m3u": SonosFunction(play_m3u, ""),
+    "play_local_m3u": SonosFunction(play_m3u, ""),
 }

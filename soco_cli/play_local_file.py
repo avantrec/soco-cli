@@ -1,13 +1,15 @@
 import functools
 import logging
+import urllib.parse
 from http.server import HTTPServer
-from RangeHTTPServer import RangeRequestHandler
 from ipaddress import IPv4Address, IPv4Network
 from os import path
 from queue import Empty
 from threading import Thread
+
 import ifaddr
-import urllib.parse
+from RangeHTTPServer import RangeRequestHandler
+
 from .utils import error_and_exit, set_speaker_playing_local_file
 
 # The port range to use
