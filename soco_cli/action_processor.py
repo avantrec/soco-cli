@@ -7,7 +7,7 @@ from distutils.version import StrictVersion
 from os import chdir, get_terminal_size, path
 from pathlib import Path
 from queue import Empty
-from random import randint
+from random import randint, sample
 
 import requests
 import soco
@@ -16,7 +16,7 @@ import tabulate
 import xmltodict
 
 from .m3u_parser import parse_m3u
-from .play_local_file import play_local_file
+from .play_local_file import is_supported_type, play_local_file
 from .speaker_info import print_speaker_table
 from .utils import (
     convert_to_seconds,
@@ -1690,13 +1690,16 @@ def play_file(speaker, action, args, soco_function, use_local_speaker_list):
     return play_local_file(speaker, args[0])
 
 
-@one_parameter
+@one_or_two_parameters
 def play_m3u(speaker, action, args, soco_function, use_local_speaker_list):
     m3u_file = args[0]
     options = "" if len(args) == 1 else args[1]
+    options = options.lower()
 
     if not m3u_file.lower().endswith(".m3u"):
-        error_and_exit("Filename '{}' does not end in '.m3u'".format(m3u_file))
+        error_and_exit(
+            "Filename '{}' does not end in '.m3u' or '.M3U'".format(m3u_file)
+        )
         return False
 
     if not path.exists(m3u_file):
@@ -1710,12 +1713,34 @@ def play_m3u(speaker, action, args, soco_function, use_local_speaker_list):
 
     logging.info("Found {} tracks to play".format(len(tracks)))
 
+    if "s" in options:
+        logging.info("Shuffling playlist")
+        # For some reason, 'shuffle(tracks)' does not work
+        tracks = sample(tracks, len(tracks))
+
     directory, _ = path.split(m3u_file)
     if directory != "":
         chdir(directory)
 
-    for track in tracks:
-        abs_filename = Path(track.path).absolute()
+    pad = len(str(len(tracks)))
+    for index, track in enumerate(tracks):
+        abs_filename = str(Path(track.path).absolute())
+        logging.info("Convert '{}' to '{}'".format(track.path, abs_filename))
+
+        if not path.exists(abs_filename):
+            print("Error: file not found:", abs_filename)
+            continue
+
+        if not is_supported_type(abs_filename):
+            print("Error: unsupported file type:", abs_filename)
+            continue
+
+        if "p" in options:
+            print(
+                "Playing {} of {}:".format(str(index + 1).zfill(pad), len(tracks)),
+                abs_filename,
+            )
+
         play_local_file(speaker, abs_filename)
 
     return True

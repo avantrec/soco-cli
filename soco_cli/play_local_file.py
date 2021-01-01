@@ -16,6 +16,8 @@ from .utils import error_and_exit, set_speaker_playing_local_file
 PORT_START = 54000
 PORT_END = 54099
 
+SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WAV"]
+
 
 class MyHTTPHandler(RangeRequestHandler):
     filename = None
@@ -110,6 +112,16 @@ def wait_until_stopped(speaker):
             pass
 
 
+def is_supported_type(filename):
+    file_upper = filename.upper()
+    for type in SUPPORTED_TYPES:
+        if file_upper.endswith("." + type):
+            # Supported file type
+            return True
+    else:
+        return False
+
+
 def play_local_file(speaker, pathname):
     # speaker is a SoCo instance
     # pathname is the local file to be played
@@ -120,15 +132,9 @@ def play_local_file(speaker, pathname):
 
     directory, filename = path.split(pathname)
 
-    supported_types = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WAV"]
-    file_upper = filename.upper()
-    for type in supported_types:
-        if file_upper.endswith("." + type):
-            # Supported file type
-            break
-    else:
+    if not is_supported_type(filename):
         error_and_exit(
-            "Unsupported file type; must be one of: {}".format(supported_types)
+            "Unsupported file type; must be one of: {}".format(SUPPORTED_TYPES)
         )
         return False
 
