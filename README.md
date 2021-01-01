@@ -111,13 +111,13 @@ The following options are for use with the alternative discovery mechanism:
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up).
 - **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
 
-Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list. This is the recommended way of using alternative discovery: first run `sonos-discover` first to create the local speaker database, then use `sonos` with the `-l` option to use the local database.
+Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list. This is the recommended way of using alternative discovery: first run `sonos-discover` to create the local speaker database, then use `sonos` with the `-l` option to use the local database when invoking `sonos` actions.
 
 ### Firewall Rules
 
-If you're running on a host with its firewall enabled, some SoCo-CLI actions require the following incoming ports to be open: **TCP 1400-1499**, **TCP 54000-54099**, and **UDP 1900**.
+If you're running on a host with its firewall enabled, note that some SoCo-CLI actions require the following incoming ports to be open: **TCP 1400-1499**, **TCP 54000-54099**, and **UDP 1900**.
 
-The TCP/1400 range is used to receive notification events from Sonos players (used in the `wait_stop` action, etc.), the TCP/54000 range is used for the built in Python web server when playing files from the local filesystem (used in the `play_file` action).
+The TCP/1400 range is used to receive notification events from Sonos players (used in the `wait_stop` action, etc.), the TCP/54000 range is used for the built in Python HTTP server when playing files from the local filesystem (used in the `play_file` action).
 
 When opening ports, SoCo-CLI will try port numbers starting at the beginning of the range and incrementing by one until a free port is found, up to the limit of the range. This allows multiple invocations of SoCo-CLI to run in parallel on the same host.
 
@@ -179,7 +179,7 @@ The host running SoCo-CLI must remain on and connected to the network during pla
 
 The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U format. Files in the playlist should be available on the local filesystem; any that are not will be skipped.
 
-There are options to print the track filenames as they are played, and to shuffle the playlist.
+There are options to print the track filenames as they are played, to shuffle the playlist, and to select a single random track from the playlist.
 
 This feature works by invoking the `play_file` action for each file in the playlist in sequence, so the same rules apply as for `play_file`. Note that this does not create a Sonos queue on the speaker -- the 'queue' is managed locally by SoCo-CLI.
 
@@ -224,7 +224,7 @@ This feature works by invoking the `play_file` action for each file in the playl
 - **`playback`** (or **`state`, `status`**): Returns the current playback state for the speaker.
 - **`play_file <filename>`** (or **`play_local_file`**): Play an MP3, M4A, MP4, FLAC, OGG, or WAV audio file from your computer.
 - **`play_from_queue <track>`** (or **`play_queue`, `pfq`, `pq`**): Play track number `<track>` from the queue. Tracks begin at 1. If `<track>` is omitted, the first item in the queue is played.
-- **`play_m3u <m3u_file> <options>`** (or **`play_local_m3u`**): Plays a local M3U playlist consisting of local audio files (in supported audio formats). Can be followed by options `p` to print each filename before it plays, and/or `s` to shuffle the playlist. (If using multiple options, concatenate them as `ps`.)
+- **`play_m3u <m3u_file> <options>`** (or **`play_local_m3u`**): Plays a local M3U playlist consisting of local audio files (in supported audio formats). Can be followed by options `p` to print each filename before it plays, and/or `s` to shuffle the playlist, or `r` to play a single, random track from the playlist. (If using multiple options, concatenate them: e.g., `ps`.) Example: `sonos Study play_m3u my_playlist.m3u ps`.
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE`, `SHUFFLE_REPEAT_ONE`, or `SHUFFLE_NOREPEAT`.
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
 - **`play_uri <uri> <title>` (or `uri`, `pu`)**: Plays the audio object given by the `<uri>` parameter (e.g., a radio stream URL). `<title>` is optional, and if present will be used for the title of the audio stream.

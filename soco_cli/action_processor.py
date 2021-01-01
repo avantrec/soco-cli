@@ -7,7 +7,7 @@ from distutils.version import StrictVersion
 from os import chdir, get_terminal_size, path
 from pathlib import Path
 from queue import Empty
-from random import randint, sample
+from random import choice, randint, sample
 
 import requests
 import soco
@@ -1697,7 +1697,7 @@ def play_m3u(speaker, action, args, soco_function, use_local_speaker_list):
     options = options.lower()
 
     # Check for invalid options
-    invalid = set(options) - set("ps")
+    invalid = set(options) - set("psr")
     if invalid:
         error_and_exit("Invalid option(s) '{}' supplied".format(invalid))
         return False
@@ -1717,9 +1717,15 @@ def play_m3u(speaker, action, args, soco_function, use_local_speaker_list):
     if not tracks:
         error_and_exit("No tracks found in '{}'".format(m3u_file))
 
-    logging.info("Found {} tracks to play".format(len(tracks)))
+    logging.info("Found {} tracks".format(len(tracks)))
 
-    if "s" in options:
+    if "r" in options:
+        # Choose a single random track
+        track = choice(tracks)
+        tracks = [track]
+        logging.info("Choosing random track: {}".format(track.path))
+
+    elif "s" in options:
         logging.info("Shuffling playlist")
         # For some reason, 'shuffle(tracks)' does not work
         tracks = sample(tracks, len(tracks))
