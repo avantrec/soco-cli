@@ -44,8 +44,9 @@ class MyHTTPHandler(RangeRequestHandler):
 
         try:
             super().do_GET()
-        except:
-            # It's normal to hit exceptions with Sonos. Ignore.
+        except Exception as e:
+            # It's normal to hit some exceptions with Sonos.
+            logging.info("Exception ignored: {}".format(e))
             pass
 
     def log_message(self, format, *args):
