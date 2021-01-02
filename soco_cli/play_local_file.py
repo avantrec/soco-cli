@@ -20,8 +20,10 @@ SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WAV"]
 
 
 class MyHTTPHandler(RangeRequestHandler):
-    filename = None
-    speaker_ip = None
+    def __init__(self, *args, filename=None, speaker_ip=None, **kwargs):
+        self.filename = filename
+        self.speaker_ip = speaker_ip
+        super().__init__(*args, **kwargs)
 
     def do_GET(self):
         logging.info("Get request received by HTTP server")
@@ -29,8 +31,8 @@ class MyHTTPHandler(RangeRequestHandler):
         # Only serve the specific file requested on the command line,
         # and only to the specific Sonos speaker IP address
         if (
-            MyHTTPHandler.filename != self.path.replace("/", "")
-            or self.client_address[0] != MyHTTPHandler.speaker_ip
+            self.path.replace("/", "") != self.filename
+            or self.client_address[0] != self.speaker_ip
         ):
             RangeRequestHandler.send_error(self, code=403, message="Access forbidden")
             logging.info(
@@ -53,14 +55,12 @@ class MyHTTPHandler(RangeRequestHandler):
 
 def http_server(server_ip, directory, filename, speaker_ip):
     # Set the directory from which to serve files, in the handler
-    handler = functools.partial(MyHTTPHandler, directory=directory)
+    # Set the specific filename and client that are authorised
+    handler = functools.partial(
+        MyHTTPHandler, filename=filename, speaker_ip=speaker_ip, directory=directory
+    )
 
-    # Set up the only filename that will be served, and the only IP to which
-    # it will be served
-    MyHTTPHandler.filename = filename
-    MyHTTPHandler.speaker_ip = speaker_ip
-
-    # Set up MIME types
+    # For possible future use: set up MIME types
     # MyHTTPHandler.extensions_map[".m4a"] = "audio/x-m4a"
     # MyHTTPHandler.extensions_map[".aac"] = "audio/aac"
 

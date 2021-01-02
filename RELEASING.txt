@@ -6,7 +6,7 @@
    git checkout master
    git merge next_version
 
-1. Update __version__ in soco_cli/__init__.py
+1. Check __version__ in soco_cli/__init__.py
 2. Commit: git commit -a -m "Version X.Y.Z"
 3. Push: git push
 4. Tag the commit: git tag -a vX.Y.Z -m "Version X.Y.Z"
@@ -16,5 +16,5 @@
 7. git checkout next_version
    git merge master
    git push
-   Add '+' to __version__ in __init__.py
+   Increment __version__ in __init__.py
    start next set of changes

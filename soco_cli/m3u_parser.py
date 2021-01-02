@@ -27,9 +27,9 @@ def parse_m3u(m3u_file):
 
     with open(m3u_file, "r") as infile:
         """
-            All M3U files start with #EXTM3U.
-            If the first line doesn't start with this, we're either
-            not working with an M3U or the file we got is corrupted.
+        All M3U files start with #EXTM3U.
+        If the first line doesn't start with this, we're either
+        not working with an M3U or the file we got is corrupted.
         """
         line = infile.readline()
         if not line.startswith("#EXTM3U"):
