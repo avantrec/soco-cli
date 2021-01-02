@@ -58,7 +58,7 @@ SoCo-CLI aims for an orderly command structure and consistent return values, mak
 
 ## Supported Environments
 
-- Requires Python 3.5 or greater. (Python 3.6+ is required for the `play_file` action.)
+- Requires Python 3.5+ for most functions. Python 3.7+ is required for the `play_file` action.
 - Should run on all platforms supported by Python. Tested on various versions of Linux, macOS and Windows.
 - Works with Sonos 'S1' and 'S2' systems, as well as split S1/S2 systems.
 

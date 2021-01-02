@@ -1,7 +1,7 @@
 import functools
 import logging
 import urllib.parse
-from http.server import HTTPServer
+from http.server import ThreadingHTTPServer
 from ipaddress import IPv4Address, IPv4Network
 from os import path
 from queue import Empty
@@ -67,7 +67,7 @@ def http_server(server_ip, directory, filename, speaker_ip):
     # Find an available port by trying ports in sequence
     for port in range(PORT_START, PORT_END + 1):
         try:
-            httpd = HTTPServer((server_ip, port), handler)
+            httpd = ThreadingHTTPServer((server_ip, port), handler)
             logging.info("Using {}:{} for web server".format(server_ip, port))
             httpd_thread = Thread(target=httpd.serve_forever, daemon=True)
             httpd_thread.start()
@@ -76,8 +76,8 @@ def http_server(server_ip, directory, filename, speaker_ip):
         except OSError:
             # Assume this means that the port is in use
             continue
-
-    return None
+    else:
+        return None
 
 
 def get_server_ip(speaker):
@@ -92,7 +92,8 @@ def get_server_ip(speaker):
                 )
                 if IPv4Address(speaker.ip_address) in network:
                     return ip.ip
-    return None
+    else:
+        return None
 
 
 def wait_until_stopped(speaker):
