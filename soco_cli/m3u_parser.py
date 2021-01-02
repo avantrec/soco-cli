@@ -23,39 +23,29 @@ class Track:
 """
 
 
-def parse_m3u(infile):
-    try:
-        assert type(infile) == "_io.TextIOWrapper"
-    except AssertionError:
-        infile = open(infile, "r")
+def parse_m3u(m3u_file):
 
-    """
-        All M3U files start with #EXTM3U.
-        If the first line doesn't start with this, we're either
-        not working with an M3U or the file we got is corrupted.
-    """
-
-    line = infile.readline()
-    if not line.startswith("#EXTM3U"):
-        return
-
-    # initialize playlist variables before reading file
-    playlist = []
-    song = Track(None, None, None)
-
-    for line in infile:
-        line = line.strip()
-        if line.startswith("#EXTINF:"):
-            # pull length and title from #EXTINF line
-            length, title = line.split("#EXTINF:")[1].split(",", 1)
-            song = Track(length, title, None)
-        elif len(line) != 0:
-            # pull song path from all other, non-blank lines
-            song.path = line
-            playlist.append(song)
-            # reset the song variable so it doesn't use the same EXTINF more than once
-            song = Track(None, None, None)
-
-    infile.close()
-
-    return playlist
+    with open(m3u_file, "r") as infile:
+        """
+            All M3U files start with #EXTM3U.
+            If the first line doesn't start with this, we're either
+            not working with an M3U or the file we got is corrupted.
+        """
+        line = infile.readline()
+        if not line.startswith("#EXTM3U"):
+            return
+        playlist = []
+        song = Track(None, None, None)
+        for line in infile:
+            line = line.strip()
+            if line.startswith("#EXTINF:"):
+                # pull length and title from #EXTINF line
+                length, title = line.split("#EXTINF:")[1].split(",", 1)
+                song = Track(length, title, None)
+            elif len(line) != 0:
+                # pull song path from all other, non-blank lines
+                song.path = line
+                playlist.append(song)
+                # reset the song variable so it doesn't use the same EXTINF more than once
+                song = Track(None, None, None)
+        return playlist

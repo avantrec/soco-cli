@@ -177,7 +177,7 @@ The host running SoCo-CLI must remain on and connected to the network during pla
 
 ### Local Playlists (M3U Files)
 
-The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U format. Files in the playlist should be available on the local filesystem; any that are not will be skipped.
+The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U (or M3U8) format. Files in the playlist should be available on the local filesystem; any that are not will be skipped.
 
 There are options to print the track filenames as they are played, to shuffle the playlist, and to select a single random track from the playlist.
 
@@ -224,7 +224,7 @@ This feature works by invoking the `play_file` action for each file in the playl
 - **`playback`** (or **`state`, `status`**): Returns the current playback state for the speaker.
 - **`play_file <filename>`** (or **`play_local_file`**): Play an MP3, M4A, MP4, FLAC, OGG, or WAV audio file from your computer.
 - **`play_from_queue <track>`** (or **`play_queue`, `pfq`, `pq`**): Play track number `<track>` from the queue. Tracks begin at 1. If `<track>` is omitted, the first item in the queue is played.
-- **`play_m3u <m3u_file> <options>`** (or **`play_local_m3u`**): Plays a local M3U playlist consisting of local audio files (in supported audio formats). Can be followed by options `p` to print each filename before it plays, and/or `s` to shuffle the playlist, or `r` to play a single, random track from the playlist. (If using multiple options, concatenate them: e.g., `ps`.) Example: `sonos Study play_m3u my_playlist.m3u ps`.
+- **`play_m3u <m3u_file> <options>`** (or **`play_local_m3u`**): Plays a local M3U/M3U8 playlist consisting of local audio files (in supported audio formats). Can be followed by options `p` to print each filename before it plays, and/or `s` to shuffle the playlist, or `r` to play a single, random track from the playlist. (If using multiple options, concatenate them: e.g., `ps`.) Example: `sonos Study play_m3u my_playlist.m3u ps`.
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE`, `SHUFFLE_REPEAT_ONE`, or `SHUFFLE_NOREPEAT`.
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
 - **`play_uri <uri> <title>` (or `uri`, `pu`)**: Plays the audio object given by the `<uri>` parameter (e.g., a radio stream URL). `<title>` is optional, and if present will be used for the title of the audio stream.
