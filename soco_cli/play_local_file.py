@@ -27,6 +27,7 @@ class MyHTTPHandler(RangeRequestHandler):
 
     def do_GET(self):
         logging.info("Get request received by HTTP server")
+
         # Only serve the specific file requested on the command line,
         # and only to the specific Sonos speaker IP address
         error = False
@@ -37,9 +38,12 @@ class MyHTTPHandler(RangeRequestHandler):
             logging.info("Access from IP '{}' forbidden".format(self.client_address[0]))
             error = True
         if error:
-            RangeRequestHandler.send_error(self, code=403, message="Access forbidden")
+            RangeRequestHandler.send_error(
+                self, code=403, message="SoCo-CLI HTTP Server: Access forbidden"
+            )
             return
 
+        # Forward the GET request
         try:
             super().do_GET()
         except Exception as e:
@@ -54,7 +58,7 @@ class MyHTTPHandler(RangeRequestHandler):
 
 def http_server(server_ip, directory, filename, speaker_ip):
     # Set the directory from which to serve files, in the handler
-    # Set the specific filename and client that are authorised
+    # Set the specific filename and client IP that are authorised
     handler = functools.partial(
         MyHTTPHandler, filename=filename, speaker_ip=speaker_ip, directory=directory
     )
