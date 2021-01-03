@@ -1,9 +1,9 @@
-v0.1.48.1 - Minor fixes & update docs re: problematic AAC playback
+v0.1.49   - Minor fixes & update docs re: AAC playback issues
 v0.1.48   - Add 'r' option to 'play_m3u' to play a single, random track
           - Add support for 'm3u8' playlist files
           - Album art now displayed when using 'play_file'
           - Add WMA file support for 'play_file'
-          - Add AAC file support for 'play_file' (with problems)
+          - Add AAC file support for 'play_file' (with issues)
 v0.1.47   - Add 'play_m3u' action to play local M3U playlists
 v0.1.46   - Fix behaviour of 'play_uri' when playing file URLs
           - Add support for M4A and MP4 playback using 'play_file'
