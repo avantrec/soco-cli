@@ -16,7 +16,7 @@ from .utils import error_and_exit, set_speaker_playing_local_file
 PORT_START = 54000
 PORT_END = 54099
 
-SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WAV", "AAC"]
+SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WMA", "WAV", "AAC"]
 
 
 class MyHTTPHandler(RangeRequestHandler):

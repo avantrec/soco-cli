@@ -167,7 +167,7 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 
 ### Audio Files on the Local Filesystem
 
-It's possible to play local audio files in **MP3, M4A, MP4, FLAC, OGG, and WAV** formats directly on your Sonos speakers using the `play_file` (or `play_local_file`) action. *AAC* files also work, but without metadata, album art, and the ability to seek within the track.
+It's possible to play local audio files in **MP3, M4A, MP4, FLAC, OGG, WMA, and WAV** formats directly on your Sonos speakers using the `play_file` (or `play_local_file`) action. *AAC* files also work, but without metadata, album art, and the ability to seek within the track.
 
 SoCo-CLI establishes a temporary internal HTTP server from which the specified audio file can be streamed, and then instructs the speaker to play it. The action will terminate once playback stops.
 
@@ -222,7 +222,7 @@ This feature works by invoking the `play_file` action for each file in the playl
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
 - **`play`** (or **`start`**): Start playback.
 - **`playback`** (or **`state`, `status`**): Returns the current playback state for the speaker.
-- **`play_file <filename>`** (or **`play_local_file`**): Play an MP3, M4A, MP4, FLAC, OGG, or WAV audio file from your computer. Also AAC files with limitations.
+- **`play_file <filename>`** (or **`play_local_file`**): Play an MP3, M4A, MP4, FLAC, OGG, WMA, or WAV audio file from your computer. Also AAC files with limitations.
 - **`play_from_queue <track>`** (or **`play_queue`, `pfq`, `pq`**): Play track number `<track>` from the queue. Tracks begin at 1. If `<track>` is omitted, the first item in the queue is played.
 - **`play_m3u <m3u_file> <options>`** (or **`play_local_m3u`**): Plays a local M3U/M3U8 playlist consisting of local audio files (in supported audio formats). Can be followed by options `p` to print each filename before it plays, and/or `s` to shuffle the playlist, or `r` to play a single, random track from the playlist. (If using multiple options, concatenate them: e.g., `ps`.) Example: `sonos Study play_m3u my_playlist.m3u ps`.
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE`, `SHUFFLE_REPEAT_ONE`, or `SHUFFLE_NOREPEAT`.
