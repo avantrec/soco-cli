@@ -16,7 +16,7 @@ from .utils import error_and_exit, set_speaker_playing_local_file
 PORT_START = 54000
 PORT_END = 54099
 
-SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WAV"]
+SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WAV", "AAC"]
 
 
 class MyHTTPHandler(RangeRequestHandler):
@@ -101,9 +101,24 @@ def get_server_ip(speaker):
 
 def wait_until_stopped(speaker):
     sub = speaker.avTransport.subscribe(auto_renew=True)
+    # Includes a hack for AAC files, which would be played in a repeat loop.
+    # The speaker never goes into a 'STOPPED' state, so we have
+    # to detect the second shift into a 'TRANSITIONING' state,
+    # which occurs at the end of first playback.
+    transitioning_count = 0
     while True:
         try:
             event = sub.events.get(timeout=1.0)
+            # Special case for AAC files
+            if event.variables["current_track_uri"].startswith("aac:"):
+                if event.variables["transport_state"] == "TRANSITIONING":
+                    if transitioning_count == 1:
+                        sub.unsubscribe()
+                        speaker.stop()
+                        return True
+                    else:
+                        transitioning_count = 1
+            # General case for other file types
             if event.variables["transport_state"] not in ["PLAYING", "TRANSITIONING"]:
                 logging.info(
                     "Speaker '{}' in state '{}'".format(
@@ -162,11 +177,17 @@ def play_local_file(speaker, pathname):
     logging.info("Stopping speaker '{}'".format(speaker.player_name))
     speaker.stop()
 
-    # Assemble the URI and send to the speaker for playback
+    # Assemble the URI
     uri = "http://" + server_ip + ":" + str(httpd.server_port) + "/" + url_filename
     logging.info("Playing file '{}' from directory '{}'".format(filename, directory))
     logging.info("Playback URI: {}".format(uri))
-    speaker.play_uri(uri)
+
+    # Send the URI to the speaker for playback
+    # A special hack is required for AAC files, which have to be treated like radio.
+    if filename.lower().endswith(".aac"):
+        speaker.play_uri(uri, force_radio=True)
+    else:
+        speaker.play_uri(uri)
 
     logging.info("Setting flag to stop playback on CTRL-C")
     set_speaker_playing_local_file(speaker)
