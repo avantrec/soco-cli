@@ -27,19 +27,17 @@ class MyHTTPHandler(RangeRequestHandler):
 
     def do_GET(self):
         logging.info("Get request received by HTTP server")
-
         # Only serve the specific file requested on the command line,
         # and only to the specific Sonos speaker IP address
-        if (
-            self.path.replace("/", "") != self.filename
-            or self.client_address[0] != self.speaker_ip
-        ):
+        error = False
+        if self.path.replace("/", "") != self.filename:
+            logging.info("Access to file '{}' forbidden".format(self.path))
+            error = True
+        if self.client_address[0] != self.speaker_ip:
+            logging.info("Access from IP '{}' forbidden".format(self.client_address[0]))
+            error = True
+        if error:
             RangeRequestHandler.send_error(self, code=403, message="Access forbidden")
-            logging.info(
-                "Access to '{}' from '{}' forbidden".format(
-                    self.path, self.client_address[0]
-                )
-            )
             return
 
         try:
