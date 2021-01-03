@@ -10,7 +10,7 @@ from threading import Thread
 import ifaddr
 from RangeHTTPServer import RangeRequestHandler
 
-from .utils import error_and_exit, set_speaker_playing_local_file
+from .utils import error_and_exit, set_speaker_playing_local_file, set_sigterm
 
 # The port range to use
 PORT_START = 54000
@@ -99,25 +99,29 @@ def get_server_ip(speaker):
         return None
 
 
-def wait_until_stopped(speaker):
+def wait_until_stopped(speaker, aac_file=False):
     sub = speaker.avTransport.subscribe(auto_renew=True)
     # Includes a hack for AAC files, which would be played in a repeat loop.
     # The speaker never goes into a 'STOPPED' state, so we have
-    # to detect the second shift into a 'TRANSITIONING' state,
-    # which occurs at the end of first playback.
-    transitioning_count = 0
+    # to detect the shift into a 'TRANSITIONING' state after playback
+    has_played = False
     while True:
         try:
             event = sub.events.get(timeout=1.0)
             # Special case for AAC files
-            if event.variables["current_track_uri"].startswith("aac:"):
+            if aac_file:
                 if event.variables["transport_state"] == "TRANSITIONING":
-                    if transitioning_count == 1:
+                    logging.info("Transitioning event received")
+                    if has_played:
+                        logging.info("AAC: transition event indicating end of track")
                         sub.unsubscribe()
                         speaker.stop()
                         return True
                     else:
-                        transitioning_count = 1
+                        logging.info("AAC: transition event before playback")
+                if event.variables["transport_state"] == "PLAYING":
+                    has_played = True
+                    logging.info("AAC: has_played set to True")
             # General case for other file types
             if event.variables["transport_state"] not in ["PLAYING", "TRANSITIONING"]:
                 logging.info(
@@ -188,20 +192,27 @@ def play_local_file(speaker, pathname):
     # Send the URI to the speaker for playback
     # A special hack is required for AAC files, which have to be treated like radio.
     if filename.lower().endswith(".aac"):
+        aac_file = True
         speaker.play_uri(uri, force_radio=True)
     else:
+        aac_file = False
         speaker.play_uri(uri)
 
     logging.info("Setting flag to stop playback on CTRL-C")
     set_speaker_playing_local_file(speaker)
 
     logging.info("Waiting for playback to stop")
-    wait_until_stopped(speaker)
+    # SIGTERM enablement experiment for AAC files only
+    if aac_file:
+        set_sigterm(True)
+    wait_until_stopped(speaker, aac_file=aac_file)
+    if aac_file:
+        set_sigterm(False)
 
     logging.info("Playback stopped ... terminating web server")
     httpd.shutdown()
 
-    logging.info("Web server thread terminated")
+    logging.info("Web server terminated")
     set_speaker_playing_local_file(None)
 
     return True
