@@ -20,21 +20,21 @@ SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WMA", "WAV", "AAC"]
 
 
 class MyHTTPHandler(RangeRequestHandler):
-    def __init__(self, *args, filename=None, speaker_ip=None, **kwargs):
+    def __init__(self, *args, filename=None, speaker_ips=None, **kwargs):
         self.filename = filename
-        self.speaker_ip = speaker_ip
+        self.speaker_ips = speaker_ips
         super().__init__(*args, **kwargs)
 
     def do_GET(self):
         logging.info("Get request received by HTTP server")
 
         # Only serve the specific file requested on the command line,
-        # and only to the specific Sonos speaker IP address
+        # and only to Sonos speakers in the Sonos system
         error = False
         if self.path.replace("/", "") != self.filename:
             logging.info("Access to file '{}' forbidden".format(self.path))
             error = True
-        if self.client_address[0] != self.speaker_ip:
+        if self.client_address[0] not in self.speaker_ips:
             logging.info("Access from IP '{}' forbidden".format(self.client_address[0]))
             error = True
         if error:
@@ -56,11 +56,11 @@ class MyHTTPHandler(RangeRequestHandler):
         return
 
 
-def http_server(server_ip, directory, filename, speaker_ip):
+def http_server(server_ip, directory, filename, speaker_ips):
     # Set the directory from which to serve files, in the handler
     # Set the specific filename and client IP that are authorised
     handler = functools.partial(
-        MyHTTPHandler, filename=filename, speaker_ip=speaker_ip, directory=directory
+        MyHTTPHandler, filename=filename, speaker_ips=speaker_ips, directory=directory
     )
 
     # For possible future use: set up MIME types
@@ -167,7 +167,10 @@ def play_local_file(speaker, pathname):
     logging.info("Using server IP address: {}".format(server_ip))
 
     # Start the webserver (runs in a daemon thread)
-    httpd = http_server(server_ip, directory, url_filename, speaker.ip_address)
+    speaker_ips = []
+    for zone in speaker.all_zones:
+        speaker_ips.append(zone.ip_address)
+    httpd = http_server(server_ip, directory, url_filename, speaker_ips)
     if not httpd:
         error_and_exit("Cannot create HTTP server")
         return False

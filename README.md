@@ -173,7 +173,7 @@ SoCo-CLI establishes a temporary internal HTTP server from which the specified a
 
 Example: `sonos Lounge play_file mozart.mp3`
 
-The host running SoCo-CLI must remain on and connected to the network during playback, in order to serve the file to the speaker. The internal HTTP server is active only for the duration of the `play_file` action. For security, it will only serve the specified audio file, and only to the specified speaker.
+The host running SoCo-CLI must remain on and connected to the network during playback, in order to serve the file to the speaker. The internal HTTP server is active only for the duration of the `play_file` action. For security, it will only serve the specified audio file, and only to Sonos speakers' IP addresses.
 
 ### Local Playlists (M3U Files)
 
