@@ -156,10 +156,10 @@ def convert_to_seconds(time_str):
             parts = time_str.split(":")
             if len(parts) == 3:  # HH:MM:SS
                 td = datetime.timedelta(
-                    hours=int(parts[2]), minutes=int(parts[1]), seconds=(parts[0])
+                    hours=int(parts[0]), minutes=int(parts[1]), seconds=int(parts[2])
                 )
             else:  # HH:MM
-                td = datetime.timedelta(hours=int(parts[2]), minutes=int(parts[1]))
+                td = datetime.timedelta(hours=int(parts[0]), minutes=int(parts[1]))
             return td.seconds
         elif time_str.endswith("s"):  # Seconds (explicit)
             duration = float(time_str[:-1])

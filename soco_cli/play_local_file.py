@@ -12,7 +12,7 @@ from RangeHTTPServer import RangeRequestHandler
 
 from .utils import error_and_exit, set_speaker_playing_local_file, set_sigterm
 
-# The port range to use
+# The HTTP server port range to use
 PORT_START = 54000
 PORT_END = 54099
 
@@ -108,6 +108,11 @@ def wait_until_stopped(speaker, aac_file=False):
     while True:
         try:
             event = sub.events.get(timeout=1.0)
+            logging.info(
+                "Transport event: State = '{}'".format(
+                    event.variables["transport_state"]
+                )
+            )
             # Special case for AAC files
             if aac_file:
                 if event.variables["transport_state"] == "TRANSITIONING":
@@ -122,13 +127,9 @@ def wait_until_stopped(speaker, aac_file=False):
                 if event.variables["transport_state"] == "PLAYING":
                     has_played = True
                     logging.info("AAC: has_played set to True")
-            # General case for other file types
-            if event.variables["transport_state"] not in ["PLAYING", "TRANSITIONING"]:
-                logging.info(
-                    "Speaker '{}' in state '{}'".format(
-                        speaker.player_name, event.variables["transport_state"]
-                    )
-                )
+            # General case for other file types. Note that pausing (PAUSED_PLAYBACK)
+            # does not terminate the loop.
+            if event.variables["transport_state"] == "STOPPED":
                 sub.unsubscribe()
                 return True
         except Empty:
@@ -193,7 +194,8 @@ def play_local_file(speaker, pathname):
     # A special hack is required for AAC files, which have to be treated like radio.
     if filename.lower().endswith(".aac"):
         aac_file = True
-        speaker.play_uri(uri, force_radio=True)
+        # speaker.play_uri(uri, force_radio=True)
+        speaker.play_uri(uri)
     else:
         aac_file = False
         speaker.play_uri(uri)
