@@ -108,6 +108,11 @@ def wait_until_stopped(speaker, aac_file=False):
     while True:
         try:
             event = sub.events.get(timeout=1.0)
+            logging.info(
+                "Transport event: State = '{}'".format(
+                    event.variables["transport_state"]
+                )
+            )
             # Special case for AAC files
             if aac_file:
                 if event.variables["transport_state"] == "TRANSITIONING":
@@ -122,13 +127,9 @@ def wait_until_stopped(speaker, aac_file=False):
                 if event.variables["transport_state"] == "PLAYING":
                     has_played = True
                     logging.info("AAC: has_played set to True")
-            # General case for other file types
-            if event.variables["transport_state"] not in ["PLAYING", "TRANSITIONING"]:
-                logging.info(
-                    "Speaker '{}' in state '{}'".format(
-                        speaker.player_name, event.variables["transport_state"]
-                    )
-                )
+            # General case for other file types. Note that pausing (PAUSED_PLAYBACK)
+            # does not terminate the loop.
+            if event.variables["transport_state"] == "STOPPED":
                 sub.unsubscribe()
                 return True
         except Empty:
