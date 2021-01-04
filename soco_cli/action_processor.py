@@ -4,10 +4,9 @@ import time
 from collections import namedtuple
 from datetime import timedelta
 from distutils.version import StrictVersion
-from os import chdir, get_terminal_size, path
-from pathlib import Path
+from os import get_terminal_size
 from queue import Empty
-from random import choice, randint, sample
+from random import randint
 
 import requests
 import soco
@@ -15,8 +14,8 @@ import soco.alarms
 import tabulate
 import xmltodict
 
-from .m3u_parser import parse_m3u
-from .play_local_file import is_supported_type, play_local_file
+from .play_local_file import play_local_file
+from .play_m3u_file import play_m3u_file
 from .speaker_info import print_speaker_table
 from .utils import (
     convert_to_seconds,
@@ -1696,65 +1695,7 @@ def play_m3u(speaker, action, args, soco_function, use_local_speaker_list):
     options = "" if len(args) == 1 else args[1]
     options = options.lower()
 
-    # Check for invalid options
-    invalid = set(options) - set("psr")
-    if invalid:
-        error_and_exit("Invalid option(s) '{}' supplied".format(invalid))
-        return False
-
-    if not (m3u_file.lower().endswith(".m3u") or m3u_file.lower().endswith(".m3u8")):
-        error_and_exit(
-            "Filename '{}' does not end in '.m3u' or '.m3u8'".format(m3u_file)
-        )
-        return False
-
-    if not path.exists(m3u_file):
-        error_and_exit("File '{}' not found".format(m3u_file))
-        return False
-
-    logging.info("Parsing M3U file '{}'".format(m3u_file))
-    tracks = parse_m3u(m3u_file)
-    if not tracks:
-        error_and_exit("No tracks found in '{}'".format(m3u_file))
-
-    logging.info("Found {} tracks".format(len(tracks)))
-
-    if "r" in options:
-        # Choose a single random track
-        track = choice(tracks)
-        tracks = [track]
-        logging.info("Choosing random track: {}".format(track.path))
-
-    elif "s" in options:
-        logging.info("Shuffling playlist")
-        # For some reason, 'shuffle(tracks)' does not work
-        tracks = sample(tracks, len(tracks))
-
-    directory, _ = path.split(m3u_file)
-    if directory != "":
-        chdir(directory)
-
-    pad = len(str(len(tracks)))
-    for index, track in enumerate(tracks):
-        abs_filename = str(Path(track.path).absolute())
-        logging.info("Convert '{}' to '{}'".format(track.path, abs_filename))
-
-        if not path.exists(abs_filename):
-            print("Error: file not found:", abs_filename)
-            continue
-
-        if not is_supported_type(abs_filename):
-            print("Error: unsupported file type:", abs_filename)
-            continue
-
-        if "p" in options:
-            print(
-                "Playing {} of {}:".format(str(index + 1).zfill(pad), len(tracks)),
-                abs_filename,
-            )
-
-        play_local_file(speaker, abs_filename)
-
+    play_m3u_file(speaker, m3u_file, options=options)
     return True
 
 

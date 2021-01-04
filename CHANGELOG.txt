@@ -1,3 +1,5 @@
+v0.1.51   - Add 'interactive mode' option to 'play_m3u' action, allowing the use
+            of 'next track', 'pause', and 'resume' while playing a playlist
 v0.1.50   - Action 'play_file' can now be paused without terminating the server
 v0.1.49   - Minor fixes & update docs re: AAC playback issues
 v0.1.48   - Add 'r' option to 'play_m3u' to play a single, random track
