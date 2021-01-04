@@ -156,7 +156,7 @@ def convert_to_seconds(time_str):
             parts = time_str.split(":")
             if len(parts) == 3:  # HH:MM:SS
                 td = datetime.timedelta(
-                    hours=int(parts[0]), minutes=int(parts[1]), seconds=(parts[2])
+                    hours=int(parts[0]), minutes=int(parts[1]), seconds=int(parts[2])
                 )
             else:  # HH:MM
                 td = datetime.timedelta(hours=int(parts[0]), minutes=int(parts[1]))

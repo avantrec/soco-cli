@@ -12,7 +12,7 @@ from RangeHTTPServer import RangeRequestHandler
 
 from .utils import error_and_exit, set_speaker_playing_local_file, set_sigterm
 
-# The port range to use
+# The HTTP server port range to use
 PORT_START = 54000
 PORT_END = 54099
 
@@ -193,7 +193,8 @@ def play_local_file(speaker, pathname):
     # A special hack is required for AAC files, which have to be treated like radio.
     if filename.lower().endswith(".aac"):
         aac_file = True
-        speaker.play_uri(uri, force_radio=True)
+        # speaker.play_uri(uri, force_radio=True)
+        speaker.play_uri(uri)
     else:
         aac_file = False
         speaker.play_uri(uri)
