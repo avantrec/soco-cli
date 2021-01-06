@@ -1978,7 +1978,7 @@ actions = {
     "remove_playlist": SonosFunction(playlist_operations, "remove_sonos_playlist"),
     "clear_playlist": SonosFunction(playlist_operations, "clear_sonos_playlist"),
     "create_playlist": SonosFunction(playlist_operations, "create_sonos_playlist"),
-    "add_uri_to_queue": SonosFunction(playlist_operations, "add_uri_to_queue"),
+    # "add_uri_to_queue": SonosFunction(playlist_operations, "add_uri_to_queue"),
     "auq": SonosFunction(playlist_operations, "add_uri_to_queue"),
     "remove_from_playlist": SonosFunction(
         remove_from_playlist, "remove_from_sonos_playlist"

@@ -1,4 +1,5 @@
-v0.1.51   - Add action 'add_uri_to_queue'
+v0.1.52   - Bugfix only
+v0.1.51   - Add queue position options to 'add_uri_to_queue'
           - Restore Python 3.5+ compatibility
 v0.1.50   - Action 'play_file' can now be paused without terminating the server
 v0.1.49   - Minor fixes & update docs re: AAC playback issues
