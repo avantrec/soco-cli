@@ -122,7 +122,7 @@ def get_server_ip(speaker):
         return None
 
 
-def wait_until_stopped(speaker, aac_file=False):
+def wait_until_stopped(speaker, uri, aac_file=False):
     sub = speaker.avTransport.subscribe(auto_renew=True)
     # Includes a hack for AAC files, which would be played in a repeat loop.
     # The speaker never goes into a 'STOPPED' state, so we have
@@ -136,6 +136,19 @@ def wait_until_stopped(speaker, aac_file=False):
                     event.variables["transport_state"]
                 )
             )
+
+            # In case there's no STOPPED state event, check that the expected URI
+            # is still playing
+            try:
+                current_uri = event.variables["current_track_meta_data"].get_uri()
+            except:
+                # Can only call get_uri() on certain datatypes
+                current_uri = ""
+            if current_uri != uri:
+                logging.info("Playback URI changed: exit event wait loop")
+                sub.unsubscribe()
+                return True
+
             # Special case for AAC files
             if aac_file:
                 if event.variables["transport_state"] == "TRANSITIONING":
@@ -150,11 +163,15 @@ def wait_until_stopped(speaker, aac_file=False):
                 if event.variables["transport_state"] == "PLAYING":
                     has_played = True
                     logging.info("AAC: has_played set to True")
+
             # General case for other file types. Note that pausing (PAUSED_PLAYBACK)
-            # does not terminate the loop.
+            # does not terminate the loop, to allow playback to be resumed
             if event.variables["transport_state"] == "STOPPED":
+                logging.info("Unsubscribing from transport events and returning")
                 sub.unsubscribe()
+                logging.info("Unsubscribed")
                 return True
+
         except Empty:
             pass
 
@@ -231,10 +248,10 @@ def play_local_file(speaker, pathname):
     # Also needed for Python < 3.7
     if aac_file or not PY37PLUS:
         set_sigterm(True)
-        wait_until_stopped(speaker, aac_file=aac_file)
+        wait_until_stopped(speaker, uri, aac_file=aac_file)
         set_sigterm(False)
     else:
-        wait_until_stopped(speaker, aac_file=aac_file)
+        wait_until_stopped(speaker, uri, aac_file=aac_file)
 
     logging.info("Playback stopped ... terminating web server")
     httpd.shutdown()
