@@ -1,4 +1,4 @@
-v0.1.53   -
+v0.1.53   - Action 'play_file' now supported back to Python 3.5
 v0.1.52   - Bugfix only
 v0.1.51   - Add queue position options to 'add_uri_to_queue'
           - Restore Python 3.5+ compatibility

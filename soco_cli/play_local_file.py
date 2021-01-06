@@ -3,9 +3,10 @@ import logging
 import urllib.parse
 from http.server import HTTPServer
 from ipaddress import IPv4Address, IPv4Network
-from os import path
+from os import chdir, path
 from queue import Empty
 from socketserver import ThreadingMixIn
+from sys import version_info as pyversion
 from threading import Thread
 
 import ifaddr
@@ -19,6 +20,8 @@ PORT_END = 54099
 
 SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WMA", "WAV", "AAC"]
 
+PY37PLUS = True if pyversion.major >= 3 and pyversion.minor >= 7 else False
+
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in separate threads.
@@ -29,10 +32,21 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 
 class MyHTTPHandler(RangeRequestHandler):
-    def __init__(self, *args, filename=None, speaker_ips=None, **kwargs):
-        self.filename = filename
-        self.speaker_ips = speaker_ips
-        super().__init__(*args, **kwargs)
+    # Handle the change to the SimpleHTTPRequestHandler __init__() in Python 3.7+
+    if PY37PLUS:
+        def __init__(self, *args, filename=None, speaker_ips=None, **kwargs):
+            self.filename = filename
+            self.speaker_ips = speaker_ips
+            super().__init__(*args, **kwargs)
+    else:
+        def __init__(self, *args, filename=None, speaker_ips=None, directory="", **kwargs):
+            self.filename = filename
+            self.speaker_ips = speaker_ips
+            try:
+                chdir(directory)
+            except:
+                pass
+            super().__init__(*args, **kwargs)
 
     def do_GET(self):
         logging.info("Get request received by HTTP server")
@@ -214,11 +228,13 @@ def play_local_file(speaker, pathname):
 
     logging.info("Waiting for playback to stop")
     # SIGTERM enablement experiment for AAC files only
-    if aac_file:
+    # Also needed for Python < 3.7
+    if aac_file or not PY37PLUS:
         set_sigterm(True)
-    wait_until_stopped(speaker, aac_file=aac_file)
-    if aac_file:
+        wait_until_stopped(speaker, aac_file=aac_file)
         set_sigterm(False)
+    else:
+        wait_until_stopped(speaker, aac_file=aac_file)
 
     logging.info("Playback stopped ... terminating web server")
     httpd.shutdown()
