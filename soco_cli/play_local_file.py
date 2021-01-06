@@ -1,10 +1,11 @@
 import functools
 import logging
 import urllib.parse
-from http.server import ThreadingHTTPServer
+from http.server import HTTPServer
 from ipaddress import IPv4Address, IPv4Network
 from os import path
 from queue import Empty
+from socketserver import ThreadingMixIn
 from threading import Thread
 
 import ifaddr
@@ -17,6 +18,14 @@ PORT_START = 54000
 PORT_END = 54099
 
 SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WMA", "WAV", "AAC"]
+
+
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    """Handle requests in separate threads.
+
+    Use the MixIn approach instead of the core ThreadingHTTPServer
+    class for backwards compatibility with Python 3.5+
+    """
 
 
 class MyHTTPHandler(RangeRequestHandler):
@@ -70,7 +79,7 @@ def http_server(server_ip, directory, filename, speaker_ips):
     # Find an available port by trying ports in sequence
     for port in range(PORT_START, PORT_END + 1):
         try:
-            httpd = ThreadingHTTPServer((server_ip, port), handler)
+            httpd = ThreadedHTTPServer((server_ip, port), handler)
             logging.info("Using {}:{} for web server".format(server_ip, port))
             httpd_thread = Thread(target=httpd.serve_forever, daemon=True)
             httpd_thread.start()
