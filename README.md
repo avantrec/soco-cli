@@ -179,7 +179,7 @@ The host running SoCo-CLI must remain on and connected to the network during pla
 
 The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U (or M3U8) format. Files in the playlist should be available on the local filesystem; any that are not will be skipped.
 
-There are options to print the track filenames as they are played, to shuffle the playlist, and to select a single random track from the playlist. There is also an **interactive mode** option, which allows tracks to be skipped, paused, and resumed using the keyboard, while the playlist is being played.
+There are options to print the track filenames as they are played, to shuffle the playlist, and to select a single random track from the playlist. There is also an **interactive mode** option, which allows (N)ext track, (P)ause playback, and (R)esume playback, while the playlist is being played.
 
 **Example**: `sonos Lounge play_m3u my_playlist.m3u`, or, to print filenames and invoke interactive mode: `sonos Lounge play_m3u my_playlist.m3u pi`.
 

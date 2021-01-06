@@ -34,12 +34,17 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 class MyHTTPHandler(RangeRequestHandler):
     # Handle the change to the SimpleHTTPRequestHandler __init__() in Python 3.7+
     if PY37PLUS:
+
         def __init__(self, *args, filename=None, speaker_ips=None, **kwargs):
             self.filename = filename
             self.speaker_ips = speaker_ips
             super().__init__(*args, **kwargs)
+
     else:
-        def __init__(self, *args, filename=None, speaker_ips=None, directory="", **kwargs):
+
+        def __init__(
+            self, *args, filename=None, speaker_ips=None, directory="", **kwargs
+        ):
             self.filename = filename
             self.speaker_ips = speaker_ips
             try:

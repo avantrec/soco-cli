@@ -1,6 +1,6 @@
-v0.1.53   - Action 'play_file' now supported back to Python 3.5
-          - Add 'interactive mode' option to 'play_m3u' action, allowing the use
-            of 'next track', 'pause', and 'resume' while playing a playlist
+v0.1.53   - Action 'play_file' now supported all the way back to Python 3.5
+          - Add simple 'interactive mode' option to 'play_m3u' action, allowing
+            'next track', 'pause', and 'resume' while playing a playlist
 v0.1.52   - Bugfix only
 v0.1.51   - Add queue position options to 'add_uri_to_queue'
           - Restore Python 3.5+ compatibility

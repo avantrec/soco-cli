@@ -41,7 +41,8 @@ def interaction_manager(speaker_ip):
     speaker = SoCo(speaker_ip)
     while True:
         try:
-            keypress = wait_for_keypress()
+            # keypress = wait_for_keypress()
+            keypress = input("")[0]
         except:
             keypress = None
             pass
@@ -76,11 +77,13 @@ def interaction_manager(speaker_ip):
             )
         # Windows captures CTRL-C key-presses, so we handle them directly here
         if name == "nt" and keypress == "\x03":
-            logging.info("Windows CTRL-C: Stopping speaker '{}' and exiting".format(speaker.player_name))
+            logging.info(
+                "Windows CTRL-C: Stopping speaker '{}' and exiting".format(
+                    speaker.player_name
+                )
+            )
             speaker.stop()
             os._exit(0)
-
-    # sys.stdin.close()
 
 
 def play_m3u_file(speaker, m3u_file, options=""):
@@ -93,14 +96,14 @@ def play_m3u_file(speaker, m3u_file, options=""):
         error_and_exit("Invalid option(s) '{}' supplied".format(invalid))
         return False
 
+    if not path.exists(m3u_file):
+        error_and_exit("File '{}' not found".format(m3u_file))
+        return False
+
     if not (m3u_file.lower().endswith(".m3u") or m3u_file.lower().endswith(".m3u8")):
         error_and_exit(
             "Filename '{}' does not end in '.m3u' or '.m3u8'".format(m3u_file)
         )
-        return False
-
-    if not path.exists(m3u_file):
-        error_and_exit("File '{}' not found".format(m3u_file))
         return False
 
     logging.info("Parsing M3U file '{}'".format(m3u_file))
@@ -128,7 +131,7 @@ def play_m3u_file(speaker, m3u_file, options=""):
     # Interactive mode
     keypress_process = None
     if "i" in options:
-        print("Interactive mode actions: (N)ext, (P)ause, (R)esume, CTRL-C")
+        print("Interactive mode actions: (N)ext, (P)ause, (R)esume + RETURN")
         try:
             logging.info("Interactive mode ... starting keypress process")
             keypress_process = Process(
