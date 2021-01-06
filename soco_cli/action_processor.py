@@ -1439,12 +1439,19 @@ def queue_item_core(speaker, action, args, type):
                 else:
                     position = int(current_position) + 1
             else:
-                error_and_exit(
-                    "Second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
-                        action
+                try:
+                    position = int(args[1])
+                    position = position if position > 0 else 1
+                    position = position if position <= speaker.queue_size else 0
+                except ValueError:
+                    # Note that 'first/start' option is now redundant, but included
+                    # here for backward compatibility
+                    error_and_exit(
+                        "Second parameter for '{}' must be integer or 'next/play_next'".format(
+                            action
+                        )
                     )
-                )
-                return False
+                    return False
         # Select a random entry from the list, in case there's more than one
         item = items[randint(0, len(items) - 1)]
         print(speaker.add_to_queue(item, position=position))
@@ -1684,6 +1691,38 @@ def rename(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@one_or_two_parameters
+def add_uri_to_queue(speaker, action, args, soco_function, use_local_speaker_list):
+    uri = args[0]
+    position = 0
+    if len(args) == 2:
+        if args[1].lower() in ["first", "start"]:
+            position = 1
+        elif args[1].lower() in ["play_next", "next"]:
+            current_position = speaker.get_current_track_info()["playlist_position"]
+            if current_position == "NOT_IMPLEMENTED":
+                position = 1
+            else:
+                position = int(current_position) + 1
+        else:
+            try:
+                position = int(args[1])
+                position = position if position > 0 else 1
+                position = position if position <= speaker.queue_size else 0
+            except ValueError:
+                # Note that 'first/start' option is now redundant, but included
+                # here for backward compatibility
+                error_and_exit(
+                    "Second parameter for '{}' must be integer or 'next/play_next'".format(
+                        action
+                    )
+                )
+                return False
+
+    print(speaker.add_uri_to_queue(uri, position=position))
+    return True
+
+
 @one_parameter
 def play_file(speaker, action, args, soco_function, use_local_speaker_list):
     return play_local_file(speaker, args[0])
@@ -1880,7 +1919,7 @@ actions = {
     "remove_playlist": SonosFunction(playlist_operations, "remove_sonos_playlist"),
     "clear_playlist": SonosFunction(playlist_operations, "clear_sonos_playlist"),
     "create_playlist": SonosFunction(playlist_operations, "create_sonos_playlist"),
-    "add_uri_to_queue": SonosFunction(playlist_operations, "add_uri_to_queue"),
+    # "add_uri_to_queue": SonosFunction(playlist_operations, "add_uri_to_queue"),
     "auq": SonosFunction(playlist_operations, "add_uri_to_queue"),
     "remove_from_playlist": SonosFunction(
         remove_from_playlist, "remove_from_sonos_playlist"
@@ -1972,4 +2011,5 @@ actions = {
     "play_local_file": SonosFunction(play_file, ""),
     "play_m3u": SonosFunction(play_m3u, ""),
     "play_local_m3u": SonosFunction(play_m3u, ""),
+    "add_uri_to_queue": SonosFunction(add_uri_to_queue, ""),
 }
