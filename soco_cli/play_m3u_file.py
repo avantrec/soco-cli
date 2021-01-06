@@ -168,4 +168,7 @@ def play_m3u_file(speaker, m3u_file, options=""):
     if keypress_process:
         keypress_process.terminate()
 
+    if "p" in options:
+        print("End of playlist")
+
     return True

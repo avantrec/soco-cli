@@ -125,7 +125,7 @@ UDP port 1900 is used when discovering speakers by name using standard multicast
 
 ### Operating on All Speakers: Using `_all_`
 
-There is a limited set of operations where it can be desirable to operate on all speakers, e.g., muting every speaker in the house. This is done by using **`_all_`** as the speaker name. Operations will only be performed on devices that are coordinators (i.e.., the master speakers in any groups or bonded configurations).
+There is a limited set of operations where it can be desirable to operate on all speakers, e.g., muting every speaker in the house. This is done by using **`_all_`** as the speaker name. Operations will only be performed on devices that are coordinators (i.e., the master speakers in any groups or bonded configurations).
 
 If `_all_` is used with the alternative discovery (`--use_local_speaker_list`) mechanism, then the operation is applied to all speakers in all households.
 
