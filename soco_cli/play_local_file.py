@@ -127,6 +127,14 @@ def get_server_ip(speaker):
         return None
 
 
+def event_unsubscribe(sub):
+    # Note ... there are instances where the unsubscribe fails and the
+    # thread hangs. Needs to be explored in SoCo. Timeout required?
+    logging.info("Unsubscribing from transport events and returning")
+    sub.unsubscribe()
+    logging.info("Unsubscribed")
+
+
 def wait_until_stopped(speaker, uri, aac_file=False):
     sub = speaker.avTransport.subscribe(auto_renew=True)
     # Includes a hack for AAC files, which would be played in a repeat loop.
@@ -151,7 +159,7 @@ def wait_until_stopped(speaker, uri, aac_file=False):
                 current_uri = ""
             if current_uri != uri:
                 logging.info("Playback URI changed: exit event wait loop")
-                sub.unsubscribe()
+                event_unsubscribe(sub)
                 return True
 
             # Special case for AAC files
@@ -160,7 +168,7 @@ def wait_until_stopped(speaker, uri, aac_file=False):
                     logging.info("Transitioning event received")
                     if has_played:
                         logging.info("AAC: transition event indicating end of track")
-                        sub.unsubscribe()
+                        event_unsubscribe(sub)
                         speaker.stop()
                         return True
                     else:
@@ -172,11 +180,7 @@ def wait_until_stopped(speaker, uri, aac_file=False):
             # General case for other file types. Note that pausing (PAUSED_PLAYBACK)
             # does not terminate the loop, to allow playback to be resumed
             if event.variables["transport_state"] == "STOPPED":
-                # Note ... there are instances where the unsubscribe fails and the
-                # thread hangs. Needs to be explored in SoCo.
-                logging.info("Unsubscribing from transport events and returning")
-                sub.unsubscribe()
-                logging.info("Unsubscribed")
+                event_unsubscribe(sub)
                 return True
 
         except Empty:
