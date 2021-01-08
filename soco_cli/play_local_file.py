@@ -12,7 +12,7 @@ from threading import Thread
 import ifaddr
 from RangeHTTPServer import RangeRequestHandler
 
-from .utils import error_and_exit, set_speaker_playing_local_file, set_sigterm
+from .utils import error_and_exit, set_sigterm, set_speaker_playing_local_file
 
 # The HTTP server port range to use
 PORT_START = 54000

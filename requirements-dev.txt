@@ -4,3 +4,4 @@ flake8
 wheel
 twine
 isort
+pytest

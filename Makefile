@@ -1,9 +1,10 @@
 .DEFAULT_GOAL := no_op
 
 SRC = setup.py soco_cli/*.py
+TESTS = tests/*.py
 MANIFEST = LICENSE README.md PYPI_README.md MANIFEST.in requirements.txt
 BUILD_DIST = build dist soco_cli.egg-info
-PYCACHE = soco_cli/__pycache__ __pycache__
+PYCACHE = soco_cli/__pycache__ tests/__pycache__ __pycache__
 TOC = README.md.*
 
 build: $(SRC) $(MANIFEST)
@@ -19,10 +20,10 @@ uninstall:
 	pip uninstall -y soco_cli
 
 black: $(SRC)
-	black $(SRC)
+	black $(SRC) $(TESTS)
 
 isort: $(SRC)
-	isort $(SRC)
+	isort $(SRC) $(TESTS)
 
 format: isort black
 
