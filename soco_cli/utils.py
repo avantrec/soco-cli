@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 import pickle
+from platform import python_version
 import sys
 from collections.abc import Sequence
 from signal import SIGTERM
@@ -185,6 +186,7 @@ def convert_true_false(true_or_false, conversion="YesOrNo"):
 def version():
     print("soco-cli version: {}".format(__version__))
     print("soco version:     {}".format(soco.__version__))
+    print("python version:   {}".format(python_version()))
 
 
 def docs():
