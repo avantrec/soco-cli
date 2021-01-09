@@ -1748,9 +1748,13 @@ def add_uri_to_queue(speaker, action, args, soco_function, use_local_speaker_lis
     return True
 
 
-@one_parameter
+@one_or_more_parameters
 def play_file(speaker, action, args, soco_function, use_local_speaker_list):
-    return play_local_file(speaker, args[0])
+    for audio_file in args:
+        result = play_local_file(speaker, audio_file)
+        if not result:
+            return False
+    return True
 
 
 @one_or_two_parameters

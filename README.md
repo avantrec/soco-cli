@@ -175,6 +175,10 @@ SoCo-CLI establishes a temporary internal HTTP server from which the specified a
 
 The host running SoCo-CLI must remain on and connected to the network during playback, in order to serve the file to the speaker. The internal HTTP server is active only for the duration of the `play_file` action. For security reasons, it will only serve the specified audio file, and only to the IP addresses of the Sonos speakers in the system.
 
+Multiple files can be played in sequence by providing multiple audio file names as parameters.
+
+**Example**: `sonos Lounge play_file one.mp3 two.mp3 three.mp3`
+
 ### Local Playlists (M3U Files)
 
 The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U (or M3U8) format. Files in the playlist should be available on the local filesystem; any that are not will be skipped.
@@ -224,7 +228,7 @@ This feature works by invoking the `play_file` action for each file in the playl
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
 - **`play`** (or **`start`**): Start playback.
 - **`playback`** (or **`state`, `status`**): Returns the current playback state for the speaker.
-- **`play_file <filename>`** (or **`play_local_file`**): Play an MP3, M4A, MP4, FLAC, OGG, WMA, or WAV audio file from your computer.
+- **`play_file <filename> ...`** (or **`play_local_file`**): Play MP3, M4A, MP4, FLAC, OGG, WMA, or WAV audio files from your computer. Multiple filenames can be provided and will be played in sequence.
 - **`play_from_queue <track>`** (or **`play_queue`, `pfq`, `pq`**): Play track number `<track>` from the queue. Tracks begin at 1. If `<track>` is omitted, the first item in the queue is played.
 - **`play_m3u <m3u_file> <options>`** (or **`play_local_m3u`**): Plays a local M3U/M3U8 playlist consisting of local audio files (in supported audio formats). Can be followed by options `p` to print each filename before it plays, and/or `s` to shuffle the playlist, or `r` to play a single, random track from the playlist. (If using multiple options, concatenate them: e.g., `ps`.) Example: `sonos Study play_m3u my_playlist.m3u ps`. Add the `i` option to invoke **interactive** mode, which allows use of the keyboard to go to the (N)ext track, to (P)ause, or to (R)esume playback.
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE`, `SHUFFLE_REPEAT_ONE`, or `SHUFFLE_NOREPEAT`.
