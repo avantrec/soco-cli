@@ -359,9 +359,12 @@ Examples:
 ```
 sonos <speaker> wait_start
 sonos <speaker> wait_stop
+sonos <speaker> wait_stop_not_pause
 ```
 
-The **`<speaker> wait_start`** and **`<speaker> wait_stop`** actions are used to pause execution of the sequence of `sonos` commands until a speaker has either started or stopped playback. For example, to reset the volume back to `25` only after the `Bedroom` speaker has stopped playing, use the following command sequence:
+The **`<speaker> wait_start`** and **`<speaker> wait_stop`** actions are used to pause execution of the sequence of `sonos` commands until a speaker has either started or stopped/paused playback. The **`wait_stop_not_pause`** (or **`wsnp`**) action is the same as `wait_stop` but ignores the 'paused' state.
+
+For example, to reset the volume back to `25` only after the `Bedroom` speaker has stopped playing, use the following command sequence:
 
 `sonos Bedroom wait_stop : Bedroom volume 25`
 

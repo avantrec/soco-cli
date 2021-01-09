@@ -1,3 +1,4 @@
+v0.1.54   - Add 'wait_stop_not_pause" action
 v0.1.53   - Action 'play_file' now supported back to Python 3.5
           - Add simple 'interactive mode' option to 'play_m3u' action, allowing
             'next track', 'pause', and 'resume' while playing a playlist

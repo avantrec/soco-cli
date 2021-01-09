@@ -1215,6 +1215,31 @@ def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
             pass
 
 
+@zero_parameters
+def wait_stop_not_pause(speaker, action, args, soco_function, use_local_speaker_list):
+    try:
+        sub = speaker.avTransport.subscribe(auto_renew=True)
+    except Exception as e:
+        error_and_exit("Exception {}".format(e))
+    while True:
+        try:
+            event = sub.events.get(timeout=1.0)
+            if event.variables["transport_state"] not in [
+                "PLAYING",
+                "TRANSITIONING",
+                "PAUSED_PLAYBACK",
+            ]:
+                logging.info(
+                    "Speaker '{}' in state '{}'".format(
+                        speaker.player_name, event.variables["transport_state"]
+                    )
+                )
+                sub.unsubscribe()
+                return True
+        except Empty:
+            pass
+
+
 @one_parameter
 def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_list):
     try:
@@ -2012,4 +2037,6 @@ actions = {
     "play_m3u": SonosFunction(play_m3u, ""),
     "play_local_m3u": SonosFunction(play_m3u, ""),
     "add_uri_to_queue": SonosFunction(add_uri_to_queue, ""),
+    "wait_stop_not_pause": SonosFunction(wait_stop_not_pause, ""),
+    "wsnp": SonosFunction(wait_stop_not_pause, ""),
 }
