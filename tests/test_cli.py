@@ -3,17 +3,24 @@ import unittest
 
 from soco_cli import action_processor as ap
 
+speaker_1 = soco.SoCo("192.168.0.42")
+speaker_2 = soco.SoCo("192.168.0.39")
 
-def test_volume(capsys):
-    speaker = soco.SoCo("192.168.0.42")
-    action = "volume"
-    use_local_speaker_list = True
-    args = ["25"]
-    ap.process_action(speaker, action, args, use_local_speaker_list)
-    assert capsys.readouterr().out == ""
-    args = []
-    ap.process_action(speaker, action, args, use_local_speaker_list)
-    assert capsys.readouterr().out == "25\n"
+tests = [
+    [speaker_1, "volume", ["25"], ""],
+    [speaker_1, "volume", [], "25\n"],
+    [speaker_1, "mute", ["on"], ""],
+    [speaker_1, "mute", [], "on\n"],
+    [speaker_1, "mute", ["off"], ""],
+    [speaker_1, "mute", [], "off\n"],
+]
+
+
+def test_cli(capsys):
+    for test in tests:
+        ap.process_action(test[0], test[1], test[2], True)
+        out, err = capsys.readouterr()
+        assert out == test[3]
 
 
 # class TestVolEQ(unittest.TestCase):
@@ -23,5 +30,5 @@ def test_volume(capsys):
 #         captured = capsys
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
