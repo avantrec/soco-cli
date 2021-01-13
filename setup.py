@@ -27,6 +27,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
+        "Development Status :: 4 - Beta",
     ],
     python_requires=">=3.5",
     install_requires=REQUIREMENTS,
