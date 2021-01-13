@@ -283,9 +283,10 @@ class Speakers:
         thread_list = []
         self._speakers = []
 
-        # THIS WILL STOP WORKING IN SOCO 0.21+
+        # THIS WILL STOP WORKING IN SOCO 0.21+, and will no longer be required
         # Disable SoCo caching to prevent problems caused by multiple households
-        soco.core.zone_group_state_shared_cache.enabled = False
+        if int(soco.__version__.split(".")[1]) < 21:
+            soco.core.zone_group_state_shared_cache.enabled = False
 
         # Create parallel threads to scan the IP range
         threads = self._network_threads

@@ -1,4 +1,4 @@
-soco == 0.20
+soco >= 0.20
 ifaddr
 tabulate
 requests
