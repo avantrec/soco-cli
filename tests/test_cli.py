@@ -13,6 +13,12 @@ tests = [
     [speaker_1, "mute", [], "on\n"],
     [speaker_1, "mute", ["off"], ""],
     [speaker_1, "mute", [], "off\n"],
+    [speaker_1, "bass", ["0"], ""],
+    [speaker_1, "bass", [], "0\n"],
+    [speaker_1, "loudness", ["off"], ""],
+    [speaker_1, "loudness", [], "off\n"],
+    [speaker_1, "loudness", ["on"], ""],
+    [speaker_1, "loudness", [], "on\n"],
 ]
 
 
