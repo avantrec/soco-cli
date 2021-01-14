@@ -32,7 +32,7 @@
          * [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
          * [Repeating Commands: The loop Actions](#repeating-commands-the-loop-actions)
       * [Conditional Command Execution](#conditional-command-execution)
-      * [Alternative Discovery](#alternative-discovery)
+      * [Cached Discovery](#cached-discovery)
          * [Usage](#usage)
          * [Speaker Naming](#speaker-naming)
          * [Refreshing the Local Speaker List](#refreshing-the-local-speaker-list)
@@ -44,7 +44,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Fri Jan  1 15:20:12 GMT 2021 -->
+<!-- Added by: pwt, at: Thu Jan 14 16:27:50 GMT 2021 -->
 
 <!--te-->
 
@@ -85,7 +85,7 @@ The `soco` command is also added to the PATH, and can be used as an alias for th
 
 Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking user confirmation; please bear this in mind when manipulating the queue, playlists, etc.
 
-If you experience any issues with finding your speakers, or if you have multiple Sonos systems ('Households') on your network, please take a look at the [Alternative Discovery](#alternative-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it can be more convenient.
+SoCo-CLI will try a number of approaches to find a speaker by name, which escalate in cost until the speaker is discovered. If SoCo-CLI seems slow to find speakers, please take a look at the [Cached Discovery](#cached-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it can be more convenient.
 
 ### Simple Usage Examples
 
@@ -103,7 +103,7 @@ If you experience any issues with finding your speakers, or if you have multiple
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
-The following options are for use with the alternative discovery mechanism:
+The following options are for use with the cached discovery mechanism:
 
 - **`--use-local-speaker-list, -l`**: Use the local speaker list instead of SoCo discovery. The speaker list will first be created and saved if it doesn't already exist.
 - **`--refresh-local-speaker-list, -r`**: In conjunction with the `-l` option, the speaker list will be regenerated and saved.
@@ -111,7 +111,7 @@ The following options are for use with the alternative discovery mechanism:
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up).
 - **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
 
-Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list. This is the recommended way of using alternative discovery: first run `sonos-discover` to create the local speaker database, then use `sonos` with the `-l` option to use the local database when invoking `sonos` actions.
+Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list. This is the recommended way of using cached discovery: first run `sonos-discover` to create the local speaker database, then use `sonos` with the `-l` option to use the local database when invoking `sonos` actions.
 
 ### Firewall Rules
 
@@ -127,7 +127,7 @@ UDP port 1900 is used when discovering speakers by name using standard multicast
 
 There is a limited set of operations where it can be desirable to operate on all speakers, e.g., muting every speaker in the house. This is done by using **`_all_`** as the speaker name. Operations will only be performed on devices that are coordinators (i.e., the master speakers in any groups or bonded configurations).
 
-If `_all_` is used with the alternative discovery (`--use_local_speaker_list`) mechanism, then the operation is applied to all speakers in all households.
+If `_all_` is used with the cached discovery (`--use_local_speaker_list`) mechanism, then the operation is applied to all speakers in all households.
 
 **Examples**: `sonos _all_ mute on` and `sonos _all_ relative_volume -10`.
 
@@ -442,27 +442,17 @@ No action will be taken if the speaker is playing, and the command will terminat
 
 Similarly, the `if_playing` modifier will execute the action that follows it only if the speaker is currently playing.
 
-## Alternative Discovery
+## Cached Discovery
 
-By default, SoCo-CLI uses the speaker discovery mechanisms in SoCo, which uses the native Sonos SSDP multicast process to discover Sonos devices, and then to look up speakers by their name.
+By default, SoCo-CLI uses the speaker discovery mechanisms in SoCo, which uses the native Sonos SSDP multicast process to discover Sonos devices, and then to look up speakers by their name. If this fails, SoCo-CLI will fall back to scanning every IP address on your local network(s) to find the speaker. It's likely to be doing this if your network contains multiple Sonos systems (multiple 'households'), or if the network has problems with multicast forwarding.
 
-SoCo-CLI also provides an alternative discovery process, which works by scanning the network(s) to which your device is attached, and generating and saving a list of Sonos speaker names and other speaker information.
+This can be slower than is desirable, so SoCo-CLI also provides an alternative process that scans the complete local network for Sonos devices, and caches the results in a local file for use in future operations.
 
-There are three reasons why you might want to use this alternative mechanism:
-
-1. On some networks, particularly when using WiFi, multicast forwarding does not work properly. This blocks normal SoCo speaker discovery.
-
-2. If there are two Sonos systems on the same network, for example when there is a 'split' S1/S2 system, normal SoCo discovery will find only one of the systems (randomly), which may not be the system that includes the speaker to be controlled. In this case, discovery will fail.
-
-3. It's often faster and more convenient to use the local cached speaker list. For example, in terms of convenience, speaker name matches can be case insensitive and can match on substrings.
-
-The disadvantage of using the alternative discovery mechanism is that the speaker list can become stale, requiring a manual refresh.
-
-Note that it's always possible to avoid any kind of discovery step simply by using a speaker's IP address directly.
+So, it's often faster and more convenient to use the local cached speaker list. Also, in terms of convenience, speaker name matches can be case insensitive and can match on substrings.  The disadvantage of using the cached discovery mechanism is that the speaker list can become stale, requiring a manual refresh.
 
 ### Usage
 
-To use this discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. A local speaker list is stored in `<your_home_directory>/.soco-cli/` for use with future invocations of the `sonos` command.
+To use the cached discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. A local speaker list is stored in `<your_home_directory>/.soco-cli/` for use with future invocations of the `sonos` command.
 
 **Example:** `sonos -l "living room" volume 50` uses the local speaker database to look up the "living room" speaker.
 

@@ -1,4 +1,7 @@
-v0.2.00   - Requires SoCo v0.21
+v0.2.00   - Requires SoCo v0.21, and benefits from some big improvements
+          - If a speaker name is not found, discovery will now fall back to
+            scanning the network for a matching speaker
+          - 'Alternative Discovery' is now referred to as 'Cached Discovery'
           - Add 'buttons' action to inspect/change whether speaker buttons
             are enabled
           - Add 'fixed_volume' action to inspect/change whether the Fixed

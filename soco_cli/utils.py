@@ -316,7 +316,11 @@ def get_speaker(name, local=False):
         return speaker_list.find(name)
     else:
         logging.info("Using SoCo speaker discovery")
-        return soco.discovery.by_name(name)
+        speaker = soco.discovery.by_name(name, allow_network_scan=True)
+        if not speaker:
+            logging.info("Speaker not found ... trying network scan")
+            speaker = soco.discovery.scan_network_get_by_name(name)
+        return speaker
 
 
 def get_right_hand_speaker(left_hand_speaker):
