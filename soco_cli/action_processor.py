@@ -1809,6 +1809,32 @@ def fixed_volume(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_or_one_parameter
+def trueplay(speaker, action, args, soco_function, use_local_speaker_list):
+    """Enable or disable whether a Trueplay profile is enabled"""
+    np = len(args)
+    if np == 0:
+        state = "on" if speaker.trueplay else "off"
+        print(state)
+    elif np == 1:
+        arg = args[0].lower()
+        try:
+            if arg == "on":
+                speaker.trueplay = True
+            elif arg == "off":
+                speaker.trueplay = False
+            else:
+                parameter_type_error(action, "on|off")
+        except:
+            error_and_exit(
+                "No Trueplay profile available for '{}' (or Trueplay not supported)".format(
+                    speaker.player_name
+                )
+            )
+            return False
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2087,4 +2113,5 @@ actions = {
     "wsnp": SonosFunction(wait_stop_not_pause, ""),
     "buttons": SonosFunction(buttons, ""),
     "fixed_volume": SonosFunction(fixed_volume, ""),
+    "trueplay": SonosFunction(trueplay, ""),
 }

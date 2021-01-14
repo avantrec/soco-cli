@@ -216,6 +216,8 @@ This feature works by invoking the `play_file` action for each file in the playl
 - **`relative_volume <adjustment>` (or `rel_vol`, `rv`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
 - **`treble`**: Returns the treble setting of the speaker, from -10 to 10.
 - **`treble <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.
+- **`trueplay`**: Returns whether a speaker's Trueplay profile is enabled, 'on' or 'off'.
+- **`trueplay <on|off>`**: Sets whether a speaker's Trueplay profile is enabled. Can only be set to 'on' for speakers that have a current Trueplay tuning profile available.
 - **`volume` (or `vol`)**: Returns the current volume setting of the speaker (0 to 100)
 - **`volume <volume>` (or `vol`)**: Sets the volume of the speaker to `<volume>` (0 to 100).
 
