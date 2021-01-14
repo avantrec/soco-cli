@@ -306,8 +306,10 @@ def set_speaker_list(s):
     speaker_list = s
 
 
-class SpeakerCache():
+SCAN_TIMEOUT = 0.1
 
+
+class SpeakerCache:
     def __init__(self):
         self._cache = set()
 
@@ -316,9 +318,14 @@ class SpeakerCache():
         return True if self._cache else False
 
     def update(self):
-        speakers = soco.discovery.scan_network(multi_household=True)
+        speakers = soco.discovery.scan_network(
+            multi_household=True, scan_timeout=SCAN_TIMEOUT
+        )
         if speakers:
+            logging.info("Adding speakers to cache")
             self._cache = speakers
+        else:
+            logging.info("No speakers found to cache")
         return None
 
     def add(self, speaker):
@@ -370,7 +377,9 @@ def get_speaker(name, local=False):
             speaker = cache.find_indirect(name)
         if not speaker:
             logging.info("Trying discovery_by_name with network scan fallback")
-            speaker = soco.discovery.by_name(name, allow_network_scan=True)
+            speaker = soco.discovery.by_name(
+                name, allow_network_scan=True, scan_timeout=SCAN_TIMEOUT
+            )
             if speaker:
                 cache.add(speaker)
         if not speaker:
