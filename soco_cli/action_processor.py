@@ -1784,6 +1784,31 @@ def buttons(speaker, action, args, soco_function, use_local_speaker_list):
             parameter_type_error(action, "on|off")
     return True
 
+
+@zero_or_one_parameter
+def fixed_volume(speaker, action, args, soco_function, use_local_speaker_list):
+    """Enable or disable whether a Connect or Port has its Fixed Volume set"""
+    np = len(args)
+    if np == 0:
+        state = "on" if speaker.fixed_volume else "off"
+        print(state)
+    elif np == 1:
+        arg = args[0].lower()
+        try:
+            if arg == "on":
+                speaker.fixed_volume = True
+            elif arg == "off":
+                speaker.fixed_volume = False
+            else:
+                parameter_type_error(action, "on|off")
+        except:
+            error_and_exit(
+                "Fixed Volume feature not supported by '{}'".format(speaker.player_name)
+            )
+            return False
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2061,4 +2086,5 @@ actions = {
     "wait_stop_not_pause": SonosFunction(wait_stop_not_pause, ""),
     "wsnp": SonosFunction(wait_stop_not_pause, ""),
     "buttons": SonosFunction(buttons, ""),
+    "fixed_volume": SonosFunction(fixed_volume, ""),
 }
