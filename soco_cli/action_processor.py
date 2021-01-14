@@ -1767,6 +1767,23 @@ def play_m3u(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_or_one_parameter
+def buttons(speaker, action, args, soco_function, use_local_speaker_list):
+    """Enable or disable a speaker's buttons"""
+    np = len(args)
+    if np == 0:
+        state = "on" if speaker.buttons_enabled else "off"
+        print(state)
+    elif np == 1:
+        arg = args[0].lower()
+        if arg == "on":
+            speaker.buttons_enabled = True
+        elif arg == "off":
+            speaker.buttons_enabled = False
+        else:
+            parameter_type_error(action, "on|off")
+    return True
+
 def process_action(speaker, action, args, use_local_speaker_list):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2043,4 +2060,5 @@ actions = {
     "add_uri_to_queue": SonosFunction(add_uri_to_queue, ""),
     "wait_stop_not_pause": SonosFunction(wait_stop_not_pause, ""),
     "wsnp": SonosFunction(wait_stop_not_pause, ""),
+    "buttons": SonosFunction(buttons, ""),
 }
