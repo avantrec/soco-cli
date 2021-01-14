@@ -1,4 +1,4 @@
-v0.2.00   - Requires SoCo v0.21, and benefits from some big improvements
+v0.2.00   - Requires SoCo v0.21, and benefits from its big improvements
           - If a speaker name is not found, discovery will now fall back to
             scanning the network for a matching speaker
           - 'Alternative Discovery' is now referred to as 'Cached Discovery'

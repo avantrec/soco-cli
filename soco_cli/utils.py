@@ -306,20 +306,81 @@ def set_speaker_list(s):
     speaker_list = s
 
 
+class SpeakerCache():
+
+    def __init__(self):
+        self._cache = set()
+
+    @property
+    def exists(self):
+        return True if self._cache else False
+
+    def update(self):
+        speakers = soco.discovery.scan_network(multi_household=True)
+        if speakers:
+            self._cache = speakers
+        return None
+
+    def add(self, speaker):
+        logging.info("Adding speaker to cache")
+        self._cache.add(speaker)
+        return None
+
+    def find_indirect(self, name):
+        for cached in self._cache:
+            for speaker in cached.visible_zones:
+                if speaker.player_name == name:
+                    return speaker
+        return None
+
+    def find(self, name):
+        for speaker in self._cache:
+            if speaker.player_name == name:
+                return speaker
+        else:
+            return None
+
+
+# Single instance of the speaker cache
+cache = SpeakerCache()
+
+
 def get_speaker(name, local=False):
-    # Allow the use of an IP address even if 'local' is specified
+    # Use an IP address
+    # (Allow the use of an IP address even if 'local' is specified)
     if Speakers.is_ipv4_address(name):
         logging.info("Using IP address instead of speaker name")
         return soco.SoCo(name)
+
+    # Use the local speaker list
     if local:
         logging.info("Using local speaker list")
         return speaker_list.find(name)
+
+    # Use discovery
     else:
-        logging.info("Using SoCo speaker discovery")
-        speaker = soco.discovery.by_name(name, allow_network_scan=True)
+        # Try various lookup methods in order of expense,
+        # and cache results where possible
+        speaker = None
         if not speaker:
-            logging.info("Speaker not found ... trying network scan")
-            speaker = soco.discovery.scan_network_get_by_name(name)
+            logging.info("Trying direct cache lookup")
+            speaker = cache.find(name)
+        if not speaker:
+            logging.info("Trying indirect cache lookup")
+            speaker = cache.find_indirect(name)
+        if not speaker:
+            logging.info("Trying discovery_by_name with network scan fallback")
+            speaker = soco.discovery.by_name(name, allow_network_scan=True)
+            if speaker:
+                cache.add(speaker)
+        if not speaker:
+            logging.info("Trying full multi-household network scan")
+            cache.update()
+            speaker = cache.find(name)
+        if speaker:
+            logging.info("Successful speaker discovery")
+        else:
+            logging.info("Failed to discover speaker")
         return speaker
 
 
