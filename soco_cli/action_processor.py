@@ -7,6 +7,7 @@ from distutils.version import StrictVersion
 from os import get_terminal_size
 from queue import Empty
 from random import randint
+from soco.exceptions import NotSupportedException
 
 import requests
 import soco
@@ -1669,38 +1670,21 @@ def cue_favourite_radio_station(
 
 @zero_parameters
 def battery(speaker, action, args, soco_function, use_local_speaker_list):
-    info = speaker.get_speaker_info()
-    logging.info("Retrieved speaker info: {}".format(info))
-    if info["model_name"] not in ["Sonos Move"]:
+    try:
+        battery_status = speaker.get_battery_info()
+    except NotSupportedException:
         error_and_exit(
-            "Speaker '{}' doesn't have a battery".format(speaker.player_name)
+            "Battery status not supported by '{}'".format(speaker.player_name)
         )
         return False
-
-    # Retrieve information from the speaker's support URL
-    url = "http://" + speaker.ip_address + ":1400/support/review"
-    try:
-        response = requests.get(url)
     except:
-        error_and_exit("Failed to retrieve speaker information")
-        return False
-    if response.status_code != 200:
-        error_and_exit("Failed to retrieve speaker information")
+        error_and_exit("Unable to retrieve battery status")
         return False
 
-    # Traverse XML to obtain the battery information
-    try:
-        data = xmltodict.parse(response.text)
-        zp_list = data["ZPNetworkInfo"]["ZPSupportInfo"]
-        for zp in zp_list:
-            if zp["ZPInfo"]["IPAddress"] == speaker.ip_address:
-                battery_status = zp["LocalBatteryStatus"]["Data"]
-                for item in battery_status:
-                    print("  {}: {}".format(item["@name"], item["#text"]))
-                return True
-    except:
-        error_and_exit("Error in the information returned by the speaker")
-        return False
+    for key, value in battery_status.items():
+        print("  " + key + ": " + str(value))
+
+    return True
 
 
 @one_parameter
