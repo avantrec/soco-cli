@@ -71,9 +71,9 @@ def main():
     if message:
         error_and_exit(message)
 
-    speaker_list.network_threads = args.network_discovery_threads
-    speaker_list.network_timeout = args.network_discovery_timeout
-    speaker_list.min_netmask = args.min_netmask
+    speaker_list._network_threads = args.network_discovery_threads
+    speaker_list._network_timeout = args.network_discovery_timeout
+    speaker_list._min_netmask = args.min_netmask
 
     try:
         speaker_list.discover()
@@ -82,7 +82,7 @@ def main():
         if saved:
             print("Saved speaker data at: {}\n".format(speaker_list.save_pathname))
         else:
-            print("No speakers found: no speaker data saved/overwritten")
+            print("No speaker data saved or overwritten")
     except Exception as e:
         error_and_exit(str(e))
 

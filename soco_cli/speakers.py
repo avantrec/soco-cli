@@ -2,11 +2,8 @@ import ipaddress
 import logging
 import os
 import pickle
-import socket
-import threading
 from collections import namedtuple
 
-import ifaddr
 import soco
 import tabulate
 
@@ -49,7 +46,6 @@ class Speakers:
         self._network_timeout = network_timeout
         self._min_netmask = min_netmask
         self._speakers = []
-        self._networks = []
 
     def remove_deprecated_pickle_files(self):
         """Remove any older, incompatible versions of the pickle file"""
@@ -179,59 +175,6 @@ class Speakers:
         except ValueError:
             return False
 
-    def find_ipv4_networks(self):
-        """Returns a set of IPv4 networks to which this node is attached."""
-        ipv4_net_list = set()
-        adapters = ifaddr.get_adapters()
-        for adapter in adapters:
-            for ip in adapter.ips:
-                if Speakers.is_ipv4_address(ip.ip):
-                    network_ip = ipaddress.ip_network(ip.ip)
-                    if (
-                        network_ip.is_private
-                        and not network_ip.is_loopback
-                        and not network_ip.is_link_local
-                    ):
-                        # Constrain the size of network that will be searched
-                        netmask = ip.network_prefix
-                        if netmask < self._min_netmask:
-                            logging.info(
-                                "{}: Constraining netmask={} to {}".format(
-                                    ip.ip, ip.network_prefix, self._min_netmask
-                                )
-                            )
-                            netmask = self._min_netmask
-                        network = ipaddress.ip_network(
-                            ip.ip + "/" + str(netmask), False
-                        )
-                        ipv4_net_list.add(network)
-        self._networks = list(ipv4_net_list)
-        logging.info("IPv4 networks to search: {}".format(ipv4_net_list))
-        return ipv4_net_list
-
-    def get_ip_search_list(self):
-        """Returns a set of IP addresses to test"""
-        ip_list = set()
-        for network in self.find_ipv4_networks():
-            for ip_addr in network:
-                ip_list.add(ip_addr)
-        return ip_list
-
-    @staticmethod
-    def check_ip_and_port(ip, port, timeout):
-        """Determine if a port is open"""
-        with (socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as socket_:
-            socket_.settimeout(timeout)
-            if socket_.connect_ex((ip, port)) == 0:
-                return True
-            else:
-                logging.debug(
-                    "Socket connection to {}:{} timed out after {}s".format(
-                        ip, port, timeout
-                    )
-                )
-                return False
-
     @staticmethod
     def get_sonos_device_data(ip_addr):
         """Get information from a Sonos device"""
@@ -250,95 +193,21 @@ class Speakers:
             logging.info("Not a Sonos device: '{}'".format(ip_addr))
             return None
 
-    @staticmethod
-    def discovery_worker(ip_set, socket_timeout, sonos_devices):
-        """Worker thread to pull IP addresses from a set, test if port 1400 is open,
-        and if so pull down the Sonos device data. Return when the list is empty.
-        """
-        # Avoid possible race condition
-        while True:
-            try:
-                ip_addr = ip_set.pop()
-            except KeyError:
-                break
-            try:
-                check = Speakers.check_ip_and_port(str(ip_addr), 1400, socket_timeout)
-            except OSError:
-                # Return the ip address to the set, and break out of this thread
-                # This has the effect of reducing the number of threads running
-                logging.info("OSError exception from socket calls")
-                ip_set.add(ip_addr)
-                break
-            if check:
-                device = Speakers.get_sonos_device_data(ip_addr)
-                if device:
-                    sonos_devices.append(device)
-                    logging.info("Found Sonos device at: {}".format(device.ip_address))
-
     def discover(self):
         """Discover the Sonos speakers on the network(s) to which
         this host is attached."""
 
-        ip_list = self.get_ip_search_list()
-        thread_list = []
-        self._speakers = []
-
-        # THIS WILL STOP WORKING IN SOCO 0.21+, and will no longer be required
-        # Disable SoCo caching to prevent problems caused by multiple households
-        if int(soco.__version__.split(".")[1]) < 21:
-            soco.core.zone_group_state_shared_cache.enabled = False
-
-        # Create parallel threads to scan the IP range
-        threads = self._network_threads
-        if threads > len(ip_list):
-            threads = len(ip_list)
-        logging.info("Searching {} IP addresses".format(len(ip_list)))
-        logging.info("Creating {} threads for network scan".format(threads))
-        logging.info(
-            "Using socket timeout of {}s for port scan".format(self._network_timeout)
+        devices = soco.discovery.scan_network(
+            include_invisible=True,
+            multi_household=True,
+            scan_timeout=self._network_timeout,
+            max_threads=self._network_threads,
+            min_netmask=self._min_netmask,
         )
-        for _ in range(threads):
-            try:
-                # Catch thread creation exceptions
-                thread = threading.Thread(
-                    target=Speakers.discovery_worker,
-                    args=(
-                        ip_list,
-                        self._network_timeout,
-                        self._speakers,
-                    ),
-                )
-                thread.start()
-                thread_list.append(thread)
-            except RuntimeError:
-                logging.info(
-                    "Failed to start new thread no. {}".format(len(thread_list) + 1)
-                )
-                break
 
-        # Wait for all threads to finish before returning
-        for thread in thread_list:
-            thread.join()
-        logging.info("All {} threads exited".format(len(thread_list)))
-
-        # Finally, for each household ID, check that all zones have been recorded
-        # using zone information obtained from Sonos
-        households = []
-        for speaker in self._speakers:
-            if speaker.household_id not in households:
-                households.append(speaker.household_id)
-                try:
-                    for zone in soco.SoCo(speaker.ip_address).all_zones:
-                        device = Speakers.get_sonos_device_data(zone.ip_address)
-                        if device not in self._speakers:
-                            logging.info(
-                                "Group discovery found additional speaker at {}".format(
-                                    device.ip_address
-                                )
-                            )
-                            self._speakers.append(device)
-                except:
-                    pass
+        # Populate the device information for each speaker
+        for device in devices:
+            self._speakers.append(self.get_sonos_device_data(device.ip_address))
 
     def find(self, speaker_name, require_visible=True):
         """Find a speaker by name and return its SoCo object."""
@@ -377,9 +246,6 @@ class Speakers:
         return None
 
     def get_all_speakers(self):
-        # THIS WILL STOP WORKING IN SOCO 0.21+
-        # Disable SoCo caching to prevent problems caused by multiple households
-        soco.core.zone_group_state_shared_cache.enabled = False
         soco_speakers = []
         for speaker in self._speakers:
             soco_speakers.append(soco.SoCo(speaker.ip_address))
@@ -410,10 +276,6 @@ class Speakers:
                 )
             )
             num_devices += 1
-
-        if self._networks:
-            print()
-            print("Networks searched: {}".format(self._networks))
 
         headers = [
             "Room/Zone Name",
