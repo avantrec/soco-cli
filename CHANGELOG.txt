@@ -1,3 +1,4 @@
+v0.2.00   - Requires SoCo v0.21
 v0.1.54   - Add 'wait_stop_not_pause" action
           - Action 'play_file' now accepts multiple files as parameters
 v0.1.53   - Action 'play_file' now supported back to Python 3.5
