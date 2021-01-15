@@ -324,6 +324,7 @@ SCAN_TIMEOUT = 0.1
 
 class SpeakerCache:
     def __init__(self):
+        # _cache contains (soco_instance, speaker_name) tuples
         self._cache = set()
 
     @property
@@ -336,26 +337,27 @@ class SpeakerCache:
         )
         if speakers:
             logging.info("Adding speakers to cache")
-            self._cache = speakers
+            for speaker in speakers:
+                self._cache.add((speaker, speaker.player_name))
         else:
             logging.info("No speakers found to cache")
         return None
 
     def add(self, speaker):
         logging.info("Adding speaker to cache")
-        self._cache.add(speaker)
-        return None
+        self._cache.add((speaker, speaker.player_name))
 
     def find_indirect(self, name):
-        for cached in self._cache:
+        for cached, cached_name in self._cache:
             for speaker in cached.visible_zones:
                 if speaker.player_name == name:
                     return speaker
-        return None
+        else:
+            return None
 
     def find(self, name):
-        for speaker in self._cache:
-            if speaker.player_name == name:
+        for speaker, speaker_name in self._cache:
+            if speaker_name == name:
                 return speaker
         else:
             return None
