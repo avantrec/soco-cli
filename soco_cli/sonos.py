@@ -25,9 +25,6 @@ from .utils import (
     version,
 )
 
-# Temporary Python 3.9 patch until SoCo 0.21 arrives
-Thread.isAlive = Thread.is_alive
-
 # Globals
 pp = pprint.PrettyPrinter(width=100)
 
