@@ -2,15 +2,17 @@ import datetime
 import logging
 import os
 import pickle
-from platform import python_version
 import sys
 from collections.abc import Sequence
+from platform import python_version
 from signal import SIGTERM
 
 import soco
 
 from .__init__ import __version__
 from .speakers import Speakers
+
+EVENT_UNSUB_PAUSE = 0.1
 
 
 # Error handling

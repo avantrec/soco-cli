@@ -8,11 +8,17 @@ from queue import Empty
 from socketserver import ThreadingMixIn
 from sys import version_info as pyversion
 from threading import Thread
+from time import sleep
 
 import ifaddr
 from RangeHTTPServer import RangeRequestHandler
 
-from .utils import error_and_exit, set_sigterm, set_speaker_playing_local_file
+from .utils import (
+    EVENT_UNSUB_PAUSE,
+    error_and_exit,
+    set_sigterm,
+    set_speaker_playing_local_file,
+)
 
 # The HTTP server port range to use
 PORT_START = 54000
@@ -130,7 +136,14 @@ def get_server_ip(speaker):
 def event_unsubscribe(sub):
     # Note ... there are instances where the unsubscribe fails and the
     # thread hangs. Needs to be explored in SoCo. Timeout required?
-    logging.info("Unsubscribing from transport events and returning")
+
+    logging.info(
+        "Unsubscribing from events ... pausing for {}s".format(EVENT_UNSUB_PAUSE)
+    )
+
+    # Inserting a brief pause here prevents lockups on unsubscription
+    sleep(EVENT_UNSUB_PAUSE)
+
     sub.unsubscribe()
     logging.info("Unsubscribed")
 

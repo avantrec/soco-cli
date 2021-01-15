@@ -7,18 +7,19 @@ from distutils.version import StrictVersion
 from os import get_terminal_size
 from queue import Empty
 from random import randint
-from soco.exceptions import NotSupportedException
 
 import requests
 import soco
 import soco.alarms
 import tabulate
 import xmltodict
+from soco.exceptions import NotSupportedException
 
 from .play_local_file import play_local_file
 from .play_m3u_file import play_m3u_file
 from .speaker_info import print_speaker_table
 from .utils import (
+    EVENT_UNSUB_PAUSE,
     convert_to_seconds,
     convert_true_false,
     error_and_exit,
@@ -1195,6 +1196,16 @@ def list_all_playlist_tracks(
     return True
 
 
+def event_unsubscribe(sub):
+    # Brief pause to prevent lockups
+    logging.info(
+        "Unsubscribing from events ... pausing for {}s".format(EVENT_UNSUB_PAUSE)
+    )
+    time.sleep(EVENT_UNSUB_PAUSE)
+    sub.unsubscribe()
+    logging.info("Unsubscribed")
+
+
 @zero_parameters
 def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
     try:
@@ -1210,7 +1221,7 @@ def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
                         speaker.player_name, event.variables["transport_state"]
                     )
                 )
-                sub.unsubscribe()
+                event_unsubscribe(sub)
                 return True
         except Empty:
             pass
@@ -1235,7 +1246,7 @@ def wait_stop_not_pause(speaker, action, args, soco_function, use_local_speaker_
                         speaker.player_name, event.variables["transport_state"]
                     )
                 )
-                sub.unsubscribe()
+                event_unsubscribe(sub)
                 return True
         except Empty:
             pass
@@ -1266,7 +1277,7 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
             )
             if event.variables["transport_state"] not in playing_states:
                 logging.info("Speaker is not in states {}".format(playing_states))
-                sub.unsubscribe()
+                event_unsubscribe(sub)
                 # ToDo: Should really return here and do this some other way ...
                 #       this is what's requiring the SIGKILL
 
@@ -1328,7 +1339,7 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
                         speaker.player_name, event.variables["transport_state"]
                     )
                 )
-                sub.unsubscribe()
+                event_unsubscribe(sub)
                 return True
         except Empty:
             pass
