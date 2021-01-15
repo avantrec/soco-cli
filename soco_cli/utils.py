@@ -6,13 +6,24 @@ import sys
 from collections.abc import Sequence
 from platform import python_version
 from signal import SIGTERM
+from time import sleep
 
 import soco
 
 from .__init__ import __version__
 from .speakers import Speakers
 
-EVENT_UNSUB_PAUSE = 0.1
+
+def event_unsubscribe(sub):
+    # Insert a brief pause before event unsubscription prevents lockups,
+    # by yielding the thread
+    pause_seconds = 0.2
+    logging.info(
+        "Unsubscribing from events ... yield by pausing for {}s".format(pause_seconds)
+    )
+    sleep(pause_seconds)
+    sub.unsubscribe()
+    logging.info("Unsubscribed")
 
 
 # Error handling

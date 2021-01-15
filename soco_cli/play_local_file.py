@@ -8,14 +8,13 @@ from queue import Empty
 from socketserver import ThreadingMixIn
 from sys import version_info as pyversion
 from threading import Thread
-from time import sleep
 
 import ifaddr
 from RangeHTTPServer import RangeRequestHandler
 
 from .utils import (
-    EVENT_UNSUB_PAUSE,
     error_and_exit,
+    event_unsubscribe,
     set_sigterm,
     set_speaker_playing_local_file,
 )
@@ -131,21 +130,6 @@ def get_server_ip(speaker):
                     return ip.ip
     else:
         return None
-
-
-def event_unsubscribe(sub):
-    # Note ... there are instances where the unsubscribe fails and the
-    # thread hangs. Needs to be explored in SoCo. Timeout required?
-
-    logging.info(
-        "Unsubscribing from events ... pausing for {}s".format(EVENT_UNSUB_PAUSE)
-    )
-
-    # Inserting a brief pause here prevents lockups on unsubscription
-    sleep(EVENT_UNSUB_PAUSE)
-
-    sub.unsubscribe()
-    logging.info("Unsubscribed")
 
 
 def wait_until_stopped(speaker, uri, aac_file=False):

@@ -8,21 +8,19 @@ from os import get_terminal_size
 from queue import Empty
 from random import randint
 
-import requests
 import soco
 import soco.alarms
 import tabulate
-import xmltodict
 from soco.exceptions import NotSupportedException
 
 from .play_local_file import play_local_file
 from .play_m3u_file import play_m3u_file
 from .speaker_info import print_speaker_table
 from .utils import (
-    EVENT_UNSUB_PAUSE,
     convert_to_seconds,
     convert_true_false,
     error_and_exit,
+    event_unsubscribe,
     get_right_hand_speaker,
     get_speaker,
     one_or_more_parameters,
@@ -1194,16 +1192,6 @@ def list_all_playlist_tracks(
         print_tracks(tracks)
         print()
     return True
-
-
-def event_unsubscribe(sub):
-    # Brief pause to prevent lockups
-    logging.info(
-        "Unsubscribing from events ... pausing for {}s".format(EVENT_UNSUB_PAUSE)
-    )
-    time.sleep(EVENT_UNSUB_PAUSE)
-    sub.unsubscribe()
-    logging.info("Unsubscribed")
 
 
 @zero_parameters
