@@ -1,5 +1,6 @@
-import soco
 import unittest
+
+import soco
 
 from soco_cli import action_processor as ap
 

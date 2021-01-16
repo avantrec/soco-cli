@@ -11,6 +11,7 @@ from time import sleep
 import soco
 
 from .__init__ import __version__
+from .match_speaker_names import speaker_name_matches
 from .speakers import Speakers
 
 
@@ -319,48 +320,6 @@ def set_speaker_list(s):
     speaker_list = s
 
 
-def speaker_name_matches(name_supplied, name_stored):
-    # Exact match
-    name_stored_original = name_stored
-    if name_supplied == name_stored:
-        logging.info(
-            "Found exact speaker name match for '{}'".format(name_stored_original)
-        )
-        return True
-
-    # Case insensitive match
-    name_supplied = name_supplied.lower()
-    name_stored = name_stored.lower()
-    if name_supplied == name_stored:
-        logging.info(
-            "Found case insensitive speaker name match for '{}'".format(
-                name_stored_original
-            )
-        )
-        return True
-
-    # Normalised apostrophe match
-    name_supplied = name_supplied.replace("’", "'")
-    name_stored = name_stored.replace("’", "'")
-    if name_supplied == name_stored:
-        logging.info(
-            "Found apostrophe-normalised speaker name match for '{}'".format(
-                name_stored_original
-            )
-        )
-        return True
-
-    # Partial match
-    if name_supplied in name_stored:
-        logging.info(
-            "Found partial speaker name match for '{}'".format(name_stored_original)
-        )
-        return True
-
-    # Not found
-    return False
-
-
 SCAN_TIMEOUT = 0.1
 
 
@@ -394,7 +353,10 @@ class SpeakerCache:
         speakers_found_names = set()
         for cached, cached_name in self._cache:
             for speaker in cached.visible_zones:
-                if speaker_name_matches(name, speaker.player_name):
+                match, exact = speaker_name_matches(name, speaker.player_name)
+                if match and exact:
+                    return speaker
+                if match and not exact:
                     speakers_found.add(speaker)
                     speakers_found_names.add(speaker.player_name)
 
@@ -411,15 +373,22 @@ class SpeakerCache:
         speakers_found = set()
         speakers_found_names = set()
         for speaker, speaker_name in self._cache:
-            if speaker_name_matches(name, speaker_name):
+            match, exact = speaker_name_matches(name, speaker_name)
+            if match and exact:
+                return speaker
+            if match and not exact:
                 speakers_found.add(speaker)
-                speakers_found_names.add(speaker.player_name)
+                speakers_found_names.add(speaker_name)
 
         if len(speakers_found) == 1:
             return speakers_found.pop()
 
         elif len(speakers_found) > 1:
-            error_and_exit("Speaker name '{}' is ambiguous within {}".format(name, speakers_found_names))
+            error_and_exit(
+                "Speaker name '{}' is ambiguous within {}".format(
+                    name, speakers_found_names
+                )
+            )
 
         else:
             return None

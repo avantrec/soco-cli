@@ -7,6 +7,8 @@ from collections import namedtuple
 import soco
 import tabulate
 
+from .match_speaker_names import speaker_name_matches
+
 # Type for holding speaker details
 SonosDevice = namedtuple(
     "SonosDevice",
@@ -211,39 +213,34 @@ class Speakers:
 
     def find(self, speaker_name, require_visible=True):
         """Find a speaker by name and return its SoCo object."""
-        # Normalise apostrophes
-        speaker_name = speaker_name.replace("’", "'")
-        # Check for exact match first
+
+        speaker_names = set()
+        return_speaker = None
+
         for speaker in self._speakers:
-            # Normalise apostrophes
-            s = speaker.speaker_name.replace("’", "'")
-            if speaker_name == s:
-                if require_visible:
-                    if speaker.is_visible:
-                        logging.info(
-                            "Found exact speaker name match for '{}'".format(
-                                speaker.speaker_name
-                            )
-                        )
-                        return soco.SoCo(speaker.ip_address)
-                else:
-                    return soco.SoCo(speaker.ip_address)
-        # Check for partial, case insensitive match if no exact match
-        for speaker in self._speakers:
-            # Normalise apostrophes
-            s = speaker.speaker_name.replace("’", "'")
-            if speaker_name.lower() in s.lower():
-                if require_visible:
-                    if speaker.is_visible:
-                        logging.info(
-                            "Found fuzzy speaker name match for '{}'".format(
-                                speaker.speaker_name
-                            )
-                        )
-                        return soco.SoCo(speaker.ip_address)
-                else:
-                    return soco.SoCo(speaker.ip_address)
-        return None
+            if require_visible and not speaker.is_visible:
+                continue
+
+            match, exact = speaker_name_matches(speaker_name, speaker.speaker_name)
+
+            if match and exact:
+                speaker_names.add(speaker.speaker_name)
+                return soco.SoCo(speaker.ip_address)
+
+            if match and not exact:
+                speaker_names.add(speaker.speaker_name)
+                if not return_speaker:
+                    return_speaker = soco.SoCo(speaker.ip_address)
+
+        if len(speaker_names) > 1:
+            print(
+                "Speaker name '{}' is ambiguous within {}".format(
+                    speaker_name, speaker_names
+                )
+            )
+            return None
+
+        return return_speaker
 
     def get_all_speakers(self):
         soco_speakers = []

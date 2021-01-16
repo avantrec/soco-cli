@@ -76,16 +76,16 @@ The installer adds the `sonos` command to the PATH. All commands have the form:
 sonos SPEAKER ACTION <parameters>
 ```
 
-- `SPEAKER` identifies the speaker to operate on, and can be the speaker's Sonos Room (Zone) name or its IPv4 address in dotted decimal format. It's best to use the exact, case sensitive speaker name, but partial, case insensitive names will also be matched, e.g., `kit` will match `Kitchen`. Partial matches must be unambiguous.
+- `SPEAKER` identifies the speaker to operate on, and can be the speaker's Sonos Room (Zone) name or its IPv4 address in dotted decimal format. For performance reasons, using the exact, case-sensitive speaker name is preferred, but partial, case-insensitive names will also be matched, e.g., `kit` will match `Kitchen`. Partial matches must be unambiguous, or an error is returned.
 - `ACTION` is the operation to perform on the speaker. It can take zero or more parameters depending on the operation.
 
-As usual, command line arguments containing spaces must be surrounded by quotes: double quotes work on all OS platforms, while Linux and macOS also support single quotes.
+As usual, command line arguments containing spaces must be surrounded by quotes: double quotes work on all supported OS platforms, while Linux and macOS also support single quotes.
 
 The `soco` command is also added to the PATH, and can be used as an alias for the `sonos` command if preferred.
 
 Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking user confirmation; please bear this in mind when manipulating the queue, playlists, etc.
 
-SoCo-CLI will try a number of approaches to find a speaker by name, which escalate in cost until the speaker is discovered. If SoCo-CLI seems slow to find speakers, please take a look at the [Cached Discovery](#cached-discovery) section below. You may prefer to use this approach anyway, even if normal SoCo discovery works for you, as it can be more convenient.
+SoCo-CLI will try a number of approaches to find a speaker by its name, which escalate in cost until the speaker is discovered or discovery fails. If SoCo-CLI seems slow to find speakers (especially if you have a multi-household Sonos system), please take a look at the generally faster [Cached Discovery](#cached-discovery) method.
 
 ### Simple Usage Examples
 
@@ -444,11 +444,11 @@ Similarly, the `if_playing` modifier will execute the action that follows it onl
 
 ## Cached Discovery
 
-By default, SoCo-CLI uses the speaker discovery mechanisms in SoCo, which uses the native Sonos SSDP multicast process to discover Sonos devices, and then to look up speakers by their name. If this fails, SoCo-CLI will fall back to scanning every IP address on your local network(s) to find the speaker. It's likely to be doing this if your network contains multiple Sonos systems (multiple 'households'), or if the network has problems with multicast forwarding.
+SoCo-CLI uses the full range of speaker discovery mechanisms in SoCo to look up speakers by their names. First, the native Sonos SSDP multicast process is tried.
 
-This can be slower than is desirable, so SoCo-CLI also provides an alternative process that scans the complete local network for Sonos devices, and caches the results in a local file for use in future operations.
+If this fails, SoCo-CLI will try scanning every IP address on your local network(s) to find the speaker; it's likely to be doing this if your network contains multiple Sonos systems (multiple 'households'), or if the network has problems with multicast forwarding. This can be slower than is desirable, so SoCo-CLI also provides an alternative process that scans the complete local network for Sonos devices as a one-off process, and then caches the results in a local file for use in future operations.
 
-So, it's often faster and more convenient to use the local cached speaker list. Also, in terms of convenience, speaker name matches can be case insensitive and can match on substrings.  The disadvantage of using the cached discovery mechanism is that the speaker list can become stale, requiring a manual refresh.
+It's often faster and more convenient to use the local cached speaker list. The disadvantage of using the cached discovery mechanism is that the speaker list can become stale due to speakers being added/removed/renamed, or IP addresses having changed, meaning the cached list must be refreshed. The `sonos-discover` command, discussed below, is a convenient way of doing this.
 
 ### Usage
 
@@ -462,9 +462,9 @@ When executing a sequence of commands, supply the `-l` option only for the first
 
 ### Speaker Naming
 
-When using the local speaker list, speaker naming does not need to be exact. Matching is case insensitive, and matching works on substrings. For example, if you have a speaker named `Front Reception`, then `"front reception"` or just `front` will match. (Be careful not to submit ambiguously matchable speaker names; the first hit will be matched, and may not be the speaker you intend.)
+Speaker naming does not need to be exact. Matching is case-insensitive, and works on substrings. For example, if you have a speaker named `Front Reception`, then `"front reception"` or just `front` will match. If an ambiguously matchable speaker name is supplied then an error will be returned.
 
-Note that if you have speakers with the same names in multiple Sonos systems (Households), you will get inconsistent name matches. It's best to keep speaker names unique within a network (or fall back on using IP addresses instead of speaker names).
+Note that if you have speakers with the same names in multiple Sonos systems (Households), SoCo-CLI will fail because it cannot disambiguate the speakers. Speaker should have unique names within a network (or fall back on using IP addresses instead of speaker names).
 
 ### Refreshing the Local Speaker List
 
