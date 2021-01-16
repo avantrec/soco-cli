@@ -1,6 +1,8 @@
 v0.2.0    - Requires SoCo v0.21, and benefits from its big improvements
           - If a speaker name is not found, discovery will now fall back to
             scanning the network for a matching speaker
+          - Partial, case insensitive matches can now be used for speaker
+            naming
           - 'Alternative Discovery' is now referred to as 'Cached Discovery'
           - Add 'buttons' action to inspect/change whether speaker buttons
             are enabled

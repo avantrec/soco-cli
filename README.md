@@ -76,7 +76,7 @@ The installer adds the `sonos` command to the PATH. All commands have the form:
 sonos SPEAKER ACTION <parameters>
 ```
 
-- `SPEAKER` identifies the speaker to operate on, and can be the speaker's Sonos Room (Zone) name or its IPv4 address in dotted decimal format. Note that the speaker name is case sensitive (unless using 'alternative discovery', discussed below).
+- `SPEAKER` identifies the speaker to operate on, and can be the speaker's Sonos Room (Zone) name or its IPv4 address in dotted decimal format. It's best to use the exact, case sensitive speaker name, but partial, case insensitive names will also be matched, e.g., `kit` will match `Kitchen`. Partial matches must be unambiguous.
 - `ACTION` is the operation to perform on the speaker. It can take zero or more parameters depending on the operation.
 
 As usual, command line arguments containing spaces must be surrounded by quotes: double quotes work on all OS platforms, while Linux and macOS also support single quotes.
@@ -462,7 +462,7 @@ When executing a sequence of commands, supply the `-l` option only for the first
 
 ### Speaker Naming
 
-When using the local speaker list, speaker naming does not need to be exact, unlike when using standard discovery. Matching is case insensitive, and matching works on substrings. For example, if you have a speaker named `Front Reception`, then `"front reception"` or just `front` will match. (Be careful not to submit ambiguously matchable speaker names; the first hit will be matched, and may not be the speaker you intend.)
+When using the local speaker list, speaker naming does not need to be exact. Matching is case insensitive, and matching works on substrings. For example, if you have a speaker named `Front Reception`, then `"front reception"` or just `front` will match. (Be careful not to submit ambiguously matchable speaker names; the first hit will be matched, and may not be the speaker you intend.)
 
 Note that if you have speakers with the same names in multiple Sonos systems (Households), you will get inconsistent name matches. It's best to keep speaker names unique within a network (or fall back on using IP addresses instead of speaker names).
 
