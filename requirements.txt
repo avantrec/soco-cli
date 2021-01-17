@@ -1,6 +1,3 @@
-soco == 0.21
-ifaddr
+soco >= 0.21
 tabulate
-requests
-xmltodict
 rangehttpserver
