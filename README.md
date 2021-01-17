@@ -6,6 +6,7 @@
       * [Supported Environments](#supported-environments)
       * [Installation](#installation)
       * [User Guide: The sonos Command](#user-guide-the-sonos-command)
+            * [Discovery](#discovery)
          * [Simple Usage Examples](#simple-usage-examples)
          * [Options for the sonos Command](#options-for-the-sonos-command)
          * [Firewall Rules](#firewall-rules)
@@ -44,7 +45,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Thu Jan 14 16:27:50 GMT 2021 -->
+<!-- Added by: pwt, at: Sun Jan 17 18:11:08 GMT 2021 -->
 
 <!--te-->
 
@@ -76,7 +77,7 @@ The installer adds the `sonos` command to the PATH. All commands have the form:
 sonos SPEAKER ACTION <parameters>
 ```
 
-- `SPEAKER` identifies the speaker to operate on, and can be the speaker's Sonos Room (Zone) name or its IPv4 address in dotted decimal format. For performance reasons, using the exact, case-sensitive speaker name is preferred, but partial, case-insensitive names will also be matched, e.g., `kit` will match `Kitchen`. Partial matches must be unambiguous, or an error is returned.
+- `SPEAKER` identifies the speaker to operate on, and can be the speaker's Sonos Room (Zone) name or its IPv4 address in dotted decimal format. Partial, case-insensitive speaker names will be matched, e.g., `kit` will match `Kitchen`. Partial matches must be unambiguous, or an error is returned.
 - `ACTION` is the operation to perform on the speaker. It can take zero or more parameters depending on the operation.
 
 As usual, command line arguments containing spaces must be surrounded by quotes: double quotes work on all supported OS platforms, while Linux and macOS also support single quotes.
@@ -84,6 +85,8 @@ As usual, command line arguments containing spaces must be surrounded by quotes:
 The `soco` command is also added to the PATH, and can be used as an alias for the `sonos` command if preferred.
 
 Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking user confirmation; please bear this in mind when manipulating the queue, playlists, etc.
+
+#### Discovery
 
 SoCo-CLI will try a number of approaches to find a speaker by its name, which escalate in cost until the speaker is discovered or discovery fails. If SoCo-CLI seems slow to find speakers (especially if you have a multi-household Sonos system), please take a look at the generally faster [Cached Discovery](#cached-discovery) method.
 

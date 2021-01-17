@@ -332,14 +332,27 @@ class SpeakerCache:
     def exists(self):
         return True if self._cache else False
 
-    def update(self):
+    def cache_speakers(self, speakers):
+        logging.info("Adding speakers to cache: {}".format(speakers))
+        for speaker in speakers:
+            self._cache.add((speaker, speaker.player_name))
+
+    def discover(self):
+        speakers = soco.discovery.discover(
+            allow_network_scan=True, scan_timeout=SCAN_TIMEOUT
+        )
+        if speakers:
+            self.cache_speakers(speakers)
+        else:
+            logging.info("No speakers found to cache")
+        return None
+
+    def scan(self):
         speakers = soco.discovery.scan_network(
             multi_household=True, scan_timeout=SCAN_TIMEOUT
         )
         if speakers:
-            logging.info("Adding speakers to cache")
-            for speaker in speakers:
-                self._cache.add((speaker, speaker.player_name))
+            self.cache_speakers(speakers)
         else:
             logging.info("No speakers found to cache")
         return None
@@ -422,15 +435,12 @@ def get_speaker(name, local=False):
             logging.info("Trying indirect cache lookup")
             speaker = cache.find_indirect(name)
         if not speaker:
-            logging.info("Trying discovery_by_name with network scan fallback")
-            speaker = soco.discovery.by_name(
-                name, allow_network_scan=True, scan_timeout=SCAN_TIMEOUT
-            )
-            if speaker:
-                cache.add(speaker)
+            logging.info("Trying standard discovery with network scan fallback")
+            cache.discover()
+            speaker = cache.find(name)
         if not speaker:
-            logging.info("Trying full multi-household network scan")
-            cache.update()
+            logging.info("Trying network scan discovery")
+            cache.scan()
             speaker = cache.find(name)
         if speaker:
             logging.info("Successful speaker discovery")
