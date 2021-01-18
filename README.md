@@ -416,9 +416,12 @@ Note that if a speaker is already playing, `wait_start` will proceed immediately
 
 ```
 sonos <speaker> wait_stopped_for <duration>
+sonos <speaker> wait_stopped_for_not_pause <duration>
 ```
 
 The **`<speaker> wait_stopped_for <duration>`** (or **`wsf`**) action will wait until a speaker has stopped playback for `<duration>` (which uses the same time parameter formats as the `wait` action). If the speaker stops playback, but then restarts (any number of times) during `<duration>`, the timer will be reset to zero each time. Processing continues once the speaker has been stopped for a continuous period equalling the `<duration>`.
+
+The **`<speaker> wait_stopped_for_not_pause <duration>`** (or **`wsfnp`**) action is the same, but ignores the 'paused' state.
 
 This function is useful if one wants to perform an action on a speaker (such as ungrouping it) only once its use has definitely stopped, as opposed to it just being temporarily paused, or stopped while switched to a different audio source. For example:
 

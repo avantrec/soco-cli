@@ -1231,19 +1231,24 @@ def wait_stop_not_pause(speaker, action, args, soco_function, use_local_speaker_
     return wait_stop_core(speaker, not_paused=True)
 
 
-@one_parameter
-def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_list):
+def wait_stopped_for_core(speaker, duration_arg, not_paused=False):
     try:
-        duration = convert_to_seconds(args[0])
+        duration = convert_to_seconds(duration_arg)
     except ValueError:
         parameter_type_error(action, "Time h/m/s or HH:MM:SS")
+
     logging.info("Waiting until playback stopped for {}s".format(duration))
+
     try:
         sub = speaker.avTransport.subscribe(auto_renew=True)
     except Exception as e:
         error_and_exit("Exception {}".format(e))
 
     playing_states = ["PLAYING", "TRANSITIONING"]
+    if not_paused:
+        # Also treat 'paused' as a playing state
+        playing_states.append("PAUSED_PLAYBACK")
+
     while True:
         try:
             # ToDo: Remove temporary fix for CTRL-C not exiting
@@ -1301,6 +1306,16 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
         except:
             set_sigterm(False)
             pass
+
+
+@one_parameter
+def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_list):
+    return wait_stopped_for_core(speaker, args[0], not_paused=False)
+
+
+@one_parameter
+def wait_stopped_for_not_pause(speaker, action, args, soco_function, use_local_speaker_list):
+    return wait_stopped_for_core(speaker, args[0], not_paused=True)
 
 
 @zero_parameters
@@ -2085,6 +2100,8 @@ actions = {
     "add_uri_to_queue": SonosFunction(add_uri_to_queue, ""),
     "wait_stop_not_pause": SonosFunction(wait_stop_not_pause, ""),
     "wsnp": SonosFunction(wait_stop_not_pause, ""),
+    "wait_stopped_for_not_pause": SonosFunction(wait_stopped_for_not_pause, ""),
+    "wsfnp": SonosFunction(wait_stopped_for_not_pause, ""),
     "buttons": SonosFunction(buttons, ""),
     "fixed_volume": SonosFunction(fixed_volume, ""),
     "trueplay": SonosFunction(trueplay, ""),
