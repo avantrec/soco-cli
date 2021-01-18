@@ -6,8 +6,9 @@
       * [Supported Environments](#supported-environments)
       * [Installation](#installation)
       * [User Guide: The sonos Command](#user-guide-the-sonos-command)
-            * [Discovery](#discovery)
+         * [Discovery](#discovery)
          * [Simple Usage Examples](#simple-usage-examples)
+         * [Using the $SPKR Environment Variable](#using-the-spkr-environment-variable)
          * [Options for the sonos Command](#options-for-the-sonos-command)
          * [Firewall Rules](#firewall-rules)
          * [Operating on All Speakers: Using _all_](#operating-on-all-speakers-using-_all_)
@@ -45,7 +46,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Sun Jan 17 18:11:08 GMT 2021 -->
+<!-- Added by: pwt, at: Mon Jan 18 12:29:52 GMT 2021 -->
 
 <!--te-->
 
@@ -86,7 +87,7 @@ The `soco` command is also added to the PATH, and can be used as an alias for th
 
 Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking user confirmation; please bear this in mind when manipulating the queue, playlists, etc.
 
-#### Discovery
+### Discovery
 
 SoCo-CLI will try a number of approaches to find a speaker by its name, which escalate in cost until the speaker is discovered or discovery fails. If SoCo-CLI seems slow to find speakers (especially if you have a multi-household Sonos system), please take a look at the generally faster [Cached Discovery](#cached-discovery) method.
 
@@ -98,6 +99,32 @@ SoCo-CLI will try a number of approaches to find a speaker by its name, which es
 - **`sonos 192.168.0.10 mute`** Returns the mute state ('on' or 'off') of the speaker at the given IP address.
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`** Plays 'Jazz24' for 30 minutes, then stops playback.
+
+### Using the `$SPKR` Environment Variable
+
+To avoid typing the speaker name, or to parameterise the use of SoCo-CLI commands, it's possible to use the `SPKR` environment variable instead of supplying the speaker name (or IP address) on the command line.
+
+**Example:** The following will set up all sonos commands to operate on the "Front Reception" speaker:
+
+Linux and macOS:
+
+```
+$ export SPKR="Front Reception"
+$ sonos play
+$ sonos wait_stop : volume 10
+```
+
+Windows:
+
+```
+C:\ set SPKR="Front Reception"
+C:\ sonos play
+C:\ sonos wait_stop : volume 10
+```
+
+IP addresses also work, e.g.: `$ export SPKR=192.168.0.50`.
+
+Shell aliasing can also be used to make it faster to type frequently used SoCo-CLI commands.
 
 ### Options for the `sonos` Command
 

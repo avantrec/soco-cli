@@ -4,9 +4,10 @@ import logging
 import pprint
 import time
 from signal import SIGINT, signal
-from threading import Thread
 
 import soco
+
+from os import environ as env
 
 from .action_processor import list_actions, process_action
 from .speakers import Speakers
@@ -27,6 +28,10 @@ from .utils import (
 
 # Globals
 pp = pprint.PrettyPrinter(width=100)
+
+
+# Speaker name environment variable
+env_name = "SPKR"
 
 
 def main():
@@ -110,6 +115,9 @@ def main():
             speaker_list.discover()
             speaker_list.save()
         set_speaker_list(speaker_list)
+
+    # Is $SPKR set in the environment?
+    env_speaker = env.get(env_name)
 
     # Break up the command line into command sequences, observing the separator.
     command_line_separator = ":"
@@ -307,6 +315,16 @@ def main():
                         "'wait_until' requires parameter: time in 24hr HH:MM(:SS) format"
                     )
                 continue
+
+            # Use the speaker name from the environment?
+            if env_speaker:
+                logging.info(
+                    "Getting speaker name '{}' from the $SPKR environment variable".format(
+                        env_speaker
+                    )
+                )
+                sequence.insert(0, env_speaker)
+                speaker_name = env_speaker
 
             # General action processing
             if len(sequence) < 2:
