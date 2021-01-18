@@ -1,4 +1,5 @@
 v0.2.2    - <Text>
+          - Add 'wait_stopped_for_not_pause' action
 v0.2.1    - Performance improvement for speaker discovery with partial name
             match
           - Action 'play_m3u' now accepts files that contain any list of audio
