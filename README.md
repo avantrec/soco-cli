@@ -184,7 +184,7 @@ Multiple files can be played in sequence by providing multiple audio file names 
 
 ### Local Playlists (M3U Files)
 
-The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U (or M3U8) format. Files in the playlist should be available on the local filesystem; any that are not will be skipped.
+The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U (or M3U8) format. Files in the playlist should be available on the local filesystem; any that are not will be skipped. Simple lists of audio files in non-M3U format can also be supplied. Comments can be inserted in the file by prefixing each comment line with '#'.
 
 There are options to print the track filenames as they are played, to shuffle the playlist, and to select a single random track from the playlist. There is also an **interactive mode** option, which allows (N)ext track, (P)ause playback, and (R)esume playback, while the playlist is being played.
 

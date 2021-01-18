@@ -1,3 +1,7 @@
+v0.2.1    - Performance improvement for speaker discovery with partial name
+            match
+          - Action 'play_m3u' now accepts files that contain any list of audio
+            filenames, without requiring M3U/M3U8 conventions
 v0.2.0    - Requires SoCo v0.21, and benefits from its big improvements
           - If a speaker name is not found, discovery will now fall back to
             scanning the network for a matching speaker

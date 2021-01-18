@@ -5,6 +5,8 @@
 
 import sys
 
+from .utils import error_and_exit
+
 
 class Track:
     def __init__(self, length, title, path):
@@ -24,16 +26,19 @@ class Track:
 
 
 def parse_m3u(m3u_file):
-
     with open(m3u_file, "r") as infile:
         """
-        All M3U files start with #EXTM3U.
-        If the first line doesn't start with this, we're either
-        not working with an M3U or the file we got is corrupted.
+        Parse file contents. Files with an M3U/M3U8 extension must follow conventions.
         """
-        line = infile.readline()
-        if not line.startswith("#EXTM3U"):
-            return
+
+        if m3u_file.lower().endswith(".m3u") or m3u_file.lower().endswith(".m3u8"):
+            line = infile.readline()
+            if not line.startswith("#EXTM3U"):
+                error_and_exit(
+                    "File '{}' lacks '#EXTM3U' as first line".format(m3u_file)
+                )
+                return None
+
         playlist = []
         song = Track(None, None, None)
         for line in infile:
@@ -42,10 +47,14 @@ def parse_m3u(m3u_file):
                 # pull length and title from #EXTINF line
                 length, title = line.split("#EXTINF:")[1].split(",", 1)
                 song = Track(length, title, None)
+            elif line.startswith("#"):
+                # Comment line
+                pass
             elif len(line) != 0:
                 # pull song path from all other, non-blank lines
                 song.path = line
                 playlist.append(song)
                 # reset the song variable so it doesn't use the same EXTINF more than once
                 song = Track(None, None, None)
+
         return playlist

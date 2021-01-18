@@ -102,13 +102,13 @@ def play_m3u_file(speaker, m3u_file, options=""):
         error_and_exit("File '{}' not found".format(m3u_file))
         return False
 
-    if not (m3u_file.lower().endswith(".m3u") or m3u_file.lower().endswith(".m3u8")):
-        error_and_exit(
-            "Filename '{}' does not end in '.m3u' or '.m3u8'".format(m3u_file)
-        )
-        return False
+    # if not (m3u_file.lower().endswith(".m3u") or m3u_file.lower().endswith(".m3u8")):
+    #     error_and_exit(
+    #         "Filename '{}' does not end in '.m3u' or '.m3u8'".format(m3u_file)
+    #     )
+    #     return False
 
-    logging.info("Parsing M3U file '{}'".format(m3u_file))
+    logging.info("Parsing file contents'{}'".format(m3u_file))
     tracks = parse_m3u(m3u_file)
     if not tracks:
         error_and_exit("No tracks found in '{}'".format(m3u_file))
