@@ -1194,16 +1194,22 @@ def list_all_playlist_tracks(
     return True
 
 
-@zero_parameters
-def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
+def wait_stop_core(speaker, not_paused=False):
+
+    playing_states = ["PLAYING", "TRANSITIONING"]
+    if not_paused:
+        # Also treat 'paused' as a playing state
+        playing_states.append("PAUSED_PLAYBACK")
+
     try:
         sub = speaker.avTransport.subscribe(auto_renew=True)
     except Exception as e:
         error_and_exit("Exception {}".format(e))
+
     while True:
         try:
             event = sub.events.get(timeout=1.0)
-            if event.variables["transport_state"] not in ["PLAYING", "TRANSITIONING"]:
+            if event.variables["transport_state"] not in playing_states:
                 logging.info(
                     "Speaker '{}' in state '{}'".format(
                         speaker.player_name, event.variables["transport_state"]
@@ -1213,31 +1219,16 @@ def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
                 return True
         except Empty:
             pass
+
+
+@zero_parameters
+def wait_stop(speaker, action, args, soco_function, use_local_speaker_list):
+    return wait_stop_core(speaker)
 
 
 @zero_parameters
 def wait_stop_not_pause(speaker, action, args, soco_function, use_local_speaker_list):
-    try:
-        sub = speaker.avTransport.subscribe(auto_renew=True)
-    except Exception as e:
-        error_and_exit("Exception {}".format(e))
-    while True:
-        try:
-            event = sub.events.get(timeout=1.0)
-            if event.variables["transport_state"] not in [
-                "PLAYING",
-                "TRANSITIONING",
-                "PAUSED_PLAYBACK",
-            ]:
-                logging.info(
-                    "Speaker '{}' in state '{}'".format(
-                        speaker.player_name, event.variables["transport_state"]
-                    )
-                )
-                event_unsubscribe(sub)
-                return True
-        except Empty:
-            pass
+    return wait_stop_core(speaker, not_paused=True)
 
 
 @one_parameter

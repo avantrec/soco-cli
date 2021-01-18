@@ -18,7 +18,7 @@ def speaker_name_matches(name_supplied, name_stored):
     name_stored = name_stored.lower()
     if name_supplied == name_stored:
         logging.info(
-            "Found case insensitive exact speaker name match for '{}' as '{}'".format(
+            "Found case-insensitive exact speaker name match for '{}' as '{}'".format(
                 name_supplied_original, name_stored_original
             )
         )
