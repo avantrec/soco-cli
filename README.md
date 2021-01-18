@@ -9,6 +9,7 @@
          * [Discovery](#discovery)
          * [Simple Usage Examples](#simple-usage-examples)
          * [Using the $SPKR Environment Variable](#using-the-spkr-environment-variable)
+         * [Using Shell Aliases](#using-shell-aliases)
          * [Options for the sonos Command](#options-for-the-sonos-command)
          * [Firewall Rules](#firewall-rules)
          * [Operating on All Speakers: Using _all_](#operating-on-all-speakers-using-_all_)
@@ -46,7 +47,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Mon Jan 18 12:29:52 GMT 2021 -->
+<!-- Added by: pwt, at: Mon Jan 18 16:51:53 GMT 2021 -->
 
 <!--te-->
 
@@ -124,7 +125,25 @@ C:\ sonos wait_stop : volume 10
 
 IP addresses also work, e.g.: `$ export SPKR=192.168.0.50`.
 
-Shell aliasing can also be used to make it faster to type frequently used SoCo-CLI commands.
+### Using Shell Aliases
+
+If your shell supports it, shell aliasing can be very convenient in creating shortcuts to SoCo-CLI commands. For example, I have the following in my `.zshrc` file:
+
+```
+# Sonos Aliases
+alias s="sonos"
+alias sk="sonos Kitchen"
+alias sr="sonos 'Rear Reception'"
+alias sf="sonos 'Front Reception'"
+alias sm="sonos Move"
+alias sb="sonos Bedroom"
+alias sb2="sonos 'Bedroom 2'"
+alias ss="sonos Study"
+alias st="sonos Test"
+alias sd="sonos-discover"
+```
+
+This allows the use of shorthand like `sk stop`, to stop playback on the Kitchen speaker. Note, however, that this won't work with sequences of commands separated with ` : `, just with the first command in such a sequence.
 
 ### Options for the `sonos` Command
 
@@ -211,7 +230,7 @@ Multiple files can be played in sequence by providing multiple audio file names 
 
 ### Local Playlists (M3U Files)
 
-The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U (or M3U8) format. Files in the playlist should be available on the local filesystem; any that are not will be skipped. Simple lists of audio files in non-M3U format can also be supplied. Comments can be inserted in the file by prefixing each comment line with '#'.
+The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U (or M3U8) format. Files in the playlist should be available on the local filesystem; any that are not will be skipped. Simple lists of audio files in non-M3U format can also be supplied. Comments can be inserted in the file by prefixing each comment line with `#`.
 
 There are options to print the track filenames as they are played, to shuffle the playlist, and to select a single random track from the playlist. There is also an **interactive mode** option, which allows (N)ext track, (P)ause playback, and (R)esume playback, while the playlist is being played.
 
