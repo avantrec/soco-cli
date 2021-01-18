@@ -10,32 +10,32 @@ from soco import SoCo
 
 from .m3u_parser import parse_m3u
 from .play_local_file import is_supported_type, play_local_file
-from .utils import error_and_exit, set_sigterm
+from .utils import error_and_exit
 
 
-def wait_for_keypress():
-    # Wait for a key press on the console and return it
-    result = None
-
-    if name == "nt":  # Windows
-        import msvcrt
-
-        result = msvcrt.getch().decode()
-    else:  # Linux & macOS
-        import termios
-
-        fd = sys.stdin.fileno()
-        oldterm = termios.tcgetattr(fd)
-        newattr = termios.tcgetattr(fd)
-        newattr[3] = newattr[3] & ~termios.ICANON & ~termios.ECHO
-        termios.tcsetattr(fd, termios.TCSANOW, newattr)
-        try:
-            result = sys.stdin.read(1)
-        except IOError:
-            pass
-        finally:
-            termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
-    return result
+# def wait_for_keypress():
+#     # Wait for a key press on the console and return it
+#     result = None
+#
+#     if name == "nt":  # Windows
+#         import msvcrt
+#
+#         result = msvcrt.getch().decode()
+#     else:  # Linux & macOS
+#         import termios
+#
+#         fd = sys.stdin.fileno()
+#         oldterm = termios.tcgetattr(fd)
+#         newattr = termios.tcgetattr(fd)
+#         newattr[3] = newattr[3] & ~termios.ICANON & ~termios.ECHO
+#         termios.tcsetattr(fd, termios.TCSANOW, newattr)
+#         try:
+#             result = sys.stdin.read(1)
+#         except IOError:
+#             pass
+#         finally:
+#             termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
+#     return result
 
 
 def interaction_manager(speaker_ip):

@@ -143,7 +143,7 @@ alias st="sonos Test"
 alias sd="sonos-discover"
 ```
 
-This allows the use of shorthand like `sk stop`, to stop playback on the Kitchen speaker. Note, however, that this won't work with sequences of commands separated with ` : `, just with the first command in such a sequence.
+This allows the use of shorthand like `sk stop`, to stop playback on the Kitchen speaker. Note, however, that this won't work with sequences of commands using a single `sonos` invocation, separated with ` : `, only for the first command in such a sequence. (Normal, mutiple `sonos` invocation, shell sequences using `;` or `&&` as separators will work, of course.)
 
 ### Options for the `sonos` Command
 
