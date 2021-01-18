@@ -5,8 +5,9 @@
       * [Overview](#overview)
       * [Supported Environments](#supported-environments)
       * [Installation](#installation)
-      * [User Guide: The sonos Command](#user-guide-the-sonos-command)
-         * [Discovery](#discovery)
+      * [User Guide](#user-guide)
+         * [The sonos Command](#the-sonos-command)
+         * [Speaker Discovery by Name](#speaker-discovery-by-name)
          * [Simple Usage Examples](#simple-usage-examples)
          * [Using the $SPKR Environment Variable](#using-the-spkr-environment-variable)
          * [Using Shell Aliases](#using-shell-aliases)
@@ -47,7 +48,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Mon Jan 18 16:51:53 GMT 2021 -->
+<!-- Added by: pwt, at: Mon Jan 18 19:34:57 GMT 2021 -->
 
 <!--te-->
 
@@ -55,7 +56,7 @@
 
 SoCo-CLI is a powerful command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. SoCo-CLI is written entirely in Python and is portable across platforms.
 
-A simple `sonos` command is provided which allows easy control of speaker playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speaker states, and to create repeated action sequences using loops. Audio files from the local filesystem can be played directly on Sonos.
+A simple `sonos` command is provided which allows easy control of a huge range of speaker functions, including playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speaker states, and to create repeated action sequences using loops. Audio files from the local filesystem can be played directly on Sonos.
 
 SoCo-CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
@@ -71,7 +72,9 @@ Install the latest version from PyPI [2] using **`pip install -U soco-cli`**.
 
 Please see the CHANGELOG.txt file for a list of the user-facing changes in each release.
 
-## User Guide: The `sonos` Command
+## User Guide
+
+### The `sonos` Command
 
 The installer adds the `sonos` command to the PATH. All commands have the form:
 
@@ -88,9 +91,9 @@ The `soco` command is also added to the PATH, and can be used as an alias for th
 
 Actions that make changes to speakers do not generally provide return values. Instead, the program exit code can be inspected to test for successful operation (exit code 0). If an error is encountered, an error message will be printed to `stderr`, and the program will return a non-zero exit code. Note that `sonos` actions are executed without seeking user confirmation; please bear this in mind when manipulating the queue, playlists, etc.
 
-### Discovery
+### Speaker Discovery by Name
 
-SoCo-CLI will try a number of approaches to find a speaker by its name, which escalate in cost until the speaker is discovered or discovery fails. If SoCo-CLI seems slow to find speakers (especially if you have a multi-household Sonos system), please take a look at the generally faster [Cached Discovery](#cached-discovery) method.
+SoCo-CLI will try a number of approaches to find a speaker by its name, which escalate in cost until the speaker is discovered or discovery fails. If SoCo-CLI seems slow to find speakers (especially if you have a multi-household Sonos system), or if you occasionally experience problems with speakers not being found, please take a look at the generally faster [Cached Discovery](#cached-discovery) method.
 
 ### Simple Usage Examples
 
@@ -143,11 +146,11 @@ alias st="sonos Test"
 alias sd="sonos-discover"
 ```
 
-This allows the use of shorthand like `sk stop`, to stop playback on the Kitchen speaker. Note, however, that this won't work with sequences of commands using a single `sonos` invocation, separated with ` : `, only for the first command in such a sequence. (Normal, mutiple `sonos` invocation, shell sequences using `;` or `&&` as separators will work, of course.)
+This allows the use of shorthand like `sk stop`, to stop playback on the Kitchen speaker. Note, however, that this won't work with sequences of commands using a single `sonos` invocation, separated with ` : ` (see [Multiple Sequential Commands](#multiple-sequential-commands)), only for the first command in such a sequence. (Normal, mutiple `sonos` invocation, shell sequences using `;` or `&&` as separators will work, of course.)
 
 ### Options for the `sonos` Command
 
-- **`--version, -v`**: Print the versions of SoCo-CLI and SoCo.
+- **`--version, -v`**: Print the versions of SoCo-CLI, SoCo, and Python.
 - **`--actions`**: Print the list of available actions.
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
@@ -514,9 +517,9 @@ When executing a sequence of commands, supply the `-l` option only for the first
 
 ### Speaker Naming
 
-Speaker naming does not need to be exact. Matching is case-insensitive, and works on substrings. For example, if you have a speaker named `Front Reception`, then `"front reception"` or just `front` will match. If an ambiguously matchable speaker name is supplied then an error will be returned.
+Speaker naming does not need to be exact. Matching is case-insensitive, and works on substrings. For example, if you have a speaker named `Front Reception`, then `"front reception"` or just `front` will match, as will any unambiguous substring. If an ambiguously matchable name is supplied then an error will be returned.
 
-Note that if you have speakers with the same names in multiple Sonos systems (Households), SoCo-CLI will fail because it cannot disambiguate the speakers. Speaker should have unique names within a network (or fall back on using IP addresses instead of speaker names).
+Note that if you have speakers with the same names in multiple Sonos systems (Households), SoCo-CLI will fail because it cannot disambiguate the speakers. Speakers should have unique names within a network (or fall back on using IP addresses instead of speaker names).
 
 ### Refreshing the Local Speaker List
 
@@ -537,7 +540,7 @@ These options only have an effect when combined with the `-l` **and** `-r` optio
 
 ### The `sonos-discover` Command
 
-**`sonos-discover`** is a standalone utility for creating/updating the local speaker cache, and for seeing the results of the discovery process. It's an alternative to using the `sonos -r` command. It accepts the same `-t`, `-n` and `-m` options as the `sonos` command. 
+**`sonos-discover`** is a separate command for creating/updating the local speaker cache, and for seeing the results of the discovery process. It's an alternative to using the `sonos -r` command. It accepts the same `-t`, `-n` and `-m` options as the `sonos` command. 
 
 **Example:** `sonos-discover -t 256 -n 1.0 -m 24` will run `sonos-discover` with a maximum of 256 threads, a network timeout of 1.0s, a minimum netmask of 24 bits, and will print the result.
 
@@ -552,7 +555,7 @@ Other options:
 - **`--network_discovery_threads, -t`**: The maximum number of parallel threads used to scan the local network.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). Use this if `sonos-discover` is not finding all of your Sonos devices.
 - **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
-- **`--version, -v`**: Print the versions of SoCo-CLI and SoCo, and exit.
+- **`--version, -v`**: Print the versions of SoCo-CLI, SoCo, Python, and exit.
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 
