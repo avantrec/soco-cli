@@ -25,7 +25,7 @@ tests = [
 
 def test_cli(capsys):
     for test in tests:
-        ap.process_action(test[0], test[1], test[2], True)
+        ap.process_action(test[0], test[1], test[2], use_local_speaker_list=True)
         out, err = capsys.readouterr()
         assert out == test[3]
 

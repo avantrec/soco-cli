@@ -1526,7 +1526,9 @@ def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speake
                 speaker.player_name, action, " ".join(args)
             )
         )
-        return process_action(speaker, action, args, use_local_speaker_list)
+        return process_action(
+            speaker, action, args, use_local_speaker_list=use_local_speaker_list
+        )
 
 
 @one_parameter
@@ -1826,7 +1828,7 @@ def trueplay(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-def process_action(speaker, action, args, use_local_speaker_list):
+def process_action(speaker, action, args, use_local_speaker_list=False):
     sonos_function = actions.get(action, None)
     if sonos_function:
         return sonos_function.processing_function(

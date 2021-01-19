@@ -612,7 +612,7 @@ Other options:
 
 ## Using SoCo-CLI as a Python Library
 
-If you'd like to use SoCo-CLI as a high-level library in another Python program, it's simple to do so using its API capability. The goal is to provide the same added value, abtractions, and command structure as using SoCo-CLI from the command line. Essentially, there is a single entry point that accepts exactly the same commands as would be used on the command line.
+If you'd like to use SoCo-CLI as a high-level library in another Python program, it's simple to do so using its API capability. The goal is to provide the same added value, abtractions, and command structure as when using SoCo-CLI directly from the command line. Essentially, there is a single entry point that accepts exactly the same commands that would be used on the command line.
 
 Using the SoCo-CLI API means that the expense of loading soco-cli is incurred only once during the operation of your program.
 
@@ -626,13 +626,13 @@ from soco_cli import api
 
 ### Using the API
 
-The API entry point is **`api.run_command(speaker_name, action, args, use_local_speaker_list)`**, which takes exactly the same parameters as would be provided on the command line:
+The API entry point is **`api.run_command(speaker_name, action, *args, use_local_speaker_list)`**, which takes exactly the same parameters as would be provided on the command line:
 
 **Parameters:**
 
 - **`speaker_name (str)`**: The speaker name or speaker IP address supplied as a string.
 - **`action (str)`**: The action to perform, supplied as a string. Almost all of the SoCo-CLI actions are available for use, with the exception of the `loop` actions, and the `wait_until` and `wait_for` actions.
-- **`args (list)`**: The arguments for the action, supplied as a list of strings. The list can be empty for actions that take no parameters.
+- **`*args (tuple)`**: The arguments for the action, supplied as a list of strings. Arguments are optional, depending on the action.
 - **`use_local_speaker_list (bool)`**: Whether to use the local speaker cache for speaker discovery. Optional, defaults to `False`.
 
 **Return Values:**
@@ -644,9 +644,9 @@ The `output_string` return value contains exactly what would have been printed t
 **Examples of use:**
 
 ```
-exit_code, output, error = api.run_command("Kitchen", "volume", [])
-exit_code, output, error = api.run_command("Study", "mute", ["on"])
-exit_code, output, error = api.run_command("Study", "group", ["Kitchen"])
+exit_code, output, error = api.run_command("Kitchen", "volume")
+exit_code, output, error = api.run_command("Study", "mute", "on")
+exit_code, output, error = api.run_command("Study", "group", "Kitchen")
 ```
 
 ### Convenience Functions

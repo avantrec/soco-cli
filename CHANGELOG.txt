@@ -1,3 +1,4 @@
+v0.3.1    - API interface change and bugfix
 v0.3.0    - Add an API alllowing the use of SoCo-CLI as a Python library
           - Add early version of interactive mode
           - Add the ability to get the speaker name from the $SPKR environment

@@ -394,7 +394,9 @@ def main():
                 speaker = get_speaker(speaker_name, use_local_speaker_list)
                 if not speaker:
                     error_and_exit("Speaker '{}' not found".format(speaker_name))
-                if not process_action(speaker, action, args, use_local_speaker_list):
+                if not process_action(
+                    speaker, action, args, use_local_speaker_list=use_local_speaker_list
+                ):
                     error_and_exit("Action '{}' not found".format(action))
 
         except Exception as e:
@@ -434,7 +436,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     print("Error: Speaker not found")
                     continue
             action = args.pop(0)
-            response = process_action(speaker, action, args, use_local_speaker_list)
+            response = process_action(
+                speaker, action, args, use_local_speaker_list=use_local_speaker_list
+            )
             if not response:
                 print("Error: Action '{}'".format(action))
         except:

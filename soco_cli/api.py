@@ -1,14 +1,22 @@
+import logging
 import sys
 
 from io import StringIO
 from signal import SIGINT, signal
 
 from .action_processor import process_action
-from .utils import configure_logging, get_speaker, set_api, sig_handler
+from .speakers import Speakers
+from .utils import (
+    configure_logging,
+    get_speaker,
+    set_api,
+    set_speaker_list,
+    sig_handler,
+)
 
 
 def run_command(
-    speaker_name: str, action: str, args: list, use_local_speaker_list: bool = False
+    speaker_name: str, action: str, *args: tuple[str,], use_local_speaker_list: bool = False
 ) -> (int, str, str):
     """Use SoCo-CLI to run a sonos command.
 
@@ -19,11 +27,14 @@ def run_command(
     :param speaker_name: The name of the speaker, or its IP address
     :param action: The name of the SoCo-CLI action to perform
     :param args: The list of arguments for the action. Each argument
-        is a string. The list can be empty.
+        is a string. Arguments are optional depending on the action.
     :param use_local_speaker_list: Whether to use the local speaker
         cache to map the speaker name into an IP address.
     :return: Three-tuple (exit_code, output_string, error_msg)
     """
+
+    if use_local_speaker_list:
+        _setup_local_speaker_list()
 
     speaker = get_speaker(speaker_name, use_local_speaker_list)
     if not speaker:
@@ -38,7 +49,9 @@ def run_command(
     # Prevent errors from causing exit
     set_api()
 
-    return_value = process_action(speaker, action, args, use_local_speaker_list)
+    return_value = process_action(
+        speaker, action, args, use_local_speaker_list=use_local_speaker_list
+    )
 
     # Restore stdout and stderr
     sys.stdout = sys.__stdout__
@@ -69,3 +82,18 @@ def handle_sigint() -> None:
     CTRL-C (sigint) handler.
     """
     signal(SIGINT, sig_handler)
+
+
+SPEAKER_LIST_SET = False
+
+
+def _setup_local_speaker_list():
+    global SPEAKER_LIST_SET
+    if not SPEAKER_LIST_SET:
+        speaker_list = Speakers()
+        if not speaker_list.load():
+            logging.info("Start speaker discovery")
+            speaker_list.discover()
+            speaker_list.save()
+        set_speaker_list(speaker_list)
+    SPEAKER_LIST_SET = True
