@@ -1,6 +1,6 @@
 # SoCo-CLI: Control Sonos from the Command Line
 
-![SoCo-CLI Logo](https://github.com/avantrec/soco-cli/raw/master/assets/soco-cli-logo-03-small.png)
+![SoCo-CLI Logo](https://raw.githubusercontent.com/avantrec/soco-cli/master/assets/soco-cli-logo-03-small.png)
 
 ## Overview
 
