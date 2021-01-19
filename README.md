@@ -1,4 +1,6 @@
-# SoCo-CLI: Control Sonos Systems from the Command Line
+# SoCo-CLI: Control Sonos from the Command Line
+
+![SoCo-CLI Logo](assets/soco-cli-logo-03-small.png)
 
 <!--ts-->
    * [SoCo-CLI: Control Sonos Systems from the Command Line](#soco-cli-control-sonos-systems-from-the-command-line)
