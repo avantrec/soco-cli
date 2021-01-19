@@ -30,6 +30,9 @@ format: isort black
 pypi_upload: clean build
 	python -m twine upload --repository pypi dist/*
 
+pypi_test: clean build
+	python -m twine upload --repository testpypi dist/*
+
 pypi_check: build
 	twine check dist/*
 

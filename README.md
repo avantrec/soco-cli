@@ -641,7 +641,7 @@ Each `run_command()` invocation returns a three tuple consisting of `exit_code (
 
 The `output_string` return value contains exactly what would have been printed to the console if the command had been run from the command line.
 
-Examples of use:
+**Examples of use**
 
 ```
 exit_code, output, error = api.run_command("Kitchen", "volume", [])
