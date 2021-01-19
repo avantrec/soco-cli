@@ -3,7 +3,7 @@
 ![SoCo-CLI Logo](assets/soco-cli-logo-03-small.png)
 
 <!--ts-->
-   * [SoCo-CLI: Control Sonos Systems from the Command Line](#soco-cli-control-sonos-systems-from-the-command-line)
+   * [SoCo-CLI: Control Sonos from the Command Line](#soco-cli-control-sonos-from-the-command-line)
       * [Overview](#overview)
       * [Supported Environments](#supported-environments)
       * [Installation](#installation)
@@ -11,7 +11,7 @@
          * [The sonos Command](#the-sonos-command)
          * [Speaker Discovery by Name](#speaker-discovery-by-name)
          * [Simple Usage Examples](#simple-usage-examples)
-         * [Using the $SPKR Environment Variable](#using-the-spkr-environment-variable)
+         * [Using the SPKR Environment Variable](#using-the-spkr-environment-variable)
          * [Using Shell Aliases](#using-shell-aliases)
          * [Options for the sonos Command](#options-for-the-sonos-command)
          * [Firewall Rules](#firewall-rules)
@@ -38,6 +38,7 @@
          * [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
          * [Repeating Commands: The loop Actions](#repeating-commands-the-loop-actions)
       * [Conditional Command Execution](#conditional-command-execution)
+      * [Interactive Mode (Experimental)](#interactive-mode-experimental)
       * [Cached Discovery](#cached-discovery)
          * [Usage](#usage)
          * [Speaker Naming](#speaker-naming)
@@ -50,7 +51,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Mon Jan 18 19:34:57 GMT 2021 -->
+<!-- Added by: pwt, at: Tue Jan 19 11:28:09 GMT 2021 -->
 
 <!--te-->
 
@@ -106,7 +107,7 @@ SoCo-CLI will try a number of approaches to find a speaker by its name, which es
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`** Plays 'Jazz24' for 30 minutes, then stops playback.
 
-### Using the `$SPKR` Environment Variable
+### Using the `SPKR` Environment Variable
 
 To avoid typing the speaker name, or to parameterise the use of SoCo-CLI commands, it's possible to use the `SPKR` environment variable instead of supplying the speaker name (or IP address) on the command line.
 
@@ -395,6 +396,8 @@ The actions below search the Sonos Music library.
 
 Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. **The `:` separator must be surrounded by spaces** to disambiguate from other uses of `:` in sonos actions.
 
+The benefit of using this approach instead of multiple separate `sonos` commands is that cost of starting the program is only incurred once.
+
 An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
 
 **Example:** `sonos Kitchen volume 25 : Kitchen play`
@@ -510,7 +513,7 @@ Interactive mode is a new, quite basic, experimental feature, which creates a So
 
 Most `sonos` commands are accepted. The sequential operator ` : ` cannot be used, nor can `loop` statements or the `wait` and `wait_until` commands. 
 
-Interactive mode is started with the `-i` or `--interactive` command line option. Optionally, a speaker name can be given, in which case all commands will be directed to that speaker.
+Interactive mode is started with the `-i` or `--interactive` command line option. Optionally, a speaker name can be given, in which case all commands will be directed to that speaker. If the `SPKR` environment variable is set, that will be used as the single speaker to operate on unless a speaker name is provided on the command line.
 
 **Example:**
 
