@@ -83,6 +83,12 @@ def main():
         default=False,
         help="Enter interactive mode",
     )
+    parser.add_argument(
+        "--no-env",
+        action="store_true",
+        default=False,
+        help="Ignore the 'SPKR' environment variable, if set",
+    )
     # The rest of the optional args are common
     configure_common_args(parser)
 
@@ -125,13 +131,20 @@ def main():
         set_speaker_list(speaker_list)
 
     # Is $SPKR set in the environment?
-    env_speaker = env.get(env_spkr_name)
+    env_speaker = None
+    if not args.no_env:
+        logging.info("Ignoring 'SPKR' environment variable")
+        env_speaker = env.get(env_spkr_name)
 
     if args.interactive:
         speaker_name = None
         if len(args.parameters):
             speaker_name = args.parameters[0]
-        interactive_loop(speaker_name, use_local_speaker_list=use_local_speaker_list)
+        interactive_loop(
+            speaker_name,
+            use_local_speaker_list=use_local_speaker_list,
+            no_env=args.no_env,
+        )
         exit(0)
 
     # Break up the command line into command sequences, observing the separator.
@@ -386,12 +399,12 @@ def main():
     exit(0)
 
 
-def interactive_loop(speaker_name, use_local_speaker_list=False):
+def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
     # Is the speaker name set on the command line?
     # Is the speaker name set in the environment?
     speaker = None
-    if not speaker_name:
+    if not speaker_name and not no_env:
         speaker_name = env.get(env_spkr_name)
     if speaker_name:
         speaker = get_speaker(speaker_name, use_local_speaker_list)

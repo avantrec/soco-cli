@@ -131,6 +131,8 @@ C:\ sonos wait_stop : volume 10
 
 IP addresses also work, e.g.: `$ export SPKR=192.168.0.50`.
 
+If you want to ignore the `SPKR` environment variable for a specific `sonos` invocation, use the `--no-env` command line option.
+
 ### Using Shell Aliases
 
 If your shell supports it, shell aliasing can be very convenient in creating shortcuts to SoCo-CLI commands. For example, I have the following in my `.zshrc` file:
