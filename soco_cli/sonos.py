@@ -20,6 +20,7 @@ from .utils import (
     docs,
     error_and_exit,
     get_speaker,
+    logo,
     seconds_until,
     set_interactive,
     set_speaker_list,
@@ -101,6 +102,10 @@ def main():
 
     if args.docs:
         docs()
+        exit(0)
+
+    if args.logo:
+        logo()
         exit(0)
 
     if args.actions or args.commands:

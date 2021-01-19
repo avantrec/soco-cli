@@ -221,6 +221,17 @@ def docs():
     print("Online documentation for {}: {}".format(version, url))
 
 
+def logo():
+    version = "v{}".format(__version__)
+    if __version__.endswith("+"):
+        url = "https://raw.githubusercontent.com/avantrec/soco-cli/next_version/assets/soco-cli-logo-01-large.png"
+    else:
+        url = "https://raw.githubusercontent.com/avantrec/soco-cli/{}/assets/soco-cli-logo-01-large.png".format(
+            version
+        )
+    print("SoCo-CLI Logo: {}".format(url))
+
+
 # ToDo: Remove with SIGTERM fix
 use_sigterm = False
 
@@ -530,6 +541,12 @@ def configure_common_args(parser):
         action="store_true",
         default=False,
         help="Print the URL to the online documentation",
+    )
+    parser.add_argument(
+        "--logo",
+        action="store_true",
+        default=False,
+        help="Print the URL to the SoCo-CLI logo",
     )
 
 
