@@ -28,6 +28,7 @@ def event_unsubscribe(sub):
 
 
 INTERACTIVE = False
+API = False
 
 
 def set_interactive():
@@ -35,12 +36,17 @@ def set_interactive():
     INTERACTIVE = True
 
 
+def set_api():
+    global API
+    API = True
+
+
 # Error handling
 def error_and_exit(msg):
     # Print to stderr
     print("Error:", msg, file=sys.stderr)
     # Use os._exit() to avoid the catch-all 'except'
-    if not INTERACTIVE:
+    if not (INTERACTIVE or API):
         os._exit(1)
 
 

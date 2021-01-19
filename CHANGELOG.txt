@@ -1,7 +1,8 @@
-v0.2.2    - Add the ability to get the speaker name from the $SPKR environment
+v0.2.2    - Add an API alllowing the use of SoCo-CLI as a Python library
+          - Add early version of interactive mode
+          - Add the ability to get the speaker name from the $SPKR environment
             variable
           - Add 'wait_stopped_for_not_pause' action
-          - Add nascent interactive mode
 v0.2.1    - Performance improvement for speaker discovery with partial name
             match
           - Action 'play_m3u' now accepts files that contain any list of audio

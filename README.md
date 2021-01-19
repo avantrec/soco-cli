@@ -46,12 +46,15 @@
          * [Discovery Options](#discovery-options)
          * [The sonos-discover Command](#the-sonos-discover-command)
          * [Options for the sonos-discover Command](#options-for-the-sonos-discover-command)
+      * [Using SoCo-CLI as a Python Library](#using-soco-cli-as-a-python-library)
+         * [Importing the API](#importing-the-api)
+         * [Using the API](#using-the-api)
       * [Known Issues](#known-issues)
       * [Uninstalling](#uninstalling)
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Tue Jan 19 11:28:09 GMT 2021 -->
+<!-- Added by: pwt, at: Tue Jan 19 17:44:54 GMT 2021 -->
 
 <!--te-->
 
@@ -606,6 +609,52 @@ Other options:
 - **`--version, -v`**: Print the versions of SoCo-CLI, SoCo, Python, and exit.
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
+
+## Using SoCo-CLI as a Python Library
+
+If you'd like to use SoCo-CLI as a high-level library in another Python program, it's simple to do so using its API capability. The goal is to provide the same added value, abtractions, and command structure as using SoCo-CLI from the command line. Essentially, there is a single entry point that accepts exactly the same commands as would be used on the command line.
+
+Using the SoCo-CLI API means that the expense of loading soco-cli is incurred only once during the operation of your program.
+
+### Importing the API
+
+Import into your Python code as follows:
+
+```
+from soco_cli import api
+```
+
+### Using the API
+
+The API entry point is **`api.run_command(speaker_name, action, args, use_local_speaker_list)`**, which takes exactly the same parameters as would be provided on the command line:
+
+**Parameters**
+
+- **`speaker_name (str)`**: The speaker name or speaker IP address supplied as a string.
+- **`action (str)`**: The action to perform, supplied as a string. Almost all of the SoCo-CLI actions are available for use, with the exception of the `loop` actions, and the `wait_until` and `wait_for` actions.
+- **`args (list)`**: The arguments for the action, supplied as a list of strings. The list can be empty for actions that take no parameters.
+- **`use_local_speaker_list (bool)`**: Whether to use the local speaker cache for speaker discovery. Optional, defaults to `False`.
+
+**Return Values**
+
+Each `run_command()` invocation returns a three tuple consisting of `exit_code (int)`, `output_string (str)`, and `error_msg (str)`. If the exit code is `0`, the command completed successfully, and the command output (if any) is contained in the `output_string`. If the exit code is non-zero, the command did not complete successfully and `error_msg` will be populated while `output_string` will not.
+
+The `output_string` return value contains exactly what would have been printed to the console if the command had been run from the command line.
+
+Examples of use:
+
+```
+exit_code, output, error = api.run_command("Kitchen", "volume", [])
+exit_code, output, error = api.run_command("Study", "mute", ["on"])
+exit_code, output, error = api.run_command("Study", "group", ["Kitchen"])
+```
+
+### Convenience Functions
+
+If required, there is a couple of simple convenience functions, to set up logging, and to set up a SIGINT handler to deal with CTRL-C interrupts more gracefully. The use of these functions is optional.
+
+- **`api.set_log_level(log_level)`**: This function sets up Python logging for the whole program. `log_level` is a string which can take one of the following values: `None, Critical, Error, Warn, Info, Debug`. The default value is `None`.
+- **`api.handle_sigint()`**: This function sets up a signal handler for SIGINT, providing a tidier exit than a stack trace on a CTRL-C.
 
 ## Known Issues
 
