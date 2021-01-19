@@ -1314,7 +1314,9 @@ def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_lis
 
 
 @one_parameter
-def wait_stopped_for_not_pause(speaker, action, args, soco_function, use_local_speaker_list):
+def wait_stopped_for_not_pause(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
     return wait_stopped_for_core(speaker, args[0], not_paused=True)
 
 

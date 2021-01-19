@@ -27,12 +27,21 @@ def event_unsubscribe(sub):
     logging.info("Unsubscribed")
 
 
+INTERACTIVE = False
+
+
+def set_interactive():
+    global INTERACTIVE
+    INTERACTIVE = True
+
+
 # Error handling
 def error_and_exit(msg):
     # Print to stderr
     print("Error:", msg, file=sys.stderr)
     # Use os._exit() to avoid the catch-all 'except'
-    os._exit(1)
+    if not INTERACTIVE:
+        os._exit(1)
 
 
 def parameter_type_error(action, required_params):

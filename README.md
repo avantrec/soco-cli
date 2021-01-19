@@ -499,6 +499,47 @@ No action will be taken if the speaker is playing, and the command will terminat
 
 Similarly, the `if_playing` modifier will execute the action that follows it only if the speaker is currently playing.
 
+## Interactive Mode (Experimental)
+
+```
+sonos --interactive
+sonos --interactive <speaker_name>
+```
+
+Interactive mode is a new, quite basic, experimental feature, which creates a SoCo-CLI command line session for entering `sonos` commands. The session can either operate only on a single speaker, or on any speaker.
+
+Most `sonos` commands are accepted. The sequential operator ` : ` cannot be used, nor can `loop` statements or the `wait` and `wait_until` commands. 
+
+Interactive mode is started with the `-i` or `--interactive` command line option. Optionally, a speaker name can be given, in which case all commands will be directed to that speaker.
+
+**Example:**
+
+```
+% sonos -i Study
+Entering SoCo-CLI interactive mode
+Enter sonos action (0 to exit): volume
+34
+Enter sonos action (0 to exit): pause  
+Enter sonos action (0 to exit): play
+Enter sonos action (0 to exit): 0
+%
+```
+
+If no speaker name is given (or the `SPKR` environment variable is not set), the speaker name must be supplied for each command.
+
+**Example:**
+
+```
+% sonos -i
+Entering SoCo-CLI interactive mode
+Enter sonos action (0 to exit): kitchen volume
+30
+Enter sonos action (0 to exit): study pause  
+Enter sonos action (0 to exit): kitchen play
+Enter sonos action (0 to exit): 0
+%
+```
+
 ## Cached Discovery
 
 SoCo-CLI uses the full range of speaker discovery mechanisms in SoCo to look up speakers by their names. First, the native Sonos SSDP multicast process is tried.

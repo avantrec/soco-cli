@@ -21,6 +21,7 @@ from .utils import (
     error_and_exit,
     get_speaker,
     seconds_until,
+    set_interactive,
     set_speaker_list,
     sig_handler,
     version,
@@ -31,7 +32,7 @@ pp = pprint.PrettyPrinter(width=100)
 
 
 # Speaker name environment variable
-env_name = "SPKR"
+env_spkr_name = "SPKR"
 
 
 def main():
@@ -75,6 +76,13 @@ def main():
         default=False,
         help="Print the list of available actions",
     )
+    parser.add_argument(
+        "--interactive",
+        "-i",
+        action="store_true",
+        default=False,
+        help="Enter interactive mode",
+    )
     # The rest of the optional args are common
     configure_common_args(parser)
 
@@ -93,7 +101,7 @@ def main():
         list_actions()
         exit(0)
 
-    if len(args.parameters) == 0:
+    if len(args.parameters) == 0 and not args.interactive:
         print("No parameters. Use 'sonos --help' for usage information")
         exit(0)
 
@@ -117,7 +125,14 @@ def main():
         set_speaker_list(speaker_list)
 
     # Is $SPKR set in the environment?
-    env_speaker = env.get(env_name)
+    env_speaker = env.get(env_spkr_name)
+
+    if args.interactive:
+        speaker_name = None
+        if len(args.parameters):
+            speaker_name = args.parameters[0]
+        interactive_loop(speaker_name, use_local_speaker_list=use_local_speaker_list)
+        exit(0)
 
     # Break up the command line into command sequences, observing the separator.
     command_line_separator = ":"
@@ -369,6 +384,43 @@ def main():
         sequence_pointer += 1
 
     exit(0)
+
+
+def interactive_loop(speaker_name, use_local_speaker_list=False):
+
+    # Is the speaker name set on the command line?
+    # Is the speaker name set in the environment?
+    speaker = None
+    if not speaker_name:
+        speaker_name = env.get(env_spkr_name)
+    if speaker_name:
+        speaker = get_speaker(speaker_name, use_local_speaker_list)
+        if not speaker:
+            error_and_exit("Speaker '{}' not found".format(speaker_name))
+
+    print("Entering SoCo-CLI interactive mode")
+    set_interactive()
+    while True:
+        logging.info("Entering interactive mode")
+        command = input("Enter sonos action (0 to exit) > ")
+        if command == "0":
+            logging.info("Exiting interactive mode")
+            return True
+
+        # Command processing
+        try:
+            args = command.split()
+            if not speaker_name:
+                speaker = get_speaker(args.pop(0), use_local_speaker_list)
+                if not speaker:
+                    print("Error: Speaker not found")
+                    continue
+            action = args.pop(0)
+            response = process_action(speaker, action, args, use_local_speaker_list)
+            if not response:
+                print("Error: Action '{}'".format(action))
+        except:
+            print("Error: Invalid command")
 
 
 if __name__ == "__main__":
