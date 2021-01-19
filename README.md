@@ -628,20 +628,20 @@ from soco_cli import api
 
 The API entry point is **`api.run_command(speaker_name, action, args, use_local_speaker_list)`**, which takes exactly the same parameters as would be provided on the command line:
 
-**Parameters**
+**Parameters:**
 
 - **`speaker_name (str)`**: The speaker name or speaker IP address supplied as a string.
 - **`action (str)`**: The action to perform, supplied as a string. Almost all of the SoCo-CLI actions are available for use, with the exception of the `loop` actions, and the `wait_until` and `wait_for` actions.
 - **`args (list)`**: The arguments for the action, supplied as a list of strings. The list can be empty for actions that take no parameters.
 - **`use_local_speaker_list (bool)`**: Whether to use the local speaker cache for speaker discovery. Optional, defaults to `False`.
 
-**Return Values**
+**Return Values:**
 
 Each `run_command()` invocation returns a three tuple consisting of `exit_code (int)`, `output_string (str)`, and `error_msg (str)`. If the exit code is `0`, the command completed successfully, and the command output (if any) is contained in the `output_string`. If the exit code is non-zero, the command did not complete successfully and `error_msg` will be populated while `output_string` will not.
 
 The `output_string` return value contains exactly what would have been printed to the console if the command had been run from the command line.
 
-**Examples of use**
+**Examples of use:**
 
 ```
 exit_code, output, error = api.run_command("Kitchen", "volume", [])
