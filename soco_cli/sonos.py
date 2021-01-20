@@ -33,7 +33,8 @@ pp = pprint.PrettyPrinter(width=100)
 
 
 # Speaker name environment variable
-env_spkr_name = "SPKR"
+ENV_SPKR = "SPKR"
+ENV_LOCAL = "USE_LOCAL"
 
 
 def main():
@@ -123,6 +124,8 @@ def main():
     configure_logging(args.log)
 
     use_local_speaker_list = args.use_local_speaker_list
+    if env.get(ENV_LOCAL) == "TRUE" and not args.no_env:
+        use_local_speaker_list = True
     if use_local_speaker_list:
         speaker_list = Speakers(
             network_threads=args.network_discovery_threads,
@@ -139,7 +142,7 @@ def main():
     env_speaker = None
     if not args.no_env:
         logging.info("Ignoring 'SPKR' environment variable")
-        env_speaker = env.get(env_spkr_name)
+        env_speaker = env.get(ENV_SPKR)
 
     if args.interactive:
         speaker_name = None
@@ -412,7 +415,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
     # Is the speaker name set in the environment?
     speaker = None
     if not speaker_name and not no_env:
-        speaker_name = env.get(env_spkr_name)
+        speaker_name = env.get(ENV_SPKR)
     if speaker_name:
         speaker = get_speaker(speaker_name, use_local_speaker_list)
         if not speaker:
