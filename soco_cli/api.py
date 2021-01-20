@@ -16,26 +16,20 @@ from .utils import (
 )
 
 
-def run_command(
-    speaker_name: str,
-    action: str,
-    *args: tuple[
-        str,
-    ],
-    use_local_speaker_list: bool = False
-) -> (int, str, str):
+def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     """Use SoCo-CLI to run a sonos command.
 
-    The exit code, output string and error message are returned as a
+    The exit code, output string and error message string are returned as a
     three-tuple. If the exit code is non-zero, the error message will be
     populated and the output string will always be empty.
 
-    :param speaker_name: The name of the speaker, or its IP address
-    :param action: The name of the SoCo-CLI action to perform
-    :param args: The list of arguments for the action. Each argument
+    :param speaker_name: The name of the speaker, or its IP address, as
+        a string
+    :param action: The name of the SoCo-CLI action to perform, as a string
+    :param args: The list of arguments (strings) for the action. Each argument
         is a string. Arguments are optional depending on the action.
     :param use_local_speaker_list: Whether to use the local speaker
-        cache to map the speaker name into an IP address.
+        cache to map the speaker name into an IP address. Bool.
     :return: Three-tuple (exit_code, output_string, error_msg)
     """
 
@@ -71,7 +65,7 @@ def run_command(
     return exit_code, output_string, error_msg
 
 
-def set_log_level(log_level: str = "None") -> None:
+def set_log_level(log_level="None"):
     """Convenience function to set up logging
 
     :param log_level: Can be one of None, Critical, Error, Warn, Info, Debug.
@@ -79,7 +73,7 @@ def set_log_level(log_level: str = "None") -> None:
     configure_logging(log_level)
 
 
-def handle_sigint() -> None:
+def handle_sigint():
     """
     Convenience function to set up a more graceful
     CTRL-C (sigint) handler.
@@ -87,12 +81,12 @@ def handle_sigint() -> None:
     signal(SIGINT, sig_handler)
 
 
-def get_soco_object(speaker_name: str, use_local_speaker_list: bool = False) -> SoCo:
+def get_soco_object(speaker_name, use_local_speaker_list=False):
     """
     Uses the full set of soco_cli strategies to map a speaker name
     into a SoCo object
 
-    :param speaker_name: The name of the speaker
+    :param speaker_name: The name of the speaker as a string
     :param use_local_speaker_list: Whether to use the local speaker cache
 
     :return SoCo object, or None if no speaker is found
