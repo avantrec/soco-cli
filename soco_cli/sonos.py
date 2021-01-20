@@ -426,7 +426,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             command = input("Enter sonos action (0 to exit) [{}] > ".format(speaker.player_name))
         else:
             command = input("Enter sonos action (0 to exit) [] > ")
-        if command == "0":
+        if command == "0" or command.lower().startswith("exit"):
             logging.info("Exiting interactive mode")
             return True
 
@@ -439,6 +439,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 if "speaker" == args[0] and "=" == args[1]:
                     speaker_name = args[2]
                     speaker = get_speaker(speaker_name, use_local_speaker_list)
+                    if not speaker:
+                        print("Error: Speaker not found")
+                        speaker_name = None
                     continue
             except IndexError:
                 speaker_name = None
