@@ -3,11 +3,10 @@ import argparse
 import logging
 import pprint
 import time
+from os import environ as env
 from signal import SIGINT, signal
 
 import soco
-
-from os import environ as env
 
 from .action_processor import list_actions, process_action
 from .speakers import Speakers

@@ -12,7 +12,6 @@ from .m3u_parser import parse_m3u
 from .play_local_file import is_supported_type, play_local_file
 from .utils import error_and_exit
 
-
 # def wait_for_keypress():
 #     # Wait for a key press on the console and return it
 #     result = None

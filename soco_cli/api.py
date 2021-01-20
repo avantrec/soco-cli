@@ -1,8 +1,9 @@
 import logging
 import sys
-
 from io import StringIO
 from signal import SIGINT, signal
+
+from soco import SoCo
 
 from .action_processor import process_action
 from .speakers import Speakers
@@ -16,7 +17,12 @@ from .utils import (
 
 
 def run_command(
-    speaker_name: str, action: str, *args: tuple[str,], use_local_speaker_list: bool = False
+    speaker_name: str,
+    action: str,
+    *args: tuple[
+        str,
+    ],
+    use_local_speaker_list: bool = False
 ) -> (int, str, str):
     """Use SoCo-CLI to run a sonos command.
 
@@ -33,10 +39,7 @@ def run_command(
     :return: Three-tuple (exit_code, output_string, error_msg)
     """
 
-    if use_local_speaker_list:
-        _setup_local_speaker_list()
-
-    speaker = get_speaker(speaker_name, use_local_speaker_list)
+    speaker = get_soco_object(speaker_name, use_local_speaker_list)
     if not speaker:
         return 1, "", "Error: Speaker '{}' not found".format(speaker_name)
 
@@ -68,7 +71,7 @@ def run_command(
     return exit_code, output_string, error_msg
 
 
-def set_log_level(log_level: str = "none") -> None:
+def set_log_level(log_level: str = "None") -> None:
     """Convenience function to set up logging
 
     :param log_level: Can be one of None, Critical, Error, Warn, Info, Debug.
@@ -82,6 +85,22 @@ def handle_sigint() -> None:
     CTRL-C (sigint) handler.
     """
     signal(SIGINT, sig_handler)
+
+
+def get_soco_object(speaker_name: str, use_local_speaker_list: bool = False) -> SoCo:
+    """
+    Uses the full set of soco_cli strategies to map a speaker name
+    into a SoCo object
+
+    :param speaker_name: The name of the speaker
+    :param use_local_speaker_list: Whether to use the local speaker cache
+
+    :return SoCo object, or None if no speaker is found
+    """
+    if use_local_speaker_list:
+        _setup_local_speaker_list()
+
+    return get_speaker(speaker_name, use_local_speaker_list)
 
 
 SPEAKER_LIST_SET = False

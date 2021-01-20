@@ -49,12 +49,13 @@
       * [Using SoCo-CLI as a Python Library](#using-soco-cli-as-a-python-library)
          * [Importing the API](#importing-the-api)
          * [Using the API](#using-the-api)
+         * [Convenience Functions](#convenience-functions)
       * [Known Issues](#known-issues)
       * [Uninstalling](#uninstalling)
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Tue Jan 19 17:44:54 GMT 2021 -->
+<!-- Added by: pwt, at: Wed Jan 20 08:47:42 GMT 2021 -->
 
 <!--te-->
 
@@ -65,6 +66,8 @@ SoCo-CLI is a powerful command line wrapper for the popular Python SoCo library 
 A simple `sonos` command is provided which allows easy control of a huge range of speaker functions, including playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speaker states, and to create repeated action sequences using loops. Audio files from the local filesystem can be played directly on Sonos.
 
 SoCo-CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
+
+SoCo-CLI can also be imported as a high-level library by other Python programs, and acts as an intermediate simplification/value-add abstraction layer between the program and the underlying SoCo library.
 
 ## Supported Environments
 
@@ -647,14 +650,16 @@ The `output_string` return value contains exactly what would have been printed t
 exit_code, output, error = api.run_command("Kitchen", "volume")
 exit_code, output, error = api.run_command("Study", "mute", "on")
 exit_code, output, error = api.run_command("Study", "group", "Kitchen")
+exit_code, output, error = api.run_command("Front Reception", "play_favourite", "Radio 6")
 ```
 
 ### Convenience Functions
 
-If required, there is a couple of simple convenience functions, to set up logging, and to set up a SIGINT handler to deal with CTRL-C interrupts more gracefully. The use of these functions is optional.
+There are some simple additional convenience functions provided by SoCo-CLI. The use of these functions is optional.
 
 - **`api.set_log_level(log_level)`**: This function sets up Python logging for the whole program. `log_level` is a string which can take one of the following values: `None, Critical, Error, Warn, Info, Debug`. The default value is `None`.
-- **`api.handle_sigint()`**: This function sets up a signal handler for SIGINT, providing a tidier exit than a stack trace on a CTRL-C.
+- **`api.handle_sigint()`**: This function sets up a signal handler for SIGINT, providing a tidier exit than a stack trace in the event of a CTRL-C interrupt.
+- **`api.get_soco_object(speaker_name, use_local_speaker_list=False)`***: Returns a SoCo object for a given speaker name, using the complete set of SoCo-CLI strategies for speaker discovery. Returns `None` if no speaker is found.
 
 ## Known Issues
 
