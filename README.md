@@ -568,9 +568,11 @@ Enter sonos action (0 to exit) [] >
 
 ## Cached Discovery
 
-SoCo-CLI uses the full range of speaker discovery mechanisms in SoCo to look up speakers by their names. First, the native Sonos SSDP multicast process is tried.
+SoCo-CLI uses the full range of speaker discovery mechanisms in SoCo to look up speakers by their names.
 
-If this fails, SoCo-CLI will try scanning every IP address on your local network(s) to find the speaker; it's likely to be doing this if your network contains multiple Sonos systems (multiple 'households'), or if the network has problems with multicast forwarding. This can be slower than is desirable, so SoCo-CLI also provides an alternative process that scans the complete local network for Sonos devices as a one-off process, and then caches the results in a local file for use in future operations.
+First, the native Sonos SSDP multicast discovery process is tried.
+
+If this fails, SoCo-CLI will try scanning every IP address on your local network(s) to find the speaker; it's likely to be doing this some of the time if your network contains multiple Sonos systems (multiple 'households'), or if the network has problems with multicast forwarding. This can be slower than is desirable, so SoCo-CLI also provides an alternative process that scans the complete local network for Sonos devices as a one-off process, and then caches the results in a local file for use in future operations.
 
 It's often faster and more convenient to use the local cached speaker list. The disadvantage of using the cached discovery mechanism is that the speaker list can become stale due to speakers being added/removed/renamed, or IP addresses having changed, meaning the cached list must be refreshed. The `sonos-discover` command, discussed below, is a convenient way of doing this.
 
@@ -632,7 +634,7 @@ Other options:
 
 If you'd like to use SoCo-CLI as a high-level library in another Python program, it's simple to do so using its API capability. The goal is to provide the same added value, abtractions, and command structure as when using SoCo-CLI directly from the command line. Essentially, there is a single entry point that accepts exactly the same commands that would be used on the command line.
 
-Using the SoCo-CLI API means that the expense of loading soco-cli is incurred only once during the operation of your program.
+Using the SoCo-CLI API means that the expense of loading soco-cli is incurred only once during the operation of your program, and speaker discovery results are cached for efficiency.
 
 ### Importing the API
 
@@ -648,9 +650,9 @@ The API entry point is **`api.run_command(speaker_name, action, *args, use_local
 
 **Parameters:**
 
-- **`speaker_name (str)`**: The speaker name or speaker IP address supplied as a string.
+- **`speaker_name (str)`**: The speaker name or speaker IP address supplied as a string. Partial, case-insensitive names will be matched, but the match must be unambiguous.
 - **`action (str)`**: The action to perform, supplied as a string. Almost all of the SoCo-CLI actions are available for use, with the exception of the `loop` actions, and the `wait_until` and `wait_for` actions.
-- **`*args (tuple)`**: The arguments for the action, supplied as a list of strings. Arguments are optional, depending on the action.
+- **`*args (tuple)`**: The arguments for the action, supplied as strings. There can be zero or more argumants, depending on the action.
 - **`use_local_speaker_list (bool)`**: Whether to use the local speaker cache for speaker discovery. Optional, defaults to `False`.
 
 **Return Values:**
