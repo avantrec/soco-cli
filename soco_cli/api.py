@@ -33,9 +33,8 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     :return: Three-tuple (exit_code, output_string, error_msg)
     """
 
-    speaker = get_soco_object(speaker_name, use_local_speaker_list)
-    if not speaker:
-        return 1, "", "Error: Speaker '{}' not found".format(speaker_name)
+    # Prevent errors from causing exit
+    set_api()
 
     # Capture stdout and stderr for the duration of this command
     output = StringIO()
@@ -43,21 +42,26 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     error = StringIO()
     sys.stderr = error
 
-    # Prevent errors from causing exit
-    set_api()
+    speaker = get_soco_object(speaker_name, use_local_speaker_list)
 
-    return_value = process_action(
-        speaker, action, args, use_local_speaker_list=use_local_speaker_list
-    )
+    if speaker:
+        return_value = process_action(
+            speaker, action, args, use_local_speaker_list=use_local_speaker_list
+        )
+    else:
+        return_value = False
 
     # Restore stdout and stderr
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
 
     output_string = output.getvalue().rstrip()
-    error_msg = error.getvalue().rstrip()
+    if speaker:
+        error_msg = error.getvalue().rstrip()
+    else:
+        error_msg = "Speaker '{}' not found".format(speaker_name)
 
-    if not return_value and error_msg == "":
+    if speaker and not return_value and error_msg == "":
         error_msg = "Error: Action '{}' not found".format(action)
 
     exit_code = 1 if len(error_msg) else 0

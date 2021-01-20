@@ -404,6 +404,7 @@ class SpeakerCache:
 
         elif len(speakers_found) > 1:
             error_and_exit("'{}' is ambiguous: {}".format(name, speakers_found_names))
+            return None
 
         else:
             return None
@@ -428,6 +429,7 @@ class SpeakerCache:
                     name, speakers_found_names
                 )
             )
+            return None
 
         else:
             return None

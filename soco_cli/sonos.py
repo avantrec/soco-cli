@@ -423,7 +423,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
     set_interactive()
     while True:
         if speaker_name and speaker:
-            command = input("Enter sonos action (0 to exit) [{}] > ".format(speaker.player_name))
+            command = input(
+                "Enter sonos action (0 to exit) [{}] > ".format(speaker.player_name)
+            )
         else:
             command = input("Enter sonos action (0 to exit) [] > ")
         if command == "0" or command.lower().startswith("exit"):
