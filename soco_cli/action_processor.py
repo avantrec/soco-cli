@@ -407,24 +407,34 @@ def transport_state(speaker, action, args, soco_function, use_local_speaker_list
     return True
 
 
-def play_favourite_core(speaker, favourite):
+def play_favourite_core(speaker, favourite, favourite_number=None):
     """Core of the play_favourite action, but doesn't exit on failure"""
     fs = speaker.music_library.get_sonos_favorites(complete_result=True)
-    the_fav = None
-    # Strict match
-    for f in fs:
-        if favourite == f.title:
-            logging.info("Strict match '{}' found".format(f.title))
-            the_fav = f
-            break
-    # Fuzzy match
-    if not the_fav:
-        favourite = favourite.lower()
+    if favourite_number:
+        try:
+            favourite_number = int(favourite_number)
+            the_fav = fs[favourite_number - 1]
+        except (IndexError, ValueError):
+            limit = len(fs)
+            return False, "Favourite number must be integer between 1 and {}".format(
+                limit
+            )
+    else:
+        the_fav = None
+        # Strict match
         for f in fs:
-            if favourite in f.title.lower():
-                logging.info("Fuzzy match '{}' found".format(f.title))
+            if favourite == f.title:
+                logging.info("Strict match '{}' found".format(f.title))
                 the_fav = f
                 break
+        # Fuzzy match
+        if not the_fav:
+            favourite = favourite.lower()
+            for f in fs:
+                if favourite in f.title.lower():
+                    logging.info("Fuzzy match '{}' found".format(f.title))
+                    the_fav = f
+                    break
     if the_fav:
         # play_uri works for some favourites
         # ToDo: this is broken and we should test for the
@@ -457,6 +467,16 @@ def play_favourite_core(speaker, favourite):
 @one_parameter
 def play_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     result, msg = play_favourite_core(speaker, args[0])
+    if not result:
+        error_and_exit(msg)
+        return False
+    else:
+        return True
+
+
+@one_parameter
+def play_favourite_number(speaker, action, args, soco_function, use_local_speaker_list):
+    result, msg = play_favourite_core(speaker, "", args[0])
     if not result:
         error_and_exit(msg)
         return False
@@ -2110,4 +2130,7 @@ actions = {
     "buttons": SonosFunction(buttons, ""),
     "fixed_volume": SonosFunction(fixed_volume, ""),
     "trueplay": SonosFunction(trueplay, ""),
+    "play_favourite_number": SonosFunction(play_favourite_number, ""),
+    "play_favorite_number": SonosFunction(play_favourite_number, ""),
+    "pfn": SonosFunction(play_favourite_number, ""),
 }
