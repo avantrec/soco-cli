@@ -184,6 +184,7 @@ def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
             queue = [queue[track_number - 1]]
         except ValueError:
             parameter_type_error(action, "integer")
+            return False
     print()
     if len(args) == 1:
         print_tracks(queue, single_track=True, track_number=track_number)
