@@ -519,7 +519,7 @@ sonos --interactive <speaker_name>
 
 Interactive mode is a new, quite basic, experimental feature, which creates a SoCo-CLI command line session for entering `sonos` commands. The session can either operate only on a single speaker, or on any speaker.
 
-Most `sonos` commands are accepted. The sequential operator ` : ` cannot be used, nor can `loop` statements or the `wait` and `wait_until` commands. 
+Most `sonos` commands are accepted, however the sequential operator ` : ` cannot be used, nor can `loop` statements or the `wait` and `wait_until` commands. 
 
 Interactive mode is started with the `-i` or `--interactive` command line option. Optionally, a speaker name can be given, in which case all commands will be directed to that speaker. If the `SPKR` environment variable is set, that will be used as the single speaker to operate on unless a speaker name is provided on the command line.
 
@@ -543,12 +543,26 @@ If no speaker name is given (or the `SPKR` environment variable is not set), the
 ```
 % sonos -i
 Entering SoCo-CLI interactive mode
-Enter sonos action (0 to exit): kitchen volume
+Enter sonos action (0 to exit) [] > kitchen volume
 30
-Enter sonos action (0 to exit): study pause  
-Enter sonos action (0 to exit): kitchen play
-Enter sonos action (0 to exit): 0
+Enter sonos action (0 to exit) [] > study pause  
+Enter sonos action (0 to exit) [] > kitchen play
+Enter sonos action (0 to exit) [] > 0
 %
+```
+
+### Setting the Active Speaker
+
+During an interactive session, the speaker to operate on can be set using `speaker = speaker_name`. The spaces around the `=` are required. The active speaker is unset by leaving the speaker name blank, for example:
+
+```
+Enter sonos action (0 to exit) [] > speaker = Study
+Enter sonos action (0 to exit) [] > volume
+50
+Enter sonos action (0 to exit) [Study] > speaker = "Front Reception"
+Enter sonos action (0 to exit) [Front Reception] > mute on
+Enter sonos action (0 to exit) [Front Reception] > speaker =
+Enter sonos action (0 to exit) [] > 
 ```
 
 ## Cached Discovery

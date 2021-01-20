@@ -1,3 +1,4 @@
+v0.3.2    - Interactive mode: add ability to set/unset active speaker
 v0.3.1    - API interface change/expansion, and bugfix for local cache
 v0.3.0    - Add an API allowing the use of SoCo-CLI as a Python library
           - Add early version of interactive mode
