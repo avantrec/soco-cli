@@ -376,6 +376,8 @@ class SpeakerCache:
 
     def scan(self, reset=False):
         if not self._discovery_done or reset:
+            # Clear the current cache
+            self._cache = set()
             logging.info("Performing full discovery scan")
             speakers = soco.discovery.scan_network(
                 multi_household=True, scan_timeout=SCAN_TIMEOUT
