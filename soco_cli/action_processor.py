@@ -409,7 +409,9 @@ def transport_state(speaker, action, args, soco_function, use_local_speaker_list
 
 def play_favourite_core(speaker, favourite, favourite_number=None):
     """Core of the play_favourite action, but doesn't exit on failure"""
+
     fs = speaker.music_library.get_sonos_favorites(complete_result=True)
+
     if favourite_number:
         err_msg = "Favourite number must be integer between 1 and {}".format(len(fs))
         try:
@@ -418,7 +420,14 @@ def play_favourite_core(speaker, favourite, favourite_number=None):
             return False, err_msg
         if not 0 < favourite_number <= len(fs):
             return False, err_msg
+
+        # List must be sorted by title to match the output of 'list_favourites'
+        fs.sort(key=lambda x: x.title)
         the_fav = fs[favourite_number - 1]
+        logging.info(
+            "Favourite number {} is '{}'".format(favourite_number, the_fav.title)
+        )
+
     else:
         the_fav = None
         # Strict match
@@ -427,6 +436,7 @@ def play_favourite_core(speaker, favourite, favourite_number=None):
                 logging.info("Strict match '{}' found".format(f.title))
                 the_fav = f
                 break
+
         # Fuzzy match
         if not the_fav:
             favourite = favourite.lower()
@@ -435,6 +445,7 @@ def play_favourite_core(speaker, favourite, favourite_number=None):
                     logging.info("Fuzzy match '{}' found".format(f.title))
                     the_fav = f
                     break
+
     if the_fav:
         # play_uri works for some favourites
         # ToDo: this is broken and we should test for the
@@ -476,6 +487,7 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
 
 @one_parameter
 def play_favourite_number(speaker, action, args, soco_function, use_local_speaker_list):
+    logging.info("Playing favourite number {}".format(args[0]))
     result, msg = play_favourite_core(speaker, "", args[0])
     if not result:
         error_and_exit(msg)
