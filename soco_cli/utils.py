@@ -440,9 +440,29 @@ class SpeakerCache:
         else:
             return None
 
+    def get_all_speakers(self):
+        self.scan()
+        return self._cache
+
+    def get_all_speaker_names(self):
+        self.scan()
+        names = [speaker[1] for speaker in self._cache]
+        names.sort()
+        return names
+
 
 # Single instance of the speaker cache
 cache = SpeakerCache()
+
+
+def speaker_cache():
+    """Return the global speaker cache object"""
+    return cache
+
+
+def local_speaker_list():
+    """Return the global speaker list object"""
+    return speaker_list
 
 
 def get_speaker(name, local=False):

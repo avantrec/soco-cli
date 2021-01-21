@@ -251,6 +251,14 @@ class Speakers:
         else:
             return None
 
+    def get_all_speaker_names(self, include_invisible=False):
+        soco_speaker_names = []
+        for speaker in self._speakers:
+            if speaker.is_visible:
+                soco_speaker_names.append(speaker.speaker_name)
+        soco_speaker_names.sort()
+        return soco_speaker_names
+
     def print(self):
         if not self._speakers:
             return

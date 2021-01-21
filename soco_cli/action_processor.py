@@ -1886,18 +1886,19 @@ SonosFunction = namedtuple(
 )
 
 
-def list_actions():
+def list_actions(include_additional=True):
     action_list = list(actions.keys())
-    additional_commands = [
-        "loop",
-        "loop_until",
-        "loop_for",
-        "loop_to_start",
-        "wait_until",
-        "wait",
-        "wait_for",
-    ]
-    action_list = action_list + additional_commands
+    if include_additional:
+        additional_commands = [
+            "loop",
+            "loop_until",
+            "loop_for",
+            "loop_to_start",
+            "wait_until",
+            "wait",
+            "wait_for",
+        ]
+        action_list = action_list + additional_commands
     action_list = sorted(action_list, reverse=True)
 
     longest_command = len(max(action_list, key=len))

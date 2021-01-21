@@ -1,4 +1,5 @@
-v0.3.3    - Bugfix for numbering issue in 'play_favourite_number'
+v0.3.3    - Significantly improved Interactive Mode
+          - Bugfix for numbering issue in 'play_favourite_number'
           - API change / bugfix for 'get_soco_object()'
 v0.3.2    - Interactive mode: add ability to set/unset active speaker
           - Add 'play_favourite_number' action to play a favourite by its

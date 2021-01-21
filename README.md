@@ -38,7 +38,8 @@
          * [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
          * [Repeating Commands: The loop Actions](#repeating-commands-the-loop-actions)
       * [Conditional Command Execution](#conditional-command-execution)
-      * [Interactive Mode (Experimental)](#interactive-mode-experimental)
+      * [Interactive Shell Mode (Experimental)](#interactive-shell-mode-experimental)
+         * [Setting the Active Speaker](#setting-the-active-speaker)
       * [Cached Discovery](#cached-discovery)
          * [Usage](#usage)
          * [Speaker Naming](#speaker-naming)
@@ -55,7 +56,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Wed Jan 20 08:47:42 GMT 2021 -->
+<!-- Added by: pwt, at: Thu Jan 21 14:57:33 GMT 2021 -->
 
 <!--te-->
 
@@ -511,59 +512,47 @@ No action will be taken if the speaker is playing, and the command will terminat
 
 Similarly, the `if_playing` modifier will execute the action that follows it only if the speaker is currently playing.
 
-## Interactive Mode (Experimental)
+## Interactive Shell Mode (Experimental)
 
 ```
-sonos --interactive
+sonos -i
 sonos --interactive <speaker_name>
 ```
 
-Interactive mode is a new, quite basic, experimental feature, which creates a SoCo-CLI command line session for entering `sonos` commands. The session can either operate only on a single speaker, or on any speaker.
+Interactive shell mode is a new feature, which creates a SoCo-CLI command line session for entering `sonos` commands. When using SoCo-CLI interactively, the shell is faster and requires less typing.
 
 Most `sonos` commands are accepted, however the sequential operator ` : ` cannot be used, nor can `loop` statements or the `wait` and `wait_until` commands. 
 
-Interactive mode is started with the `-i` or `--interactive` command line option. Optionally, a speaker name can be given, in which case all commands will be directed to that speaker. If the `SPKR` environment variable is set, that will be used as the single speaker to operate on unless a speaker name is provided on the command line.
+Interactive mode is started with the `-i` or `--interactive` command line option. Optionally, a speaker name can be given, in which case all commands will be directed to that speaker (until changed in the shell).
 
-**Example:**
+Type `help` at the sonos command line for more information on using interactive mode:
 
 ```
-% sonos -i Study
+$ sonos -i
+
 Entering SoCo-CLI interactive mode
-Enter sonos action (0 to exit): volume
-34
-Enter sonos action (0 to exit): pause  
-Enter sonos action (0 to exit): play
-Enter sonos action (0 to exit): 0
-%
-```
+Type 'help' for available commands.
 
-If no speaker name is given (or the `SPKR` environment variable is not set), the speaker name must be supplied for each command.
+Enter 'speaker action [args]' (0 to exit) [] > help
 
-**Example:**
+This is the SoCo-CLI interactive mode. Interactive commands are as follows:
 
-```
-% sonos -i
-Entering SoCo-CLI interactive mode
-Enter sonos action (0 to exit) [] > kitchen volume
-30
-Enter sonos action (0 to exit) [] > study pause  
-Enter sonos action (0 to exit) [] > kitchen play
-Enter sonos action (0 to exit) [] > 0
-%
-```
+    'actions'   :   Show the list of SoCo-CLI actions
+    'exit'      :   Exit the program. '0' also works.
+    'help'      :   Show this help message
+    'rescan'    :   Rescan the whole network to discover speakers
+    'speakers'  :   List the names of all available speakers
+    'speaker =' :   Set the speaker to operate on, using 'speaker = <speaker_name>'
+                    Use quotes when needed for the speaker name, e.g.:
+                    speaker = "Front Reception". The spaces around '=' are
+                    required.
+                    To unset the speaker, use a blank speaker name.
+    
+    The command syntax is just the same as using 'sonos' from the command line.
+    If a speaker been set, the speaker name is omitted from the command.
 
-### Setting the Active Speaker
 
-During an interactive session, the speaker to operate on can be set using `speaker = speaker_name`. The spaces around the `=` are required. The active speaker is unset by leaving the speaker name blank, for example:
-
-```
-Enter sonos action (0 to exit) [] > speaker = Study
-Enter sonos action (0 to exit) [] > volume
-50
-Enter sonos action (0 to exit) [Study] > speaker = "Front Reception"
-Enter sonos action (0 to exit) [Front Reception] > mute on
-Enter sonos action (0 to exit) [Front Reception] > speaker =
-Enter sonos action (0 to exit) [] > 
+Enter 'speaker action [args]' (0 to exit) [] > 
 ```
 
 ## Cached Discovery
