@@ -1,3 +1,4 @@
+v0.3.4    - Fix refactoring bug
 v0.3.3    - Significantly improved Interactive Mode
           - Bugfix for numbering issue in 'play_favourite_number'
           - API change / bugfix for 'get_soco_object()'

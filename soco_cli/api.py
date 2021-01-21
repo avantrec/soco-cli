@@ -42,7 +42,7 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     error = StringIO()
     sys.stderr = error
 
-    speaker = get_soco_object(speaker_name, use_local_speaker_list)
+    speaker, error_msg = get_soco_object(speaker_name, use_local_speaker_list)
 
     if speaker:
         return_value = process_action(
