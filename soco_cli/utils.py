@@ -353,6 +353,7 @@ class SpeakerCache:
     def __init__(self):
         # _cache contains (soco_instance, speaker_name) tuples
         self._cache = set()
+        self._scan_done = False
         self._discovery_done = False
 
     @property
@@ -364,18 +365,22 @@ class SpeakerCache:
         for speaker in speakers:
             self._cache.add((speaker, speaker.player_name))
 
-    def discover(self):
-        speakers = soco.discovery.discover(
-            allow_network_scan=True, scan_timeout=SCAN_TIMEOUT
-        )
-        if speakers:
-            self.cache_speakers(speakers)
-        else:
-            logging.info("No speakers found to cache")
+    def discover(self, reset=False):
+        if not self._discovery_done or reset:
+            # Clear the current cache
+            self._cache = set()
+            speakers = soco.discovery.discover(
+                allow_network_scan=True, scan_timeout=SCAN_TIMEOUT
+            )
+            if speakers:
+                self.cache_speakers(speakers)
+            else:
+                logging.info("No speakers found to cache")
+            self._discovery_done = True
         return None
 
     def scan(self, reset=False):
-        if not self._discovery_done or reset:
+        if not self._scan_done or reset:
             # Clear the current cache
             self._cache = set()
             logging.info("Performing full discovery scan")
@@ -384,7 +389,7 @@ class SpeakerCache:
             )
             if speakers:
                 self.cache_speakers(speakers)
-                self._discovery_done = True
+                self._scan_done = True
             else:
                 logging.info("No speakers found to cache")
         else:
@@ -442,12 +447,18 @@ class SpeakerCache:
         else:
             return None
 
-    def get_all_speakers(self):
-        self.scan()
+    def get_all_speakers(self, use_scan=False):
+        if use_scan:
+            self.scan()
+        else:
+            self.discover()
         return self._cache
 
-    def get_all_speaker_names(self):
-        self.scan()
+    def get_all_speaker_names(self, use_scan=False):
+        if use_scan:
+            self.scan()
+        else:
+            self.discover()
         names = [speaker[1] for speaker in self._cache]
         names.sort()
         return names

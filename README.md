@@ -38,8 +38,7 @@
          * [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
          * [Repeating Commands: The loop Actions](#repeating-commands-the-loop-actions)
       * [Conditional Command Execution](#conditional-command-execution)
-      * [Interactive Shell Mode (Experimental)](#interactive-shell-mode-experimental)
-         * [Setting the Active Speaker](#setting-the-active-speaker)
+      * [Interactive Shell Mode](#interactive-shell-mode)
       * [Cached Discovery](#cached-discovery)
          * [Usage](#usage)
          * [Speaker Naming](#speaker-naming)
@@ -56,7 +55,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Thu Jan 21 14:57:33 GMT 2021 -->
+<!-- Added by: pwt, at: Thu Jan 21 18:54:39 GMT 2021 -->
 
 <!--te-->
 
@@ -69,6 +68,8 @@ A simple `sonos` command is provided which allows easy control of a huge range o
 SoCo-CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
 SoCo-CLI can also be used as a simple, high-level library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library.
+
+For interactive command line use, SoCo-CLI has an [Interactive Shell Mode](#interactive-shell-mode) that is faster and reduces typing.
 
 ## Supported Environments
 
@@ -512,7 +513,7 @@ No action will be taken if the speaker is playing, and the command will terminat
 
 Similarly, the `if_playing` modifier will execute the action that follows it only if the speaker is currently playing.
 
-## Interactive Shell Mode (Experimental)
+## Interactive Shell Mode
 
 ```
 sonos -i
@@ -525,7 +526,7 @@ Most `sonos` commands are accepted, however the sequential operator ` : ` cannot
 
 Interactive mode is started with the `-i` or `--interactive` command line option. Optionally, a speaker name can be given, in which case all commands will be directed to that speaker (until changed in the shell).
 
-Type `help` at the sonos command line for more information on using interactive mode:
+Type `help` at the sonos command line for more information on using interactive shell mode:
 
 ```
 $ sonos -i
@@ -535,21 +536,30 @@ Type 'help' for available commands.
 
 Enter 'speaker action [args]' (0 to exit) [] > help
 
-This is the SoCo-CLI interactive mode. Interactive commands are as follows:
+This is SoCo-CLI interactive mode. Interactive commands are as follows:
 
-    'actions'   :   Show the list of SoCo-CLI actions
+    '1', ...    :   Set the active speaker. Use the numbers shown by the
+                    'speakers' command. E.g., to set to speaker number 4
+                    in the list, just type '4'. A negative number will
+                    unset the active speaker, e.g., enter '-1'.
+    'actions'   :   Show the list of SoCo-CLI actions.
     'exit'      :   Exit the program. '0' also works.
-    'help'      :   Show this help message
-    'rescan'    :   Rescan the whole network to discover speakers
+    'help'      :   Show this help message.
+    'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
+                    use this to perform a more comprehensive scan.
     'speakers'  :   List the names of all available speakers
-    'speaker =' :   Set the speaker to operate on, using 'speaker = <speaker_name>'
+    'speaker =' :   Set the active, using 'speaker = <speaker_name>'
                     Use quotes when needed for the speaker name, e.g.:
                     speaker = "Front Reception". The spaces around '=' are
-                    required.
-                    To unset the speaker, use a blank speaker name.
+                    required. Unambiguous partial, case-insensitive matches
+                    work.
+                    To unset the active speaker, use a blank speaker name,
+                    or just enter a negative number.
+
     
-    The command syntax is just the same as using 'sonos' from the command line.
+    The command syntax is the same as using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.
+
 
 
 Enter 'speaker action [args]' (0 to exit) [] > 
