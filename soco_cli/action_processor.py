@@ -411,14 +411,14 @@ def play_favourite_core(speaker, favourite, favourite_number=None):
     """Core of the play_favourite action, but doesn't exit on failure"""
     fs = speaker.music_library.get_sonos_favorites(complete_result=True)
     if favourite_number:
+        err_msg = "Favourite number must be integer between 1 and {}".format(len(fs))
         try:
             favourite_number = int(favourite_number)
-            the_fav = fs[favourite_number - 1]
-        except (IndexError, ValueError):
-            limit = len(fs)
-            return False, "Favourite number must be integer between 1 and {}".format(
-                limit
-            )
+        except ValueError:
+            return False, err_msg
+        if not 0 < favourite_number <= len(fs):
+            return False, err_msg
+        the_fav = fs[favourite_number - 1]
     else:
         the_fav = None
         # Strict match
