@@ -676,7 +676,7 @@ There are some simple additional convenience functions provided by SoCo-CLI. The
 
 - **`api.set_log_level(log_level)`**: This function sets up Python logging for the whole program. `log_level` is a string which can take one of the following values: `None, Critical, Error, Warn, Info, Debug`. The default value is `None`.
 - **`api.handle_sigint()`**: This function sets up a signal handler for SIGINT, providing a tidier exit than a stack trace in the event of a CTRL-C interrupt.
-- **`api.get_soco_object(speaker_name, use_local_speaker_list=False)`***: Returns a SoCo object for a given speaker name, using the complete set of SoCo-CLI strategies for speaker discovery. Returns `None` if no speaker is found.
+- **`api.get_soco_object(speaker_name, use_local_speaker_list=False)`**: Returns a two-tuple of the SoCo object for a given speaker name (or None), and an error message string. Uses the complete set of SoCo-CLI strategies for speaker discovery.
 
 ## Known Issues
 

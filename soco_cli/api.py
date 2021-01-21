@@ -93,12 +93,21 @@ def get_soco_object(speaker_name, use_local_speaker_list=False):
     :param speaker_name: The name of the speaker as a string
     :param use_local_speaker_list: Whether to use the local speaker cache
 
-    :return SoCo object, or None if no speaker is found
+    :return Tuple of SoCo object, or None if no speaker is found, and an
+        error message.
     """
+    set_api()
+
+    error = StringIO()
+    sys.stderr = error
+
     if use_local_speaker_list:
         _setup_local_speaker_list()
+    speaker = get_speaker(speaker_name, use_local_speaker_list)
 
-    return get_speaker(speaker_name, use_local_speaker_list)
+    sys.stderr = sys.__stderr__
+
+    return speaker, error.getvalue().rstrip()
 
 
 SPEAKER_LIST_SET = False

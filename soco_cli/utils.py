@@ -16,7 +16,7 @@ from .speakers import Speakers
 
 
 def event_unsubscribe(sub):
-    # Insert a brief pause before event unsubscription prevents lockups,
+    # Insert a brief pause before event unsubscription to prevent lockups,
     # by yielding the thread
     pause_seconds = 0.2
     logging.info(
@@ -353,6 +353,7 @@ class SpeakerCache:
     def __init__(self):
         # _cache contains (soco_instance, speaker_name) tuples
         self._cache = set()
+        self._discovery_done = False
 
     @property
     def exists(self):
@@ -373,14 +374,19 @@ class SpeakerCache:
             logging.info("No speakers found to cache")
         return None
 
-    def scan(self):
-        speakers = soco.discovery.scan_network(
-            multi_household=True, scan_timeout=SCAN_TIMEOUT
-        )
-        if speakers:
-            self.cache_speakers(speakers)
+    def scan(self, reset=False):
+        if not self._discovery_done or reset:
+            logging.info("Performing full discovery scan")
+            speakers = soco.discovery.scan_network(
+                multi_household=True, scan_timeout=SCAN_TIMEOUT
+            )
+            if speakers:
+                self.cache_speakers(speakers)
+                self._discovery_done = True
+            else:
+                logging.info("No speakers found to cache")
         else:
-            logging.info("No speakers found to cache")
+            logging.info("Full discovery scan already done, and reset not requested")
         return None
 
     def add(self, speaker):
