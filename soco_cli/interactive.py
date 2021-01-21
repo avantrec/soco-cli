@@ -1,9 +1,7 @@
-"""
-SoCo-CLI interactive mode handler
-"""
+""" SoCo-CLI interactive mode handler """
 
 import logging
-from os import environ as env
+import readline
 
 from .utils import error_and_exit, get_speaker, set_interactive
 
@@ -23,6 +21,11 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             error_and_exit("Speaker '{}' not found".format(speaker_name))
 
     print("Entering SoCo-CLI interactive mode")
+
+    # readline.parse_and_bind('tab: complete')
+    # readline.set_completer(_completer)
+    # readline.set_completer_delims(' ')
+
     set_interactive()
     while True:
         if speaker_name and speaker:
@@ -65,3 +68,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 print("Error: Action '{}'".format(action))
         except:
             print("Error: Invalid command")
+
+
+def _completer(*args, **kwargs):
+    pass
