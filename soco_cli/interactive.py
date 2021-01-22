@@ -24,8 +24,8 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             print("Speaker '{}' not found {}".format(speaker_name, error_msg))
             speaker_name = None
 
-    print("\nEntering SoCo-CLI interactive mode")
-    print("Type 'help' for available commands.\n")
+    print("\nEntering SoCo-CLI interactive shell.")
+    print("Type 'help' for available shell commands.\n")
 
     readline.parse_and_bind("tab: complete")
     readline.set_completer(_completer)
@@ -36,9 +36,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
     # Input loop
     while True:
         if speaker_name and speaker:
-            command = input(
-                "SoCo-CLI [{}] > ".format(speaker.player_name)
-            )
+            command = input("SoCo-CLI [{}] > ".format(speaker.player_name))
         else:
             command = input("SoCo-CLI [] > ")
 
@@ -46,7 +44,13 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             continue
         command_lower = command.lower()
 
-        if command == "0" or command_lower.startswith("exit"):
+        if command == "0":
+            # Unset the active speaker
+            speaker_name = None
+            speaker = None
+            continue
+
+        if command_lower.startswith("exit"):
             logging.info("Exiting interactive mode")
             return True
 
@@ -61,7 +65,8 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
         if command_lower == "speakers":
             print()
             names = _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
-            for index, name in enumerate(names, start=1):
+            names.insert(0, "Unset the active speaker")
+            for index, name in enumerate(names, start=0):
                 print("  ", str(index).rjust(2), ":", name)
             print()
             continue
@@ -69,22 +74,16 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
         # Is the input a number in the range of speaker numbers?
         try:
             speaker_number = int(command_lower)
-            if (
-                1
-                <= speaker_number
-                <= len(
-                    _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
-                )
-            ):
+            limit = len(
+                _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
+            )
+            if 1 <= speaker_number <= limit:
                 speaker_name = _get_speaker_names(
                     use_local_speaker_list=use_local_speaker_list
                 )[speaker_number - 1]
                 speaker = get_speaker(speaker_name, use_local_speaker_list)
-            elif speaker_number < 0:
-                speaker_name = None
-                speaker = None
             else:
-                print("Error: Speaker number is out of range")
+                print("Error: Speaker number is out of range (0 to {})".format(limit))
             continue
         except ValueError:
             pass
@@ -182,11 +181,11 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
 
     '1', ...    :   Set the active speaker. Use the numbers shown by the
                     'speakers' command. E.g., to set to speaker number 4
-                    in the list, just type '4'. A negative number will
-                    unset the active speaker, e.g., enter '-1'.
+                    in the list, just type '4'.
+                    '0' will unset the active speaker.
     'actions'   :   Show the complete list of SoCo-CLI actions.
-    'exit'      :   Exit the program. '0' also works.
-    'help'      :   Show this help message.
+    'exit'      :   Exit the shell.
+    'help'      :   Show this help message (available shell commands).
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
                     use this to perform a more comprehensive scan.
     'set <spkr> :   Set the active speaker using its name.
@@ -194,10 +193,10 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     'set "Front Reception"'. Unambiguous partial, case-insensitive
                     matches are supported, e.g., 'set front'.
                     To unset the active speaker, omit the speaker name,
-                    or just enter a negative number.    
+                    or just enter '0'.   
     'speakers'  :   List the names of all available speakers
     
-    The command syntax is the same as using 'sonos' from the command line.
+    The command syntax is the same as when using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.
     
     Use the TAB key for autocompletion of shell commands and SoCo-CLI actions.

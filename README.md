@@ -539,8 +539,8 @@ Type `help` or `?` at the sonos command line for more information on using inter
 ```
 $ sonos -i
 
-Entering SoCo-CLI interactive mode
-Type 'help' for available commands.
+Entering SoCo-CLI interactive shell.
+Type 'help' for available shell commands.
 
 SoCo-CLI [] > help
 
@@ -548,27 +548,28 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
 
     '1', ...    :   Set the active speaker. Use the numbers shown by the
                     'speakers' command. E.g., to set to speaker number 4
-                    in the list, just type '4'. A negative number will
-                    unset the active speaker, e.g., enter '-1'.
+                    in the list, just type '4'.
+                    '0' will unset the active speaker.
     'actions'   :   Show the complete list of SoCo-CLI actions.
-    'exit'      :   Exit the program. '0' also works.
-    'help'      :   Show this help message.
+    'exit'      :   Exit the shell.
+    'help'      :   Show this help message (available shell commands).
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
                     use this to perform a more comprehensive scan.
     'set <spkr> :   Set the active speaker using its name.
-                    Use quotes when needed for the speaker name, e.g.:
+                    Use quotes when needed for the speaker name, e.g.,
                     'set "Front Reception"'. Unambiguous partial, case-insensitive
-                    matches are supported, e.g. 'set front'.
+                    matches are supported, e.g., 'set front'.
                     To unset the active speaker, omit the speaker name,
-                    or just enter a negative number.    
+                    or just enter '0'.   
     'speakers'  :   List the names of all available speakers
     
-    The command syntax is the same as using 'sonos' from the command line.
+    The command syntax is the same as when using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.
     
     Use the TAB key for autocompletion of shell commands and SoCo-CLI actions.
 
 SoCo-CLI [] > 
+
 ```
 
 ### Shell History and Auto-Completion
