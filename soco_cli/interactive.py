@@ -94,8 +94,8 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
             # Setting a speaker to operate on?
             try:
-                if "speaker" == args[0] and "=" == args[1]:
-                    speaker_name = args[2]
+                if "set" == args[0]:
+                    speaker_name = args[1]
                     speaker = get_speaker(speaker_name, use_local_speaker_list)
                     if not speaker:
                         print("Error: Speaker not found")
@@ -120,7 +120,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             print("Error: Invalid command")
 
 
-COMMANDS = ["actions", "exit", "help", "rescan", "speakers", "speaker = "]
+COMMANDS = ["actions", "exit", "help", "rescan", "set ", "speakers"]
 
 
 def _completer(text, context):
@@ -154,14 +154,13 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'help'      :   Show this help message.
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
                     use this to perform a more comprehensive scan.
+    'set <spkr> :   Set the active speaker using its name.
+                    Use quotes when needed for the speaker name, e.g.,
+                    'set "Front Reception"'. Unambiguous partial, case-insensitive
+                    matches are supported, e.g., 'set front'.
+                    To unset the active speaker, omit the speaker name,
+                    or just enter a negative number.    
     'speakers'  :   List the names of all available speakers
-    'speaker =' :   Set the active, using 'speaker = <speaker_name>'
-                    Use quotes when needed for the speaker name, e.g.:
-                    speaker = "Front Reception". The spaces around '=' are
-                    required. Unambiguous partial, case-insensitive matches
-                    work.
-                    To unset the active speaker, use a blank speaker name,
-                    or just enter a negative number.
     
     The command syntax is the same as using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.

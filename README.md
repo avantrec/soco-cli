@@ -552,23 +552,19 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     unset the active speaker, e.g., enter '-1'.
     'actions'   :   Show the list of SoCo-CLI actions.
     'exit'      :   Exit the program. '0' also works.
-    'help', '?' :   Show this help message.
+    'help'      :   Show this help message.
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
                     use this to perform a more comprehensive scan.
-    'speakers'  :   List the names of all available speakers
-    'speaker =' :   Set the active, using 'speaker = <speaker_name>'
+    'set <spkr> :   Set the active speaker using its name.
                     Use quotes when needed for the speaker name, e.g.:
-                    speaker = "Front Reception". The spaces around '=' are
-                    required. Unambiguous partial, case-insensitive matches
-                    work.
-                    To unset the active speaker, use a blank speaker name,
-                    or just enter a negative number.
-
+                    'set "Front Reception"'. Unambiguous partial, case-insensitive
+                    matches are supported, e.g. 'set front'.
+                    To unset the active speaker, omit the speaker name,
+                    or just enter a negative number.    
+    'speakers'  :   List the names of all available speakers
     
     The command syntax is the same as using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.
-
-
 
 Enter 'speaker action [args]' (0 to exit) [] > 
 ```
