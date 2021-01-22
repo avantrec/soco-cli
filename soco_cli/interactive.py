@@ -27,9 +27,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
     print("\nEntering SoCo-CLI interactive mode")
     print("Type 'help' for available commands.\n")
 
-    readline.parse_and_bind('tab: complete')
+    readline.parse_and_bind("tab: complete")
     readline.set_completer(_completer)
-    readline.set_completer_delims(' ')
+    readline.set_completer_delims(" ")
 
     set_interactive()
 
@@ -70,8 +70,16 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
         # Is the input a number in the range of speaker numbers?
         try:
             speaker_number = int(command_lower)
-            if 1 <= speaker_number <= len(_get_speaker_names(use_local_speaker_list=use_local_speaker_list)):
-                speaker_name = _get_speaker_names(use_local_speaker_list=use_local_speaker_list)[speaker_number - 1]
+            if (
+                1
+                <= speaker_number
+                <= len(
+                    _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
+                )
+            ):
+                speaker_name = _get_speaker_names(
+                    use_local_speaker_list=use_local_speaker_list
+                )[speaker_number - 1]
                 speaker = get_speaker(speaker_name, use_local_speaker_list)
             elif speaker_number < 0:
                 speaker_name = None
@@ -119,11 +127,16 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     print("Error: Speaker not found")
                     continue
             action = args.pop(0)
-            response = process_action(
-                speaker, action, args, use_local_speaker_list=use_local_speaker_list
+            exit_code, output, error_msg = run_command(
+                speaker.ip_address,
+                action,
+                *args,
+                use_local_speaker_list=use_local_speaker_list,
             )
-            if not response:
-                print("Error: Action '{}'".format(action))
+            if exit_code:
+                print(error_msg)
+            else:
+                print(output)
         except:
             print("Error: Invalid command")
 
