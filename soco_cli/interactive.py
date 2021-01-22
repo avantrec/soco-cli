@@ -27,9 +27,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
     print("\nEntering SoCo-CLI interactive mode")
     print("Type 'help' for available commands.\n")
 
-    # readline.parse_and_bind('tab: complete')
-    # readline.set_completer(_completer)
-    # readline.set_completer_delims(' ')
+    readline.parse_and_bind('tab: complete')
+    readline.set_completer(_completer)
+    readline.set_completer_delims(' ')
 
     set_interactive()
 
@@ -120,8 +120,13 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             print("Error: Invalid command")
 
 
-def _completer(*args, **kwargs):
-    pass
+COMMANDS = ["actions", "exit", "help", "rescan", "speakers", "speaker = "]
+
+
+def _completer(text, context):
+    """Auto-complete commands using TAB"""
+    matches = [cmd for cmd in COMMANDS if cmd.startswith(text)]
+    return matches[context]
 
 
 def _show_actions():

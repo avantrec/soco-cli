@@ -39,8 +39,11 @@
          * [Repeating Commands: The loop Actions](#repeating-commands-the-loop-actions)
       * [Conditional Command Execution](#conditional-command-execution)
       * [Interactive Shell Mode](#interactive-shell-mode)
-      * [Cached Discovery](#cached-discovery)
+         * [Description](#description)
          * [Usage](#usage)
+         * [Shell History and Auto-Completion](#shell-history-and-auto-completion)
+      * [Cached Discovery](#cached-discovery)
+         * [Usage](#usage-1)
          * [Speaker Naming](#speaker-naming)
          * [Refreshing the Local Speaker List](#refreshing-the-local-speaker-list)
          * [Discovery Options](#discovery-options)
@@ -55,7 +58,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Thu Jan 21 18:54:39 GMT 2021 -->
+<!-- Added by: pwt, at: Fri Jan 22 14:33:42 GMT 2021 -->
 
 <!--te-->
 
@@ -521,9 +524,13 @@ sonos --interactive <speaker_name>
 sonos -i
 ```
 
+### Description
+
 Interactive shell mode is a new feature, which creates a SoCo-CLI command line session for entering `sonos` commands. Compared to using individual `sonos` invocations, using the shell is faster and requires less typing.
 
 Most `sonos` commands are accepted, however the sequential operator ` : ` cannot be used, nor can `loop` statements or the `wait` and `wait_until` commands. 
+
+### Usage
 
 Interactive mode is started with the `-i` or `--interactive` command line option. Optionally, a speaker name can be given, in which case all commands will be directed to that speaker (until changed in the shell).
 
@@ -565,6 +572,10 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
 
 Enter 'speaker action [args]' (0 to exit) [] > 
 ```
+
+### Shell History and Auto-Completion
+
+Commands in the shell history can be scrolled through by using the up/down arrows, and commands can be edited using the left/right arrows. Shell commands can be auto-completed using the TAB key.
 
 ## Cached Discovery
 
