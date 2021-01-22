@@ -8,7 +8,7 @@ SoCo-CLI is a powerful command line wrapper for the popular Python SoCo library 
 
 A simple `sonos` command is provided which allows easy control of a huge range of speaker functions, including playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speaker states, and to create repeated action sequences using loops. Audio files from the local filesystem can be played directly on Sonos.
 
-SoCo-CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, `cron` jobs, etc.
+SoCo-CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, cron jobs, etc.
 
 SoCo-CLI also has a **shell mode** for more efficient interactive use at the command line.
 
