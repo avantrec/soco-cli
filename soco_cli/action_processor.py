@@ -1886,6 +1886,22 @@ SonosFunction = namedtuple(
 )
 
 
+def get_actions(include_additional=True):
+    action_list = list(actions.keys())
+    if include_additional:
+        additional_commands = [
+            "loop",
+            "loop_until",
+            "loop_for",
+            "loop_to_start",
+            "wait_until",
+            "wait",
+            "wait_for",
+        ]
+        action_list = action_list + additional_commands
+    return sorted(action_list)
+
+
 def list_actions(include_additional=True):
     action_list = list(actions.keys())
     if include_additional:

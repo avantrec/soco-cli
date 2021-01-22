@@ -3,12 +3,12 @@
 import logging
 import readline
 
-from .api import get_soco_object
+from .api import get_soco_object, run_command
 from .utils import get_speaker, local_speaker_list, set_interactive, speaker_cache
 
 from shlex import split as shlex_split
 
-from .action_processor import list_actions, process_action
+from .action_processor import get_actions, list_actions, process_action
 
 
 def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
@@ -41,19 +41,24 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             )
         else:
             command = input("Enter 'speaker action [args]' (0 to exit) [] > ")
+
         if command == "":
             continue
         command_lower = command.lower()
+
         if command == "0" or command_lower.startswith("exit"):
             logging.info("Exiting interactive mode")
             print()
             return True
+
         if command_lower in ["help", "?"]:
             _interactive_help()
             continue
+
         if command_lower == "actions":
             _show_actions()
             continue
+
         if command_lower == "speakers":
             print()
             names = _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
@@ -61,6 +66,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 print("  ", str(index).rjust(2), ":", name)
             print()
             continue
+
         # Is the input a number in the range of speaker numbers?
         try:
             speaker_number = int(command_lower)
@@ -75,12 +81,14 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             continue
         except ValueError:
             pass
+
         # if command_lower == "rediscover":
         #     if use_local_speaker_list:
         #         print("Using cached speaker list: no discovery performed")
         #     else:
         #         speaker_cache().discover(reset=True)
         #     continue
+
         if command_lower == "rescan":
             if use_local_speaker_list:
                 print("Using cached speaker list: no rescan performed")
@@ -125,7 +133,7 @@ COMMANDS = ["actions", "exit", "help", "rescan", "set ", "speakers"]
 
 def _completer(text, context):
     """Auto-complete commands using TAB"""
-    matches = [cmd for cmd in COMMANDS if cmd.startswith(text)]
+    matches = [cmd for cmd in _get_actions_and_commands() if cmd.startswith(text)]
     return matches[context]
 
 
@@ -136,6 +144,17 @@ def _show_actions():
     print()
     list_actions(include_additional=False)
     print()
+
+
+ACTIONS_LIST = None
+
+
+def _get_actions_and_commands():
+    global ACTIONS_LIST
+    if not ACTIONS_LIST:
+        # Add a space after each action
+        ACTIONS_LIST = [action + " " for action in get_actions()] + COMMANDS
+    return ACTIONS_LIST
 
 
 def _interactive_help():
@@ -149,7 +168,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     'speakers' command. E.g., to set to speaker number 4
                     in the list, just type '4'. A negative number will
                     unset the active speaker, e.g., enter '-1'.
-    'actions'   :   Show the list of SoCo-CLI actions.
+    'actions'   :   Show the complete list of SoCo-CLI actions.
     'exit'      :   Exit the program. '0' also works.
     'help'      :   Show this help message.
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
@@ -164,6 +183,8 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     
     The command syntax is the same as using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.
+    
+    Use the TAB key for autocompletion of shell commands and SoCo-CLI actions.
 """
 
 

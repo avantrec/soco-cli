@@ -10,7 +10,9 @@ A simple `sonos` command is provided which allows easy control of a huge range o
 
 SoCo-CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, `cron` jobs, etc.
 
-SoCo-CLI can also be used as a simple, high-level library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library.
+SoCo-CLI also has a **shell mode** for more efficient interactive use at the command line.
+
+Finally, SoCo-CLI provides a simple **API** to allow its use as a high-level library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library.
 
 ## Supported Environments
 

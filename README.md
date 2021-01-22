@@ -550,7 +550,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     'speakers' command. E.g., to set to speaker number 4
                     in the list, just type '4'. A negative number will
                     unset the active speaker, e.g., enter '-1'.
-    'actions'   :   Show the list of SoCo-CLI actions.
+    'actions'   :   Show the complete list of SoCo-CLI actions.
     'exit'      :   Exit the program. '0' also works.
     'help'      :   Show this help message.
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
@@ -565,13 +565,15 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     
     The command syntax is the same as using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.
+    
+    Use the TAB key for autocompletion of shell commands and SoCo-CLI actions.
 
 Enter 'speaker action [args]' (0 to exit) [] > 
 ```
 
 ### Shell History and Auto-Completion
 
-Commands in the shell history can be scrolled through by using the up/down arrows, and commands can be edited using the left/right arrows. Shell commands can be auto-completed using the TAB key.
+Commands in the shell history can be scrolled through by using the up/down arrows, and commands can be edited using the left/right arrows to position the cursor. Shell commands can be auto-completed using the TAB key.
 
 ## Cached Discovery
 
