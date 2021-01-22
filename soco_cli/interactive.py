@@ -3,12 +3,12 @@
 import logging
 import readline
 
-from .api import get_soco_object, run_command
+from .api import get_soco_object, rescan_for_speakers, run_command
 from .utils import get_speaker, local_speaker_list, set_interactive, speaker_cache
 
 from shlex import split as shlex_split
 
-from .action_processor import get_actions, list_actions, process_action
+from .action_processor import get_actions, list_actions
 
 
 def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
@@ -37,10 +37,10 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
     while True:
         if speaker_name and speaker:
             command = input(
-                "Enter 'action [args]' (0 to exit) [{}] > ".format(speaker.player_name)
+                "SoCo-CLI [{}] > ".format(speaker.player_name)
             )
         else:
-            command = input("Enter 'speaker action [args]' (0 to exit) [] > ")
+            command = input("SoCo-CLI [] > ")
 
         if command == "":
             continue
@@ -48,7 +48,6 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
         if command == "0" or command_lower.startswith("exit"):
             logging.info("Exiting interactive mode")
-            print()
             return True
 
         if command_lower in ["help", "?"]:
@@ -134,9 +133,13 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 use_local_speaker_list=use_local_speaker_list,
             )
             if exit_code:
-                print(error_msg)
+                if not error_msg == "":
+                    print(error_msg)
             else:
-                print(output)
+                if not output == "":
+                    print(output)
+                    if len(output.splitlines()) > 1:
+                        print()
         except:
             print("Error: Invalid command")
 

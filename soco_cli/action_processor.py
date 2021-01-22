@@ -667,6 +667,9 @@ def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
         error_and_exit("Pairing operations require SoCo v0.20 or greater")
         return False
     speaker2 = get_speaker(args[0], use_local_speaker_list)
+    if not speaker2:
+        error_and_exit("Speaker '{}' not found".format(args[0]))
+        return False
     if speaker == speaker2:
         error_and_exit("Speakers are the same")
         return False

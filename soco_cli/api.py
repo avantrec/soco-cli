@@ -13,6 +13,7 @@ from .utils import (
     set_api,
     set_speaker_list,
     sig_handler,
+    speaker_cache,
 )
 
 
@@ -42,31 +43,30 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     error = StringIO()
     sys.stderr = error
 
-    speaker, error_msg = get_soco_object(speaker_name, use_local_speaker_list)
+    speaker = _get_soco_object(
+        speaker_name, use_local_speaker_list=use_local_speaker_list
+    )
 
     if speaker:
         return_value = process_action(
             speaker, action, args, use_local_speaker_list=use_local_speaker_list
         )
+        output_msg = output.getvalue().rstrip()
+        error_out = error.getvalue().rstrip()
+        if not return_value:
+            if error_out == "":
+                error_out = "Error: Action '{}' not found".format(action)
+            return_value = (1, output_msg, error_out)
+        else:
+            return_value = (0, output_msg, error_out)
     else:
-        return_value = False
+        return_value = (1, "", "Speaker '{}' not found".format(speaker_name))
 
     # Restore stdout and stderr
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
 
-    output_string = output.getvalue().rstrip()
-    if speaker:
-        error_msg = error.getvalue().rstrip()
-    else:
-        error_msg = "Speaker '{}' not found".format(speaker_name)
-
-    if speaker and not return_value and error_msg == "":
-        error_msg = "Error: Action '{}' not found".format(action)
-
-    exit_code = 1 if len(error_msg) else 0
-
-    return exit_code, output_string, error_msg
+    return return_value
 
 
 def set_log_level(log_level="None"):
@@ -85,6 +85,20 @@ def handle_sigint():
     signal(SIGINT, sig_handler)
 
 
+def _get_soco_object(speaker_name, use_local_speaker_list=False):
+    """Internal helper version that doesn't redirect stderr"""
+
+    if use_local_speaker_list:
+        _setup_local_speaker_list()
+
+    return get_speaker(speaker_name, use_local_speaker_list)
+
+
+def rescan_for_speakers():
+    """Full network scan to find speakers"""
+    speaker_cache().scan(reset=True)
+
+
 def get_soco_object(speaker_name, use_local_speaker_list=False):
     """
     Uses the full set of soco_cli strategies to map a speaker name
@@ -101,9 +115,7 @@ def get_soco_object(speaker_name, use_local_speaker_list=False):
     error = StringIO()
     sys.stderr = error
 
-    if use_local_speaker_list:
-        _setup_local_speaker_list()
-    speaker = get_speaker(speaker_name, use_local_speaker_list)
+    speaker = _get_soco_object(speaker_name, use_local_speaker_list)
 
     sys.stderr = sys.__stderr__
 

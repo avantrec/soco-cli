@@ -542,7 +542,7 @@ $ sonos -i
 Entering SoCo-CLI interactive mode
 Type 'help' for available commands.
 
-Enter 'speaker action [args]' (0 to exit) [] > help
+SoCo-CLI [] > help
 
 This is SoCo-CLI interactive mode. Interactive commands are as follows:
 
@@ -568,7 +568,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     
     Use the TAB key for autocompletion of shell commands and SoCo-CLI actions.
 
-Enter 'speaker action [args]' (0 to exit) [] > 
+SoCo-CLI [] > 
 ```
 
 ### Shell History and Auto-Completion
