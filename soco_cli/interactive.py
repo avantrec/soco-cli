@@ -48,7 +48,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             logging.info("Exiting interactive mode")
             print()
             return True
-        if command_lower == "help":
+        if command_lower in ["help", "?"]:
             _interactive_help()
             continue
         if command_lower == "actions":

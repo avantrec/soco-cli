@@ -516,17 +516,18 @@ Similarly, the `if_playing` modifier will execute the action that follows it onl
 ## Interactive Shell Mode
 
 ```
-sonos -i
+sonos -i <speaker_name>
 sonos --interactive <speaker_name>
+sonos -i
 ```
 
-Interactive shell mode is a new feature, which creates a SoCo-CLI command line session for entering `sonos` commands. When using SoCo-CLI interactively, the shell is faster and requires less typing.
+Interactive shell mode is a new feature, which creates a SoCo-CLI command line session for entering `sonos` commands. Compared to using individual `sonos` invocations, using the shell is faster and requires less typing.
 
 Most `sonos` commands are accepted, however the sequential operator ` : ` cannot be used, nor can `loop` statements or the `wait` and `wait_until` commands. 
 
 Interactive mode is started with the `-i` or `--interactive` command line option. Optionally, a speaker name can be given, in which case all commands will be directed to that speaker (until changed in the shell).
 
-Type `help` at the sonos command line for more information on using interactive shell mode:
+Type `help` or `?` at the sonos command line for more information on using interactive shell mode:
 
 ```
 $ sonos -i
@@ -544,7 +545,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     unset the active speaker, e.g., enter '-1'.
     'actions'   :   Show the list of SoCo-CLI actions.
     'exit'      :   Exit the program. '0' also works.
-    'help'      :   Show this help message.
+    'help', '?' :   Show this help message.
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
                     use this to perform a more comprehensive scan.
     'speakers'  :   List the names of all available speakers
