@@ -132,11 +132,13 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             # Setting a speaker to operate on?
             try:
                 if args[0] == "set":
-                    speaker_name = args[1]
-                    speaker = get_speaker(speaker_name, use_local_speaker_list)
-                    if not speaker:
-                        print("Error: Speaker '{}' not found".format(speaker_name))
-                        speaker_name = None
+                    new_speaker_name = args[1]
+                    new_speaker = get_speaker(new_speaker_name, use_local_speaker_list)
+                    if not new_speaker:
+                        print("Error: Speaker '{}' not found".format(new_speaker_name))
+                    else:
+                        speaker_name = new_speaker_name
+                        speaker = new_speaker
                     continue
             except IndexError:
                 speaker_name = None
