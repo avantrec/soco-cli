@@ -1,7 +1,15 @@
 """ SoCo-CLI interactive mode handler """
 
 import logging
-import readline
+import os
+
+# Readline is only available on Unix
+try:
+    import readline
+
+    RL = True
+except ImportError:
+    RL = False
 
 from .api import get_soco_object, rescan_for_speakers, run_command
 from .utils import get_speaker, local_speaker_list, set_interactive, speaker_cache
@@ -26,11 +34,16 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
     print("\nEntering SoCo-CLI interactive shell.")
     print("Type 'help' for available shell commands.\n")
+    if not RL:
+        print(
+            "Note: Command history and autocompletion not currently available on Windows.\n"
+        )
 
-    _set_actions_and_commands_list(use_local_speaker_list=use_local_speaker_list)
-    readline.parse_and_bind("tab: complete")
-    readline.set_completer(_completer)
-    readline.set_completer_delims(" ")
+    if RL:
+        _set_actions_and_commands_list(use_local_speaker_list=use_local_speaker_list)
+        readline.parse_and_bind("tab: complete")
+        readline.set_completer(_completer)
+        readline.set_completer_delims(" ")
 
     set_interactive()
 
@@ -96,9 +109,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 print("Using cached speaker list: no rescan performed")
             else:
                 speaker_cache().scan(reset=True)
-                _print_speaker_list(
-                    use_local_speaker_list=use_local_speaker_list
-                )
+                _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
                 _set_actions_and_commands_list(
                     use_local_speaker_list=use_local_speaker_list
                 )
@@ -167,7 +178,7 @@ def _show_actions():
     print()
 
 
-ACTIONS_LIST = None
+ACTIONS_LIST = []
 
 
 def _set_actions_and_commands_list(use_local_speaker_list=False):
@@ -179,7 +190,7 @@ def _set_actions_and_commands_list(use_local_speaker_list=False):
     ] + COMMANDS
 
 
-def _get_actions_and_commands(use_local_speaker_list=False):
+def _get_actions_and_commands():
     return ACTIONS_LIST
 
 
