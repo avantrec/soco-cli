@@ -327,7 +327,7 @@ This feature works by invoking the `play_file` action for each file in the playl
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
 - **`list_queue <track_number>`** (or **`lq`, `q`**): List the track in the queue at position `<track_number>`
-- **`play_from_queue <track_number>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue.
+- **`play_from_queue <track_number or 'cp'>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue. If `cp` is provided, play starts at the current queue position.
 - **`queue_album <album_name> <play_next|next or first|start>`** (or **`qa`**): Add `<album_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the album name, a random match will be chosen. Optionally, `next` or `play_next` can be added to insert the album at the next_play position in the queue. The queue position of the first track in the album will be returned.
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
 - **`queue_position`** (or **`qp`**): Return the current queue position.

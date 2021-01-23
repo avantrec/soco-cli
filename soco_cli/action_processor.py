@@ -70,7 +70,32 @@ def print_list_header(prefix, name):
     print(spacer + underline)
 
 
-def print_tracks(tracks, single_track=False, track_number=None):
+def get_current_queue_position(speaker):
+    """Find the current queue position and whether a speaker is playing
+    from the queue
+
+    'is_playing' will be reported correctly in most, but not all, cases.
+    """
+
+    try:
+        qp = int(speaker.get_current_track_info()["playlist_position"])
+    except:
+        qp = 0
+
+    try:
+        cts = speaker.get_current_transport_info()["current_transport_state"]
+        is_playing = True if cts == "PLAYING" and qp != 0 else False
+    except:
+        is_playing = False
+
+    return qp, is_playing
+
+
+def print_tracks(tracks, speaker=None, single_track=False, track_number=None):
+    qp = None
+    is_playing = None
+    if speaker:
+        qp, is_playing = get_current_queue_position(speaker)
     if single_track:
         item_number = track_number
     else:
@@ -88,11 +113,22 @@ def print_tracks(tracks, single_track=False, track_number=None):
             title = track.title
         except:
             title = ""
-        print(
-            "{:7d}: Artist: {} | Album: {} | Title: {}".format(
-                item_number, artist, album, title
+        if not qp or qp != item_number:
+            print(
+                "{:7d}: Artist: {} | Album: {} | Title: {}".format(
+                    item_number, artist, album, title
+                )
             )
-        )
+        elif qp == item_number:
+            if is_playing:
+                prefix = " >* "
+            else:
+                prefix = "  * "
+            print(
+                "{}{:3d}: Artist: {} | Album: {} | Title: {}".format(
+                    prefix, item_number, artist, album, title
+                )
+            )
         item_number += 1
     return True
 
@@ -187,9 +223,9 @@ def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
             return False
     print()
     if len(args) == 1:
-        print_tracks(queue, single_track=True, track_number=track_number)
+        print_tracks(queue, speaker, single_track=True, track_number=track_number)
     else:
-        print_tracks(queue)
+        print_tracks(queue, speaker)
     print()
     return True
 
@@ -711,10 +747,15 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
         speaker.play_from_queue(0)
     elif np == 1:
         try:
-            index = int(args[0])
+            # Play from current queue position?
+            if args[0] in ["cp", "current", "current_position"]:
+                index, _ = get_current_queue_position(speaker)
+            else:
+                index = int(args[0])
         except:
-            parameter_type_error(action, "integer")
+            parameter_type_error(action, "integer or 'cp' for current position")
             return False
+
         if 1 <= index <= speaker.queue_size:
             speaker.play_from_queue(index - 1)
         else:
@@ -1624,7 +1665,8 @@ def transfer_playback(speaker, action, args, soco_function, use_local_speaker_li
 
 @zero_parameters
 def queue_position(speaker, action, args, soco_function, use_local_speaker_list):
-    print(speaker.get_current_track_info()["playlist_position"])
+    position, _ = get_current_queue_position(speaker)
+    print(position)
     return True
 
 
