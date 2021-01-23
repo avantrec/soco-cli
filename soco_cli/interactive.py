@@ -15,7 +15,7 @@ except ImportError:
 from shlex import split as shlex_split
 
 from .action_processor import get_actions, list_actions
-from .api import get_soco_object, rescan_for_speakers, run_command
+from .api import get_soco_object, run_command
 from .utils import (
     get_readline_history,
     get_speaker,

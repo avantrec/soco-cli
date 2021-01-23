@@ -102,9 +102,24 @@ def _get_soco_object(speaker_name, use_local_speaker_list=False):
     return get_speaker(speaker_name, use_local_speaker_list)
 
 
-def rescan_for_speakers():
-    """Full network scan to find speakers"""
+def rescan_speakers():
+    """Run full network scan to find speakers"""
     speaker_cache().scan(reset=True)
+
+
+def rediscover_speakers():
+    """Run normal SoCo discovery to discover speakers"""
+    speaker_cache().discover(reset=True)
+
+
+def get_all_speakers():
+    """Return all SoCo instances"""
+    return [s[0] for s in speaker_cache().get_all_speakers()]
+
+
+def get_all_speaker_names():
+    """Return all speaker names"""
+    return speaker_cache().get_all_speaker_names()
 
 
 def get_soco_object(speaker_name, use_local_speaker_list=False):
