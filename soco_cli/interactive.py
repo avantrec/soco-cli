@@ -112,7 +112,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     speaker_name = args[1]
                     speaker = get_speaker(speaker_name, use_local_speaker_list)
                     if not speaker:
-                        print("Error: Speaker not found")
+                        print("Error: Speaker '{}' not found".format(speaker_name))
                         speaker_name = None
                     continue
             except IndexError:
@@ -124,6 +124,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 if not speaker:
                     print("Error: Speaker not found")
                     continue
+
             action = args.pop(0)
             exit_code, output, error_msg = run_command(
                 speaker.ip_address,
@@ -136,8 +137,11 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     print(error_msg)
             else:
                 if not output == "":
+                    lines = output.splitlines()
+                    if len(lines) > 1 and lines[0] != "":
+                        print()
                     print(output)
-                    if len(output.splitlines()) > 1:
+                    if len(lines) > 1 and output[len(lines) - 1] != "":
                         print()
         except:
             print("Error: Invalid command")
