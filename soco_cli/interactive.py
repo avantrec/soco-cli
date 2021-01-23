@@ -127,7 +127,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
             action = args.pop(0)
             exit_code, output, error_msg = run_command(
-                speaker.ip_address,
+                speaker,
                 action,
                 *args,
                 use_local_speaker_list=use_local_speaker_list,

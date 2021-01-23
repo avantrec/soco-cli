@@ -43,9 +43,17 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     error = StringIO()
     sys.stderr = error
 
-    speaker = _get_soco_object(
-        speaker_name, use_local_speaker_list=use_local_speaker_list
-    )
+    speaker = None
+
+    # Can pass a SoCo object instead of the speaker name (not documented)
+    if type(speaker_name) == SoCo:
+        speaker = speaker_name
+        speaker_name = speaker.player_name
+
+    elif type(speaker_name) == str:
+        speaker = _get_soco_object(
+            speaker_name, use_local_speaker_list=use_local_speaker_list
+        )
 
     if speaker:
         return_value = process_action(
