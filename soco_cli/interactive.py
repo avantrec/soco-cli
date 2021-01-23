@@ -27,6 +27,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
     print("\nEntering SoCo-CLI interactive shell.")
     print("Type 'help' for available shell commands.\n")
 
+    _set_actions_and_commands_list(use_local_speaker_list=use_local_speaker_list)
     readline.parse_and_bind("tab: complete")
     readline.set_completer(_completer)
     readline.set_completer_delims(" ")
@@ -63,12 +64,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             continue
 
         if command_lower == "speakers":
-            print()
-            names = _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
-            names.insert(0, "Unset the active speaker")
-            for index, name in enumerate(names, start=0):
-                print("  ", str(index).rjust(2), ":", name)
-            print()
+            _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
             continue
 
         # Is the input a number in the range of speaker numbers?
@@ -100,6 +96,12 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 print("Using cached speaker list: no rescan performed")
             else:
                 speaker_cache().scan(reset=True)
+                _print_speaker_list(
+                    use_local_speaker_list=use_local_speaker_list
+                )
+                _set_actions_and_commands_list(
+                    use_local_speaker_list=use_local_speaker_list
+                )
             continue
 
         # Command processing
@@ -125,7 +127,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     print("Error: Speaker not found")
                     continue
 
-            action = args.pop(0)
+            action = args.pop(0).lower()
             exit_code, output, error_msg = run_command(
                 speaker,
                 action,
@@ -168,11 +170,16 @@ def _show_actions():
 ACTIONS_LIST = None
 
 
-def _get_actions_and_commands():
+def _set_actions_and_commands_list(use_local_speaker_list=False):
     global ACTIONS_LIST
-    if not ACTIONS_LIST:
-        # Add a space after each action
-        ACTIONS_LIST = [action + " " for action in get_actions()] + COMMANDS
+    ACTIONS_LIST = [
+        action + " "
+        for action in get_actions()
+        + _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
+    ] + COMMANDS
+
+
+def _get_actions_and_commands(use_local_speaker_list=False):
     return ACTIONS_LIST
 
 
@@ -213,3 +220,12 @@ def _get_speaker_names(use_local_speaker_list=False):
     else:
         names = speaker_cache().get_all_speaker_names()
     return names
+
+
+def _print_speaker_list(use_local_speaker_list=False):
+    print()
+    names = _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
+    names.insert(0, "Unset the active speaker")
+    for index, name in enumerate(names, start=0):
+        print("  ", str(index).rjust(2), ":", name)
+    print()
