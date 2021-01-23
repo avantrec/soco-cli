@@ -2,6 +2,11 @@ import datetime
 import logging
 import os
 import pickle
+
+try:
+    import readline
+except ImportError:
+    pass
 import sys
 from collections.abc import Sequence
 from platform import python_version
@@ -268,7 +273,10 @@ def sig_handler(signal_received, frame):
         )
         speaker_playing_local_file.stop()
 
-    # ToDo: Temporary for now; hard kill required to get out of 'wait_for_stopped'
+    if INTERACTIVE:
+        save_readline_history()
+
+    # ToDo: Temporary for now; hard kill required to get out of wait
     if use_sigterm:
         os.kill(os.getpid(), SIGTERM)
     else:
@@ -638,3 +646,31 @@ def read_search():
             logging.info("Failed to load search results: %s", e)
             pass
     return None
+
+
+# Interactive shell history file
+HIST_FILE = os.path.join(os.path.expanduser("~"), ".soco-cli", "shell-history.txt")
+HIST_LEN = 50
+
+
+def save_readline_history():
+    logging.info("Saving shell history file: {}".format(HIST_FILE))
+    try:
+        readline.write_history_file(HIST_FILE)
+    except Exception as e:
+        logging.info("Error saving shell history file: {}".format(e))
+        pass
+
+
+def get_readline_history():
+    if not os.path.exists(HIST_FILE):
+        logging.info("No shell history file found: {}".format(HIST_FILE))
+        return
+
+    logging.info("Reading shell history file: {}".format(HIST_FILE))
+    try:
+        readline.read_history_file(HIST_FILE)
+        readline.set_history_length(HIST_LEN)
+    except Exception as e:
+        logging.info("Error reading shell history file: {}".format(e))
+        pass

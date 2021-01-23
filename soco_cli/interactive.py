@@ -1,7 +1,7 @@
 """ SoCo-CLI interactive mode handler """
 
 import logging
-import os
+from os import path
 
 # Readline is only available on Unix
 try:
@@ -12,12 +12,18 @@ except ImportError:
 
     RL = False
 
-from .api import get_soco_object, rescan_for_speakers, run_command
-from .utils import get_speaker, local_speaker_list, set_interactive, speaker_cache
-
 from shlex import split as shlex_split
 
 from .action_processor import get_actions, list_actions
+from .api import get_soco_object, rescan_for_speakers, run_command
+from .utils import (
+    get_readline_history,
+    get_speaker,
+    local_speaker_list,
+    save_readline_history,
+    set_interactive,
+    speaker_cache,
+)
 
 
 def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
@@ -45,6 +51,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
         readline.parse_and_bind("tab: complete")
         readline.set_completer(_completer)
         readline.set_completer_delims(" ")
+        _get_readline_history()
 
     set_interactive()
 
@@ -57,6 +64,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
         if command == "":
             continue
+
         command_lower = command.lower()
 
         if command == "0":
@@ -67,6 +75,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
         if command_lower.startswith("exit"):
             logging.info("Exiting interactive mode")
+            _save_readline_history()
             return True
 
         if command_lower in ["help", "?"]:
@@ -122,7 +131,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
             # Setting a speaker to operate on?
             try:
-                if "set" == args[0]:
+                if args[0] == "set":
                     speaker_name = args[1]
                     speaker = get_speaker(speaker_name, use_local_speaker_list)
                     if not speaker:
@@ -243,3 +252,13 @@ def _print_speaker_list(use_local_speaker_list=False):
     for index, name in enumerate(names, start=0):
         print("  ", str(index).rjust(2), ":", name)
     print()
+
+
+def _save_readline_history():
+    if RL:
+        save_readline_history()
+
+
+def _get_readline_history():
+    if RL:
+        get_readline_history()

@@ -580,6 +580,8 @@ SoCo-CLI [] >
 
 Commands in the shell history can be scrolled through by using the up/down arrows, and commands can be edited using the left/right arrows to position the cursor. Shell commands can be auto-completed using the TAB key.
 
+The shell history is saved between shell sessions in `~/.soco-cli/shell-history.txt`.
+
 ## Cached Discovery
 
 SoCo-CLI uses the full range of speaker discovery mechanisms in SoCo to look up speakers by their names.
