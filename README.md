@@ -364,6 +364,8 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`cue_favourite_radio_station`** (or **`cue_favorite_radio_station`**, **`cfrs`**): Cue a favourite radio station for later playback. This is a convenience action that issues the sequence: `mute, play_favourite_radio_station, stop, unmute`. It's useful for silently setting a speaker to a state where it's ready to play the nominated favourite. Mute and group mute states are preserved.
 - **`favourite_radio_stations`** (or **`favorite_radio_stations`**, **`lfrs`**, **`frs`**): List the favourite radio stations.
 - **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station.
+- **`play_fav_radio_station_no <station_number>`** (or **`pfrsn`**): Play a favourite radio station by its number.
+
 
 ### Grouping and Stereo Pairing
 

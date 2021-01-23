@@ -587,6 +587,23 @@ def add_favourite_to_queue(
 
 
 @one_parameter
+def play_favourite_radio_number(speaker, action, args, soco_function, use_local_speaker_list):
+    try:
+        fav_no = int(args[0])
+    except:
+        parameter_type_error(action, "integer")
+        return False
+
+    logging.info("Playing favourite radio station no. {}".format(fav_no))
+
+    preset = 0
+    limit = 99
+    station = speaker.music_library.get_favorite_radio_stations(preset, limit)[fav_no - 1]
+    logging.info("Requested station is '{}'".format(station.title))
+    return play_favourite_radio(speaker, action, [station.title], soco_function, use_local_speaker_list)
+
+
+@one_parameter
 def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker_list):
     favourite = args[0]
     preset = 0
@@ -2207,4 +2224,6 @@ actions = {
     "play_favourite_number": SonosFunction(play_favourite_number, ""),
     "play_favorite_number": SonosFunction(play_favourite_number, ""),
     "pfn": SonosFunction(play_favourite_number, ""),
+    "play_fav_radio_station_no": SonosFunction(play_favourite_radio_number, ""),
+    "pfrsn": SonosFunction(play_favourite_radio_number, ""),
 }
