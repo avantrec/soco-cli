@@ -70,21 +70,40 @@ def print_list_header(prefix, name):
     print(spacer + underline)
 
 
-def get_current_queue_position(speaker):
+def get_current_queue_position(speaker, tracks=None):
     """Find the current queue position and whether a speaker is playing
-    from the queue
+    from the queue.
 
     'is_playing' will be reported correctly in most, but not all, cases.
     """
+    qp = 0
+    is_playing = False
+    track_title = None
 
     try:
-        qp = int(speaker.get_current_track_info()["playlist_position"])
+        info = speaker.get_current_track_info()
+        qp = int(info["playlist_position"])
+        track_title = info["title"]
     except:
         qp = 0
 
     try:
         cts = speaker.get_current_transport_info()["current_transport_state"]
-        is_playing = True if cts == "PLAYING" and qp != 0 else False
+        if cts == "PLAYING":
+            if tracks is not None:
+                try:
+                    if tracks[qp - 1].title == track_title:
+                        is_playing = True
+                    else:
+                        is_playing = False
+                        qp = 1
+                except:
+                    is_playing = False
+                    qp = 1
+            else:
+                is_playing = True
+        else:
+            is_playing = False
     except:
         is_playing = False
 
@@ -95,7 +114,7 @@ def print_tracks(tracks, speaker=None, single_track=False, track_number=None):
     qp = None
     is_playing = None
     if speaker:
-        qp, is_playing = get_current_queue_position(speaker)
+        qp, is_playing = get_current_queue_position(speaker, tracks)
     if single_track:
         item_number = track_number
     else:
@@ -121,7 +140,7 @@ def print_tracks(tracks, speaker=None, single_track=False, track_number=None):
             )
         elif qp == item_number:
             if is_playing:
-                prefix = " >* "
+                prefix = " *> "
             else:
                 prefix = "  * "
             print(
