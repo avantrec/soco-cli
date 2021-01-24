@@ -10,6 +10,7 @@ from signal import SIGINT, signal
 import soco
 
 from .action_processor import list_actions, process_action
+from .cmd_parser import CLIParser
 from .interactive import interactive_loop
 from .speakers import Speakers
 from .utils import (
@@ -156,46 +157,9 @@ def main():
         )
         exit(0)
 
-    # Break up the command line into command sequences, observing the separator.
-    command_line_separator = ":"
-    sequence = []  # A single command sequence
-    sequences = []  # A list of command sequences
-    for arg in args.parameters:
-        if len(arg) > 1 and command_line_separator in arg:
-            # Catch special cases of colon use: HH:MM(:SS) time formats,
-            # and URLs
-            if not (
-                sequence
-                and sequence[-1]
-                in [
-                    "wait",
-                    "wait_for",
-                    "wait_until",
-                    "seek",
-                    "seek_to",
-                    "seek_forward",
-                    "sf",
-                    "seek_back",
-                    "sb",
-                    "sleep",
-                    "sleep_timer",
-                    "sleep_at",
-                    "wait_stopped_for",
-                    "loop_for",
-                    "loop_until",
-                ]
-                or ":/" in arg
-            ):
-                error_and_exit(
-                    "Spaces are required each side of the ':' command separator"
-                )
-        if arg != command_line_separator:
-            sequence.append(arg)
-        else:
-            sequences.append(sequence)
-            sequence = []
-    if sequence:
-        sequences.append(sequence)
+    cli_parser = CLIParser()
+    cli_parser.parse(args.parameters)
+    sequences = cli_parser.get_sequences()
 
     # Loop through processing command sequences
     logging.info("Found {} action sequence(s): {}".format(len(sequences), sequences))
