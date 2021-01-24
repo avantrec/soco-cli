@@ -16,6 +16,7 @@ from shlex import split as shlex_split
 
 from .action_processor import get_actions, list_actions
 from .api import get_soco_object, run_command
+from .cmd_parser import CLIParser
 from .utils import (
     get_readline_history,
     get_speaker,
@@ -58,118 +59,125 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
     # Input loop
     while True:
         if speaker_name and speaker:
-            command = input("SoCo-CLI [{}] > ".format(speaker.player_name))
+            command_line = input("SoCo-CLI [{}] > ".format(speaker.player_name))
         else:
-            command = input("SoCo-CLI [] > ")
+            command_line = input("SoCo-CLI [] > ")
 
-        if command == "":
+        if command_line == "":
             continue
 
-        command_lower = command.lower()
+        # Parse multiple action sequences
+        cli_parser = CLIParser()
+        cli_parser.parse(shlex_split(command_line))
 
-        if command == "0":
-            # Unset the active speaker
-            speaker_name = None
-            speaker = None
-            continue
+        # Loop through action sequences
+        for command in cli_parser.get_sequences():
 
-        if command_lower.startswith("exit"):
-            logging.info("Exiting interactive mode")
-            _save_readline_history()
-            return True
+            command_lower = command[0].lower()
 
-        if command_lower in ["help", "?"]:
-            _interactive_help()
-            continue
-
-        if command_lower == "actions":
-            _show_actions()
-            continue
-
-        if command_lower == "speakers":
-            _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
-            continue
-
-        # Is the input a number in the range of speaker numbers?
-        try:
-            speaker_number = int(command_lower)
-            limit = len(
-                _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
-            )
-            if 1 <= speaker_number <= limit:
-                speaker_name = _get_speaker_names(
-                    use_local_speaker_list=use_local_speaker_list
-                )[speaker_number - 1]
-                speaker = get_speaker(speaker_name, use_local_speaker_list)
-            else:
-                print("Error: Speaker number is out of range (0 to {})".format(limit))
-            continue
-        except ValueError:
-            pass
-
-        # if command_lower == "rediscover":
-        #     if use_local_speaker_list:
-        #         print("Using cached speaker list: no discovery performed")
-        #     else:
-        #         speaker_cache().discover(reset=True)
-        #     continue
-
-        if command_lower == "rescan":
-            if use_local_speaker_list:
-                print("Using cached speaker list: no rescan performed")
-            else:
-                speaker_cache().scan(reset=True)
-                _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
-                _set_actions_and_commands_list(
-                    use_local_speaker_list=use_local_speaker_list
-                )
-            continue
-
-        # Command processing
-        try:
-            args = shlex_split(command)
-
-            # Setting a speaker to operate on?
-            try:
-                if args[0] == "set":
-                    new_speaker_name = args[1]
-                    new_speaker = get_speaker(new_speaker_name, use_local_speaker_list)
-                    if not new_speaker:
-                        print("Error: Speaker '{}' not found".format(new_speaker_name))
-                    else:
-                        speaker_name = new_speaker_name
-                        speaker = new_speaker
-                    continue
-            except IndexError:
+            if command[0] == "0":
+                # Unset the active speaker
                 speaker_name = None
+                speaker = None
                 continue
 
-            if not speaker_name:
-                speaker = get_speaker(args.pop(0), use_local_speaker_list)
-                if not speaker:
-                    print("Error: Speaker not found")
+            if command_lower.startswith("exit"):
+                logging.info("Exiting interactive mode")
+                _save_readline_history()
+                return True
+
+            if command_lower in ["help", "?"]:
+                _interactive_help()
+                continue
+
+            if command_lower == "actions":
+                _show_actions()
+                continue
+
+            if command_lower == "speakers":
+                _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
+                continue
+
+            # Is the input a number in the range of speaker numbers?
+            try:
+                speaker_number = int(command_lower)
+                limit = len(
+                    _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
+                )
+                if 1 <= speaker_number <= limit:
+                    speaker_name = _get_speaker_names(
+                        use_local_speaker_list=use_local_speaker_list
+                    )[speaker_number - 1]
+                    speaker = get_speaker(speaker_name, use_local_speaker_list)
+                else:
+                    print("Error: Speaker number is out of range (0 to {})".format(limit))
+                continue
+            except ValueError:
+                pass
+
+            # if command_lower == "rediscover":
+            #     if use_local_speaker_list:
+            #         print("Using cached speaker list: no discovery performed")
+            #     else:
+            #         speaker_cache().discover(reset=True)
+            #     continue
+
+            if command_lower == "rescan":
+                if use_local_speaker_list:
+                    print("Using cached speaker list: no rescan performed")
+                else:
+                    speaker_cache().scan(reset=True)
+                    _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
+                    _set_actions_and_commands_list(
+                        use_local_speaker_list=use_local_speaker_list
+                    )
+                continue
+
+            # Command processing
+            try:
+                args = command
+
+                # Setting a speaker to operate on?
+                try:
+                    if args[0] == "set":
+                        new_speaker_name = args[1]
+                        new_speaker = get_speaker(new_speaker_name, use_local_speaker_list)
+                        if not new_speaker:
+                            print("Error: Speaker '{}' not found".format(new_speaker_name))
+                        else:
+                            speaker_name = new_speaker_name
+                            speaker = new_speaker
+                        continue
+                except IndexError:
+                    speaker_name = None
                     continue
 
-            action = args.pop(0).lower()
-            exit_code, output, error_msg = run_command(
-                speaker,
-                action,
-                *args,
-                use_local_speaker_list=use_local_speaker_list,
-            )
-            if exit_code:
-                if not error_msg == "":
-                    print(error_msg)
-            else:
-                if not output == "":
-                    lines = output.splitlines()
-                    if len(lines) > 1 and lines[0] != "":
-                        print()
-                    print(output)
-                    if len(lines) > 1 and output[len(lines) - 1] != "":
-                        print()
-        except:
-            print("Error: Invalid command")
+                if not speaker_name:
+                    speaker = get_speaker(args.pop(0), use_local_speaker_list)
+                    if not speaker:
+                        print("Error: Speaker not found")
+                        continue
+
+                action = args.pop(0).lower()
+                exit_code, output, error_msg = run_command(
+                    speaker,
+                    action,
+                    *args,
+                    use_local_speaker_list=use_local_speaker_list,
+                )
+                if exit_code:
+                    if not error_msg == "":
+                        print(error_msg)
+                else:
+                    if not output == "":
+                        lines = output.splitlines()
+                        if len(lines) > 1 and lines[0] != "":
+                            print()
+                        print(output)
+                        if len(lines) > 1 and output[len(lines) - 1] != "":
+                            print()
+            except:
+                print("Error: Invalid command")
 
 
 COMMANDS = ["actions", "exit", "help", "rescan", "set ", "speakers"]

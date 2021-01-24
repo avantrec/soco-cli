@@ -530,7 +530,7 @@ sonos -i
 
 Interactive shell mode is a new feature, which creates a SoCo-CLI command line session for entering `sonos` commands. Compared to using individual `sonos` invocations, using the shell is faster and requires less typing.
 
-Most `sonos` commands are accepted, however the sequential operator ` : ` cannot be used, nor can `loop` statements or the `wait` and `wait_until` commands. 
+Most `sonos` actions are accepted, except for the `loop` and `wait` actions. Multiple actions can be submitted on a single command line using the ` : ` separator. 
 
 ### Usage
 
