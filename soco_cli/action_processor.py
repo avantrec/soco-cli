@@ -587,7 +587,9 @@ def add_favourite_to_queue(
 
 
 @one_parameter
-def play_favourite_radio_number(speaker, action, args, soco_function, use_local_speaker_list):
+def play_favourite_radio_number(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
     try:
         fav_no = int(args[0])
     except:
@@ -598,9 +600,13 @@ def play_favourite_radio_number(speaker, action, args, soco_function, use_local_
 
     preset = 0
     limit = 99
-    station = speaker.music_library.get_favorite_radio_stations(preset, limit)[fav_no - 1]
+    station = speaker.music_library.get_favorite_radio_stations(preset, limit)[
+        fav_no - 1
+    ]
     logging.info("Requested station is '{}'".format(station.title))
-    return play_favourite_radio(speaker, action, [station.title], soco_function, use_local_speaker_list)
+    return play_favourite_radio(
+        speaker, action, [station.title], soco_function, use_local_speaker_list
+    )
 
 
 @one_parameter

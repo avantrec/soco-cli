@@ -29,6 +29,8 @@ from .utils import (
     sig_handler,
     version,
 )
+from .wait_actions import process_wait
+
 
 # Globals
 pp = pprint.PrettyPrinter(width=100)
@@ -282,39 +284,9 @@ def main():
                 sequence_pointer = loop_pointer
                 continue
 
-            # Special case: the 'wait' action
-            if speaker_name in ["wait", "wait_for"]:
-                duration = 0
-                if len(sequence) != 2:
-                    error_and_exit(
-                        "Action 'wait' requires 1 parameter (check spaces around the ':' separator)"
-                    )
-                action = sequence[1].lower()
-                try:
-                    duration = convert_to_seconds(action)
-                except ValueError:
-                    error_and_exit(
-                        "Action 'wait' requires positive number of hours, seconds or minutes + 'h/m/s', or HH:MM(:SS)"
-                    )
-                logging.info("Waiting for {}s".format(duration))
-                time.sleep(duration)
-                continue
-
-            # Special case: the 'wait_until' action
-            elif speaker_name in ["wait_until"]:
-                if len(sequence) != 2:
-                    error_and_exit(
-                        "'wait_until' requires 1 parameter (check spaces around the ':' separator)"
-                    )
-                try:
-                    action = sequence[1].lower()
-                    duration = seconds_until(action)
-                    logging.info("Waiting for {}s".format(duration))
-                    time.sleep(duration)
-                except ValueError:
-                    error_and_exit(
-                        "'wait_until' requires parameter: time in 24hr HH:MM(:SS) format"
-                    )
+            # Special case: the 'wait' actions
+            if speaker_name in ["wait", "wait_for", "wait_until"]:
+                process_wait(sequence)
                 continue
 
             # Use the speaker name from the environment?
@@ -373,8 +345,6 @@ def main():
 
     exit(0)
 
-
-2
 
 if __name__ == "__main__":
     main()

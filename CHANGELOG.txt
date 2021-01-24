@@ -1,6 +1,7 @@
 v0.3.8    - Shell history is now saved across shell sessions in
             ~/.soco-cli/shell-history.txt
           - Add 'play_fav_radio_station_no' action
+          - Shell now supports ' : ' for multiple actions, and 'wait' actions
 v0.3.7    - Fix 'readline' import error on Windows and add shell warning
 v0.3.6    - Add auto-completion for Interactive Shell commands
           - Various shell improvements

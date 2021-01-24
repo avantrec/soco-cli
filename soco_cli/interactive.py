@@ -25,6 +25,7 @@ from .utils import (
     set_interactive,
     speaker_cache,
 )
+from .wait_actions import process_wait
 
 
 def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
@@ -98,6 +99,10 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
                 continue
 
+            if command_lower in ["wait", "wait_until", "wait_for"]:
+                process_wait(command)
+                continue
+
             # Is the input a number in the range of speaker numbers?
             try:
                 speaker_number = int(command_lower)
@@ -110,7 +115,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     )[speaker_number - 1]
                     speaker = get_speaker(speaker_name, use_local_speaker_list)
                 else:
-                    print("Error: Speaker number is out of range (0 to {})".format(limit))
+                    print(
+                        "Error: Speaker number is out of range (0 to {})".format(limit)
+                    )
                 continue
             except ValueError:
                 pass
@@ -141,9 +148,13 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 try:
                     if args[0] == "set":
                         new_speaker_name = args[1]
-                        new_speaker = get_speaker(new_speaker_name, use_local_speaker_list)
+                        new_speaker = get_speaker(
+                            new_speaker_name, use_local_speaker_list
+                        )
                         if not new_speaker:
-                            print("Error: Speaker '{}' not found".format(new_speaker_name))
+                            print(
+                                "Error: Speaker '{}' not found".format(new_speaker_name)
+                            )
                         else:
                             speaker_name = new_speaker_name
                             speaker = new_speaker
