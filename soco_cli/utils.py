@@ -649,11 +649,20 @@ def read_search():
 
 
 # Interactive shell history file
-HIST_FILE = os.path.join(os.path.expanduser("~"), ".soco-cli", "shell-history.txt")
+SOCO_CLI_DIR = os.path.join(os.path.expanduser("~"), ".soco-cli")
+HIST_FILE = os.path.join(SOCO_CLI_DIR, "shell-history.txt")
 HIST_LEN = 50
 
 
 def save_readline_history():
+    if not os.path.exists(SOCO_CLI_DIR):
+        logging.info("Creating directory '{}'".format(SOCO_CLI_DIR))
+        try:
+            os.mkdir(SOCO_CLI_DIR)
+        except:
+            error_and_exit("Failed to create directory '{}'".format(SOCO_CLI_DIR))
+            return
+
     logging.info("Saving shell history file: {}".format(HIST_FILE))
     try:
         readline.write_history_file(HIST_FILE)
