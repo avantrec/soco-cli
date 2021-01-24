@@ -12,8 +12,9 @@ def process_wait(sequence):
         duration = 0
         if len(sequence) != 2:
             error_and_exit(
-                "Action 'wait' requires 1 parameter (check spaces around the ':' separator)"
+                "Action 'wait' requires 1 parameter (check spaces around the ':' separator?)"
             )
+            return
         action = sequence[1].lower()
         try:
             duration = convert_to_seconds(action)
@@ -28,8 +29,9 @@ def process_wait(sequence):
     elif sequence[0] in ["wait_until"]:
         if len(sequence) != 2:
             error_and_exit(
-                "'wait_until' requires 1 parameter (check spaces around the ':' separator)"
+                "'wait_until' requires 1 parameter (check spaces around the ':' separator?)"
             )
+            return
         try:
             action = sequence[1].lower()
             duration = seconds_until(action)
