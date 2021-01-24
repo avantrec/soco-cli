@@ -1,3 +1,4 @@
+v0.3.9    -
 v0.3.8    - Shell history is now saved across shell sessions in
             ~/.soco-cli/shell-history.txt
           - Add 'play_fav_radio_station_no' action
