@@ -568,9 +568,10 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     The command syntax is the same as when using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.
     
-    [Not Available on Windows]
-    Use the TAB key for autocompletion of shell commands, SoCo-CLI actions, and
-    speaker names. Use the arrow keys for command history and command editing.
+    Use the arrow keys for command history and command editing.
+    
+    [Not Available on Windows] Use the TAB key for autocompletion of shell
+    commands, SoCo-CLI actions, and speaker names.
 
 SoCo-CLI [] > 
 
@@ -578,11 +579,11 @@ SoCo-CLI [] >
 
 ### Shell History and Auto-Completion
 
+Commands in the shell history can be scrolled through by using the up/down arrows, and commands can be edited using the left/right arrows to position the cursor.
+
 *Not available on Windows*
 
-Commands in the shell history can be scrolled through by using the up/down arrows, and commands can be edited using the left/right arrows to position the cursor. Shell commands can be auto-completed using the TAB key.
-
-The shell history is saved between shell sessions in `~/.soco-cli/shell-history.txt`.
+Shell commands can be auto-completed using the TAB key. The shell history is saved between shell sessions in `~/.soco-cli/shell-history.txt`.
 
 ## Cached Discovery
 

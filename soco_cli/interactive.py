@@ -251,10 +251,11 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     
     The command syntax is the same as when using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.
+
+    Use the arrow keys for command history and command editing.
     
-    [Not Available on Windows]
-    Use the TAB key for autocompletion of shell commands, SoCo-CLI actions, and
-    speaker names. Use the arrow keys for command history and command editing.
+    [Not Available on Windows] Use the TAB key for autocompletion of shell
+    commands, SoCo-CLI actions, and speaker names.
 """
 
 
