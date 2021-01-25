@@ -55,12 +55,28 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
             speaker_name, use_local_speaker_list=use_local_speaker_list
         )
 
+    return_value = False
+    exception_error = None
+
     if speaker:
-        return_value = process_action(
-            speaker, action, args, use_local_speaker_list=use_local_speaker_list
-        )
+        try:
+            return_value = process_action(
+                speaker, action, args, use_local_speaker_list=use_local_speaker_list
+            )
+        except Exception as e:
+            logging.info("Exception: {}".format(e))
+            exception_error = e
+            pass
+
         output_msg = output.getvalue().rstrip()
         error_out = error.getvalue().rstrip()
+
+        if exception_error:
+            if error_out:
+                error_out = error_out + "\nError: " + str(exception_error)
+            else:
+                error_out = "Error: " + str(exception_error)
+
         if not return_value:
             if error_out == "":
                 error_out = "Error: Action '{}' not found".format(action)
@@ -73,6 +89,8 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     # Restore stdout and stderr
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
+
+    logging.info("Return value: {}".format(return_value))
 
     return return_value
 
