@@ -201,14 +201,20 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 else:
                     # Have to collect the remaining sequences: they're all
                     # part of the alias. Reconstruction required.
+                    # Multi-word parameters need quotes reinstated
+                    _restore_quotes(command)
                     actions = [" ".join(command)]
+                    logging.info("Action = '{}'".format(command))
                     while True:
                         try:
                             command = command_sequences.pop_next()
+                            _restore_quotes(command)
                             actions.append(" ".join(command))
+                            logging.info("Action = '{}'".format(command))
                         except IndexError:
                             break
                     action = " : ".join(actions)
+                    logging.info("Action sequence = '{}'".format(action))
                     _, new = am.create_alias(alias_name, action)
                     if new:
                         print("Alias '{}' created".format(alias_name))
@@ -393,3 +399,9 @@ def _get_readline_history():
     if RL:
         logging.info("Reading shell history")
         get_readline_history()
+
+
+def _restore_quotes(command):
+    for index, parts in enumerate(command):
+        if len(parts.split()) > 1:
+            command[index] = '"' + parts + '"'
