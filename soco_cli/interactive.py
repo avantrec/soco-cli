@@ -15,6 +15,7 @@ except ImportError:
 from shlex import split as shlex_split
 
 from .action_processor import get_actions, list_actions
+from .aliases import AliasManager
 from .api import get_soco_object, run_command
 from .cmd_parser import CLIParser
 from .utils import (
@@ -26,6 +27,11 @@ from .utils import (
     speaker_cache,
 )
 from .wait_actions import process_wait
+
+
+# Alias Manager
+am = AliasManager()
+am.load_aliases()
 
 
 def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
@@ -44,9 +50,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
     print("\nEntering SoCo-CLI interactive shell.")
     print("Type 'help' for available shell commands.\n")
     if not RL:
-        print(
-            "Note: Command history and autocompletion not currently available on Windows.\n"
-        )
+        print("Note: Autocompletion not currently available on Windows.\n")
 
     if RL:
         _set_actions_and_commands_list(use_local_speaker_list=use_local_speaker_list)
@@ -140,8 +144,38 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     )
                 continue
 
+            if command_lower == "aliases":
+                am.print_aliases()
+                continue
+
+            if command_lower == "alias":
+                if len(command) == 1:
+                    continue
+                # Remove 'alias'
+                command.pop(0)
+                alias_name = command.pop(0)
+                if len(command) == 0:
+                    if am.create_alias(alias_name, None):
+                        print("Alias '{}' removed".format(alias_name))
+                    else:
+                        print("Alias '{}' not found".format(alias_name))
+                else:
+                    action = " ".join(command)
+                    am.create_alias(alias_name, action)
+                    print("Alias '{}' created or overwritten".format(alias_name))
+                am.save_aliases()
+                _set_actions_and_commands_list(
+                    use_local_speaker_list=use_local_speaker_list
+                )
+                continue
+
             # Command processing
             try:
+
+                # Replace the command sequence with the contents of an alias
+                if command[0] in am.alias_names():
+                    command = shlex_split(am.action(command[0]))
+
                 args = command
 
                 # Setting a speaker to operate on?
@@ -191,7 +225,16 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 print("Error: Invalid command")
 
 
-COMMANDS = ["actions", "exit", "help", "rescan", "set ", "speakers"]
+COMMANDS = [
+    "actions",
+    "alias ",
+    "aliases",
+    "exit",
+    "help",
+    "rescan",
+    "set ",
+    "speakers",
+]
 
 
 def _completer(text, context):
@@ -214,11 +257,15 @@ ACTIONS_LIST = []
 
 def _set_actions_and_commands_list(use_local_speaker_list=False):
     global ACTIONS_LIST
-    ACTIONS_LIST = [
-        action + " "
-        for action in get_actions()
-        + _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
-    ] + COMMANDS
+    ACTIONS_LIST = (
+        [
+            action + " "
+            for action in get_actions()
+            + _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
+        ]
+        + COMMANDS
+        + am.alias_names()
+    )
 
 
 def _get_actions_and_commands():
@@ -237,6 +284,9 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     in the list, just type '4'.
                     '0' will unset the active speaker.
     'actions'   :   Show the complete list of SoCo-CLI actions.
+    'alias'     :   Add an alias: alias <alias_name> <command>
+                    Remove an alias: alias <alias_name>
+    'aliases'   :   Show the current list of aliases
     'exit'      :   Exit the shell.
     'help'      :   Show this help message (available shell commands).
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
@@ -255,7 +305,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     Use the arrow keys for command history and command editing.
     
     [Not Available on Windows] Use the TAB key for autocompletion of shell
-    commands, SoCo-CLI actions, and speaker names.
+    commands, SoCo-CLI actions, aliases, and speaker names.
 """
 
 
