@@ -318,6 +318,23 @@ class RewindableList(Sequence):
         else:
             raise IndexError
 
+    def __str__(self):
+        return str(self._items)
+
+    def index(self):
+        return self._index
+
+    def insert(self, index, element):
+        self._items.insert(index, element)
+        if index <= self._index:
+            self._index += 1
+
+    def pop_next(self):
+        item = self._items.pop(0)
+        if self._index != 0:
+            self._index -= 1
+        return item
+
 
 # Set up logging
 def configure_logging(log_level):

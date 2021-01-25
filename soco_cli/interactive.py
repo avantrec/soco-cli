@@ -19,6 +19,7 @@ from .aliases import AliasManager
 from .api import get_soco_object, run_command
 from .cmd_parser import CLIParser
 from .utils import (
+    RewindableList,
     get_readline_history,
     get_speaker,
     local_speaker_list,
@@ -76,7 +77,16 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
         cli_parser.parse(shlex_split(command_line))
 
         # Loop through action sequences
-        for command in cli_parser.get_sequences():
+        command_sequences = RewindableList(cli_parser.get_sequences())
+        logging.info("Command sequences = {}".format(command_sequences))
+
+        # The command_sequence list can change, so we use pop() until the
+        # list is exhausted
+        while True:
+            try:
+                command = command_sequences.pop_next()
+            except IndexError:
+                break
 
             command_lower = command[0].lower()
 
@@ -160,7 +170,16 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     else:
                         print("Alias '{}' not found".format(alias_name))
                 else:
-                    action = " ".join(command)
+                    # Have to collect the remaining sequences: they're all
+                    # part of the alias. Reconstruction required.
+                    actions = [" ".join(command)]
+                    while True:
+                        try:
+                            command = command_sequences.pop_next()
+                            actions.append(" ".join(command))
+                        except IndexError:
+                            break
+                    action = " : ".join(actions)
                     am.create_alias(alias_name, action)
                     print("Alias '{}' created or overwritten".format(alias_name))
                 am.save_aliases()
@@ -173,8 +192,20 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             try:
 
                 # Replace the command sequence with the contents of an alias
+                # This is tricky for multiple sequences
                 if command[0] in am.alias_names():
-                    command = shlex_split(am.action(command[0]))
+                    action = am.action(command[0])
+                    actions = shlex_split(action)
+                    cli_parser.parse(actions)
+                    new_sequences = cli_parser.get_sequences()
+                    command = new_sequences.pop(0)
+                    # Multiple sequences?
+                    if len(new_sequences):
+                        # Insert the additional sequences in the list
+                        index = command_sequences.index()
+                        for sequence in new_sequences:
+                            command_sequences.insert(index, sequence)
+                            index += 1
 
                 args = command
 
@@ -286,6 +317,8 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'actions'   :   Show the complete list of SoCo-CLI actions.
     'alias'     :   Add an alias: alias <alias_name> <command>
                     Remove an alias: alias <alias_name>
+                    Aliases override existing actions and can contain
+                    sequences of actions.
     'aliases'   :   Show the current list of aliases
     'exit'      :   Exit the shell.
     'help'      :   Show this help message (available shell commands).

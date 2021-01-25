@@ -53,5 +53,5 @@ class AliasManager:
         spacer = " " * 4
         print()
         for alias_name in sorted(self._aliases.keys()):
-            print(spacer + alias_name + " : " + self._aliases[alias_name])
+            print(spacer + alias_name + " = " + self._aliases[alias_name])
         print()
