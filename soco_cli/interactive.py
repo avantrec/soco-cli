@@ -336,12 +336,13 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     in the list, just type '4'.
                     '0' will unset the active speaker.
     'actions'   :   Show the complete list of SoCo-CLI actions.
-    'alias'     :   Add an alias: alias <alias_name> <command>
+    'alias'     :   Add an alias: alias <alias_name> <actions>
                     Remove an alias: alias <alias_name>
+                    Update an alias by creating a new alias with the same name.
+                    Using 'alias' without parameters shows the current list of
+                    aliases.
                     Aliases override existing actions and can contain
                     sequences of actions.
-                    Uisng 'alias' without parameters shows the current list of
-                    aliases.
     'exit'      :   Exit the shell.
     'help'      :   Show this help message (available shell commands).
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,

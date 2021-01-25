@@ -42,6 +42,7 @@
          * [Description](#description)
          * [Usage](#usage)
          * [Shell History and Auto-Completion](#shell-history-and-auto-completion)
+         * [Shell Aliases](#shell-aliases)
       * [Cached Discovery](#cached-discovery)
          * [Usage](#usage-1)
          * [Speaker Naming](#speaker-naming)
@@ -58,7 +59,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Fri Jan 22 14:33:42 GMT 2021 -->
+<!-- Added by: pwt, at: Mon Jan 25 11:46:54 GMT 2021 -->
 
 <!--te-->
 
@@ -553,6 +554,13 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     in the list, just type '4'.
                     '0' will unset the active speaker.
     'actions'   :   Show the complete list of SoCo-CLI actions.
+    'alias'     :   Add an alias: alias <alias_name> <actions>
+                    Remove an alias: alias <alias_name>
+                    Update an alias by creating a new alias with the same name.
+                    Using 'alias' without parameters shows the current list of
+                    aliases.
+                    Aliases override existing actions and can contain
+                    sequences of actions.
     'exit'      :   Exit the shell.
     'help'      :   Show this help message (available shell commands).
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
@@ -567,11 +575,11 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     
     The command syntax is the same as when using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.
-    
+
     Use the arrow keys for command history and command editing.
     
     [Not Available on Windows] Use the TAB key for autocompletion of shell
-    commands, SoCo-CLI actions, and speaker names.
+    commands, SoCo-CLI actions, aliases, and speaker names.
 
 SoCo-CLI [] > 
 
@@ -584,6 +592,26 @@ Commands in the shell history can be scrolled through by using the up/down arrow
 *Not available on Windows*
 
 Shell commands can be auto-completed using the TAB key. The shell history is saved between shell sessions in `~/.soco-cli/shell-history.txt`.
+
+### Shell Aliases
+
+Shell aliases allow the creation of shortcuts for individual actions or sequences of actions. Aliases are created using:
+
+`> alias <alias_name> <alias_action> [ : <alias_action>]`
+
+For example, to **create** an alias action sequence `go` that sets the volume of the active speaker to '50', starts playback, and then shows the track name, use:
+
+`> alias go volume 50 : play : track`
+
+Aliases are **run** by using the alias name, e.g.: `> go`.
+
+Aliases are included in **autocompletion** results, and they **override** built-in commands of the same name (so they can be used to remap actions).
+
+- **List** your aliases using the command `alias` without parameters.
+- **Remove** an alias by using `alias <alias_name>` without additional parameters.
+- **Update** an alias by creating a new action sequence with the same alias name (the previous alias is overwritten).
+
+Aliases are **saved** between sessions, using a file in the `~/.soco-cli` directory.
 
 ## Cached Discovery
 
