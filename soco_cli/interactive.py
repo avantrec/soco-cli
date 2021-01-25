@@ -35,10 +35,12 @@ am = AliasManager()
 
 def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
-    # Is the speaker name set on the command line?
-    # Note: ignores SPKR set as part of the environment
     speaker = None
     saved_speaker = None
+    pushed = False
+
+    # Is the speaker name set on the command line?
+    # Note: ignores SPKR set as part of the environment
     if speaker_name:
         speaker, error_msg = get_soco_object(
             speaker_name, use_local_speaker_list=use_local_speaker_list
@@ -183,6 +185,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 continue
 
             if command_lower == "push":
+                pushed = True
                 if speaker:
                     logging.info(
                         "Pushing current active speaker: {}".format(speaker.player_name)
@@ -201,8 +204,13 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     speaker_name = speaker.player_name
                     logging.info("Saved speaker = '{}'".format(speaker_name))
                     saved_speaker = None
+                elif pushed:
+                    saved_speaker = None
+                    speaker = None
+                    speaker_name = None
                 else:
                     logging.info("No saved speaker")
+                pushed = False
                 continue
 
             # Alias creation, update, and deletion
