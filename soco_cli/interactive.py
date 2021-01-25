@@ -51,15 +51,15 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
     if not RL:
         print("Note: Autocompletion not currently available on Windows.\n")
 
+    set_interactive()
+    am.load_aliases()
+
     if RL:
         _set_actions_and_commands_list(use_local_speaker_list=use_local_speaker_list)
         readline.parse_and_bind("tab: complete")
         readline.set_completer(_completer)
         readline.set_completer_delims(" ")
         _get_readline_history()
-
-    set_interactive()
-    am.load_aliases()
 
     # Input loop
     while True:
