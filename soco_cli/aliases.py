@@ -1,5 +1,6 @@
 """Manages aliases for use with the interactive shell"""
 
+import logging
 import pickle
 
 from os import mkdir, path
@@ -17,8 +18,13 @@ class AliasManager:
         if alias_actions in [None, ""]:
             return self.remove_alias(alias_name)
         else:
+            if self._aliases.get(alias_name, None):
+                new = False
+            else:
+                new = True
+            logging.info("Adding alias '{}', new = {}".format(alias_name, new))
             self._aliases[alias_name] = alias_actions
-            return True
+            return True, new
 
     def action(self, alias_name):
         return self._aliases.get(alias_name, None)
@@ -26,8 +32,10 @@ class AliasManager:
     def remove_alias(self, alias_name):
         try:
             del self._aliases[alias_name]
+            logging.info("Removing alias '{}'".format(alias_name))
             return True
         except KeyError:
+            logging.info("Alias '{}' not found".format(alias_name))
             return False
 
     def alias_names(self):
@@ -36,17 +44,21 @@ class AliasManager:
     def save_aliases(self):
         if not path.exists(CONFIG_DIR):
             try:
+                logging.info("Creating directory '{}'".format(CONFIG_DIR))
                 mkdir(CONFIG_DIR)
             except:
                 pass
         with open(ALIAS_FILE, "wb") as f:
+            logging.info("Saving aliases")
             pickle.dump(self._aliases, f)
 
     def load_aliases(self):
         try:
             with open(ALIAS_FILE, "rb") as f:
+                logging.info("Reading aliases")
                 self._aliases = pickle.load(f)
         except:
+            logging.info("Failed to read aliases from file")
             pass
 
     def print_aliases(self):

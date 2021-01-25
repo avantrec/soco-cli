@@ -85,6 +85,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
         while True:
             try:
                 command = command_sequences.pop_next()
+                logging.info("Current command = '{}'".format(command))
             except IndexError:
                 break
 
@@ -92,6 +93,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
             if command[0] == "0":
                 # Unset the active speaker
+                logging.info("Unset active speaker")
                 speaker_name = None
                 speaker = None
                 continue
@@ -114,6 +116,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 continue
 
             if command_lower in ["wait", "wait_until", "wait_for"]:
+                logging.info("Processing a 'wait' action")
                 process_wait(command)
                 continue
 
@@ -124,10 +127,14 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
                 )
                 if 1 <= speaker_number <= limit:
+                    logging.info(
+                        "Setting to active speaker no. {} ".format(speaker_number)
+                    )
                     speaker_name = _get_speaker_names(
                         use_local_speaker_list=use_local_speaker_list
                     )[speaker_number - 1]
                     speaker = get_speaker(speaker_name, use_local_speaker_list)
+                    logging.info("{} : {}".format(speaker, speaker_name))
                 else:
                     print(
                         "Error: Speaker number is out of range (0 to {})".format(limit)
@@ -147,6 +154,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 if use_local_speaker_list:
                     print("Using cached speaker list: no rescan performed")
                 else:
+                    logging.info("Full network rescan")
                     speaker_cache().scan(reset=True)
                     _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
                     _set_actions_and_commands_list(
@@ -177,8 +185,11 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                         except IndexError:
                             break
                     action = " : ".join(actions)
-                    am.create_alias(alias_name, action)
-                    print("Alias '{}' created or overwritten".format(alias_name))
+                    _, new = am.create_alias(alias_name, action)
+                    if new:
+                        print("Alias '{}' created".format(alias_name))
+                    else:
+                        print("Alias '{}' overwritten".format(alias_name))
                 am.save_aliases()
                 _set_actions_and_commands_list(
                     use_local_speaker_list=use_local_speaker_list
@@ -195,12 +206,18 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     actions = shlex_split(action)
                     cli_parser.parse(actions)
                     new_sequences = cli_parser.get_sequences()
+                    logging.info("Sequences in the alias: {}".format(new_sequences))
                     command = new_sequences.pop(0)
                     # Multiple sequences?
                     if len(new_sequences):
                         # Insert the additional sequences in the list
                         index = command_sequences.index()
                         for sequence in new_sequences:
+                            logging.info(
+                                "Inserting new sequence {} at {}".format(
+                                    sequence, index
+                                )
+                            )
                             command_sequences.insert(index, sequence)
                             index += 1
 
@@ -218,6 +235,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                                 "Error: Speaker '{}' not found".format(new_speaker_name)
                             )
                         else:
+                            logging.info(
+                                "Set new active speaker: {}'".format(speaker_name)
+                            )
                             speaker_name = new_speaker_name
                             speaker = new_speaker
                         continue
@@ -226,12 +246,16 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     continue
 
                 if not speaker_name:
+                    logging.info(
+                        "Treating first parameter '{}' as speaker name".format(args[0])
+                    )
                     speaker = get_speaker(args.pop(0), use_local_speaker_list)
                     if not speaker:
                         print("Error: Speaker not found")
                         continue
 
                 action = args.pop(0).lower()
+                logging.info("Action = '{}'; args = '{}'".format(action, args))
                 exit_code, output, error_msg = run_command(
                     speaker,
                     action,
@@ -283,6 +307,7 @@ ACTIONS_LIST = []
 
 
 def _set_actions_and_commands_list(use_local_speaker_list=False):
+    logging.info("Rebuilding commands/action list")
     global ACTIONS_LIST
     ACTIONS_LIST = (
         [
@@ -358,9 +383,11 @@ def _print_speaker_list(use_local_speaker_list=False):
 
 def _save_readline_history():
     if RL:
+        logging.info("Saving shell history")
         save_readline_history()
 
 
 def _get_readline_history():
     if RL:
+        logging.info("Reading shell history")
         get_readline_history()
