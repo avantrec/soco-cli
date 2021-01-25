@@ -104,9 +104,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     index = command_sequences.index()
                     for sequence in new_sequences:
                         logging.info(
-                            "Inserting new sequence {} at {}".format(
-                                sequence, index
-                            )
+                            "Inserting new sequence {} at {}".format(sequence, index)
                         )
                         command_sequences.insert(index, sequence)
                         index += 1
@@ -186,7 +184,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
             if command_lower == "push":
                 if speaker:
-                    logging.info("Pushing current active speaker: {}".format(speaker.player_name))
+                    logging.info(
+                        "Pushing current active speaker: {}".format(speaker.player_name)
+                    )
                 else:
                     logging.info("No active speaker to push")
                 saved_speaker = speaker
@@ -205,6 +205,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     logging.info("No saved speaker")
                 continue
 
+            # Alias creation, update, and deletion
             if command_lower == "alias":
                 if len(command) == 1:
                     am.print_aliases()
@@ -267,20 +268,28 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                             logging.info(
                                 "Set new active speaker: '{}'".format(new_speaker_name)
                             )
-                            speaker_name = new_speaker_name
                             speaker = new_speaker
+                            speaker_name = speaker.player_name
                         continue
                 except IndexError:
+                    # No speaker name given
+                    logging.info("Unset active speaker ('set' with no arguments)")
                     speaker_name = None
+                    speaker = None
                     continue
 
                 if not speaker_name:
                     logging.info(
                         "Treating first parameter '{}' as speaker name".format(args[0])
                     )
-                    speaker = get_speaker(args.pop(0), use_local_speaker_list)
+                    name = args.pop(0)
+                    speaker = get_speaker(name, use_local_speaker_list)
                     if not speaker:
-                        print("Error: Speaker not found")
+                        print(
+                            "Error: Speaker '{}' not found; should an active speaker be set?".format(
+                                name
+                            )
+                        )
                         continue
 
                 action = args.pop(0).lower()
