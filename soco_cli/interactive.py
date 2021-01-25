@@ -154,12 +154,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     )
                 continue
 
-            if command_lower == "aliases":
-                am.print_aliases()
-                continue
-
             if command_lower == "alias":
                 if len(command) == 1:
+                    am.print_aliases()
                     continue
                 # Remove 'alias'
                 command.pop(0)
@@ -259,7 +256,6 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 COMMANDS = [
     "actions",
     "alias ",
-    "aliases",
     "exit",
     "help",
     "rescan",
@@ -319,7 +315,8 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     Remove an alias: alias <alias_name>
                     Aliases override existing actions and can contain
                     sequences of actions.
-    'aliases'   :   Show the current list of aliases
+                    Uisng 'alias' without parameters shows the current list of
+                    aliases.
     'exit'      :   Exit the shell.
     'help'      :   Show this help message (available shell commands).
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
