@@ -38,6 +38,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
     # Is the speaker name set on the command line?
     # Note: ignores SPKR set as part of the environment
     speaker = None
+    saved_speaker = None
     if speaker_name:
         speaker, error_msg = get_soco_object(
             speaker_name, use_local_speaker_list=use_local_speaker_list
@@ -183,6 +184,27 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     )
                 continue
 
+            if command_lower == "push":
+                if speaker:
+                    logging.info("Pushing current active speaker: {}".format(speaker.player_name))
+                else:
+                    logging.info("No active speaker to push")
+                saved_speaker = speaker
+                speaker_name = None
+                speaker = None
+                continue
+
+            if command_lower == "pop":
+                logging.info("Popping the saved speaker state")
+                if saved_speaker:
+                    speaker = saved_speaker
+                    speaker_name = speaker.player_name
+                    logging.info("Saved speaker = '{}'".format(speaker_name))
+                    saved_speaker = None
+                else:
+                    logging.info("No saved speaker")
+                continue
+
             if command_lower == "alias":
                 if len(command) == 1:
                     am.print_aliases()
@@ -243,7 +265,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                             )
                         else:
                             logging.info(
-                                "Set new active speaker: {}'".format(speaker_name)
+                                "Set new active speaker: '{}'".format(new_speaker_name)
                             )
                             speaker_name = new_speaker_name
                             speaker = new_speaker
@@ -289,6 +311,8 @@ COMMANDS = [
     "alias ",
     "exit",
     "help",
+    "pop",
+    "push",
     "rescan",
     "set ",
     "speakers",
@@ -352,6 +376,8 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     sequences of actions.
     'exit'      :   Exit the shell.
     'help'      :   Show this help message (available shell commands).
+    'pop'       :   Restore saved active speaker state.
+    'push'      :   Save the current active speaker, and unset the active speaker.
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
                     use this to perform a more comprehensive scan.
     'set <spkr> :   Set the active speaker using its name.

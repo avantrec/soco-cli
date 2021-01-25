@@ -563,6 +563,8 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     sequences of actions.
     'exit'      :   Exit the shell.
     'help'      :   Show this help message (available shell commands).
+    'pop'       :   Restore saved active speaker state.
+    'push'      :   Save the current active speaker, and unset the active speaker.
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
                     use this to perform a more comprehensive scan.
     'set <spkr> :   Set the active speaker using its name.
@@ -612,6 +614,12 @@ Aliases are included in **autocompletion** results, and they **override** built-
 - **Update** an alias by creating a new action sequence with the same alias name (the previous alias is overwritten).
 
 Aliases are **saved** between sessions, using a file in the `~/.soco-cli` directory.
+
+The **`push`** and **`pop`** commands are useful in alias actions when one wants to target actions at other speakers, but keep the current active speaker when the action sequence ends, e.g.:
+
+`> alias fv push : set "Front Reception" : volume 50 : pfrs "Jazz 24" : pop`
+
+This command sequence targets the 'Front Reception' speaker, but first saves the current active speaker, restoring it at the end. (This will, of course, still work if the current active speaker is 'Front Reception'.)
 
 ## Cached Discovery
 

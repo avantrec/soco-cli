@@ -1,4 +1,7 @@
-v0.3.10   -
+v0.3.10   - Shell aliases can now be used for shell commands (except
+            alias!)
+          - Add 'push' and 'pop' shell commands to save / restore the
+            active speaker
 v0.3.9    - Add alias capability to the shell
 v0.3.8    - Shell history is now saved across shell sessions in
             ~/.soco-cli/shell-history.txt
