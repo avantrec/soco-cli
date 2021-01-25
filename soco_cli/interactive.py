@@ -1,7 +1,6 @@
 """ SoCo-CLI interactive mode handler """
 
 import logging
-from os import path
 
 # Readline is only available on Unix
 try:
@@ -89,7 +88,27 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             except IndexError:
                 break
 
-            command_lower = command[0].lower()
+            # Replace the command sequence with the contents of an alias
+            # This is tricky for multiple sequences
+            if command[0] in am.alias_names():
+                action = am.action(command[0])
+                actions = shlex_split(action)
+                cli_parser.parse(actions)
+                new_sequences = cli_parser.get_sequences()
+                logging.info("Sequences in the alias: {}".format(new_sequences))
+                command = new_sequences.pop(0)
+                # Multiple sequences?
+                if len(new_sequences):
+                    # Insert the additional sequences in the list
+                    index = command_sequences.index()
+                    for sequence in new_sequences:
+                        logging.info(
+                            "Inserting new sequence {} at {}".format(
+                                sequence, index
+                            )
+                        )
+                        command_sequences.insert(index, sequence)
+                        index += 1
 
             if command[0] == "0":
                 # Unset the active speaker
@@ -97,6 +116,8 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 speaker_name = None
                 speaker = None
                 continue
+
+            command_lower = command[0].lower()
 
             if command_lower.startswith("exit"):
                 logging.info("Exiting interactive mode")
@@ -169,6 +190,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 # Remove 'alias'
                 command.pop(0)
                 alias_name = command.pop(0)
+                if alias_name == "alias":
+                    print("Cannot create alias for 'alias'")
+                    continue
                 if len(command) == 0:
                     if am.create_alias(alias_name, None):
                         print("Alias '{}' removed".format(alias_name))
@@ -189,7 +213,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                     if new:
                         print("Alias '{}' created".format(alias_name))
                     else:
-                        print("Alias '{}' overwritten".format(alias_name))
+                        print("Alias '{}' updated".format(alias_name))
                 am.save_aliases()
                 _set_actions_and_commands_list(
                     use_local_speaker_list=use_local_speaker_list
@@ -198,29 +222,6 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
             # Command processing
             try:
-
-                # Replace the command sequence with the contents of an alias
-                # This is tricky for multiple sequences
-                if command[0] in am.alias_names():
-                    action = am.action(command[0])
-                    actions = shlex_split(action)
-                    cli_parser.parse(actions)
-                    new_sequences = cli_parser.get_sequences()
-                    logging.info("Sequences in the alias: {}".format(new_sequences))
-                    command = new_sequences.pop(0)
-                    # Multiple sequences?
-                    if len(new_sequences):
-                        # Insert the additional sequences in the list
-                        index = command_sequences.index()
-                        for sequence in new_sequences:
-                            logging.info(
-                                "Inserting new sequence {} at {}".format(
-                                    sequence, index
-                                )
-                            )
-                            command_sequences.insert(index, sequence)
-                            index += 1
-
                 args = command
 
                 # Setting a speaker to operate on?

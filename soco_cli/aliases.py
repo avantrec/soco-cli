@@ -62,6 +62,9 @@ class AliasManager:
             pass
 
     def print_aliases(self):
+        if len(self._aliases) == 0:
+            print("No current aliases")
+            return
 
         # Find the longest alias name
         max_alias = 0

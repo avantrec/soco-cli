@@ -605,7 +605,7 @@ For example, to **create** an alias action sequence `go` that sets the volume of
 
 Aliases are **run** by using the alias name, e.g.: `> go`.
 
-Aliases are included in **autocompletion** results, and they **override** built-in commands of the same name (so they can be used to remap actions).
+Aliases are included in **autocompletion** results, and they **override** built-in commands and actions of the same name (so they can be used to remap commands and actions).
 
 - **List** your aliases using the command `alias` without parameters.
 - **Remove** an alias by using `alias <alias_name>` without additional parameters.
