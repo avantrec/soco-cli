@@ -31,7 +31,6 @@ from .wait_actions import process_wait
 
 # Alias Manager
 am = AliasManager()
-am.load_aliases()
 
 
 def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
@@ -60,6 +59,7 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
         _get_readline_history()
 
     set_interactive()
+    am.load_aliases()
 
     # Input loop
     while True:

@@ -53,9 +53,9 @@ class AliasManager:
             pickle.dump(self._aliases, f)
 
     def load_aliases(self):
+        logging.info("Reading aliases")
         try:
             with open(ALIAS_FILE, "rb") as f:
-                logging.info("Reading aliases")
                 self._aliases = pickle.load(f)
         except:
             logging.info("Failed to read aliases from file")
