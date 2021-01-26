@@ -313,7 +313,9 @@ class RewindableList(Sequence):
         self._index = 0
 
     def rewind_to(self, index):
-        if 0 <= index < len(self._items):
+        if len(self._items) == 0 and index == 0:
+            self._index = 0
+        elif 0 <= index < len(self._items):
             self._index = index
         else:
             raise IndexError

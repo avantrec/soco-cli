@@ -621,6 +621,16 @@ The **`push`** and **`pop`** commands are useful in alias actions when one wants
 
 This command sequence targets the 'Front Reception' speaker, but first saves the current active speaker, restoring it at the end. (This will, of course, still work if the current active speaker is 'Front Reception'.)
 
+**Aliases can include other aliases** in their sequences of actions. e.g.:
+
+```
+> alias alias_1 vol 30 : play
+> alias alias_2 push : set Kitchen : alias_1 : pop 
+> alias_2
+```
+
+Loops are detected and disallowed when an alias with a loop is run, but not at alias creation time.
+
 ## Cached Discovery
 
 SoCo-CLI uses the full range of speaker discovery mechanisms in SoCo to look up speakers by their names.

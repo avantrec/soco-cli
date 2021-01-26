@@ -93,23 +93,12 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
             # Replace the command sequence with the contents of an alias
             # This is tricky for multiple sequences
+            ap = AliasProcessor()
             if command[0] in am.alias_names():
-                action = am.action(command[0])
-                actions = shlex_split(action)
-                cli_parser.parse(actions)
-                new_sequences = cli_parser.get_sequences()
-                logging.info("Sequences in the alias: {}".format(new_sequences))
-                command = new_sequences.pop(0)
-                # Multiple sequences?
-                if len(new_sequences):
-                    # Insert the additional sequences in the list
-                    index = command_sequences.index()
-                    for sequence in new_sequences:
-                        logging.info(
-                            "Inserting new sequence {} at {}".format(sequence, index)
-                        )
-                        command_sequences.insert(index, sequence)
-                        index += 1
+                index = command_sequences.index()
+                ap.process(command[0], am, command_sequences)
+                command_sequences.rewind_to(index)
+                continue
 
             if command[0] == "0":
                 # Unset the active speaker
@@ -185,6 +174,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 continue
 
             if command_lower == "push":
+                if pushed == True:
+                    print("Active speaker already pushed ... ignored")
+                    continue
                 pushed = True
                 if speaker:
                     logging.info(
@@ -198,6 +190,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
                 continue
 
             if command_lower == "pop":
+                if pushed == False:
+                    print("No active speaker state to pop ... ignored")
+                    continue
                 logging.info("Popping the saved speaker state")
                 if saved_speaker:
                     speaker = saved_speaker
@@ -448,3 +443,44 @@ def _restore_quotes(command):
     for index, parts in enumerate(command):
         if len(parts.split()) > 1:
             command[index] = '"' + parts + '"'
+
+
+class AliasProcessor:
+    def __init__(self):
+        self._used_aliases = []
+
+    def process(self, alias_name, am, command_list):
+
+        if alias_name in self._used_aliases:
+            print("Error: Alias loop detected ... stopping")
+            return False
+        else:
+            self._used_aliases.append(alias_name)
+
+        alias_actions = am.action(alias_name)
+        action_elements = shlex_split(alias_actions)
+
+        cli_parser = CLIParser()
+        cli_parser.parse(action_elements)
+        sequences = cli_parser.get_sequences()
+
+        logging.info("Unpacking the alias '{} -> '{}'".format(alias_name, sequences))
+
+        index = command_list.index()
+        for sequence in sequences:
+            # Recurse if the sequence is itself an alias
+            if sequence[0] in am.alias_names():
+                logging.info("Recursively unpacking the alias '{}'".format(sequence[0]))
+                if self.process(sequence[0], am, command_list):
+                    index = command_list.index()
+                else:
+                    return False
+
+            # Not an alias, so insert the sequence in the command list
+            # at the correct index, and increment the index
+            else:
+                logging.info("Inserting new sequence {} at {}".format(sequence, index))
+                command_list.insert(index, sequence)
+                index += 1
+
+        return True
