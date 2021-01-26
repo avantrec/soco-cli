@@ -1,4 +1,6 @@
 v0.3.11   - Allow aliases to include other aliases, with loop detection
+          - Add 'single keystroke' mode to the shell. (Not supported on
+            Windows.)
 v0.3.10   - Shell aliases can now be used for shell commands (except
             alias!)
           - Add 'push' and 'pop' shell commands to save / restore the

@@ -2,9 +2,7 @@
 
 import logging
 import pickle
-
 from os import mkdir, path
-
 
 CONFIG_DIR = path.join(path.expanduser("~"), ".soco-cli")
 ALIAS_FILE = path.join(CONFIG_DIR, "aliases.pickle")

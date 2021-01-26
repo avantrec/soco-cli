@@ -31,7 +31,6 @@ from .utils import (
 )
 from .wait_actions import process_wait
 
-
 # Globals
 pp = pprint.PrettyPrinter(width=100)
 
@@ -95,6 +94,12 @@ def main():
         default=False,
         help="Ignore the 'SPKR' environment variable, if set",
     )
+    parser.add_argument(
+        "--sk",
+        action="store_true",
+        default=False,
+        help="Enter Single Keystroke mode in the Interactive Shell",
+    )
     # The rest of the optional args are common
     configure_common_args(parser)
 
@@ -149,6 +154,7 @@ def main():
         env_speaker = env.get(ENV_SPKR)
 
     if args.interactive:
+        sk = True if args.sk else False
         speaker_name = None
         if len(args.parameters):
             speaker_name = args.parameters[0]
@@ -156,6 +162,7 @@ def main():
             speaker_name,
             use_local_speaker_list=use_local_speaker_list,
             no_env=args.no_env,
+            single_keystroke=sk,
         )
         exit(0)
 

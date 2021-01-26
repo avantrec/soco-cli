@@ -43,6 +43,7 @@
          * [Usage](#usage)
          * [Shell History and Auto-Completion](#shell-history-and-auto-completion)
          * [Shell Aliases](#shell-aliases)
+         * [Single Keystroke Mode](#single-keystroke-mode)
       * [Cached Discovery](#cached-discovery)
          * [Usage](#usage-1)
          * [Speaker Naming](#speaker-naming)
@@ -59,7 +60,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Mon Jan 25 11:46:54 GMT 2021 -->
+<!-- Added by: pwt, at: Tue Jan 26 13:31:09 GMT 2021 -->
 
 <!--te-->
 
@@ -573,6 +574,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     matches are supported, e.g., 'set front'.
                     To unset the active speaker, omit the speaker name,
                     or just enter '0'.   
+    'sk'        :   Enters 'single keystroke' mode. (Also 'single-keystroke'.)
     'speakers'  :   List the names of all available speakers
     
     The command syntax is the same as when using 'sonos' from the command line.
@@ -630,6 +632,16 @@ This command sequence targets the 'Front Reception' speaker, but first saves the
 ```
 
 Loops are detected and disallowed when an alias with a loop is run, but not at alias creation time.
+
+### Single Keystroke Mode
+
+*Not supported on Windows.*
+
+Single keystroke mode allows the shell to be controlled by single character presses on the keyboard, without requiring the return key to be pressed. This is useful for some headless automation use cases, as well as sometimes being convenient for interactive use. All single character actions are available, including aliases. 
+
+Enable by using the actions `sk` or `single-keystroke` at the shell prompt. Type 'x' to exit back to the normal shell.
+
+To start SoCo-CLI in single keystroke mode, use the command line option `--sk`, along with the interactive (`-i` or `--interactive`) option.
 
 ## Cached Discovery
 

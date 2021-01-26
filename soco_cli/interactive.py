@@ -17,6 +17,7 @@ from .action_processor import get_actions, list_actions
 from .aliases import AliasManager
 from .api import get_soco_object, run_command
 from .cmd_parser import CLIParser
+from .keystroke_capture import get_keystroke
 from .utils import (
     RewindableList,
     get_readline_history,
@@ -28,12 +29,13 @@ from .utils import (
 )
 from .wait_actions import process_wait
 
-
 # Alias Manager
 am = AliasManager()
 
 
-def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
+def interactive_loop(
+    speaker_name, use_local_speaker_list=False, no_env=False, single_keystroke=False
+):
 
     speaker = None
     saved_speaker = None
@@ -50,7 +52,10 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             speaker_name = None
 
     print("\nEntering SoCo-CLI interactive shell.")
-    print("Type 'help' for available shell commands.\n")
+    if single_keystroke:
+        print("Single Keystroke Mode ... 'x' to exit.\n")
+    else:
+        print("Type 'help' for available shell commands.\n")
     if not RL:
         print("Note: Autocompletion not currently available on Windows.\n")
 
@@ -64,12 +69,27 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
         readline.set_completer_delims(" ")
         _get_readline_history()
 
+    single_keystroke = single_keystroke
+
     # Input loop
     while True:
         if speaker_name and speaker:
-            command_line = input("SoCo-CLI [{}] > ".format(speaker.player_name))
+            prompt = "SoCo-CLI [{}] > ".format(speaker.player_name)
         else:
-            command_line = input("SoCo-CLI [] > ")
+            prompt = "SoCo-CLI [] > "
+
+        if single_keystroke:
+            command_line = get_keystroke()
+            if speaker_name and speaker:
+                speaker_text = "[{}]".format(speaker.player_name)
+            else:
+                speaker_text = "[]"
+            print("{} Command =".format(speaker_text), command_line)
+            if command_line == "x":
+                single_keystroke = False
+                continue
+        else:
+            command_line = input(prompt)
 
         if command_line == "":
             continue
@@ -91,10 +111,9 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
             except IndexError:
                 break
 
-            # Replace the command sequence with the contents of an alias
-            # This is tricky for multiple sequences
-            ap = AliasProcessor()
+            # Is this an alias?
             if command[0] in am.alias_names():
+                ap = AliasProcessor()
                 index = command_sequences.index()
                 ap.process(command[0], am, command_sequences)
                 command_sequences.rewind_to(index)
@@ -120,6 +139,14 @@ def interactive_loop(speaker_name, use_local_speaker_list=False, no_env=False):
 
             if command_lower == "actions":
                 _show_actions()
+                continue
+
+            if command_lower in ["single-keystroke", "sk"]:
+                if RL:  # Use as a proxy for 'not Windows'
+                    print("Single keystroke mode ... 'x' to exit")
+                    single_keystroke = True
+                else:
+                    print("Single keystroke mode is not supported on Windows")
                 continue
 
             if command_lower == "speakers":
@@ -327,6 +354,8 @@ COMMANDS = [
     "push",
     "rescan",
     "set ",
+    "single-keystroke",
+    "sk",
     "speakers",
 ]
 
@@ -397,7 +426,9 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     'set "Front Reception"'. Unambiguous partial, case-insensitive
                     matches are supported, e.g., 'set front'.
                     To unset the active speaker, omit the speaker name,
-                    or just enter '0'.   
+                    or just enter '0'.
+    'sk'        :   Enters 'single keystroke' mode. (Also 'single-keystroke'.)
+                    (Not supported on Windows).
     'speakers'  :   List the names of all available speakers
     
     The command syntax is the same as when using 'sonos' from the command line.
