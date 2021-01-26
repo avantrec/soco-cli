@@ -619,12 +619,16 @@ def play_favourite_radio_number(
 
     preset = 0
     limit = 99
-    station = speaker.music_library.get_favorite_radio_stations(preset, limit)[
-        fav_no - 1
-    ]
-    logging.info("Requested station is '{}'".format(station.title))
+    stations = speaker.music_library.get_favorite_radio_stations(preset, limit)
+
+    station_titles = sorted([s.title for s in stations])
+    logging.info("Sorted station titles are: {}".format(station_titles))
+
+    station_title = station_titles[fav_no - 1]
+    logging.info("Requested station is '{}'".format(station_title))
+
     return play_favourite_radio(
-        speaker, action, [station.title], soco_function, use_local_speaker_list
+        speaker, action, [station_title], soco_function, use_local_speaker_list
     )
 
 
