@@ -485,6 +485,14 @@ class AliasProcessor:
 
     def process(self, command, am, command_list):
 
+        self._recurse_level += 1
+
+        logging.info(
+            "Alias unpacking: recursion level {}, sequence number {}".format(
+                self._recurse_level, self._seq_number
+            )
+        )
+
         alias_name = command[0]
         alias_parms = command[1:]
 
@@ -493,16 +501,16 @@ class AliasProcessor:
         for used_alias in self._used_aliases:
             if used_alias[0] != self._recurse_level:
                 if used_alias[1] == self._seq_number and used_alias[2] == alias_name:
-                    # Recursion
+                    # Alias name reused at different recursion levels, but within
+                    # the unpacking of the same sequence = loop.
                     print("Error: Alias loop detected ... stopping".format(alias_name))
                     self._remove_added_commands()
                     return False
         else:
+            # Each used_alias entry is a 3-tuple
             self._used_aliases.append(
                 (self._recurse_level, self._seq_number, alias_name)
             )
-
-        self._recurse_level += 1
 
         alias_actions = am.action(alias_name)
         action_elements = shlex_split(alias_actions)
@@ -514,7 +522,7 @@ class AliasProcessor:
         logging.info("Unpacking the alias '{} -> '{}'".format(alias_name, sequences))
 
         index = command_list.index()
-        for idx, sequence in enumerate(sequences):
+        for idx, sequence in enumerate(sequences, start=1):
             self._seq_number = idx
             sequence = sequence + alias_parms
             # Recurse if the sequence is itself an alias
@@ -533,6 +541,8 @@ class AliasProcessor:
                 index += 1
                 self._command_count += 1
                 self._index = index
+
+        self._recurse_level -= 1
 
         return True
 
