@@ -259,9 +259,7 @@ def list_numbered_things(speaker, action, args, soco_function, use_local_speaker
         things = getattr(speaker.music_library, soco_function)(complete_result=True)
     else:
         things = getattr(speaker, soco_function)(complete_result=True)
-    things_list = []
-    for thing in things:
-        things_list.append(thing.title)
+    things_list = [thing.title for thing in things]
     things_list.sort()
     print()
     index = 0

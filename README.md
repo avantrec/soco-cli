@@ -633,6 +633,15 @@ This command sequence targets the 'Front Reception' speaker, but first saves the
 
 Loops are detected and disallowed when an alias with a loop is run, but not at alias creation time.
 
+**Aliases accept parameters** when invoked, which is helpful in remapping existing actions to new alias names. Note that if an alias is composed of a sequence of actions, the parameter(s) will be passed to all actions in the sequence, e.g.:
+
+```
+> alias a1 pfq
+> a1 5          <- Invokes 'pfq 5'
+> alias a2 Kitchen volume : Bathroom volume
+> a2 30         <- Invokes 'Kitchen volume 30 : Bathroom volume 30'
+```
+
 ### Single Keystroke Mode
 
 *Not supported on Windows.*

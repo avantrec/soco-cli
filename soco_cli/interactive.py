@@ -115,7 +115,7 @@ def interactive_loop(
             if command[0] in am.alias_names():
                 ap = AliasProcessor()
                 index = command_sequences.index()
-                ap.process(command[0], am, command_sequences)
+                ap.process(command, am, command_sequences)
                 command_sequences.rewind_to(index)
                 continue
 
@@ -479,14 +479,36 @@ def _restore_quotes(command):
 class AliasProcessor:
     def __init__(self):
         self._used_aliases = []
+        self._seq_number = 0
+        self._recurse_level = 0
+        self._command_count = 0
+        self._index = 0
+        self._command_list = []
 
-    def process(self, alias_name, am, command_list):
+    def process(self, command, am, command_list):
 
-        if alias_name in self._used_aliases:
-            print("Error: Alias loop detected ... stopping")
-            return False
+        alias_name = command[0]
+        alias_parms = command[1:]
+
+        self._command_list = command_list
+
+        for used_alias in self._used_aliases:
+            if used_alias[0] != self._recurse_level:
+                if used_alias[1] == self._seq_number and used_alias[2] == alias_name:
+                    # Recursion
+                    print(
+                        "Error: Alias loop detected ... stopping".format(
+                            alias_name
+                        )
+                    )
+                    self._remove_added_commands()
+                    return False
         else:
-            self._used_aliases.append(alias_name)
+            self._used_aliases.append(
+                (self._recurse_level, self._seq_number, alias_name)
+            )
+
+        self._recurse_level += 1
 
         alias_actions = am.action(alias_name)
         action_elements = shlex_split(alias_actions)
@@ -498,11 +520,13 @@ class AliasProcessor:
         logging.info("Unpacking the alias '{} -> '{}'".format(alias_name, sequences))
 
         index = command_list.index()
-        for sequence in sequences:
+        for idx, sequence in enumerate(sequences):
+            self._seq_number = idx
+            sequence = sequence + alias_parms
             # Recurse if the sequence is itself an alias
             if sequence[0] in am.alias_names():
                 logging.info("Recursively unpacking the alias '{}'".format(sequence[0]))
-                if self.process(sequence[0], am, command_list):
+                if self.process(sequence, am, command_list):
                     index = command_list.index()
                 else:
                     return False
@@ -513,5 +537,12 @@ class AliasProcessor:
                 logging.info("Inserting new sequence {} at {}".format(sequence, index))
                 command_list.insert(index, sequence)
                 index += 1
+                self._command_count += 1
+                self._index = index
 
         return True
+
+    def _remove_added_commands(self):
+        for _ in range(self._command_count):
+            cmd = self._command_list.pop_next()
+            logging.info("Removing command {}".format(cmd))

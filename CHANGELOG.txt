@@ -1,4 +1,4 @@
-v0.3.13   -
+v0.3.13   - Shell aliases now accept parameters
 v0.3.12   - Bugfix for 'play_fav_radio_station_no' picking the wrong
             station (#12).
 v0.3.11   - Allow aliases to include other aliases, with loop detection
