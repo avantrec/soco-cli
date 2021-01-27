@@ -199,6 +199,7 @@ def on_off_action(speaker, action, args, soco_function, use_local_speaker_list):
             setattr(speaker, soco_function, False)
         else:
             parameter_type_error(action, "on|off")
+            return False
     return True
 
 
