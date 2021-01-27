@@ -568,6 +568,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'push'      :   Save the current active speaker, and unset the active speaker.
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
                     use this to perform a more comprehensive scan.
+    'rescan_max':   Try this if you're having trouble finding all your speakers.
     'set <spkr> :   Set the active speaker using its name.
                     Use quotes when needed for the speaker name, e.g.,
                     'set "Front Reception"'. Unambiguous partial, case-insensitive

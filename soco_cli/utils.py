@@ -373,15 +373,15 @@ def set_speaker_list(s):
     speaker_list = s
 
 
-SCAN_TIMEOUT = 0.1
-
-
 class SpeakerCache:
-    def __init__(self):
+    def __init__(self, max_threads=256, scan_timeout=0.1, min_netmask=24):
         # _cache contains (soco_instance, speaker_name) tuples
         self._cache = set()
         self._scan_done = False
         self._discovery_done = False
+        self._max_threads = max_threads
+        self._scan_timeout = scan_timeout
+        self._min_netmask = min_netmask
 
     @property
     def exists(self):
@@ -397,7 +397,10 @@ class SpeakerCache:
             # Clear the current cache
             self._cache = set()
             speakers = soco.discovery.discover(
-                allow_network_scan=True, scan_timeout=SCAN_TIMEOUT
+                allow_network_scan=True,
+                max_threads=self._max_threads,
+                scan_timeout=self._scan_timeout,
+                min_netmask=self._min_netmask,
             )
             if speakers:
                 self.cache_speakers(speakers)
@@ -406,13 +409,21 @@ class SpeakerCache:
             self._discovery_done = True
         return None
 
-    def scan(self, reset=False):
+    def scan(self, reset=False, scan_timeout_override=None):
         if not self._scan_done or reset:
             # Clear the current cache
             self._cache = set()
-            logging.info("Performing full discovery scan")
+            scan_timeout = (
+                scan_timeout_override if scan_timeout_override else self._scan_timeout
+            )
+            logging.info(
+                "Performing full discovery scan with timeout = {}s".format(scan_timeout)
+            )
             speakers = soco.discovery.scan_network(
-                multi_household=True, scan_timeout=SCAN_TIMEOUT
+                multi_household=True,
+                max_threads=self._max_threads,
+                scan_timeout=scan_timeout,
+                min_netmask=self._min_netmask,
             )
             if speakers:
                 self.cache_speakers(speakers)
@@ -491,13 +502,20 @@ class SpeakerCache:
         return names
 
 
+SPKR_CACHE = None
+
+
 # Single instance of the speaker cache
-cache = SpeakerCache()
+def create_speaker_cache(max_threads=256, scan_timeout=0.1, min_netmask=24):
+    global SPKR_CACHE
+    SPKR_CACHE = SpeakerCache(
+        max_threads=max_threads, scan_timeout=scan_timeout, min_netmask=min_netmask
+    )
 
 
 def speaker_cache():
     """Return the global speaker cache object"""
-    return cache
+    return SPKR_CACHE
 
 
 def local_speaker_list():
@@ -524,18 +542,18 @@ def get_speaker(name, local=False):
         speaker = None
         if not speaker:
             logging.info("Trying direct cache lookup")
-            speaker = cache.find(name)
+            speaker = SPKR_CACHE.find(name)
         if not speaker:
             logging.info("Trying indirect cache lookup")
-            speaker = cache.find_indirect(name)
+            speaker = SPKR_CACHE.find_indirect(name)
         if not speaker:
             logging.info("Trying standard discovery with network scan fallback")
-            cache.discover()
-            speaker = cache.find(name)
+            SPKR_CACHE.discover()
+            speaker = SPKR_CACHE.find(name)
         if not speaker:
             logging.info("Trying network scan discovery")
-            cache.scan()
-            speaker = cache.find(name)
+            SPKR_CACHE.scan()
+            speaker = SPKR_CACHE.find(name)
         if speaker:
             logging.info("Successful speaker discovery")
         else:

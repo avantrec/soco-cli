@@ -15,6 +15,7 @@ from .interactive import interactive_loop
 from .speakers import Speakers
 from .utils import (
     RewindableList,
+    create_speaker_cache,
     check_args,
     configure_common_args,
     configure_logging,
@@ -146,6 +147,13 @@ def main():
             speaker_list.discover()
             speaker_list.save()
         set_speaker_list(speaker_list)
+    else:
+        # Create the local speaker cache in the utils module
+        create_speaker_cache(
+            max_threads=args.network_discovery_threads,
+            scan_timeout=args.network_discovery_timeout,
+            min_netmask=args.min_netmask,
+        )
 
     # Is $SPKR set in the environment?
     env_speaker = None

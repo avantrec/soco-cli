@@ -189,15 +189,11 @@ def interactive_loop(
             #     continue
 
             if command_lower == "rescan":
-                if use_local_speaker_list:
-                    print("Using cached speaker list: no rescan performed")
-                else:
-                    logging.info("Full network rescan")
-                    speaker_cache().scan(reset=True)
-                    _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
-                    _set_actions_and_commands_list(
-                        use_local_speaker_list=use_local_speaker_list
-                    )
+                _rescan(use_local_speaker_list=use_local_speaker_list)
+                continue
+
+            if command_lower == "rescan_max":
+                _rescan(use_local_speaker_list=use_local_speaker_list, max=True)
                 continue
 
             if command_lower == "push":
@@ -353,6 +349,7 @@ COMMANDS = [
     "pop",
     "push",
     "rescan",
+    "rescan_max",
     "set ",
     "single-keystroke",
     "sk",
@@ -421,6 +418,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'push'      :   Save the current active speaker, and unset the active speaker.
     'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
                     use this to perform a more comprehensive scan.
+    'rescan_max':   Try this if you're having trouble finding all your speakers.
     'set <spkr> :   Set the active speaker using its name.
                     Use quotes when needed for the speaker name, e.g.,
                     'set "Front Reception"'. Unambiguous partial, case-insensitive
@@ -496,11 +494,7 @@ class AliasProcessor:
             if used_alias[0] != self._recurse_level:
                 if used_alias[1] == self._seq_number and used_alias[2] == alias_name:
                     # Recursion
-                    print(
-                        "Error: Alias loop detected ... stopping".format(
-                            alias_name
-                        )
-                    )
+                    print("Error: Alias loop detected ... stopping".format(alias_name))
                     self._remove_added_commands()
                     return False
         else:
@@ -546,3 +540,16 @@ class AliasProcessor:
         for _ in range(self._command_count):
             cmd = self._command_list.pop_next()
             logging.info("Removing command {}".format(cmd))
+
+
+def _rescan(use_local_speaker_list=False, max=False):
+    if use_local_speaker_list:
+        print("Using cached speaker list: no rescan performed")
+    elif max:
+        logging.info("Full network rescan at max strength (timeout = 10.0s)")
+        speaker_cache().scan(reset=True, scan_timeout_override=10.0)
+    else:
+        logging.info("Full network rescan")
+        speaker_cache().scan(reset=True)
+        _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
+    _set_actions_and_commands_list(use_local_speaker_list=use_local_speaker_list)
