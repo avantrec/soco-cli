@@ -8,6 +8,7 @@ from soco import SoCo
 from .action_processor import process_action
 from .speakers import Speakers
 from .utils import (
+    create_speaker_cache,
     configure_logging,
     get_speaker,
     set_api,
@@ -45,18 +46,23 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
 
     speaker = None
 
+    exception_error = None
+
     # Can pass a SoCo object instead of the speaker name (not documented)
     if type(speaker_name) == SoCo:
         speaker = speaker_name
         speaker_name = speaker.player_name
 
     elif type(speaker_name) == str:
-        speaker = _get_soco_object(
-            speaker_name, use_local_speaker_list=use_local_speaker_list
-        )
+        try:
+            speaker = _get_soco_object(
+                speaker_name, use_local_speaker_list=use_local_speaker_list
+            )
+        except Exception as e:
+            logging.info("Exception: {}".format(e))
+            exception_error = e
 
     return_value = False
-    exception_error = None
 
     if speaker:
         try:
@@ -84,7 +90,11 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
         else:
             return_value = (0, output_msg, error_out)
     else:
-        return_value = (1, "", "Speaker '{}' not found".format(speaker_name))
+        return_value = (
+            1,
+            "",
+            "Speaker '{}' not found: {}".format(speaker_name, exception_error),
+        )
 
     # Restore stdout and stderr
     sys.stdout = sys.__stdout__
@@ -116,6 +126,9 @@ def _get_soco_object(speaker_name, use_local_speaker_list=False):
 
     if use_local_speaker_list:
         _setup_local_speaker_list()
+
+    if not speaker_cache():
+        create_speaker_cache(max_threads=256, scan_timeout=1.0, min_netmask=24)
 
     return get_speaker(speaker_name, use_local_speaker_list)
 
