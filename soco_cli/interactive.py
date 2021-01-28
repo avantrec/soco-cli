@@ -50,6 +50,8 @@ def interactive_loop(
         if not speaker:
             print("Speaker '{}' not found {}".format(speaker_name, error_msg))
             speaker_name = None
+        else:
+            speaker_name = speaker.player_name
 
     print("\nEntering SoCo-CLI interactive shell.")
     if single_keystroke:
@@ -74,7 +76,7 @@ def interactive_loop(
     # Input loop
     while True:
         if speaker_name and speaker:
-            prompt = "SoCo-CLI [{}] > ".format(speaker.player_name)
+            prompt = "SoCo-CLI [{}] > ".format(speaker_name)
         else:
             prompt = "SoCo-CLI [] > "
 
