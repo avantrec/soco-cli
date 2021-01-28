@@ -1,3 +1,4 @@
+v0.3.16   -
 v0.3.15   - Add 'album_art' action
 v0.3.14   - Bugfixes to API and alias loop detection
 v0.3.13   - Shell aliases now accept parameters
