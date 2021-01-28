@@ -1,7 +1,13 @@
 """Captures single keystrokes"""
 
 import sys
-import termios
+
+# termios is not available on Windows
+try:
+    import termios
+
+except ImportError:
+    pass
 
 
 def get_keystroke():
