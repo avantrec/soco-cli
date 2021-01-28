@@ -121,35 +121,27 @@ def handle_sigint():
     signal(SIGINT, sig_handler)
 
 
-def _get_soco_object(speaker_name, use_local_speaker_list=False):
-    """Internal helper version that doesn't redirect stderr"""
-
-    if use_local_speaker_list:
-        _setup_local_speaker_list()
-
-    if not speaker_cache():
-        create_speaker_cache(max_threads=256, scan_timeout=1.0, min_netmask=24)
-
-    return get_speaker(speaker_name, use_local_speaker_list)
-
-
 def rescan_speakers():
     """Run full network scan to find speakers"""
+    _check_for_speaker_cache()
     speaker_cache().scan(reset=True)
 
 
 def rediscover_speakers():
     """Run normal SoCo discovery to discover speakers"""
+    _check_for_speaker_cache()
     speaker_cache().discover(reset=True)
 
 
 def get_all_speakers():
     """Return all SoCo instances"""
+    _check_for_speaker_cache()
     return [s[0] for s in speaker_cache().get_all_speakers()]
 
 
 def get_all_speaker_names():
     """Return all speaker names"""
+    _check_for_speaker_cache()
     return speaker_cache().get_all_speaker_names()
 
 
@@ -173,9 +165,30 @@ def get_soco_object(speaker_name, use_local_speaker_list=False):
 
     sys.stderr = sys.__stderr__
 
-    return speaker, error.getvalue().rstrip()
+    error_msg = error.getvalue().rstrip()
+    if not speaker and error_msg == "":
+        error_msg = "Speaker not found"
+
+    return speaker, error_msg
 
 
+def _get_soco_object(speaker_name, use_local_speaker_list=False):
+    """Internal helper version that doesn't redirect stderr"""
+
+    if use_local_speaker_list:
+        _setup_local_speaker_list()
+
+    _check_for_speaker_cache()
+
+    return get_speaker(speaker_name, use_local_speaker_list)
+
+
+def _check_for_speaker_cache():
+    if not speaker_cache():
+        create_speaker_cache(max_threads=256, scan_timeout=1.0, min_netmask=24)
+
+
+# For local speaker list operations
 SPEAKER_LIST_SET = False
 
 
