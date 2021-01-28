@@ -15,11 +15,11 @@ from .interactive import interactive_loop
 from .speakers import Speakers
 from .utils import (
     RewindableList,
-    create_speaker_cache,
     check_args,
     configure_common_args,
     configure_logging,
     convert_to_seconds,
+    create_speaker_cache,
     docs,
     error_and_exit,
     get_speaker,

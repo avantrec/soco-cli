@@ -293,6 +293,7 @@ This feature works by invoking the `play_file` action for each file in the playl
 
 ### Playback Control
 
+- **`album_art`**: Return a URL to the album art for the current stream, if there's one available.
 - **`cross_fade`** (or **`crossfade`, `fade`**): Returns the cross fade setting of the speaker, 'on' or 'off'.
 - **`cross_fade <on|off>`** (or **`crossfade`, `fade`**): Sets the cross fade setting of the speaker to 'on' or 'off'.
 - **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise. (Use `state` to check whether the Line-In is actually playing.)

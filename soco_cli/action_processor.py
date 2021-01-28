@@ -12,6 +12,7 @@ import soco
 import soco.alarms
 import tabulate
 from soco.exceptions import NotSupportedException
+from xmltodict import parse
 
 from .play_local_file import play_local_file
 from .play_m3u_file import play_m3u_file
@@ -1832,6 +1833,27 @@ def rename(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
+def album_art(speaker, action, args, soco_function, use_local_speaker_list):
+    """Get a URL for the current album art"""
+
+    try:
+        info = speaker.get_current_track_info()
+        metadata = info["metadata"]
+        data = parse(metadata)
+        album_art_uri = data["DIDL-Lite"]["item"]["upnp:albumArtURI"]
+    except:
+        print("Album art not available")
+        return True
+
+    if not album_art_uri.lower().startswith("http"):
+        print("Album art not accessible")
+    else:
+        print(album_art_uri)
+
+    return True
+
+
 @one_or_two_parameters
 def add_uri_to_queue(speaker, action, args, soco_function, use_local_speaker_list):
     uri = args[0]
@@ -2254,4 +2276,5 @@ actions = {
     "pfn": SonosFunction(play_favourite_number, ""),
     "play_fav_radio_station_no": SonosFunction(play_favourite_radio_number, ""),
     "pfrsn": SonosFunction(play_favourite_radio_number, ""),
+    "album_art": SonosFunction(album_art, ""),
 }

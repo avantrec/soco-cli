@@ -8,8 +8,8 @@ from soco import SoCo
 from .action_processor import process_action
 from .speakers import Speakers
 from .utils import (
-    create_speaker_cache,
     configure_logging,
+    create_speaker_cache,
     get_speaker,
     set_api,
     set_speaker_list,
