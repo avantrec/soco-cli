@@ -5,9 +5,9 @@ from signal import SIGINT, signal
 
 from soco import SoCo
 
-from .action_processor import process_action
-from .speakers import Speakers
-from .utils import (
+from soco_cli.action_processor import process_action
+from soco_cli.speakers import Speakers
+from soco_cli.utils import (
     configure_logging,
     create_speaker_cache,
     get_speaker,

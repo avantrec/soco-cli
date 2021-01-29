@@ -9,11 +9,11 @@ from signal import SIGINT, signal
 
 import soco
 
-from .action_processor import list_actions, process_action
-from .cmd_parser import CLIParser
-from .interactive import interactive_loop
-from .speakers import Speakers
-from .utils import (
+from soco_cli.action_processor import list_actions, process_action
+from soco_cli.cmd_parser import CLIParser
+from soco_cli.interactive import interactive_loop
+from soco_cli.speakers import Speakers
+from soco_cli.utils import (
     RewindableList,
     check_args,
     configure_common_args,
@@ -30,6 +30,7 @@ from .utils import (
     sig_handler,
     version,
 )
+
 from .wait_actions import process_wait
 
 # Globals

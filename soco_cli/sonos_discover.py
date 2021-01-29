@@ -1,7 +1,7 @@
 import argparse
 
-from .speakers import Speakers
-from .utils import (
+from soco_cli.speakers import Speakers
+from soco_cli.utils import (
     check_args,
     configure_common_args,
     configure_logging,

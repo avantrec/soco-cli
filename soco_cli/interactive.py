@@ -13,12 +13,12 @@ except ImportError:
 
 from shlex import split as shlex_split
 
-from .action_processor import get_actions, list_actions
-from .aliases import AliasManager
-from .api import get_soco_object, run_command
-from .cmd_parser import CLIParser
-from .keystroke_capture import get_keystroke
-from .utils import (
+from soco_cli.action_processor import get_actions, list_actions
+from soco_cli.aliases import AliasManager
+from soco_cli.api import get_soco_object, run_command
+from soco_cli.cmd_parser import CLIParser
+from soco_cli.keystroke_capture import get_keystroke
+from soco_cli.utils import (
     RewindableList,
     get_readline_history,
     get_speaker,
@@ -27,6 +27,7 @@ from .utils import (
     set_interactive,
     speaker_cache,
 )
+
 from .wait_actions import process_wait
 
 # Alias Manager

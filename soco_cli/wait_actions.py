@@ -3,7 +3,7 @@
 import logging
 import time
 
-from .utils import convert_to_seconds, error_and_exit, seconds_until
+from soco_cli.utils import convert_to_seconds, error_and_exit, seconds_until
 
 
 def process_wait(sequence):

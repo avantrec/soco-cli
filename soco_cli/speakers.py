@@ -7,7 +7,7 @@ from collections import namedtuple
 import soco
 import tabulate
 
-from .match_speaker_names import speaker_name_matches
+from soco_cli.match_speaker_names import speaker_name_matches
 
 # Type for holding speaker details
 SonosDevice = namedtuple(

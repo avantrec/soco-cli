@@ -12,7 +12,7 @@ from threading import Thread
 import ifaddr
 from RangeHTTPServer import RangeRequestHandler
 
-from .utils import (
+from soco_cli.utils import (
     error_and_exit,
     event_unsubscribe,
     set_sigterm,

@@ -15,9 +15,9 @@ from time import sleep
 
 import soco
 
-from .__init__ import __version__
-from .match_speaker_names import speaker_name_matches
-from .speakers import Speakers
+from soco_cli.__init__ import __version__
+from soco_cli.match_speaker_names import speaker_name_matches
+from soco_cli.speakers import Speakers
 
 
 def event_unsubscribe(sub):

@@ -5,7 +5,7 @@
 
 import sys
 
-from .utils import error_and_exit
+from soco_cli.utils import error_and_exit
 
 
 class Track:

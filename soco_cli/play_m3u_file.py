@@ -8,9 +8,9 @@ from random import choice, sample
 
 from soco import SoCo
 
-from .m3u_parser import parse_m3u
-from .play_local_file import is_supported_type, play_local_file
-from .utils import error_and_exit
+from soco_cli.m3u_parser import parse_m3u
+from soco_cli.play_local_file import is_supported_type, play_local_file
+from soco_cli.utils import error_and_exit
 
 # def wait_for_keypress():
 #     # Wait for a key press on the console and return it

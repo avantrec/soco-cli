@@ -1,6 +1,6 @@
 """Parse sequential command lines, using ':' as a command separator"""
 
-from .utils import error_and_exit
+from soco_cli.utils import error_and_exit
 
 
 class CLIParser:

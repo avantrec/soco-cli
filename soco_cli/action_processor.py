@@ -14,10 +14,10 @@ import tabulate
 from soco.exceptions import NotSupportedException
 from xmltodict import parse
 
-from .play_local_file import play_local_file
-from .play_m3u_file import play_m3u_file
-from .speaker_info import print_speaker_table
-from .utils import (
+from soco_cli.play_local_file import play_local_file
+from soco_cli.play_m3u_file import play_m3u_file
+from soco_cli.speaker_info import print_speaker_table
+from soco_cli.utils import (
     convert_to_seconds,
     convert_true_false,
     error_and_exit,
