@@ -3,7 +3,6 @@ import datetime
 import tabulate
 
 # Collect speaker information from each speaker in turn
-speakers = []
 headers = [
     "Zone Name",
     "IP Address",
@@ -19,21 +18,22 @@ headers = [
     "HW Version",
     "SW Version",
 ]
-models = set()
-errors = []
-exceptions = []
-
-
-def add_err_and_exc(err_player_name, err_ip_address, exc):
-    exceptions.append(exc)
-    errors.append(
-        ("Could not get speaker_info for {}: {}").format(
-            err_player_name, err_ip_address
-        )
-    )
 
 
 def print_speaker_table(device):
+    speakers = []
+    models = set()
+    errors = []
+    exceptions = []
+
+    def add_err_and_exc(err_player_name, err_ip_address, exc):
+        exceptions.append(exc)
+        errors.append(
+            ("Could not get speaker_info for {}: {}").format(
+                err_player_name, err_ip_address
+            )
+        )
+
     for sco in device.all_zones:
         # Load the speaker info
         try:
@@ -131,7 +131,8 @@ def print_speaker_table(device):
     )
     print()
 
-    # List any speakers that couldn't be inspected, along with the relevant Exception
+    # List any speakers that couldn't be inspected, along with the
+    # relevant exception
     if len(errors) != 0:
         for err, exc in zip(errors, exceptions):
             print(err)
