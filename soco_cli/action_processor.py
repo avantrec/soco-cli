@@ -1,7 +1,6 @@
 import logging
 import pprint
 import time
-from collections import namedtuple
 from datetime import timedelta
 from distutils.version import StrictVersion
 from os import get_terminal_size
@@ -860,10 +859,13 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
     # Walk though the list of tracks from position 1, removing items marked '0'
     # Account for the queue shift by keeping count of those deleted
     logging.info("Created map of queue items to delete (==0) {}".format(queue))
+    # Note: do not switch the loop below to 'enumerate'. Yield behaviour breaks
+    # the sequencing of requests to Sonos.
+    # pylint: disable = consider-using-enumerate
     count_removed = 0
-    for idx, item in enumerate(queue):
-        if item == 0:
-            updated_index = idx - count_removed
+    for index in range(len(queue)):
+        if queue[index] == 0:
+            updated_index = index - count_removed
             speaker.remove_from_queue(updated_index)
             logging.info(
                 "Removing queue item at (adjusted) index {}".format(updated_index + 1)
