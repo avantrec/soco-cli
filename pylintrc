@@ -1,0 +1,33 @@
+[MESSAGES CONTROL]
+
+# locally disable too-many-lines is only possible if the disable statement is
+# put into the first line, which is not good practice
+# see https://github.com/SoCo/SoCo/issues/127
+# duplicate code check disabled whilst refactoring of wimp plugin is in
+# progress
+
+disable = broad-except, invalid-name, logging-format-interpolation,
+          global-statement
+
+# disable=too-many-lines,locally-disabled,duplicate-code,too-few-public-methods,
+#    bad-option-value,no-else-return,cyclic-import,too-many-public-methods,
+#    bad-continuation, broad-except, invalid-name
+
+
+[REPORTS]
+
+# Tells whether to display a full report or only the messages
+reports=no
+
+[FORMAT]
+
+# Maximum number of characters on a single line.
+max-line-length=120
+
+[TYPECHECK]
+
+# List of module names for which member attributes should not be checked
+# (useful for modules/projects where namespaces are manipulated during runtime
+# and thus existing member attributes cannot be deduced by static analysis
+
+# ignored-modules=pytest

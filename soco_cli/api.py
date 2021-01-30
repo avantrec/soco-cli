@@ -1,3 +1,9 @@
+"""The SoCo-CLI API
+
+Provides a few simple, high-level functions that allow the features of SoCo-CLI
+to be used in other programs.
+"""
+
 import logging
 import sys
 from io import StringIO
@@ -25,14 +31,16 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     three-tuple. If the exit code is non-zero, the error message will be
     populated and the output string will always be empty.
 
-    :param speaker_name: The name of the speaker, or its IP address, as
-        a string
-    :param action: The name of the SoCo-CLI action to perform, as a string
-    :param args: The list of arguments (strings) for the action. Each argument
-        is a string. Arguments are optional depending on the action.
-    :param use_local_speaker_list: Whether to use the local speaker
-        cache to map the speaker name into an IP address. Bool.
-    :return: Three-tuple (exit_code, output_string, error_msg)
+    All exceptions are caught when this function is
+
+    Args:
+        speaker_name (str): The name of the speaker, or its IP address
+        action (str): The The name of the SoCo-CLI action to perform
+        *args (list[str]): The set of arguments that accompany the action
+
+    Returns:
+        int, str, str: a three-tuple of exit_code, output_string and
+        error_msg.
     """
 
     # Prevent errors from causing exit
@@ -45,15 +53,14 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     sys.stderr = error
 
     speaker = None
-
     exception_error = None
 
     # Can pass a SoCo object instead of the speaker name (not documented)
-    if type(speaker_name) == SoCo:
-        speaker = speaker_name
+    if isinstance(speaker_name, SoCo):
+        speaker = SoCo(speaker_name)
         speaker_name = speaker.player_name
 
-    elif type(speaker_name) == str:
+    elif isinstance(speaker_name, str):
         try:
             speaker = _get_soco_object(
                 speaker_name, use_local_speaker_list=use_local_speaker_list
@@ -72,7 +79,6 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
         except Exception as e:
             logging.info("Exception: {}".format(e))
             exception_error = e
-            pass
 
         output_msg = output.getvalue().rstrip()
         error_out = error.getvalue().rstrip()
