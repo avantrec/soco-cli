@@ -82,9 +82,9 @@ def get_current_queue_position(speaker, tracks=None):
     track_title = None
 
     try:
-        info = speaker.get_current_track_info()
-        qp = int(info["playlist_position"])
-        track_title = info["title"]
+        track_info = speaker.get_current_track_info()
+        qp = int(track_info["playlist_position"])
+        track_title = track_info["title"]
     except:
         qp = 0
 
@@ -234,7 +234,7 @@ def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
     if len(args) == 1:
         try:
             track_number = int(args[0])
-            if not (0 < track_number <= len(queue)):
+            if not 0 < track_number <= len(queue):
                 error_and_exit(
                     "Track number {} is out of queue range".format(track_number)
                 )
@@ -282,12 +282,10 @@ def volume_actions(speaker, action, args, soco_function, use_local_speaker_list)
             if 0 <= vol <= 100:
                 print(speaker.ramp_to_volume(vol))
                 return True
-            else:
-                parameter_type_error(action, "0 to 100")
-                return False
-        else:
-            parameter_number_error(action, "1")
+            parameter_type_error(action, "0 to 100")
             return False
+        parameter_number_error(action, "1")
+        return False
     if soco_function == "group_volume":
         speaker = speaker.group
     if np == 0:
@@ -515,7 +513,7 @@ def play_favourite_core(speaker, favourite, favourite_number=None):
             return True, ""
         except Exception as e:
             e1 = e
-            pass
+
         # Other favourites will be added to the queue, then played
         try:
             # Add to the end of the current queue and play
@@ -536,8 +534,8 @@ def play_favourite(speaker, action, args, soco_function, use_local_speaker_list)
     if not result:
         error_and_exit(msg)
         return False
-    else:
-        return True
+
+    return True
 
 
 @one_parameter
@@ -547,8 +545,8 @@ def play_favourite_number(speaker, action, args, soco_function, use_local_speake
     if not result:
         error_and_exit(msg)
         return False
-    else:
-        return True
+
+    return True
 
 
 @one_or_two_parameters
@@ -674,9 +672,9 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
         logging.info("Trying 'play_uri()': URI={}, Metadata={}".format(uri, metadata))
         speaker.play_uri(uri=uri, meta=metadata)
         return True
-    else:
-        error_and_exit("Favourite '{}' not found".format(args[0]))
-        return False
+
+    error_and_exit("Favourite '{}' not found".format(args[0]))
+    return False
 
 
 @one_or_two_parameters
@@ -863,9 +861,9 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
     # Account for the queue shift by keeping count of those deleted
     logging.info("Created map of queue items to delete (==0) {}".format(queue))
     count_removed = 0
-    for item in range(len(queue)):
-        if queue[item] == 0:
-            updated_index = item - count_removed
+    for idx, item in enumerate(queue):
+        if item == 0:
+            updated_index = idx - count_removed
             speaker.remove_from_queue(updated_index)
             logging.info(
                 "Removing queue item at (adjusted) index {}".format(updated_index + 1)
@@ -1059,9 +1057,9 @@ def list_playlist_tracks(speaker, action, args, soco_function, use_local_speaker
         print()
         save_search(tracks)
         return True
-    else:
-        error_and_exit("Playlist '{}' not found".format(args[0]))
-        return False
+
+    error_and_exit("Playlist '{}' not found".format(args[0]))
+    return False
 
 
 @two_parameters
@@ -1076,9 +1074,9 @@ def remove_from_playlist(speaker, action, args, soco_function, use_local_speaker
     if playlist:
         speaker.remove_from_sonos_playlist(playlist, track_number - 1)
         return True
-    else:
-        error_and_exit("Playlist '{}' not found".format(args[0]))
-        return False
+
+    error_and_exit("Playlist '{}' not found".format(args[0]))
+    return False
 
 
 @zero_one_or_two_parameters
@@ -1199,7 +1197,7 @@ def info(speaker, action, args, soco_function, use_local_speaker_list):
         info["household_id"] = speaker.household_id
         info["status_light"] = speaker.status_light
         info["is_coordinator"] = speaker.is_coordinator
-        info["grouped_or_paired"] = False if len(speaker.group.members) == 1 else True
+        info["grouped_or_paired"] = len(speaker.group.members) > 1
         info["loudness"] = speaker.loudness
         info["treble"] = speaker.treble
         info["bass"] = speaker.bass
@@ -1354,7 +1352,7 @@ def wait_stop_not_pause(speaker, action, args, soco_function, use_local_speaker_
     return wait_stop_core(speaker, not_paused=True)
 
 
-def wait_stopped_for_core(speaker, duration_arg, not_paused=False):
+def wait_stopped_for_core(speaker, action, duration_arg, not_paused=False):
     try:
         duration = convert_to_seconds(duration_arg)
     except ValueError:
@@ -1428,19 +1426,18 @@ def wait_stopped_for_core(speaker, duration_arg, not_paused=False):
                 return True
         except:
             set_sigterm(False)
-            pass
 
 
 @one_parameter
 def wait_stopped_for(speaker, action, args, soco_function, use_local_speaker_list):
-    return wait_stopped_for_core(speaker, args[0], not_paused=False)
+    return wait_stopped_for_core(speaker, action, args[0], not_paused=False)
 
 
 @one_parameter
 def wait_stopped_for_not_pause(
     speaker, action, args, soco_function, use_local_speaker_list
 ):
-    return wait_stopped_for_core(speaker, args[0], not_paused=True)
+    return wait_stopped_for_core(speaker, action, args[0], not_paused=True)
 
 
 @zero_parameters
@@ -1525,7 +1522,7 @@ def search_albums(speaker, action, args, soco_function, use_local_speaker_list):
     albums = ml.get_music_library_information(
         "albums", search_term=name, complete_result=True
     )
-    if len(albums):
+    if len(albums) > 0:
         print()
         print_list_header("Sonos Music Library Album Search:", name)
         print_albums(albums)
@@ -1541,7 +1538,7 @@ def search_tracks(speaker, action, args, soco_function, use_local_speaker_list):
     tracks = ml.get_music_library_information(
         "tracks", search_term=name, complete_result=True
     )
-    if len(tracks):
+    if len(tracks) > 0:
         print()
         print_list_header("Sonos Music Library Track Search:", name)
         print_tracks(tracks)
@@ -1578,12 +1575,12 @@ def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list
     return True
 
 
-def queue_item_core(speaker, action, args, type):
+def queue_item_core(speaker, action, args, info_type):
     name = args[0]
     items = speaker.music_library.get_music_library_information(
-        type, search_term=name, complete_result=True
+        info_type, search_term=name, complete_result=True
     )
-    if len(items):
+    if len(items) > 0:
         position = 1
         if len(args) == 2:
             if args[1].lower() in ["first", "start"]:
@@ -1612,9 +1609,9 @@ def queue_item_core(speaker, action, args, type):
         item = items[randint(0, len(items) - 1)]
         print(speaker.add_to_queue(item, position=position))
         return True
-    else:
-        error_and_exit("'{}' not found".format(name))
-        return False
+
+    error_and_exit("'{}' not found".format(name))
+    return False
 
 
 @one_or_two_parameters
@@ -1641,17 +1638,17 @@ def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speake
     ):
         logging.info("Action suppressed")
         return True
-    else:
-        action = args[0]
-        args = args[1:]
-        logging.info(
-            "Action invoked: '{} {} {}'".format(
-                speaker.player_name, action, " ".join(args)
-            )
+
+    action = args[0]
+    args = args[1:]
+    logging.info(
+        "Action invoked: '{} {} {}'".format(
+            speaker.player_name, action, " ".join(args)
         )
-        return process_action(
-            speaker, action, args, use_local_speaker_list=use_local_speaker_list
-        )
+    )
+    return process_action(
+        speaker, action, args, use_local_speaker_list=use_local_speaker_list
+    )
 
 
 @one_parameter
@@ -1704,9 +1701,9 @@ def transfer_playback(speaker, action, args, soco_function, use_local_speaker_li
         speaker2.join(speaker)
         speaker.unjoin()
         return True
-    else:
-        error_and_exit("Speaker '{}' not found".format(args[0]))
-        return False
+
+    error_and_exit("Speaker '{}' not found".format(args[0]))
+    return False
 
 
 @zero_parameters
@@ -1720,7 +1717,7 @@ def queue_position(speaker, action, args, soco_function, use_local_speaker_list)
 def last_search(speaker, action, args, soco_function, use_local_speaker_list):
     items = read_search()
     if items:
-        if len(items):
+        if len(items) > 0:
             print()
             print_list_header(
                 "Sonos Music Library: Saved {} Search".format(
@@ -1790,9 +1787,9 @@ def queue_search_result_number(
         item = items[saved_search_number - 1]
         print(speaker.add_to_queue(item, position=position))
         return True
-    else:
-        error_and_exit("Item search index must be between 1 and {}".format(len(items)))
-        return False
+
+    error_and_exit("Item search index must be between 1 and {}".format(len(items)))
+    return False
 
 
 def cue_favourite_radio_station(
@@ -1983,8 +1980,7 @@ def process_action(speaker, action, args, use_local_speaker_list=False):
             sonos_function.soco_function,
             use_local_speaker_list,
         )
-    else:
-        return False
+    return False
 
 
 # Type for holding action processing functions

@@ -7,7 +7,10 @@
 # progress
 
 disable = broad-except, invalid-name, logging-format-interpolation,
-          global-statement
+          global-statement, unused-argument, fixme, too-many-lines,
+          missing-module-docstring, missing-function-docstring,
+          bare-except, redefined-outer-name, too-many-branches,
+          too-many-locals, too-many-nested-blocks
 
 # disable=too-many-lines,locally-disabled,duplicate-code,too-few-public-methods,
 #    bad-option-value,no-else-return,cyclic-import,too-many-public-methods,
