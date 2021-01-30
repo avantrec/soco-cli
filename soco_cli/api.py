@@ -58,8 +58,7 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
 
     # Can pass a SoCo object instead of the speaker name (not documented)
     if isinstance(speaker_name, SoCo):
-        speaker = SoCo(speaker_name)
-        speaker_name = speaker.player_name
+        speaker = speaker_name
 
     elif isinstance(speaker_name, str):
         try:
