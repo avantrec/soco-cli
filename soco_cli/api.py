@@ -113,55 +113,54 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
 
 
 def set_log_level(log_level="None"):
-    """Convenience function to set up logging
+    """Convenience function to set up logging.
 
-    :param log_level: Can be one of None, Critical, Error, Warn, Info, Debug.
+    Args:
+        log_level (str): Can be one of None, Critical, Error, Warn, Info, Debug.
     """
     configure_logging(log_level)
 
 
 def handle_sigint():
-    """
-    Convenience function to set up a more graceful
-    CTRL-C (sigint) handler.
+    """ Convenience function to set up a more graceful CTRL-C (sigint) handler.
     """
     signal(SIGINT, sig_handler)
 
 
 def rescan_speakers():
-    """Run full network scan to find speakers"""
+    """Run full network scan to find speakers."""
     _check_for_speaker_cache()
     speaker_cache().scan(reset=True)
 
 
 def rediscover_speakers():
-    """Run normal SoCo discovery to discover speakers"""
+    """Run normal SoCo discovery to discover speakers."""
     _check_for_speaker_cache()
     speaker_cache().discover(reset=True)
 
 
 def get_all_speakers():
-    """Return all SoCo instances"""
+    """Return all SoCo instances."""
     _check_for_speaker_cache()
     return [s[0] for s in speaker_cache().get_all_speakers()]
 
 
 def get_all_speaker_names():
-    """Return all speaker names"""
+    """Return all speaker names."""
     _check_for_speaker_cache()
     return speaker_cache().get_all_speaker_names()
 
 
 def get_soco_object(speaker_name, use_local_speaker_list=False):
-    """
-    Uses the full set of soco_cli strategies to map a speaker name
-    into a SoCo object
+    """ Uses the full set of soco_cli strategies to find a speaker.
 
-    :param speaker_name: The name of the speaker as a string
-    :param use_local_speaker_list: Whether to use the local speaker cache
+    Args:
+        speaker_name (str): The name of the speaker to find.
+        use_local_speaker_list (bool): Whether to use the local speaker cache.
 
-    :return Tuple of SoCo object, or None if no speaker is found, and an
-        error message.
+    Returns:
+        (SoCo, str): Tuple of SoCo object, or None if no speaker is found,
+        and an error message.
     """
     set_api()
 
@@ -180,7 +179,7 @@ def get_soco_object(speaker_name, use_local_speaker_list=False):
 
 
 def _get_soco_object(speaker_name, use_local_speaker_list=False):
-    """Internal helper version that doesn't redirect stderr"""
+    """Internal helper version that doesn't redirect stderr."""
 
     if use_local_speaker_list:
         _setup_local_speaker_list()
@@ -196,16 +195,16 @@ def _check_for_speaker_cache():
 
 
 # For local speaker list operations
-SPEAKER_LIST_SET = False
+speaker_list_set = False
 
 
 def _setup_local_speaker_list():
-    global SPEAKER_LIST_SET
-    if not SPEAKER_LIST_SET:
+    global speaker_list_set
+    if not speaker_list_set:
         speaker_list = Speakers()
         if not speaker_list.load():
             logging.info("Start speaker discovery")
             speaker_list.discover()
             speaker_list.save()
         set_speaker_list(speaker_list)
-    SPEAKER_LIST_SET = True
+    speaker_list_set = True
