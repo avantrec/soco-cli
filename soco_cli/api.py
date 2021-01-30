@@ -121,8 +121,7 @@ def set_log_level(log_level="None"):
 
 
 def handle_sigint():
-    """ Convenience function to set up a more graceful CTRL-C (sigint) handler.
-    """
+    """Convenience function to set up a more graceful CTRL-C (sigint) handler."""
     signal(SIGINT, sig_handler)
 
 
@@ -151,7 +150,7 @@ def get_all_speaker_names():
 
 
 def get_soco_object(speaker_name, use_local_speaker_list=False):
-    """ Uses the full set of soco_cli strategies to find a speaker.
+    """Uses the full set of soco_cli strategies to find a speaker.
 
     Args:
         speaker_name (str): The name of the speaker to find.

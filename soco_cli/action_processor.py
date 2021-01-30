@@ -1972,6 +1972,12 @@ def trueplay(speaker, action, args, soco_function, use_local_speaker_list):
 def process_action(speaker, action, args, use_local_speaker_list=False):
     sonos_function = actions.get(action, None)
     if sonos_function:
+        if sonos_function.switch_to_coordinator:
+            if not speaker.is_coordinator:
+                speaker = speaker.group.coordinator
+                logging.info(
+                    "Switching to coordinator speaker '{}'".format(speaker.player_name)
+                )
         return sonos_function.processing_function(
             speaker,
             action,
@@ -1982,15 +1988,25 @@ def process_action(speaker, action, args, use_local_speaker_list=False):
     return False
 
 
-# Type for holding action processing functions
-SonosFunction = namedtuple(
-    "SonosFunction",
-    [
-        "processing_function",
-        "soco_function",
-    ],
-    rename=False,
-)
+class SonosFunction:
+    """Maps actions into processing functions."""
+
+    def __init__(self, function, soco_function=None, switch_to_coordinator=False):
+        self._function = function
+        self._soco_function = soco_function
+        self._switch_to_coordinator = switch_to_coordinator
+
+    @property
+    def processing_function(self):
+        return self._function
+
+    @property
+    def soco_function(self):
+        return self._soco_function
+
+    @property
+    def switch_to_coordinator(self):
+        return self._switch_to_coordinator
 
 
 def get_actions(include_additional=True):
@@ -2060,17 +2076,17 @@ actions = {
     "dialog": SonosFunction(on_off_action, "dialog_mode"),
     "dialogue_mode": SonosFunction(on_off_action, "dialog_mode"),
     "dialogue": SonosFunction(on_off_action, "dialog_mode"),
-    "play": SonosFunction(no_args_no_output, "play"),
-    "start": SonosFunction(no_args_no_output, "play"),
-    "stop": SonosFunction(no_args_no_output, "stop"),
-    "pause": SonosFunction(no_args_no_output, "pause"),
-    "next": SonosFunction(no_args_no_output, "next"),
-    "previous": SonosFunction(no_args_no_output, "previous"),
-    "prev": SonosFunction(no_args_no_output, "previous"),
-    "list_queue": SonosFunction(list_queue, "get_queue"),
-    "lq": SonosFunction(list_queue, "get_queue"),
-    "queue": SonosFunction(list_queue, "get_queue"),
-    "q": SonosFunction(list_queue, "get_queue"),
+    "play": SonosFunction(no_args_no_output, "play", True),
+    "start": SonosFunction(no_args_no_output, "play", True),
+    "stop": SonosFunction(no_args_no_output, "stop", True),
+    "pause": SonosFunction(no_args_no_output, "pause", True),
+    "next": SonosFunction(no_args_no_output, "next", True),
+    "previous": SonosFunction(no_args_no_output, "previous", True),
+    "prev": SonosFunction(no_args_no_output, "previous", True),
+    "list_queue": SonosFunction(list_queue, "get_queue", True),
+    "lq": SonosFunction(list_queue, "get_queue", True),
+    "queue": SonosFunction(list_queue, "get_queue", True),
+    "q": SonosFunction(list_queue, "get_queue", True),
     "list_playlists": SonosFunction(list_numbered_things, "get_sonos_playlists"),
     "playlists": SonosFunction(list_numbered_things, "get_sonos_playlists"),
     "lp": SonosFunction(list_numbered_things, "get_sonos_playlists"),
@@ -2092,25 +2108,27 @@ actions = {
     "group_relative_volume": SonosFunction(relative_volume, "group_relative_volume"),
     "group_rel_vol": SonosFunction(relative_volume, "group_relative_volume"),
     "grv": SonosFunction(relative_volume, "group_relative_volume"),
-    "track": SonosFunction(track, ""),
-    "play_mode": SonosFunction(playback_mode, "play_mode"),
-    "mode": SonosFunction(playback_mode, "play_mode"),
-    "playback_state": SonosFunction(transport_state, "get_current_transport_info"),
-    "playback": SonosFunction(transport_state, "get_current_transport_info"),
-    "state": SonosFunction(transport_state, "get_current_transport_info"),
-    "status": SonosFunction(transport_state, "get_current_transport_info"),
-    "play_favourite": SonosFunction(play_favourite, "play_favorite"),
-    "play_favorite": SonosFunction(play_favourite, "play_favorite"),
-    "favourite": SonosFunction(play_favourite, "play_favorite"),
-    "favorite": SonosFunction(play_favourite, "play_favorite"),
-    "play_fav": SonosFunction(play_favourite, "play_favorite"),
-    "fav": SonosFunction(play_favourite, "play_favorite"),
-    "pf": SonosFunction(play_favourite, "play_favorite"),
-    "play_uri": SonosFunction(play_uri, "play_uri"),
-    "uri": SonosFunction(play_uri, "play_uri"),
-    "pu": SonosFunction(play_uri, "play_uri"),
-    "sleep_timer": SonosFunction(sleep_timer, "sleep_timer"),
-    "sleep": SonosFunction(sleep_timer, "sleep_timer"),
+    "track": SonosFunction(track, "", True),
+    "play_mode": SonosFunction(playback_mode, "play_mode", True),
+    "mode": SonosFunction(playback_mode, "play_mode", True),
+    "playback_state": SonosFunction(
+        transport_state, "get_current_transport_info", True
+    ),
+    "playback": SonosFunction(transport_state, "get_current_transport_info", True),
+    "state": SonosFunction(transport_state, "get_current_transport_info", True),
+    "status": SonosFunction(transport_state, "get_current_transport_info", True),
+    "play_favourite": SonosFunction(play_favourite, "play_favorite", True),
+    "play_favorite": SonosFunction(play_favourite, "play_favorite", True),
+    "favourite": SonosFunction(play_favourite, "play_favorite", True),
+    "favorite": SonosFunction(play_favourite, "play_favorite", True),
+    "play_fav": SonosFunction(play_favourite, "play_favorite", True),
+    "fav": SonosFunction(play_favourite, "play_favorite", True),
+    "pf": SonosFunction(play_favourite, "play_favorite", True),
+    "play_uri": SonosFunction(play_uri, "play_uri", True),
+    "uri": SonosFunction(play_uri, "play_uri", True),
+    "pu": SonosFunction(play_uri, "play_uri", True),
+    "sleep_timer": SonosFunction(sleep_timer, "sleep_timer", True),
+    "sleep": SonosFunction(sleep_timer, "sleep_timer", True),
     "group": SonosFunction(group_or_pair, "join"),
     "g": SonosFunction(group_or_pair, "join"),
     "ungroup": SonosFunction(no_args_no_output, "unjoin"),
@@ -2125,34 +2143,34 @@ actions = {
     "all_rooms": SonosFunction(zones, "zones"),
     "visible_zones": SonosFunction(zones, "zones"),
     "visible_rooms": SonosFunction(zones, "zones"),
-    "play_from_queue": SonosFunction(play_from_queue, "play_from_queue"),
-    "play_queue": SonosFunction(play_from_queue, "play_from_queue"),
-    "pfq": SonosFunction(play_from_queue, "play_from_queue"),
-    "pq": SonosFunction(play_from_queue, "play_from_queue"),
-    "remove_from_queue": SonosFunction(remove_from_queue, "remove_from_queue"),
-    "rfq": SonosFunction(remove_from_queue, "remove_from_queue"),
-    "rq": SonosFunction(remove_from_queue, "remove_from_queue"),
-    "clear_queue": SonosFunction(no_args_no_output, "clear_queue"),
-    "cq": SonosFunction(no_args_no_output, "clear_queue"),
+    "play_from_queue": SonosFunction(play_from_queue, "play_from_queue", True),
+    "play_queue": SonosFunction(play_from_queue, "play_from_queue", True),
+    "pfq": SonosFunction(play_from_queue, "play_from_queue", True),
+    "pq": SonosFunction(play_from_queue, "play_from_queue", True),
+    "remove_from_queue": SonosFunction(remove_from_queue, "remove_from_queue", True),
+    "rfq": SonosFunction(remove_from_queue, "remove_from_queue", True),
+    "rq": SonosFunction(remove_from_queue, "remove_from_queue", True),
+    "clear_queue": SonosFunction(no_args_no_output, "clear_queue", True),
+    "cq": SonosFunction(no_args_no_output, "clear_queue", True),
     "group_mute": SonosFunction(on_off_action, "group_mute"),
-    "save_queue": SonosFunction(save_queue, "create_sonos_playlist_from_queue"),
-    "sq": SonosFunction(save_queue, "create_sonos_playlist_from_queue"),
+    "save_queue": SonosFunction(save_queue, "create_sonos_playlist_from_queue", True),
+    "sq": SonosFunction(save_queue, "create_sonos_playlist_from_queue", True),
     "create_playlist_from_queue": SonosFunction(
-        save_queue, "create_sonos_playlist_from_queue"
+        save_queue, "create_sonos_playlist_from_queue", True
     ),
-    "queue_length": SonosFunction(no_args_one_output, "queue_size"),
-    "ql": SonosFunction(no_args_one_output, "queue_size"),
-    "add_playlist_to_queue": SonosFunction(playlist_operations, "add_to_queue"),
-    "add_pl_to_queue": SonosFunction(playlist_operations, "add_to_queue"),
-    "queue_playlist": SonosFunction(playlist_operations, "add_to_queue"),
-    "apq": SonosFunction(playlist_operations, "add_to_queue"),
+    "queue_length": SonosFunction(no_args_one_output, "queue_size", True),
+    "ql": SonosFunction(no_args_one_output, "queue_size", True),
+    "add_playlist_to_queue": SonosFunction(playlist_operations, "add_to_queue", True),
+    "add_pl_to_queue": SonosFunction(playlist_operations, "add_to_queue", True),
+    "queue_playlist": SonosFunction(playlist_operations, "add_to_queue", True),
+    "apq": SonosFunction(playlist_operations, "add_to_queue", True),
     "pause_all": SonosFunction(operate_on_all, "pause"),
-    "seek": SonosFunction(seek, "seek"),
-    "seek_to": SonosFunction(seek, "seek"),
-    "seek_forward": SonosFunction(seek_forward, "seek_forward"),
-    "sf": SonosFunction(seek_forward, "seek_forward"),
-    "seek_back": SonosFunction(seek_back, "seek_back"),
-    "sb": SonosFunction(seek_back, "seek_back"),
+    "seek": SonosFunction(seek, "seek", True),
+    "seek_to": SonosFunction(seek, "seek", True),
+    "seek_forward": SonosFunction(seek_forward, "seek_forward", True),
+    "sf": SonosFunction(seek_forward, "seek_forward", True),
+    "seek_back": SonosFunction(seek_back, "seek_back", True),
+    "sb": SonosFunction(seek_back, "seek_back", True),
     "line_in": SonosFunction(line_in, ""),
     "bass": SonosFunction(eq, "bass"),
     "treble": SonosFunction(eq, "treble"),
@@ -2167,7 +2185,7 @@ actions = {
     "clear_playlist": SonosFunction(playlist_operations, "clear_sonos_playlist"),
     "create_playlist": SonosFunction(playlist_operations, "create_sonos_playlist"),
     # "add_uri_to_queue": SonosFunction(playlist_operations, "add_uri_to_queue"),
-    "auq": SonosFunction(playlist_operations, "add_uri_to_queue"),
+    "auq": SonosFunction(playlist_operations, "add_uri_to_queue", True),
     "remove_from_playlist": SonosFunction(
         remove_from_playlist, "remove_from_sonos_playlist"
     ),
@@ -2182,17 +2200,21 @@ actions = {
     "lfrs": SonosFunction(list_numbered_things, "get_favorite_radio_stations"),
     "play_favourite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
     "play_favorite_radio_station": SonosFunction(play_favourite_radio, "play_uri"),
-    "pfrs": SonosFunction(play_favourite_radio, "play_uri"),
+    "pfrs": SonosFunction(play_favourite_radio, "play_uri", True),
     # "tracks": SonosFunction(list_numbered_things, "get_tracks"),
     "alarms": SonosFunction(list_alarms, "get_alarms"),
     "libraries": SonosFunction(list_libraries, "list_library_shares"),
     "shares": SonosFunction(list_libraries, "list_library_shares"),
     "sysinfo": SonosFunction(system_info, ""),
-    "sleep_at": SonosFunction(sleep_at, ""),
-    "add_favourite_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
-    "add_favorite_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
-    "add_fav_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue"),
-    "afq": SonosFunction(add_favourite_to_queue, "add_to_queue"),
+    "sleep_at": SonosFunction(sleep_at, "", True),
+    "add_favourite_to_queue": SonosFunction(
+        add_favourite_to_queue, "add_to_queue", True
+    ),
+    "add_favorite_to_queue": SonosFunction(
+        add_favourite_to_queue, "add_to_queue", True
+    ),
+    "add_fav_to_queue": SonosFunction(add_favourite_to_queue, "add_to_queue", True),
+    "afq": SonosFunction(add_favourite_to_queue, "add_to_queue", True),
     "list_playlist_tracks": SonosFunction(list_playlist_tracks, "list_tracks"),
     "lpt": SonosFunction(list_playlist_tracks, "list_tracks"),
     "list_all_playlist_tracks": SonosFunction(list_all_playlist_tracks, ""),
@@ -2221,44 +2243,46 @@ actions = {
     "albums": SonosFunction(list_albums, ""),
     "list_artists": SonosFunction(list_artists, ""),
     "artists": SonosFunction(list_artists, ""),
-    "queue_album": SonosFunction(queue_album, ""),
-    "qa": SonosFunction(queue_album, ""),
-    "queue_track": SonosFunction(queue_track, ""),
-    "qt": SonosFunction(queue_track, ""),
-    "cue_favourite": SonosFunction(cue_favourite, ""),
-    "cue_favorite": SonosFunction(cue_favourite, ""),
-    "cue_fav": SonosFunction(cue_favourite, ""),
-    "cf": SonosFunction(cue_favourite, ""),
-    "transfer_playback": SonosFunction(transfer_playback, ""),
-    "transfer_to": SonosFunction(transfer_playback, ""),
-    "transfer": SonosFunction(transfer_playback, ""),
-    "shuffle": SonosFunction(shuffle, ""),
-    "sh": SonosFunction(shuffle, ""),
-    "repeat": SonosFunction(repeat, ""),
-    "rpt": SonosFunction(repeat, ""),
+    "queue_album": SonosFunction(queue_album, "", True),
+    "qa": SonosFunction(queue_album, "", True),
+    "queue_track": SonosFunction(queue_track, "", True),
+    "qt": SonosFunction(queue_track, "", True),
+    "cue_favourite": SonosFunction(cue_favourite, "", True),
+    "cue_favorite": SonosFunction(cue_favourite, "", True),
+    "cue_fav": SonosFunction(cue_favourite, "", True),
+    "cf": SonosFunction(cue_favourite, "", True),
+    "transfer_playback": SonosFunction(transfer_playback, "", True),
+    "transfer_to": SonosFunction(transfer_playback, "", True),
+    "transfer": SonosFunction(transfer_playback, "", True),
+    "shuffle": SonosFunction(shuffle, "", True),
+    "sh": SonosFunction(shuffle, "", True),
+    "repeat": SonosFunction(repeat, "", True),
+    "rpt": SonosFunction(repeat, "", True),
     "remove_current_track_from_queue": SonosFunction(
-        remove_current_track_from_queue, ""
+        remove_current_track_from_queue, "", True
     ),
-    "rctfq": SonosFunction(remove_current_track_from_queue, ""),
-    "remove_last_track_from_queue": SonosFunction(remove_last_track_from_queue, ""),
-    "rltfq": SonosFunction(remove_last_track_from_queue, ""),
-    "queue_position": SonosFunction(queue_position, ""),
-    "qp": SonosFunction(queue_position, ""),
-    "last_search": SonosFunction(last_search, ""),
+    "rctfq": SonosFunction(remove_current_track_from_queue, "", True),
+    "remove_last_track_from_queue": SonosFunction(
+        remove_last_track_from_queue, "", True
+    ),
+    "rltfq": SonosFunction(remove_last_track_from_queue, "", True),
+    "queue_position": SonosFunction(queue_position, "", True),
+    "qp": SonosFunction(queue_position, "", True),
+    "last_search": SonosFunction(last_search, "", True),
     "ls": SonosFunction(last_search, ""),
-    "queue_search_result_number": SonosFunction(queue_search_result_number, ""),
-    "queue_search_number": SonosFunction(queue_search_result_number, ""),
-    "qsn": SonosFunction(queue_search_result_number, ""),
-    "cue_favourite_radio_station": SonosFunction(cue_favourite_radio_station, ""),
-    "cue_favorite_radio_station": SonosFunction(cue_favourite_radio_station, ""),
-    "cfrs": SonosFunction(cue_favourite_radio_station, ""),
+    "queue_search_result_number": SonosFunction(queue_search_result_number, "", True),
+    "queue_search_number": SonosFunction(queue_search_result_number, "", True),
+    "qsn": SonosFunction(queue_search_result_number, "", True),
+    "cue_favourite_radio_station": SonosFunction(cue_favourite_radio_station, "", True),
+    "cue_favorite_radio_station": SonosFunction(cue_favourite_radio_station, "", True),
+    "cfrs": SonosFunction(cue_favourite_radio_station, "", True),
     "battery": SonosFunction(battery, ""),
     "rename": SonosFunction(rename, ""),
-    "play_file": SonosFunction(play_file, ""),
-    "play_local_file": SonosFunction(play_file, ""),
-    "play_m3u": SonosFunction(play_m3u, ""),
-    "play_local_m3u": SonosFunction(play_m3u, ""),
-    "add_uri_to_queue": SonosFunction(add_uri_to_queue, ""),
+    "play_file": SonosFunction(play_file, "", True),
+    "play_local_file": SonosFunction(play_file, "", True),
+    "play_m3u": SonosFunction(play_m3u, "", True),
+    "play_local_m3u": SonosFunction(play_m3u, "", True),
+    "add_uri_to_queue": SonosFunction(add_uri_to_queue, "", True),
     "wait_stop_not_pause": SonosFunction(wait_stop_not_pause, ""),
     "wsnp": SonosFunction(wait_stop_not_pause, ""),
     "wait_stopped_for_not_pause": SonosFunction(wait_stopped_for_not_pause, ""),
@@ -2266,10 +2290,10 @@ actions = {
     "buttons": SonosFunction(buttons, ""),
     "fixed_volume": SonosFunction(fixed_volume, ""),
     "trueplay": SonosFunction(trueplay, ""),
-    "play_favourite_number": SonosFunction(play_favourite_number, ""),
-    "play_favorite_number": SonosFunction(play_favourite_number, ""),
-    "pfn": SonosFunction(play_favourite_number, ""),
-    "play_fav_radio_station_no": SonosFunction(play_favourite_radio_number, ""),
-    "pfrsn": SonosFunction(play_favourite_radio_number, ""),
-    "album_art": SonosFunction(album_art, ""),
+    "play_favourite_number": SonosFunction(play_favourite_number, "", True),
+    "play_favorite_number": SonosFunction(play_favourite_number, "", True),
+    "pfn": SonosFunction(play_favourite_number, "", True),
+    "play_fav_radio_station_no": SonosFunction(play_favourite_radio_number, "", True),
+    "pfrsn": SonosFunction(play_favourite_radio_number, "", True),
+    "album_art": SonosFunction(album_art, "", True),
 }
