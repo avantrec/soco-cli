@@ -1642,9 +1642,7 @@ def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speake
     action = args[0]
     args = args[1:]
     logging.info(
-        "Action invoked: '{} {} {}'".format(
-            speaker.player_name, action, " ".join(args)
-        )
+        "Action invoked: '{} {} {}'".format(speaker.player_name, action, " ".join(args))
     )
     return process_action(
         speaker, action, args, use_local_speaker_list=use_local_speaker_list
@@ -1761,8 +1759,9 @@ def queue_search_result_number(
             # If so, add at the next track position
             if (
                 speaker.get_current_transport_info()["current_transport_state"]
-                == "PLAYING"
-                and speaker.get_current_track_info()["position"] != "NOT_IMPLEMENTED"
+                == "PLAYING"  # noqa: W503
+                and speaker.get_current_track_info()["position"]  # noqa: W503
+                != "NOT_IMPLEMENTED"  # noqa: W503
             ):
                 logging.info("Currently playing from queue; add as next track")
                 offset = 1
