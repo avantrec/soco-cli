@@ -31,7 +31,8 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     three-tuple. If the exit code is non-zero, the error message will be
     populated and the output string will always be empty.
 
-    All exceptions are caught when this function is
+    All exceptions are caught when this function is run. Exception details
+    will be returned in the error message string.
 
     Args:
         speaker_name (str): The name of the speaker, or its IP address
