@@ -73,7 +73,7 @@ def interactive_loop(
         readline.set_completer_delims(" ")
         _get_readline_history()
 
-    single_keystroke = single_keystroke
+    single_keystroke = single_keystroke if RL else False
 
     # Input loop
     while True:
