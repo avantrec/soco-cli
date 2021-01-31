@@ -6,4 +6,4 @@ used in other programs via its simple API.
 For more information, please see: https://github.com/avantrec/soco-cli
 """
 
-__version__ = "0.3.17"
+__version__ = "0.3.18"

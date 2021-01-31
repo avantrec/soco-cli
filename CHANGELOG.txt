@@ -1,3 +1,4 @@
+v0.3.18   -
 v0.3.17   - Add 'version' command to the Shell
           - Fix regression in 'remove_from_queue'
           - Add 'groupstatus' action
