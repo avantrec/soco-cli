@@ -1971,6 +1971,51 @@ def trueplay(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
+def groupstatus(speaker, action, args, soco_function, use_local_speaker_list):
+    """Determine the grouped/paired/bonded status of a speaker."""
+
+    # Use binary maps to express the state of the speaker
+    visible_speakers = False
+    invisible_speakers = False
+    coordinator = None
+
+    for grouped_speaker in speaker.group.members:
+        if speaker is grouped_speaker:
+            continue
+        if grouped_speaker.is_visible:
+            visible_speakers = True
+        if not grouped_speaker.is_visible:
+            invisible_speakers = True
+        if grouped_speaker.is_coordinator:
+            coordinator = grouped_speaker
+
+    if len(speaker.group.members) == 1:
+        print("Standalone")
+
+    if speaker.is_visible and speaker.is_coordinator and invisible_speakers:
+        print("Paired or bonded, coordinator")
+
+    if not speaker.is_visible:
+        print(
+            "Paired or bonded, not coordinator [coordinator = {} @ {}]".format(
+                coordinator.player_name, coordinator.ip_address
+            )
+        )
+
+    if speaker.is_visible and speaker.is_coordinator and visible_speakers:
+        print("Grouped, coordinator")
+
+    if speaker.is_visible and not speaker.is_coordinator:
+        print(
+            "Grouped, not coordinator [coordinator = {} @ {}]".format(
+                coordinator.player_name, coordinator.ip_address
+            )
+        )
+
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2298,4 +2343,5 @@ actions = {
     "play_fav_radio_station_no": SonosFunction(play_favourite_radio_number, "", True),
     "pfrsn": SonosFunction(play_favourite_radio_number, "", True),
     "album_art": SonosFunction(album_art, "", True),
+    "groupstatus": SonosFunction(groupstatus),
 }

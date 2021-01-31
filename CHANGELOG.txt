@@ -1,5 +1,6 @@
 v0.3.17   - Add 'version' command to the Shell
           - Fix regression in 'remove_from_queue'
+          - Add 'groupstatus' action
 v0.3.16   - Selected actions targeted at a non-coordinator speaker in a
             group are now diverted to the coordinator instead of returning
             an error

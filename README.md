@@ -387,6 +387,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`buttons`**: Returns whether the speaker's control buttons are enabled, 'on' or 'off'.
 - **`buttons <on|off>`**: Sets whether the speaker's control buttons are on or off.  
 - **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
+- **`groupstatus`**: Indicates whether the speaker is part of a group, and whether it's part of a stereo pair or bonded home theatre configuration. Note that first can override the second: if a paired/bonded coordinator speaker is also part of a group, the group will be reported but not the paired/bonded status.
 - **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
 - **`libraries`** (or **`shares`**): List the local music library shares.
 - **`reindex`**: Start a reindex of the local music libraries.
