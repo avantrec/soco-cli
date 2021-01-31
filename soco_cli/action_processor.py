@@ -1840,7 +1840,9 @@ def album_art(speaker, action, args, soco_function, use_local_speaker_list):
         metadata = info["metadata"]
         data = parse(metadata)
         album_art_uri = data["DIDL-Lite"]["item"]["upnp:albumArtURI"]
+        logging.info("Album art URI = ".format(album_art_uri))
     except:
+        logging.info("No album art URI available")
         print("Album art not available")
         return True
 
@@ -1975,7 +1977,6 @@ def trueplay(speaker, action, args, soco_function, use_local_speaker_list):
 def groupstatus(speaker, action, args, soco_function, use_local_speaker_list):
     """Determine the grouped/paired/bonded status of a speaker."""
 
-    # Use binary maps to express the state of the speaker
     visible_speakers = False
     invisible_speakers = False
     coordinator = None
@@ -1989,6 +1990,16 @@ def groupstatus(speaker, action, args, soco_function, use_local_speaker_list):
             invisible_speakers = True
         if grouped_speaker.is_coordinator:
             coordinator = grouped_speaker
+
+    logging.info(
+        "Visible = {}, Coordinator = {}, Speakers in Group = {}, Other Visible Speakers = {}, Other Invisible Speakers = {}".format(
+            speaker.is_visible,
+            speaker.is_coordinator,
+            len(speaker.group.members),
+            visible_speakers,
+            invisible_speakers,
+        )
+    )
 
     if len(speaker.group.members) == 1:
         print("Standalone")
