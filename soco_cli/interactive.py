@@ -83,12 +83,11 @@ def interactive_loop(
             prompt = "SoCo-CLI [] > "
 
         if single_keystroke:
+            prompt = prompt.replace("SoCo-CLI", "SoCo-CLI SK")
+            prompt = prompt.replace(">", ">>")
+            print(prompt, flush=True, end="")
             command_line = get_keystroke()
-            if speaker_name and speaker:
-                speaker_text = "[{}]".format(speaker.player_name)
-            else:
-                speaker_text = "[]"
-            print("{} Command =".format(speaker_text), command_line)
+            print(command_line)
             if command_line == "x":
                 single_keystroke = False
                 continue
