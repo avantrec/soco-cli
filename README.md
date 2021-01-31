@@ -577,7 +577,8 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     To unset the active speaker, omit the speaker name,
                     or just enter '0'.   
     'sk'        :   Enters 'single keystroke' mode. (Also 'single-keystroke'.)
-    'speakers'  :   List the names of all available speakers
+    'speakers'  :   List the names of all available speakers.
+    'version'   :   Print the versions of SoCo-CLI, SoCo, and Python in use.
     
     The command syntax is the same as when using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.

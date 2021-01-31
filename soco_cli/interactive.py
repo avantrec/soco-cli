@@ -26,6 +26,7 @@ from soco_cli.utils import (
     save_readline_history,
     set_interactive,
     speaker_cache,
+    version,
 )
 
 from .wait_actions import process_wait
@@ -159,6 +160,12 @@ def interactive_loop(
             if command_lower in ["wait", "wait_until", "wait_for"]:
                 logging.info("Processing a 'wait' action")
                 process_wait(command)
+                continue
+
+            if command_lower in ["version"]:
+                print()
+                version()
+                print()
                 continue
 
             # Is the input a number in the range of speaker numbers?
@@ -357,6 +364,7 @@ COMMANDS = [
     "single-keystroke",
     "sk",
     "speakers",
+    "version",
 ]
 
 
@@ -430,7 +438,8 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     or just enter '0'.
     'sk'        :   Enters 'single keystroke' mode. (Also 'single-keystroke'.)
                     (Not supported on Windows).
-    'speakers'  :   List the names of all available speakers
+    'speakers'  :   List the names of all available speakers.
+    'version'   :   Print the versions of SoCo-CLI, SoCo, and Python in use.
     
     The command syntax is the same as when using 'sonos' from the command line.
     If a speaker been set, the speaker name is omitted from the command.
