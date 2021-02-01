@@ -1,4 +1,4 @@
-""" SoCo-CLI interactive mode handler."""
+"""SoCo-CLI interactive mode handler."""
 
 import logging
 

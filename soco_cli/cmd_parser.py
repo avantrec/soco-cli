@@ -1,4 +1,4 @@
-"""Parse sequential command lines, using ':' as a command separator"""
+"""Parse sequential command lines, using ':' as a command separator."""
 
 from soco_cli.utils import error_and_exit
 

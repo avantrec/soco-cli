@@ -1,3 +1,9 @@
+"""The main command processing module.
+
+This module requires refactoring, improvements to its argument handling,
+and needs to be converted to a Class.
+"""
+
 import logging
 import pprint
 import time

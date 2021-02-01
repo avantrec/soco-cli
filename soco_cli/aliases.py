@@ -1,4 +1,4 @@
-"""Manages aliases for use with the interactive shell"""
+"""Manages aliases for use with the interactive shell."""
 
 import logging
 import pickle

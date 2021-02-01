@@ -1,3 +1,5 @@
+"""Plays files from the local filesytem."""
+
 import functools
 import logging
 import urllib.parse

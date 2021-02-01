@@ -1,4 +1,4 @@
-"""The SoCo-CLI API
+"""The SoCo-CLI API.
 
 Provides a few simple, high-level functions that allow the features of SoCo-CLI
 to be used in other programs.

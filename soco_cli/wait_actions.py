@@ -1,4 +1,4 @@
-"""Process the 'wait' actions"""
+"""Process the speaker-independent 'wait' actions."""
 
 import logging
 import time

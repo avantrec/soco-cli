@@ -1,4 +1,7 @@
-"""Captures single keystrokes."""
+"""Captures single keystrokes.
+
+This feature is currently not available on Windows.
+"""
 
 import sys
 

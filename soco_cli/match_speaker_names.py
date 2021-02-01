@@ -1,8 +1,15 @@
+"""Matches a supplied speaker name to a stored name."""
+
 import logging
 
 
 def speaker_name_matches(name_supplied, name_stored):
-    """Matches speaker names."""
+    """Matches speaker names.
+
+    Returns:
+        bool, bool: Returns whether a match is found, and whether
+            the match is considered exact or not.
+    """
 
     # Exact match
     name_supplied_original = name_supplied

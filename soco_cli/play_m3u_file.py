@@ -1,3 +1,5 @@
+"""Plays a list of files from the local filesystem, with interactive options."""
+
 import logging
 import os
 import sys

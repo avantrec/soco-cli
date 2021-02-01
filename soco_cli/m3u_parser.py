@@ -1,9 +1,9 @@
+"""Parse M3U files."""
+
 # Derived from https://github.com/dvndrsn/M3uParser ... thanks!
 #
 # more info on the M3U file format available here:
 # http://n4k3d.com/the-m3u-file-format/
-
-import sys
 
 from soco_cli.utils import error_and_exit
 

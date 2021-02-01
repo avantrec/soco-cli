@@ -1,3 +1,5 @@
+"""Manages speaker information for Cached Discovery mode."""
+
 import ipaddress
 import logging
 import os

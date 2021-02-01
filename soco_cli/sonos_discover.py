@@ -1,3 +1,5 @@
+"""The main entry point into the 'sonos-discover' command."""
+
 import argparse
 
 from soco_cli.speakers import Speakers

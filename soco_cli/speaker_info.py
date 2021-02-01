@@ -1,3 +1,5 @@
+"""Prints a table of information about the Sonos system."""
+
 import datetime
 
 import tabulate
