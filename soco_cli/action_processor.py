@@ -2055,7 +2055,6 @@ def pauseplay(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-
 def process_action(speaker, action, args, use_local_speaker_list=False):
     sonos_function = actions.get(action, None)
     if sonos_function:

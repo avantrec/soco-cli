@@ -533,7 +533,7 @@ sonos -i
 
 ### Description
 
-Interactive shell mode is a new feature, which creates a SoCo-CLI command line session for entering `sonos` commands. Compared to using individual `sonos` invocations, using the shell is faster and requires less typing.
+Interactive shell mode creates a SoCo-CLI command line session for entering `sonos` commands. Compared to using individual `sonos` invocations, using the shell is faster to perform operations, and requires less typing.
 
 Most `sonos` actions are accepted, except for the `loop` actions. Multiple actions can be submitted on a single command line using the ` : ` separator. 
 
@@ -598,9 +598,7 @@ SoCo-CLI [] >
 
 Commands in the shell history can be scrolled through by using the up/down arrows, and commands can be edited using the left/right arrows to position the cursor.
 
-*Not available on Windows*
-
-Shell commands can be auto-completed using the TAB key. The shell history is saved between shell sessions in `~/.soco-cli/shell-history.txt`.
+*Not available on Windows*: Shell commands can be auto-completed using the TAB key. The shell history is saved between shell sessions in `~/.soco-cli/shell-history.txt`.
 
 ### Shell Aliases
 
@@ -636,7 +634,7 @@ This command sequence targets the 'Front Reception' speaker, but first saves the
 > alias_2
 ```
 
-Loops are detected and disallowed when an alias with a loop is run, but not at alias creation time.
+**Loops** are detected and disallowed when an alias with a loop is run.
 
 **Aliases accept parameters** when invoked, which is helpful in remapping existing actions to new alias names. Note that if an alias is composed of a sequence of actions, the parameter(s) will be passed to all actions in the sequence, e.g.:
 
@@ -645,6 +643,14 @@ Loops are detected and disallowed when an alias with a loop is run, but not at a
 > a1 5          <- Invokes 'pfq 5'
 > alias a2 Kitchen volume : Bathroom volume
 > a2 30         <- Invokes 'Kitchen volume 30 : Bathroom volume 30'
+```
+
+To **prevent parameters being passed through** to a command in an alias, use a `_` character. This will instruct the alias processor not to pass through any parameters. This is sometimes useful in compound actions where parameters are not required for all actions. E.g.:
+
+```
+> alias f1 pfq : vol 50 _
+> f1 3         <- The '30' parameter is ignored for the 'vol' command
+                  Executes: 'pfq 3 : vol 50'
 ```
 
 ### Single Keystroke Mode

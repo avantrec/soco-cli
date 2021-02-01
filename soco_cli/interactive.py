@@ -545,7 +545,12 @@ class AliasProcessor:
         index = command_list.index()
         for idx, sequence in enumerate(sequences, start=1):
             self._seq_number = idx
-            sequence = sequence + alias_parms
+            if "_" in sequence:
+                logging.info("Suppressing any additional parameters")
+                position = sequence.index("_")
+                sequence = sequence[:position]
+            else:
+                sequence = sequence + alias_parms
             # Recurse if the sequence is itself an alias
             if sequence[0] in am.alias_names():
                 logging.info("Recursively unpacking the alias '{}'".format(sequence[0]))
