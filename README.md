@@ -301,6 +301,7 @@ This feature works by invoking the `play_file` action for each file in the playl
 - **`next`**: Move to the next track (if applicable for the current audio source).
 - **`pause`**: Pause playback (if applicable for the audio source).
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
+- **`pauseplay`**: If a speaker is currently playing, it will be paused or stopped; if a speaker is paused or stopped, playback will be started.
 - **`play`** (or **`start`**): Start playback.
 - **`playback`** (or **`state`, `status`**): Returns the current playback state for the speaker.
 - **`play_file <filename> ...`** (or **`play_local_file`**): Play MP3, M4A, MP4, FLAC, OGG, WMA, or WAV audio files from your computer. Multiple filenames can be provided and will be played in sequence.

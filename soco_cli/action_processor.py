@@ -2027,6 +2027,29 @@ def groupstatus(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
+def pauseplay(speaker, action, args, soco_function, use_local_speaker_list):
+    """Invert a STOPPED or PAUSED STATE."""
+
+    state = speaker.get_current_transport_info()["current_transport_state"]
+    logging.info("Speaker '{}' is in a '{}' state".format(speaker.player_name, state))
+
+    if state in ["PLAYING"]:
+        try:
+            logging.info("Trying 'pause'")
+            speaker.pause()
+        except:
+            logging.info("'Pause' failed ... using 'stop'")
+            speaker.stop()
+
+    elif state in ["STOPPED", "PAUSED_PLAYBACK"]:
+        logging.info("Trying 'play'")
+        speaker.play()
+
+    return True
+
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2355,4 +2378,5 @@ actions = {
     "pfrsn": SonosFunction(play_favourite_radio_number, "", True),
     "album_art": SonosFunction(album_art, "", True),
     "groupstatus": SonosFunction(groupstatus),
+    "pauseplay": SonosFunction(pauseplay, "", True),
 }
