@@ -60,7 +60,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Tue Jan 26 13:31:09 GMT 2021 -->
+<!-- Added by: pwt, at: Mon Feb  1 17:42:53 GMT 2021 -->
 
 <!--te-->
 
@@ -370,7 +370,6 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station.
 - **`play_fav_radio_station_no <station_number>`** (or **`pfrsn`**): Play a favourite radio station by its number.
 
-
 ### Grouping and Stereo Pairing
 
 - **`group <master_speaker>`(or `g`)**: Groups the speaker with `<master_speaker>`.
@@ -654,8 +653,6 @@ To **prevent parameters being passed through** to a command in an alias, use a `
 ```
 
 ### Single Keystroke Mode
-
-*Not supported on Windows.*
 
 Single keystroke mode allows the shell to be controlled by single character presses on the keyboard, without requiring the return key to be pressed. This is useful for some headless automation use cases, as well as sometimes being convenient for interactive use. All single character actions are available, including aliases. 
 

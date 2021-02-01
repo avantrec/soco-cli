@@ -83,7 +83,7 @@ def interactive_loop(
         readline.set_completer_delims(" ")
         _get_readline_history()
 
-    single_keystroke = single_keystroke if RL else False
+    single_keystroke = single_keystroke
 
     # Input loop
     while True:
@@ -98,7 +98,9 @@ def interactive_loop(
             print(prompt, flush=True, end="")
             command_line = get_keystroke()
             print(command_line)
-            if command_line == "x":
+            # Catch exit, including Windows CTRL-C
+            if command_line in ["x", "\x03"]:
+                logging.info("Exit from single keystroke mode")
                 single_keystroke = False
                 continue
         else:
@@ -155,11 +157,8 @@ def interactive_loop(
                 continue
 
             if command_lower in ["single-keystroke", "sk"]:
-                if RL:  # Use as a proxy for 'not Windows'
-                    print("Single keystroke mode ... 'x' to exit")
-                    single_keystroke = True
-                else:
-                    print("Single keystroke mode is not supported on Windows")
+                print("Single keystroke mode ... 'x' to exit")
+                single_keystroke = True
                 continue
 
             if command_lower == "speakers":
@@ -519,6 +518,7 @@ class AliasProcessor:
 
         self._command_list = command_list
 
+        # Detect loops
         for used_alias in self._used_aliases:
             if used_alias[0] != self._recurse_level:
                 if used_alias[1] == self._seq_number and used_alias[2] == alias_name:
@@ -528,7 +528,6 @@ class AliasProcessor:
                     self._remove_added_commands()
                     return False
         else:
-            # Each used_alias entry is a 3-tuple
             self._used_aliases.append(
                 (self._recurse_level, self._seq_number, alias_name)
             )
@@ -545,12 +544,15 @@ class AliasProcessor:
         index = command_list.index()
         for idx, sequence in enumerate(sequences, start=1):
             self._seq_number = idx
+
+            # Parameter pass-through
             if "_" in sequence:
                 logging.info("Suppressing any additional parameters")
                 position = sequence.index("_")
                 sequence = sequence[:position]
             else:
                 sequence = sequence + alias_parms
+
             # Recurse if the sequence is itself an alias
             if sequence[0] in am.alias_names():
                 logging.info("Recursively unpacking the alias '{}'".format(sequence[0]))
