@@ -1695,17 +1695,28 @@ def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def transfer_playback(speaker, action, args, soco_function, use_local_speaker_list):
-    """Transfer playback from one speaker to another, by grouping and ungrouping."""
+    """Transfer playback from one speaker to another, by delegating coordination."""
+
     if not speaker.is_coordinator:
         error_and_exit("Speaker '{}' is not a coordinator".format(speaker.player_name))
         return False
+
     speaker2 = get_speaker(args[0], use_local_speaker_list)
     if speaker == speaker2:
-        error_and_exit("Source and target speakers are the same")
+        error_and_exit(
+            "Speakers are the same, or source speaker is non-coordinator in target's group"
+        )
         return False
+
+    state = speaker.get_current_transport_info()["current_transport_state"]
+
     if speaker2:
-        speaker2.join(speaker)
-        speaker.unjoin()
+        speaker.avTransport.DelegateGroupCoordinationTo(
+            [("InstanceID", 0), ("NewCoordinator", speaker2.uid), ("RejoinGroup", 0)]
+        )
+        if state == "PLAYING":
+            speaker.pause()
+            speaker2.play()
         return True
 
     error_and_exit("Speaker '{}' not found".format(args[0]))
