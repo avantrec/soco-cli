@@ -1,4 +1,4 @@
-"""Captures single keystrokes"""
+"""Captures single keystrokes."""
 
 import sys
 
@@ -11,6 +11,8 @@ except ImportError:
 
 
 def get_keystroke():
+    """Waits for a keypress, then returns it."""
+
     result = None
     fd = sys.stdin.fileno()
     oldterm = termios.tcgetattr(fd)

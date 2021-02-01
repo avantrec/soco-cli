@@ -1,4 +1,4 @@
-""" SoCo-CLI interactive mode handler """
+""" SoCo-CLI interactive mode handler."""
 
 import logging
 
@@ -38,6 +38,16 @@ am = AliasManager()
 def interactive_loop(
     speaker_name, use_local_speaker_list=False, no_env=False, single_keystroke=False
 ):
+    """
+    The main interactive loop for gathering and processing interactive commands.
+
+    Args:
+        speaker_name (str): The name of the speaker supplied if supplied on the command
+            line.
+        use_local_speaker_list (bool): Whether to use cached discovery.
+        no_env (bool): Whether to ignore environment variables.
+        single_keystroke (bool): Whether to start in single keystroke mode.
+    """
 
     speaker = None
     saved_speaker = None
