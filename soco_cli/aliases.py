@@ -64,15 +64,8 @@ class AliasManager:
             print("No current aliases")
             return
 
-        # Find the longest alias name
-        max_alias = 0
-        for alias_name in self._aliases.keys():
-            alias_len = len(alias_name)
-            max_alias = max_alias if alias_len <= max_alias else alias_len
-
-        # Print each alias
         print()
+        max_alias = len(max(self._aliases.keys(), key=len))
         for alias_name in sorted(self._aliases.keys()):
-            print("  ", alias_name.ljust(max_alias), "=", self._aliases[alias_name])
-            # print(spacer + alias_name + " = " + self._aliases[alias_name])
+            print(" ", alias_name.ljust(max_alias), "=", self._aliases[alias_name])
         print()
