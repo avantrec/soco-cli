@@ -449,8 +449,8 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'speakers'  :   List the names of all available speakers.
     'version'   :   Print the versions of SoCo-CLI, SoCo, and Python in use.
     
-    The command syntax is the same as when using 'sonos' from the command line.
-    If a speaker been set, the speaker name is omitted from the command.
+    The action syntax is the same as when using 'sonos' from the command line.
+    If a speaker has been set in the shell, omit the speaker name from the action.
 
     Use the arrow keys for command history and command editing.
     
@@ -522,8 +522,8 @@ class AliasProcessor:
         for used_alias in self._used_aliases:
             if used_alias[0] != self._recurse_level:
                 if used_alias[1] == self._seq_number and used_alias[2] == alias_name:
-                    # Alias name reused at different recursion levels, but within
-                    # the unpacking of the same sequence = loop.
+                    # Alias name reused at different recursion levels but within
+                    # the unpacking of the same sequence signifies a loop.
                     print("Error: Alias loop detected ... stopping".format(alias_name))
                     self._remove_added_commands()
                     return False
@@ -551,6 +551,7 @@ class AliasProcessor:
                 position = sequence.index("_")
                 sequence = sequence[:position]
             else:
+                logging.info("Adding parameters: {}".format(alias_parms))
                 sequence = sequence + alias_parms
 
             # Recurse if the sequence is itself an alias

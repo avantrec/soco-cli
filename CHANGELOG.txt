@@ -1,5 +1,6 @@
 v0.3.19   - Add "_" option to suppress pass-thru parameters in shell aliases
           - Add single keystroke shell support for Windows
+          - Add 'playpause' as synonym for 'pauseplay'
 v0.3.18   - Add 'pauseplay' action
           - Improve the prompt in Shell single keystroke mode
 v0.3.17   - Add 'version' command to the Shell

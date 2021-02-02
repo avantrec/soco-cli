@@ -2384,4 +2384,5 @@ actions = {
     "album_art": SonosFunction(album_art, "", True),
     "groupstatus": SonosFunction(groupstatus),
     "pauseplay": SonosFunction(pauseplay, "", True),
+    "playpause": SonosFunction(pauseplay, "", True),
 }
