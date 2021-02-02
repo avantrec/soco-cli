@@ -36,6 +36,7 @@ def event_unsubscribe(sub):
 
 INTERACTIVE = False
 API = False
+SINGLE_KEYSTROKE = False
 
 
 def set_interactive():
@@ -46,6 +47,11 @@ def set_interactive():
 def set_api():
     global API
     API = True
+
+
+def set_single_keystroke(sk):
+    global SINGLE_KEYSTROKE
+    SINGLE_KEYSTROKE = sk
 
 
 # Error handling
@@ -278,7 +284,12 @@ def sig_handler(signal_received, frame):
     if INTERACTIVE:
         save_readline_history()
 
-    # ToDo: Temporary for now; hard kill required to get out of wait
+    if SINGLE_KEYSTROKE:
+        print("Type 'x' to leave Single Keystroke mode: ", end="", flush=True)
+        if not use_sigterm:
+            return
+
+    # TODO: Temporary for now; hard kill required to get out of wait
     if use_sigterm:
         os.kill(os.getpid(), SIGTERM)
     else:
