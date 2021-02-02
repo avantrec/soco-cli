@@ -25,7 +25,6 @@ from soco_cli.utils import (
     local_speaker_list,
     save_readline_history,
     set_interactive,
-    set_single_keystroke,
     speaker_cache,
     version,
 )
@@ -94,7 +93,6 @@ def interactive_loop(
             prompt = "SoCo-CLI [] > "
 
         if single_keystroke:
-            set_single_keystroke(True)
             prompt = prompt.replace("SoCo-CLI", "SoCo-CLI SK")
             prompt = prompt.replace(">", ">>")
             print(prompt, flush=True, end="")
@@ -104,7 +102,6 @@ def interactive_loop(
             if command_line in ["x", "\x03"]:
                 logging.info("Exit from single keystroke mode")
                 single_keystroke = False
-                set_single_keystroke(False)
                 continue
         else:
             command_line = input(prompt)
