@@ -245,7 +245,7 @@ def logo():
     print("SoCo-CLI Logo: {}".format(url))
 
 
-# ToDo: Remove with SIGTERM fix
+# TODO: Remove with SIGTERM fix
 use_sigterm = False
 
 # Stop a stream if playing a local file
@@ -278,7 +278,7 @@ def sig_handler(signal_received, frame):
     if INTERACTIVE:
         save_readline_history()
 
-    # ToDo: Temporary for now; hard kill required to get out of wait
+    # TODO: Temporary for now; hard kill required to get out of wait
     if use_sigterm:
         os.kill(os.getpid(), SIGTERM)
     else:

@@ -5,7 +5,6 @@ import logging
 import pprint
 import time
 from os import environ as env
-from shlex import split as shlex_split
 from signal import SIGINT, signal
 
 import soco

@@ -50,7 +50,7 @@ sonos_max_items = 66000
 
 
 def get_playlist(speaker, name):
-    """Returns the playlist object with 'name' otherwise None"""
+    """Returns the playlist object with 'name' otherwise None."""
     playlists = speaker.get_sonos_playlists(complete_result=True)
     # Strict match
     for playlist in playlists:
@@ -506,7 +506,7 @@ def play_favourite_core(speaker, favourite, favourite_number=None):
 
     if the_fav:
         # play_uri works for some favourites
-        # ToDo: this is broken and we should test for the
+        # TODO: this is broken and we should test for the
         #       type of favourite
         try:
             uri = the_fav.get_uri()
@@ -1380,7 +1380,7 @@ def wait_stopped_for_core(speaker, action, duration_arg, not_paused=False):
 
     while True:
         try:
-            # ToDo: Remove temporary fix for CTRL-C not exiting
+            # TODO: Remove temporary fix for CTRL-C not exiting
             set_sigterm(True)
             event = sub.events.get(timeout=1.0)
             logging.info(
@@ -1391,11 +1391,11 @@ def wait_stopped_for_core(speaker, action, duration_arg, not_paused=False):
             if event.variables["transport_state"] not in playing_states:
                 logging.info("Speaker is not in states {}".format(playing_states))
                 event_unsubscribe(sub)
-                # ToDo: Should really return here and do this some other way ...
+                # TODO: Should really return here and do this some other way ...
                 #       this is what's requiring the SIGKILL
 
                 # Poll for changes; count down reset timer
-                # ToDo: Polling is not ideal; should be redesigned using events
+                # TODO: Polling is not ideal; should be redesigned using events
                 original_start_time = start_time = current_time = time.time()
                 poll_interval = 10
                 logging.info(
@@ -1485,7 +1485,7 @@ def search_artists(speaker, action, args, soco_function, use_local_speaker_list)
         )
         print_albums(albums, omit_first=True)  # Omit the first (empty) entry
         print()
-        # ToDo: Debating whether to include lists of all the tracks that feature the artist...
+        # TODO: Debating whether to include lists of all the tracks that feature the artist...
         # print_list_header("Sonos Music Library Tracks with Artist:", artist.title)
         # tracks = ml.search_track(artist.title)
         # # tracks = ml.get_music_library_information("artists", subcategories=[name, ""], complete_result=True)

@@ -14,7 +14,6 @@ headers = [
     "Vol.",
     "Mute",
     "State",
-    # "Title",
     "Model Name",
     "Model No.",
     "HW Version",
