@@ -13,6 +13,8 @@ class AliasManager:
         self._aliases = {}
 
     def create_alias(self, alias_name, alias_actions):
+        alias_name = alias_name.strip()
+        alias_actions = alias_actions.strip()
         if alias_actions in [None, ""]:
             return self.remove_alias(alias_name)
         else:
@@ -28,6 +30,7 @@ class AliasManager:
         return self._aliases.get(alias_name, None)
 
     def remove_alias(self, alias_name):
+        alias_name = alias_name.strip()
         try:
             del self._aliases[alias_name]
             logging.info("Removing alias '{}'".format(alias_name))
@@ -63,9 +66,48 @@ class AliasManager:
         if len(self._aliases) == 0:
             print("No current aliases")
             return
+        print("\n", self._aliases_to_text())
 
-        print()
+    def save_aliases_to_file(self, filename):
+        try:
+            with open(filename, "w") as f:
+                f.write("# Soco-CLI Aliases File\n")
+                f.write(self._aliases_to_text(raw=True))
+                return True
+        except:
+            return False
+
+    def load_aliases_from_file(self, filename):
+        try:
+            with open(filename, "r") as f:
+                line = f.readline()
+                while line != "":
+                    if not line.startswith("#") and line != "\n":
+                        if line.count("=") != 1:
+                            print("Malformed alias ... ignored")
+                            print(line, end="")
+                        else:
+                            alias = line.split("=")
+                            self.create_alias(alias[0], alias[1])
+                    line = f.readline()
+            self.save_aliases()
+            return True
+        except:
+            return False
+
+    def _aliases_to_text(self, raw=False):
+        output = ""
         max_alias = len(max(self._aliases.keys(), key=len))
         for alias_name in sorted(self._aliases.keys()):
-            print(" ", alias_name.ljust(max_alias), "=", self._aliases[alias_name])
-        print()
+            if raw:
+                output = output + alias_name + " = " + self._aliases[alias_name] + "\n"
+            else:
+                output = (
+                    output
+                    + "  "
+                    + alias_name.ljust(max_alias)
+                    + " = "
+                    + self._aliases[alias_name]
+                    + "\n"
+                )
+        return output

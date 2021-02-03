@@ -10,6 +10,7 @@ from signal import SIGINT, signal
 import soco
 
 from soco_cli.action_processor import list_actions, process_action
+from soco_cli.aliases import AliasManager
 from soco_cli.cmd_parser import CLIParser
 from soco_cli.interactive import interactive_loop
 from soco_cli.speakers import Speakers
@@ -102,6 +103,24 @@ def main():
         default=False,
         help="Enter Single Keystroke mode in the Interactive Shell",
     )
+    parser.add_argument(
+        "--save_aliases",
+        type=str,
+        default="NONE",
+        help="Save the current shell aliases file to the supplied filename and exit",
+    )
+    parser.add_argument(
+        "--load_aliases",
+        type=str,
+        default="NONE",
+        help="Load shell aliases from the supplied filename and exit; aliases are added to the list",
+    )
+    parser.add_argument(
+        "--overwrite_aliases",
+        type=str,
+        default="NONE",
+        help="Overwrite current shell aliases with those from the supplied filename and exit",
+    )
     # The rest of the optional args are common
     configure_common_args(parser)
 
@@ -122,6 +141,38 @@ def main():
 
     if args.actions or args.commands:
         list_actions()
+        exit(0)
+
+    if args.save_aliases != "NONE":
+        am = AliasManager()
+        am.load_aliases()
+        if am.save_aliases_to_file(args.save_aliases):
+            print("Saved shell aliases to '{}'".format(args.save_aliases))
+        else:
+            print("Failed to save shell aliases to '{}'".format(args.save_aliases))
+        exit(0)
+
+    if args.load_aliases != "NONE":
+        am = AliasManager()
+        am.load_aliases()
+        if am.load_aliases_from_file(args.load_aliases):
+            print("Loaded and saved shell aliases from '{}'".format(args.load_aliases))
+        else:
+            print("Failed to load shell aliases from '{}'".format(args.load_aliases))
+        exit(0)
+
+    if args.overwrite_aliases != "NONE":
+        am = AliasManager()
+        if am.load_aliases_from_file(args.overwrite_aliases):
+            print(
+                "Loaded and saved shell aliases from '{}'".format(
+                    args.overwrite_aliases
+                )
+            )
+        else:
+            print(
+                "Failed to load shell aliases from '{}'".format(args.overwrite_aliases)
+            )
         exit(0)
 
     if len(args.parameters) == 0 and not args.interactive:
