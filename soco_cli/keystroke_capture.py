@@ -37,4 +37,3 @@ def get_keystroke():
             termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
 
     return result
-

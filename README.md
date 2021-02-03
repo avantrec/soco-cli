@@ -43,6 +43,10 @@
          * [Usage](#usage)
          * [Shell History and Auto-Completion](#shell-history-and-auto-completion)
          * [Shell Aliases](#shell-aliases)
+            * [Push and Pop](#push-and-pop)
+            * [Alias Subroutines](#alias-subroutines)
+            * [Alias Parameters](#alias-parameters)
+            * [Saving and Loading Aliases](#saving-and-loading-aliases)
          * [Single Keystroke Mode](#single-keystroke-mode)
       * [Cached Discovery](#cached-discovery)
          * [Usage](#usage-1)
@@ -60,7 +64,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Mon Feb  1 17:42:53 GMT 2021 -->
+<!-- Added by: pwt, at: Thu Feb  4 11:55:10 GMT 2021 -->
 
 <!--te-->
 
@@ -619,13 +623,17 @@ Aliases are included in **autocompletion** results, and they **override** built-
 
 Aliases are **saved** between sessions, using a file in the `~/.soco-cli` directory.
 
+#### Push and Pop
+
 The **`push`** and **`pop`** commands are useful in alias actions when one wants to target actions at other speakers, but keep the current active speaker when the action sequence ends, e.g.:
 
 `> alias fv push : set "Front Reception" : volume 50 : pfrs "Jazz 24" : pop`
 
 This command sequence targets the 'Front Reception' speaker, but first saves the current active speaker, restoring it at the end. (This will, of course, still work if the current active speaker is 'Front Reception'.)
 
-**Aliases can include other aliases** in their sequences of actions. e.g.:
+#### Alias Subroutines
+
+Aliases can include other aliases in their sequences of actions. e.g.:
 
 ```
 > alias alias_1 vol 30 : play
@@ -635,7 +643,9 @@ This command sequence targets the 'Front Reception' speaker, but first saves the
 
 **Loops** are detected and disallowed when an alias with a loop is run.
 
-**Aliases accept parameters** when invoked, which is helpful in remapping existing actions to new alias names. Note that if an alias is composed of a sequence of actions, the parameter(s) will be passed to all actions in the sequence, e.g.:
+#### Alias Parameters
+
+Aliases accept parameters when invoked, which is helpful in remapping existing actions to new alias names. Note that if an alias is composed of a sequence of actions, the parameter(s) will be passed to all actions in the sequence, e.g.:
 
 ```
 > alias a1 pfq
@@ -650,6 +660,27 @@ To **prevent parameters being passed through** to a command in an alias, use a `
 > alias f1 pfq : vol 50 _
 > f1 3         <- The '30' parameter is ignored for the 'vol' command
                   Executes: 'pfq 3 : vol 50'
+```
+
+#### Saving and Loading Aliases
+
+```
+sonos --save_aliases <filename>
+sonos --load_aliases <filename>
+sonos --overwrite_aliases <filename>
+```
+
+Aliases can be saved and loaded from plain text files using the command line options above. The command will terminate once the file operation is complete. Option `save_aliases` will write the current aliases to the supplied filename; `load_aliases` will load a list of aliases and merge them with the current list; `overwrite_aliases` will overwrite any current aliases with the list from the file.
+
+The alias file format consists of lines containing `<alias_name> = <alias actions>`, e.g:
+
+```
+# This is a comment line
+my_alias = vol 30 : play_fav "Radio 4"
+p = pauseplay
+
+# Blank lines are OK
+m = mute on
 ```
 
 ### Single Keystroke Mode
