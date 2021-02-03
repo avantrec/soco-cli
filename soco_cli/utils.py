@@ -508,7 +508,7 @@ SPKR_CACHE = None
 
 
 # Single instance of the speaker cache
-def create_speaker_cache(max_threads=256, scan_timeout=0.1, min_netmask=24):
+def create_speaker_cache(max_threads=256, scan_timeout=1.0, min_netmask=24):
     global SPKR_CACHE
     SPKR_CACHE = SpeakerCache(
         max_threads=max_threads, scan_timeout=scan_timeout, min_netmask=min_netmask
