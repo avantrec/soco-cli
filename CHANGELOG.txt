@@ -1,4 +1,5 @@
-v0.3.20   -
+v0.3.20   - Add the ability to save, load, and overwrite shell aliases from
+            text files
 v0.3.19   - Add "_" option to suppress pass-thru parameters in shell aliases
           - Add single keystroke shell support for Windows
           - Add 'playpause' as synonym for 'pauseplay'

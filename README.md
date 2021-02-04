@@ -43,6 +43,9 @@
          * [Usage](#usage)
          * [Shell History and Auto-Completion](#shell-history-and-auto-completion)
          * [Shell Aliases](#shell-aliases)
+            * [Push and Pop](#push-and-pop)
+            * [Alias Subroutines](#alias-subroutines)
+            * [Alias Parameters](#alias-parameters)
             * [Saving and Loading Aliases](#saving-and-loading-aliases)
          * [Single Keystroke Mode](#single-keystroke-mode)
       * [Cached Discovery](#cached-discovery)
@@ -61,7 +64,11 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
+<<<<<<< HEAD
 <!-- Added by: pwt, at: Thu Feb  4 11:20:54 GMT 2021 -->
+=======
+<!-- Added by: pwt, at: Thu Feb  4 11:55:10 GMT 2021 -->
+>>>>>>> master
 
 <!--te-->
 
