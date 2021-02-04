@@ -101,24 +101,21 @@ def main():
         "--sk",
         action="store_true",
         default=False,
-        help="Enter Single Keystroke mode in the Interactive Shell",
+        help="Enter single keystroke mode in the interactive shell",
     )
     parser.add_argument(
         "--save_aliases",
         type=str,
-        default="NONE",
-        help="Save the current shell aliases file to the supplied filename and exit",
+        help="Save the current shell aliases to the supplied filename and exit",
     )
     parser.add_argument(
         "--load_aliases",
         type=str,
-        default="NONE",
-        help="Load shell aliases from the supplied filename and exit; aliases are added to the list",
+        help="Load shell aliases from the supplied filename and exit (aliases are merged)",
     )
     parser.add_argument(
         "--overwrite_aliases",
         type=str,
-        default="NONE",
         help="Overwrite current shell aliases with those from the supplied filename and exit",
     )
     # The rest of the optional args are common
@@ -143,7 +140,7 @@ def main():
         list_actions()
         exit(0)
 
-    if args.save_aliases != "NONE":
+    if args.save_aliases:
         am = AliasManager()
         am.load_aliases()
         if am.save_aliases_to_file(args.save_aliases):
@@ -152,16 +149,16 @@ def main():
             print("Failed to save shell aliases to '{}'".format(args.save_aliases))
         exit(0)
 
-    if args.load_aliases != "NONE":
+    if args.load_aliases:
         am = AliasManager()
         am.load_aliases()
         if am.load_aliases_from_file(args.load_aliases):
-            print("Loaded and saved shell aliases from '{}'".format(args.load_aliases))
+            print("Loaded and merged shell aliases from '{}'".format(args.load_aliases))
         else:
             print("Failed to load shell aliases from '{}'".format(args.load_aliases))
         exit(0)
 
-    if args.overwrite_aliases != "NONE":
+    if args.overwrite_aliases:
         am = AliasManager()
         if am.load_aliases_from_file(args.overwrite_aliases):
             print(
