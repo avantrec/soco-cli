@@ -347,6 +347,8 @@ def interactive_loop(
                 if exit_code:
                     if not error_msg == "":
                         print(error_msg)
+                        if ":" in error_msg.replace("Error:", ""):
+                            print("Spaces missing around ':'?")
                 else:
                     if not output == "":
                         lines = output.splitlines()

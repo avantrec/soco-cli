@@ -393,7 +393,14 @@ def main():
                         if not process_action(
                             speaker, action, args, use_local_speaker_list
                         ):
-                            error_and_exit("Action '{}' not found".format(action))
+                            if ":" in action:
+                                error_and_exit(
+                                    "Action '{}' not found ... spaces missing around ':'?".format(
+                                        action
+                                    )
+                                )
+                            else:
+                                error_and_exit("Action '{}' not found".format(action))
             else:
                 speaker = get_speaker(speaker_name, use_local_speaker_list)
                 if not speaker:
@@ -401,7 +408,14 @@ def main():
                 if not process_action(
                     speaker, action, args, use_local_speaker_list=use_local_speaker_list
                 ):
-                    error_and_exit("Action '{}' not found".format(action))
+                    if ":" in action:
+                        error_and_exit(
+                            "Action '{}' not found ... spaces missing around ':'?".format(
+                                action
+                            )
+                        )
+                    else:
+                        error_and_exit("Action '{}' not found".format(action))
 
         except Exception as e:
             error_and_exit(str(e))
