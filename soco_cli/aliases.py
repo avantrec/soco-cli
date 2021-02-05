@@ -14,7 +14,8 @@ class AliasManager:
 
     def create_alias(self, alias_name, alias_actions):
         alias_name = alias_name.strip()
-        alias_actions = alias_actions.strip()
+        if alias_actions:
+            alias_actions = alias_actions.strip()
         if alias_actions in [None, ""]:
             return self.remove_alias(alias_name)
         else:
