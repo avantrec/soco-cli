@@ -64,11 +64,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<<<<<<< HEAD
-<!-- Added by: pwt, at: Thu Feb  4 11:20:54 GMT 2021 -->
-=======
 <!-- Added by: pwt, at: Thu Feb  4 11:55:10 GMT 2021 -->
->>>>>>> master
 
 <!--te-->
 
