@@ -1832,8 +1832,9 @@ def rename(speaker, action, args, soco_function, use_local_speaker_list):
         error_and_exit("Current and new names are identical")
         return False
     speaker.player_name = new_name
-    if use_local_speaker_list:
-        rename_speaker_in_cache(old_name, new_name)
+    rename_speaker_in_cache(
+        old_name, new_name, use_local_speaker_list=use_local_speaker_list
+    )
     return True
 
 

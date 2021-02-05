@@ -503,6 +503,16 @@ class SpeakerCache:
         names.sort()
         return names
 
+    def rename_speaker(self, old_name, new_name):
+        for speaker in self._cache:
+            if speaker[1] == old_name:
+                logging.info("Updating speaker cache with new name")
+                self._cache.remove(speaker)
+                self._cache.add((speaker[0], new_name))
+                return True
+        logging.info("Speaker with name '{}' not found".format(old_name))
+        return False
+
 
 SPKR_CACHE = None
 
@@ -589,8 +599,11 @@ def get_right_hand_speaker(left_hand_speaker):
         return None
 
 
-def rename_speaker_in_cache(old_name, new_name):
-    return speaker_list.rename(old_name, new_name)
+def rename_speaker_in_cache(old_name, new_name, use_local_speaker_list=True):
+    if use_local_speaker_list:
+        return speaker_list.rename(old_name, new_name)
+    else:
+        return SPKR_CACHE.rename_speaker(old_name, new_name)
 
 
 # Argument processing

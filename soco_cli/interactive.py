@@ -355,6 +355,10 @@ def interactive_loop(
                         print(output)
                         if len(lines) > 1 and output[len(lines) - 1] != "":
                             print()
+                    if action == "rename":
+                        speaker_name = speaker.get_speaker_info(refresh=True)[
+                            "zone_name"
+                        ]
             except:
                 print("Error: Invalid command")
 
