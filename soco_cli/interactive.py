@@ -126,6 +126,9 @@ def interactive_loop(
             except IndexError:
                 break
 
+            if len(command) == 0:
+                continue
+
             # Is this an alias?
             if command[0] in am.alias_names():
                 ap = AliasProcessor()
