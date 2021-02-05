@@ -91,7 +91,8 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
 
         if not return_value:
             if error_out == "":
-                error_out = "Error: Action '{}' not found".format(action)
+                hint = " ... missing spaces around ':'?" if ":" in action else ""
+                error_out = "Error: Action '{}' not found{}".format(action, hint)
             return_value = (1, output_msg, error_out)
         else:
             return_value = (0, output_msg, error_out)
