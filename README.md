@@ -422,7 +422,7 @@ Multiple commands can be run as part of the same `sonos` invocation by using the
 
 The benefit of using this approach instead of multiple separate `sonos` commands is that cost of starting the program is only incurred once.
 
-An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will terminate and will not execute the remaining commands.
+An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will report the error, and will generally attempt to execute subsequent commands.
 
 **Example:** `sonos Kitchen volume 25 : Kitchen play`
 

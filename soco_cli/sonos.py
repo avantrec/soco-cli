@@ -9,8 +9,9 @@ from signal import SIGINT, signal
 
 import soco
 
-from soco_cli.action_processor import list_actions, process_action
+from soco_cli.action_processor import list_actions
 from soco_cli.aliases import AliasManager
+from soco_cli.api import run_command
 from soco_cli.cmd_parser import CLIParser
 from soco_cli.interactive import interactive_loop
 from soco_cli.speakers import Speakers
@@ -390,32 +391,27 @@ def main():
                             )
                         )
                         print(speaker.player_name)
-                        if not process_action(
-                            speaker, action, args, use_local_speaker_list
-                        ):
-                            if ":" in action:
-                                error_and_exit(
-                                    "Action '{}' not found ... spaces missing around ':'?".format(
-                                        action
-                                    )
-                                )
-                            else:
-                                error_and_exit("Action '{}' not found".format(action))
+                        exit_code, output_msg, error_msg = run_command(
+                            speaker,
+                            action,
+                            *args,
+                            use_local_speaker_list=use_local_speaker_list,
+                        )
+                        if exit_code == 0:
+                            print(output_msg)
+                        else:
+                            print(error_msg)
             else:
                 speaker = get_speaker(speaker_name, use_local_speaker_list)
                 if not speaker:
                     error_and_exit("Speaker '{}' not found".format(speaker_name))
-                if not process_action(
-                    speaker, action, args, use_local_speaker_list=use_local_speaker_list
-                ):
-                    if ":" in action:
-                        error_and_exit(
-                            "Action '{}' not found ... spaces missing around ':'?".format(
-                                action
-                            )
-                        )
-                    else:
-                        error_and_exit("Action '{}' not found".format(action))
+                exit_code, output_msg, error_msg = run_command(
+                    speaker, action, *args, use_local_speaker_list=use_local_speaker_list
+                )
+                if exit_code == 0:
+                    print(output_msg)
+                else:
+                    print(error_msg)
 
         except Exception as e:
             error_and_exit(str(e))
