@@ -577,7 +577,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'rescan_max':   Try this if you're having trouble finding all your speakers.
     'set <spkr> :   Set the active speaker using its name.
                     Use quotes when needed for the speaker name, e.g.,
-                    'set "Front Reception"'. Unambiguous partial, case-insensitive
+                    'set "Front Reception"'. Unambiguous, partial, case-insensitive
                     matches are supported, e.g., 'set front'.
                     To unset the active speaker, omit the speaker name,
                     or just enter '0'.   
