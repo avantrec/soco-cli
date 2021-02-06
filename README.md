@@ -420,7 +420,7 @@ The actions below search the Sonos Music library.
 
 Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. **The `:` separator must be surrounded by spaces** to disambiguate from other uses of `:` in sonos actions.
 
-The benefit of using this approach instead of multiple separate `sonos` commands is that cost of starting the program is only incurred once.
+The benefit of using this approach instead of multiple separate `sonos` commands is that cost of starting the program is only incurred once. In addition, it allows for the introduction of wait states and loops.
 
 An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will report the error, and will generally attempt to execute subsequent commands.
 
@@ -625,7 +625,7 @@ Aliases are **saved** between sessions, using a file in the `~/.soco-cli` direct
 
 #### Push and Pop
 
-The **`push`** and **`pop`** commands are useful in alias actions when one wants to target actions at other speakers, but keep the current active speaker when the action sequence ends, e.g.:
+The **`push`** and **`pop`** commands are useful in alias actions when one wants to target actions at other speakers, but keep the current active speaker when the action sequence ends. `push` saves the current speaker and unsets it, and `pop` reselects the saved speaker, e.g.:
 
 `> alias fv push : set "Front Reception" : volume 50 : pfrs "Jazz 24" : pop`
 
@@ -658,7 +658,7 @@ To **prevent parameters being passed through** to a command in an alias, use a `
 
 ```
 > alias f1 pfq : vol 50 _
-> f1 3         <- The '30' parameter is ignored for the 'vol' command
+> f1 3         <- The '3' parameter is ignored for the 'vol' command
                   Executes: 'pfq 3 : vol 50'
 ```
 
@@ -687,7 +687,7 @@ m = mute on
 
 Single keystroke mode allows the shell to be controlled by single character presses on the keyboard, without requiring the return key to be pressed. This is useful for some headless automation use cases, as well as sometimes being convenient for interactive use. All single character actions are available, including aliases. 
 
-Enable by using the actions `sk` or `single-keystroke` at the shell prompt. Type 'x' to exit back to the normal shell.
+Enable by using the action `sk` or `single-keystroke` at the shell prompt. Type 'x' to exit back to the normal shell.
 
 To start SoCo-CLI in single keystroke mode, use the command line option `--sk`, along with the interactive (`-i` or `--interactive`) option.
 
