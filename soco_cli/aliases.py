@@ -67,7 +67,8 @@ class AliasManager:
         if len(self._aliases) == 0:
             print("No current aliases")
             return
-        print("\n", self._aliases_to_text())
+        print()
+        print(self._aliases_to_text())
 
     def save_aliases_to_file(self, filename):
         try:
@@ -98,7 +99,8 @@ class AliasManager:
 
     def _aliases_to_text(self, raw=False):
         output = ""
-        max_alias = len(max(self._aliases.keys(), key=len))
+        if not raw:
+            max_alias = len(max(self._aliases.keys(), key=len))
         for alias_name in sorted(self._aliases.keys()):
             if raw:
                 output = output + alias_name + " = " + self._aliases[alias_name] + "\n"
