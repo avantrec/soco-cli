@@ -1,4 +1,6 @@
-v0.3.21   - Bugfixes
+v0.3.22   - Multiple sequential actions will now attempt to proceed in the
+            event of an action in the sequence failing
+v0.3.21   - Bugfix: correct issue where shell aliases can't be deleted
 v0.3.20   - Add the ability to save, load, and overwrite shell aliases from
             text files
 v0.3.19   - Add "_" option to suppress pass-thru parameters in shell aliases
