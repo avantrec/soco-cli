@@ -397,9 +397,9 @@ def main():
                             *args,
                             use_local_speaker_list=use_local_speaker_list,
                         )
-                        if exit_code == 0:
+                        if exit_code == 0 and len(output_msg) != 0:
                             print(output_msg)
-                        else:
+                        elif len(error_msg) != 0:
                             print(error_msg)
             else:
                 speaker = get_speaker(speaker_name, use_local_speaker_list)
@@ -411,9 +411,9 @@ def main():
                     *args,
                     use_local_speaker_list=use_local_speaker_list,
                 )
-                if exit_code == 0:
+                if exit_code == 0 and len(output_msg) != 0:
                     print(output_msg)
-                else:
+                elif len(error_msg) != 0:
                     print(error_msg)
 
         except Exception as e:
