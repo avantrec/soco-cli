@@ -1,3 +1,4 @@
+v0.3.23   -
 v0.3.22   - Multiple sequential actions will now attempt to proceed in the
             event of an action in the sequence failing
 v0.3.21   - Bugfix: correct issue where shell aliases can't be deleted
