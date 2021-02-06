@@ -406,7 +406,10 @@ def main():
                 if not speaker:
                     error_and_exit("Speaker '{}' not found".format(speaker_name))
                 exit_code, output_msg, error_msg = run_command(
-                    speaker, action, *args, use_local_speaker_list=use_local_speaker_list
+                    speaker,
+                    action,
+                    *args,
+                    use_local_speaker_list=use_local_speaker_list,
                 )
                 if exit_code == 0:
                     print(output_msg)
