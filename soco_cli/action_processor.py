@@ -2056,6 +2056,15 @@ def pauseplay(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
+def available_actions(speaker, action, args, soco_function, use_local_speaker_list):
+    """Determine the currently available playback control options."""
+    actions = speaker.avTransport.GetCurrentTransportActions([('InstanceID', 0)])["Actions"]
+    actions = actions.replace("X_DLNA_", "")
+    print("Currently available plyaback actions: {}".format(actions))
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2386,4 +2395,5 @@ actions = {
     "groupstatus": SonosFunction(groupstatus),
     "pauseplay": SonosFunction(pauseplay, "", True),
     "playpause": SonosFunction(pauseplay, "", True),
+    "available_actions": SonosFunction(available_actions, "", True),
 }

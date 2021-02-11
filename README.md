@@ -387,6 +387,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 ### Speaker and Sonos System Information
 
 - **`alarms`**: List the alarms in the Sonos system.
+- **`available_actions`**: List the currently available speaker actions (play, pause, seek, next, etc.).  
 - **`battery`**: Shows the battery status for a Sonos Move speaker.
 - **`buttons`**: Returns whether the speaker's control buttons are enabled, 'on' or 'off'.
 - **`buttons <on|off>`**: Sets whether the speaker's control buttons are on or off.  

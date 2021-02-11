@@ -1,4 +1,4 @@
-v0.3.24   -
+v0.3.24   - Add 'available_actions' action.
 v0.3.23   - Bugfix: Remove spurious newline when action returns no value (#17)
 v0.3.22   - Multiple sequential actions will now attempt to proceed in the
             event of an action in the sequence failing
