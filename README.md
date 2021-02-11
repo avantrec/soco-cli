@@ -452,6 +452,7 @@ Examples:
 sonos <speaker> wait_start
 sonos <speaker> wait_stop
 sonos <speaker> wait_stop_not_pause
+sonos <speaker> wait_end_track
 ```
 
 The **`<speaker> wait_start`** and **`<speaker> wait_stop`** actions are used to pause execution of the sequence of `sonos` commands until a speaker has either started or stopped/paused playback. The **`wait_stop_not_pause`** (or **`wsnp`**) action is the same as `wait_stop` but ignores the 'paused' state.
@@ -463,6 +464,10 @@ For example, to reset the volume back to `25` only after the `Bedroom` speaker h
 Note that if a speaker is already playing, `wait_start` will proceed immediately, and if a speaker is already stopped, `wait_stop` will proceed immediately. If the behaviour you want is to continue **after** the **next** piece of audio ends, then you can chain commands as shown in the following example:
 
 `sonos <speaker> wait_start : <speaker> wait_stop : <speaker> vol 50`
+
+The **`wait_end_track`** action will pause execution of `sonos` commands until the current track has ended, or until playback has otherwise stopped. This is useful, for example, when one want to stop playback after the current track has ended:
+
+`sonos <speaker> wait_end_track : stop`
 
 ### The `wait_stopped_for <duration>` Action
 

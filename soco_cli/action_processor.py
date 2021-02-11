@@ -2065,6 +2065,32 @@ def available_actions(speaker, action, args, soco_function, use_local_speaker_li
     return True
 
 
+@zero_parameters
+def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list):
+    """Wait for the end of the current track, or until playback stops/pauses."""
+
+    try:
+        sub = speaker.avTransport.subscribe(auto_renew=True)
+    except Exception as e:
+        error_and_exit("Exception {}".format(e))
+
+    initial_track = None
+
+    while True:
+        try:
+            event = sub.events.get(timeout=1.0)
+            if event.variables["transport_state"] != "PLAYING":
+                event_unsubscribe(sub)
+                return True
+            if not initial_track:
+                initial_track = event.variables["current_track"]
+            elif event.variables["current_track"] != initial_track:
+                event_unsubscribe(sub)
+                return True
+        except Empty:
+            pass
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2396,4 +2422,5 @@ actions = {
     "pauseplay": SonosFunction(pauseplay, "", True),
     "playpause": SonosFunction(pauseplay, "", True),
     "available_actions": SonosFunction(available_actions, "", True),
+    "wait_end_track": SonosFunction(wait_end_track, "", True),
 }
