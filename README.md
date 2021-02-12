@@ -446,7 +446,7 @@ Examples:
 - `sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`
 - `sonos Bedroom volume 0 : Bedroom play_favourite "Radio 4" : Bedroom ramp 40 : wait 1h : Bedroom ramp 0 : Bedroom stop`
 
-### Waiting Until Playback has Started/Stopped: `wait_start` and `wait_stop`
+### Waiting Until Playback has Started/Stopped: `wait_start`, `wait_stop` and `wait_end_track`
 
 ```
 sonos <speaker> wait_start
@@ -455,7 +455,7 @@ sonos <speaker> wait_stop_not_pause
 sonos <speaker> wait_end_track
 ```
 
-The **`<speaker> wait_start`** and **`<speaker> wait_stop`** actions are used to pause execution of the sequence of `sonos` commands until a speaker has either started or stopped/paused playback. The **`wait_stop_not_pause`** (or **`wsnp`**) action is the same as `wait_stop` but ignores the 'paused' state.
+The **`<speaker> wait_start`** and **`<speaker> wait_stop`** actions are used to pause execution of the sequence of `sonos` commands until a speaker has either started or stopped/paused playback. The **`wait_stop_not_pause`** (or **`wsnp`**) action is the same as `wait_stop` but ignores the 'paused' state, i.e., it only resumes when a speaker enters the stopped state.
 
 For example, to reset the volume back to `25` only after the `Bedroom` speaker has stopped playing, use the following command sequence:
 
@@ -465,7 +465,7 @@ Note that if a speaker is already playing, `wait_start` will proceed immediately
 
 `sonos <speaker> wait_start : <speaker> wait_stop : <speaker> vol 50`
 
-The **`wait_end_track`** action will pause execution of `sonos` commands until the current track has ended, or until playback has otherwise stopped. This is useful, for example, when one want to stop playback after the current track has ended:
+The **`wait_end_track`** action will pause execution of `sonos` commands until the current track has ended, or until playback has otherwise paused or stopped. This is useful, for example, when one want to stop playback after the current track has ended:
 
 `sonos <speaker> wait_end_track : stop`
 

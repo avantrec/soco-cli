@@ -2063,7 +2063,9 @@ def pauseplay(speaker, action, args, soco_function, use_local_speaker_list):
 @zero_parameters
 def available_actions(speaker, action, args, soco_function, use_local_speaker_list):
     """Determine the currently available playback control options."""
-    actions = speaker.avTransport.GetCurrentTransportActions([('InstanceID', 0)])["Actions"]
+    actions = speaker.avTransport.GetCurrentTransportActions([("InstanceID", 0)])[
+        "Actions"
+    ]
     actions = actions.replace("X_DLNA_", "")
     print("Currently available playback actions: {}".format(actions))
     return True
@@ -2075,6 +2077,9 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
 
     try:
         sub = speaker.avTransport.subscribe(auto_renew=True)
+        logging.info(
+            "Subscribing to transport events from {}".format(speaker.player_name)
+        )
     except Exception as e:
         error_and_exit("Exception {}".format(e))
         return False
@@ -2084,14 +2089,33 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
     while True:
         try:
             event = sub.events.get(timeout=1.0)
-            if event.variables["transport_state"] != "PLAYING":
+            logging.info("Transport event received")
+
+            # The code below never works; retain for possible future use
+            #
+            # info = speaker.get_current_track_info()
+            # position = convert_to_seconds(info["position"])
+            # duration = convert_to_seconds(info["duration"])
+            # logging.info("Position = {}, duration = {}".format(position, duration))
+            #
+            # if duration - position == 0:
+            #     logging.info("Track duration expired")
+            #     event_unsubscribe(sub)
+            #     return True
+
+            if event.variables["transport_state"] not in ["PLAYING", "TRANSITIONING"]:
+                logging.info("Speaker is not playing")
                 event_unsubscribe(sub)
                 return True
+
             if not initial_track:
                 initial_track = event.variables["current_track"]
+
             elif event.variables["current_track"] != initial_track:
+                logging.info("Track number has changed")
                 event_unsubscribe(sub)
                 return True
+
         except Empty:
             pass
 
