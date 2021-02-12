@@ -243,6 +243,7 @@ def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
                 error_and_exit(
                     "Track number {} is out of queue range".format(track_number)
                 )
+                return False
             queue = [queue[track_number - 1]]
         except ValueError:
             parameter_type_error(action, "integer")
@@ -1334,6 +1335,7 @@ def wait_stop_core(speaker, not_paused=False):
         sub = speaker.avTransport.subscribe(auto_renew=True)
     except Exception as e:
         error_and_exit("Exception {}".format(e))
+        return False
 
     while True:
         try:
@@ -1372,6 +1374,7 @@ def wait_stopped_for_core(speaker, action, duration_arg, not_paused=False):
         sub = speaker.avTransport.subscribe(auto_renew=True)
     except Exception as e:
         error_and_exit("Exception {}".format(e))
+        return False
 
     playing_states = ["PLAYING", "TRANSITIONING"]
     if not_paused:
@@ -1454,6 +1457,7 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
         sub = speaker.avTransport.subscribe(auto_renew=True)
     except Exception as e:
         error_and_exit("Exception {}".format(e))
+        return False
     while True:
         try:
             event = sub.events.get(timeout=1.0)
@@ -2061,7 +2065,7 @@ def available_actions(speaker, action, args, soco_function, use_local_speaker_li
     """Determine the currently available playback control options."""
     actions = speaker.avTransport.GetCurrentTransportActions([('InstanceID', 0)])["Actions"]
     actions = actions.replace("X_DLNA_", "")
-    print("Currently available plyaback actions: {}".format(actions))
+    print("Currently available playback actions: {}".format(actions))
     return True
 
 
@@ -2073,6 +2077,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
         sub = speaker.avTransport.subscribe(auto_renew=True)
     except Exception as e:
         error_and_exit("Exception {}".format(e))
+        return False
 
     initial_track = None
 
