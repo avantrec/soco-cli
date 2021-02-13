@@ -607,7 +607,7 @@ SoCo-CLI [] >
 
 Commands in the shell history can be scrolled through by using the up/down arrows, and commands can be edited using the left/right arrows to position the cursor.
 
-*Not available on Windows*: Shell commands can be auto-completed using the TAB key. The shell history is saved between shell sessions in `~/.soco-cli/shell-history.txt`.
+(*Not available on Windows*) Shell commands can be auto-completed using the TAB key. The shell history is saved between shell sessions in `~/.soco-cli/shell-history.txt`.
 
 ### Shell Aliases
 
@@ -647,7 +647,7 @@ Aliases can include other aliases in their sequences of actions. e.g.:
 > alias_2
 ```
 
-**Loops** are detected and disallowed when an alias with a loop is run.
+Alias subroutines can be nested to an arbitrary depth. **Loops** are detected and prevented when an alias with a loop is invoked. 
 
 #### Alias Parameters
 
@@ -660,7 +660,7 @@ Aliases accept parameters when invoked, which is helpful in remapping existing a
 > a2 30         <- Invokes 'Kitchen volume 30 : Bathroom volume 30'
 ```
 
-To **prevent parameters being passed through** to a command in an alias, use a `_` character. This will instruct the alias processor not to pass through any parameters. This is sometimes useful in compound actions where parameters are not required for all actions. E.g.:
+To **prevent parameters being passed through** to a command in an alias, use a `_` as an alias parameter. This will instruct the alias processor not to pass through any supplemental parameters. This is sometimes useful in compound actions where parameters are not required for all actions. E.g.:
 
 ```
 > alias f1 pfq : vol 50 _
@@ -815,8 +815,9 @@ Please report any problems you find using GitHub Issues [3].
 
 ## Uninstalling
 
-- Use the normal Pip approach to uninstall the SoCo-CLI package: `pip uninstall soco-cli`. 
-- You may also need to remove the directory `.soco-cli` and its contents from your home directory.
+1. Use the normal Pip approach to uninstall the SoCo-CLI package: `pip uninstall soco-cli`. 
+2. As usual, Pip will not remove dependencies. If you'd like to perform an exhaustive removal, inspect the `requirements.txt` files for `soco-cli`, and for `SoCo`. Take care not to remove packages that may also be required by other installed packages.
+3. You may also need to remove the directory `.soco-cli` and its contents from your home directory.
 
 ## Acknowledgments
 
