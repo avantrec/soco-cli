@@ -34,7 +34,7 @@
       * [Multiple Sequential Commands](#multiple-sequential-commands)
          * [Chaining Commands Using the : Separator](#chaining-commands-using-the--separator)
          * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
-         * [Waiting Until Playback has Started/Stopped: wait_start and wait_stop](#waiting-until-playback-has-startedstopped-wait_start-and-wait_stop)
+         * [Waiting Until Playback has Started/Stopped: wait_start, wait_stop and wait_end_track](#waiting-until-playback-has-startedstopped-wait_start-wait_stop-and-wait_end_track)
          * [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
          * [Repeating Commands: The loop Actions](#repeating-commands-the-loop-actions)
       * [Conditional Command Execution](#conditional-command-execution)
@@ -64,7 +64,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Thu Feb  4 11:55:10 GMT 2021 -->
+<!-- Added by: pwt, at: Sun Feb 14 09:38:49 GMT 2021 -->
 
 <!--te-->
 
