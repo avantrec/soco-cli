@@ -822,6 +822,8 @@ Please report any problems you find using GitHub Issues [3].
 
 ## Acknowledgments
 
+Developed with **[PyCharm](https://www.jetbrains.com/pycharm/)**, with many thanks to JetBrains for the free license for open source development.
+
 All trademarks acknowledged. Avantrec Ltd has no connection with Sonos Inc.
 
 ## Resources
