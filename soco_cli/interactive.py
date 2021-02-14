@@ -367,6 +367,9 @@ def interactive_loop(
                         speaker_name = speaker.get_speaker_info(refresh=True)[
                             "zone_name"
                         ]
+                        _set_actions_and_commands_list(
+                            use_local_speaker_list=use_local_speaker_list
+                        )
             except:
                 print("Error: Invalid command")
 
