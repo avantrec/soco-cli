@@ -574,6 +574,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     aliases.
                     Aliases override existing actions and can contain
                     sequences of actions.
+    'docs'      :   Print a link to the documentation.
     'exit'      :   Exit the shell.
     'help'      :   Show this help message (available shell commands).
     'pop'       :   Restore saved active speaker state.

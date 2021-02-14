@@ -20,6 +20,7 @@ from soco_cli.cmd_parser import CLIParser
 from soco_cli.keystroke_capture import get_keystroke
 from soco_cli.utils import (
     RewindableList,
+    docs,
     get_readline_history,
     get_speaker,
     local_speaker_list,
@@ -177,6 +178,10 @@ def interactive_loop(
                 print()
                 version()
                 print()
+                continue
+
+            if command_lower in ["docs"]:
+                docs()
                 continue
 
             # Is the input a number in the range of speaker numbers?
@@ -369,6 +374,7 @@ def interactive_loop(
 COMMANDS = [
     "actions",
     "alias ",
+    "docs",
     "exit",
     "help",
     "pop",
@@ -438,6 +444,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     aliases.
                     Aliases override existing actions and can contain
                     sequences of actions.
+    'docs'      :   Print a link to the documentation.
     'exit'      :   Exit the shell.
     'help'      :   Show this help message (available shell commands).
     'pop'       :   Restore saved active speaker state.
