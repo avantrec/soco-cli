@@ -603,13 +603,17 @@ class AliasProcessor:
                 ]
 
             # Recurse if the sequence is itself an alias
-            if sequence[0] in am.alias_names():
-                logging.info("Recursively unpacking the alias '{}'".format(sequence[0]))
-                logging.info("Unpacking: '{}'".format(sequence + alias_parms_local))
-                if self.process(sequence + alias_parms_local, am, command_list):
-                    index = command_list.index()
-                else:
-                    return False
+            try:
+                if sequence[0] in am.alias_names():
+                    logging.info("Recursively unpacking the alias '{}'".format(sequence[0]))
+                    logging.info("Unpacking: '{}'".format(sequence + alias_parms_local))
+                    if self.process(sequence + alias_parms_local, am, command_list):
+                        index = command_list.index()
+                    else:
+                        return False
+            except IndexError:
+                logging.info("Empty sequence ... returning")
+                return False
 
             # Not an alias, so insert the sequence in the command list
             # at the correct index, and increment the index
