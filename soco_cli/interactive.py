@@ -511,6 +511,10 @@ def _restore_quotes(command):
 
 
 class AliasProcessor:
+
+    # The arg substitution names %1, ..., %9
+    _arg_names = tuple("%" + str(x) for x in range(1, 10))
+
     def __init__(self):
         self._used_aliases = []
         self._seq_number = 0
@@ -561,19 +565,48 @@ class AliasProcessor:
         for idx, sequence in enumerate(sequences, start=1):
             self._seq_number = idx
 
-            # Parameter pass-through
+            alias_parms_local = alias_parms.copy()
+
+            # Deprecated
             if "_" in sequence:
-                logging.info("Suppressing any additional parameters")
+                logging.info("Deprecated: Suppressing any additional parameters")
+                print("*** Warning: The use of '_' is now deprecated in favour of")
+                print("*** positional arguments (%1, %2, etc.).")
                 position = sequence.index("_")
                 sequence = sequence[:position]
             else:
-                logging.info("Adding parameters: {}".format(alias_parms))
-                sequence = sequence + alias_parms
+                # Positional argument substitution: %1, %2, etc.
+                alias_parms_used = []
+                for i, item in enumerate(sequence):
+                    if item in self._arg_names:
+                        parm_index = int(item[1]) - 1
+                        try:
+                            sequence[i] = alias_parms_local[parm_index]
+                            logging.info(
+                                "Substituting '{}' for arg. {}".format(
+                                    alias_parms_local[parm_index], item
+                                )
+                            )
+                            # This allows reuse of the same parameter
+                            alias_parms_used.append(parm_index)
+                        except IndexError:
+                            logging.info("No value found for arg. {}".format(item))
+                            sequence[i] = None
+                            pass
+
+                # Remove unsatisfied arguments and substituted parameters
+                sequence = [x for x in sequence if x is not None]
+                alias_parms_local = [
+                    y
+                    for x, y in enumerate(alias_parms_local)
+                    if not x in alias_parms_used
+                ]
 
             # Recurse if the sequence is itself an alias
             if sequence[0] in am.alias_names():
                 logging.info("Recursively unpacking the alias '{}'".format(sequence[0]))
-                if self.process(sequence, am, command_list):
+                logging.info("Unpacking: '{}'".format(sequence + alias_parms_local))
+                if self.process(sequence + alias_parms_local, am, command_list):
                     index = command_list.index()
                 else:
                     return False

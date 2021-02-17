@@ -45,7 +45,7 @@
          * [Shell Aliases](#shell-aliases)
             * [Push and Pop](#push-and-pop)
             * [Alias Subroutines](#alias-subroutines)
-            * [Alias Parameters](#alias-parameters)
+            * [Alias Arguments](#alias-arguments)
             * [Saving and Loading Aliases](#saving-and-loading-aliases)
          * [Single Keystroke Mode](#single-keystroke-mode)
       * [Cached Discovery](#cached-discovery)
@@ -64,7 +64,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Sun Feb 14 09:38:49 GMT 2021 -->
+<!-- Added by: pwt, at: Wed Feb 17 11:27:41 GMT 2021 -->
 
 <!--te-->
 
@@ -650,24 +650,32 @@ Aliases can include other aliases in their sequences of actions. e.g.:
 
 Alias subroutines can be nested to an arbitrary depth. **Loops** are detected and prevented when an alias with a loop is invoked. 
 
-#### Alias Parameters
+#### Alias Arguments
 
-Aliases accept parameters when invoked, which is helpful in remapping existing actions to new alias names. Note that if an alias is composed of a sequence of actions, the parameter(s) will be passed to all actions in the sequence, e.g.:
+Aliases accept arguments when invoked, which is helpful in remapping existing actions to new alias names. Arguments are specified positionally using `%1`, `%2`, etc. For example:
 
 ```
-> alias a1 pfq
+> alias a1 pfq %1
 > a1 5          <- Invokes 'pfq 5'
-> alias a2 Kitchen volume : Bathroom volume
+>
+> alias a2 push : Kitchen volume %1 : Bathroom volume %1 : pop
+>
 > a2 30         <- Invokes 'Kitchen volume 30 : Bathroom volume 30'
+                   (surrounded by a push/pop to save the current target
+                   speaker).
 ```
 
-To **prevent parameters being passed through** to a command in an alias, use a `_` as an alias parameter. This will instruct the alias processor not to pass through any supplemental parameters. This is sometimes useful in compound actions where parameters are not required for all actions. E.g.:
+If positional arguments are not specified, values will not be passed through. Unsatisfied positional arguments are ignored. For example:
 
 ```
-> alias f1 pfq : vol 50 _
-> f1 3         <- The '3' parameter is ignored for the 'vol' command
-                  Executes: 'pfq 3 : vol 50'
+> alias a1 vol %1 %2
+>
+> a1            <- Invokes 'vol'
+> a1 50         <- Invokes 'vol 50'
+> a1 50 50      <- Invokes 'vol 50 50' (and generates an error).
 ```
+
+Positional arguments can be used multiple times within an action (unlikely to be useful) or within a sequence of actions.
 
 #### Saving and Loading Aliases
 

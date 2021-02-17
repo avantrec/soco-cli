@@ -1,4 +1,6 @@
-v0.3.25   - Add 'docs' command to shell
+v0.3.25   - Add argument substitution (%1, %2, etc.) to aliases
+            Note that the use of '_' to suppress arguments is now deprecated
+          - Add 'docs' command to shell
 v0.3.24   - Add 'available_actions' action
           - Add 'wait_end_track' action
 v0.3.23   - Bugfix: Remove spurious newline when action returns no value (#17)
