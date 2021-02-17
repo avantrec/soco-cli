@@ -223,15 +223,16 @@ def interactive_loop(
                 continue
 
             if command_lower == "push":
-                if pushed == True:
-                    print("Active speaker already pushed ... ignored")
+                if pushed is True:
+                    logging.info("Active speaker already pushed ... ignored")
                     continue
-                pushed = True
                 if speaker:
+                    pushed = True
                     logging.info(
                         "Pushing current active speaker: {}".format(speaker.player_name)
                     )
                 else:
+                    pushed = False
                     logging.info("No active speaker to push")
                 saved_speaker = speaker
                 speaker_name = None
@@ -239,8 +240,8 @@ def interactive_loop(
                 continue
 
             if command_lower == "pop":
-                if pushed == False:
-                    print("No active speaker state to pop ... ignored")
+                if pushed is False:
+                    logging.info("No active speaker state to pop ... ignored")
                     continue
                 logging.info("Popping the saved speaker state")
                 if saved_speaker:
