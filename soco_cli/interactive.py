@@ -118,12 +118,12 @@ def interactive_loop(
         command_sequences = RewindableList(cli_parser.get_sequences())
         logging.info("Command sequences = {}".format(command_sequences))
 
-        # The command_sequence list can change, so we use pop() until the
+        # The command_sequence list can change, so we use pop_next() until the
         # list is exhausted
         while True:
             try:
                 command = command_sequences.pop_next()
-                logging.info("Current command = '{}'".format(command))
+                logging.info("Current command = {}".format(command))
             except IndexError:
                 break
 
@@ -612,18 +612,19 @@ class AliasProcessor:
                         index = command_list.index()
                     else:
                         return False
+
+                # Not an alias, so insert the sequence in the command list
+                # at the correct index, and increment the index
+                else:
+                    logging.info("Inserting new sequence {} at {}".format(sequence, index))
+                    command_list.insert(index, sequence)
+                    index += 1
+                    self._command_count += 1
+                    self._index = index
+
             except IndexError:
                 logging.info("Empty sequence ... returning")
                 return False
-
-            # Not an alias, so insert the sequence in the command list
-            # at the correct index, and increment the index
-            else:
-                logging.info("Inserting new sequence {} at {}".format(sequence, index))
-                command_list.insert(index, sequence)
-                index += 1
-                self._command_count += 1
-                self._index = index
 
         self._recurse_level -= 1
 
