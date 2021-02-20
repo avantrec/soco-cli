@@ -112,7 +112,11 @@ def interactive_loop(
 
         # Parse multiple action sequences
         cli_parser = CLIParser()
-        cli_parser.parse(shlex_split(command_line))
+        try:
+            cli_parser.parse(shlex_split(command_line))
+        except ValueError as error:
+            print("Error: {}".format(error))
+            continue
 
         # Loop through action sequences
         command_sequences = RewindableList(cli_parser.get_sequences())
@@ -267,7 +271,7 @@ def interactive_loop(
                 command.pop(0)
                 alias_name = command.pop(0)
                 if alias_name == "alias":
-                    print("Cannot create alias for 'alias'")
+                    print("Not permitted: cannot create alias for 'alias'")
                     continue
                 if len(command) == 0:
                     if am.create_alias(alias_name, None):
@@ -554,7 +558,11 @@ class AliasProcessor:
             )
 
         alias_actions = am.action(alias_name)
-        action_elements = shlex_split(alias_actions)
+        try:
+            action_elements = shlex_split(alias_actions)
+        except ValueError as error:
+            print("Error: {}".format(error))
+            return False
 
         cli_parser = CLIParser()
         cli_parser.parse(action_elements)
