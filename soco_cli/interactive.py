@@ -127,7 +127,7 @@ def interactive_loop(
         while True:
             try:
                 command = command_sequences.pop_next()
-                logging.info("Current command = {}".format(command))
+                logging.info("Current sequence = {}".format(command))
             except IndexError:
                 break
 
@@ -350,7 +350,7 @@ def interactive_loop(
                         continue
 
                 action = args.pop(0).lower()
-                logging.info("Action = '{}'; args = '{}'".format(action, args))
+                logging.info("Action = '{}'; args = {}".format(action, args))
                 exit_code, output, error_msg = run_command(
                     speaker,
                     action,
@@ -568,7 +568,7 @@ class AliasProcessor:
         cli_parser.parse(action_elements)
         sequences = cli_parser.get_sequences()
 
-        logging.info("Unpacking the alias '{} -> '{}'".format(alias_name, sequences))
+        logging.info("Unpacking the alias '{}' -> '{}'".format(alias_name, sequences))
 
         index = command_list.index()
         for idx, sequence in enumerate(sequences, start=1):
@@ -650,6 +650,7 @@ def _rescan(use_local_speaker_list=False, max=False):
     elif max:
         logging.info("Full network rescan at max strength (timeout = 10.0s)")
         speaker_cache().scan(reset=True, scan_timeout_override=10.0)
+        _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
     else:
         logging.info("Full network rescan")
         speaker_cache().scan(reset=True)

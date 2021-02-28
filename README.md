@@ -74,11 +74,11 @@ SoCo-CLI is a powerful command line wrapper for the popular Python SoCo library 
 
 A simple `sonos` command is provided which allows easy control of a huge range of speaker functions, including playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speaker states, and to create repeated action sequences using loops. Audio files from the local filesystem can be played directly on Sonos.
 
-SoCo-CLI aims for an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
+SoCo-CLI has an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
 SoCo-CLI can also be used as a simple, high-level library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library.
 
-For interactive command line use, SoCo-CLI has an [Interactive Shell Mode](#interactive-shell-mode) that is faster and reduces typing.
+For interactive command line use, SoCo-CLI provides an [Interactive Shell Mode](#interactive-shell-mode) that improves speed of operation and reduces typing.
 
 ## Supported Environments
 
@@ -113,7 +113,7 @@ Actions that make changes to speakers do not generally provide return values. In
 
 ### Speaker Discovery by Name
 
-SoCo-CLI will try a number of approaches to find a speaker by its name, which escalate in cost until the speaker is discovered or discovery fails. If SoCo-CLI seems slow to find speakers (especially if you have a multi-household Sonos system), or if you occasionally experience problems with speakers not being found, please take a look at the generally faster [Cached Discovery](#cached-discovery) method.
+SoCo-CLI will try a number of approaches to find a speaker's IP address by speaker name, which escalate in cost until the speaker is discovered or discovery fails. If SoCo-CLI seems slow to find speakers (especially if you have a multi-household Sonos system), or if you occasionally experience problems with speakers not being found, please take a look at the generally faster [Cached Discovery](#cached-discovery) method.
 
 ### Simple Usage Examples
 
@@ -708,7 +708,7 @@ To start SoCo-CLI in single keystroke mode, use the command line option `--sk`, 
 
 ## Cached Discovery
 
-SoCo-CLI uses the full range of speaker discovery mechanisms in SoCo to look up speakers by their names.
+SoCo-CLI uses the full range of speaker discovery mechanisms in SoCo to look up speakers by their names to determine their IP addresses.
 
 First, the native Sonos SSDP multicast discovery process is tried.
 
