@@ -1823,6 +1823,8 @@ def battery(speaker, action, args, soco_function, use_local_speaker_list):
         return False
 
     for key, value in battery_status.items():
+        if key == "Level":
+            value = str(value) + "%"
         print("  " + key + ": " + str(value))
 
     return True
