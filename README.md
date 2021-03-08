@@ -685,7 +685,7 @@ sonos --load_aliases <filename>
 sonos --overwrite_aliases <filename>
 ```
 
-Aliases can be saved and loaded from plain text files using the command line options above. The command will terminate once the file operation is complete. Option `save_aliases` will write the current aliases to the supplied filename; `load_aliases` will load a list of aliases and merge them with the current list; `overwrite_aliases` will overwrite any current aliases with the list from the file.
+Aliases can be saved and loaded from plain text files using the command line options above. The command will terminate once the file operation is complete. Option `save_aliases` will write the current aliases to the supplied filename; `load_aliases` will load a list of aliases and merge them with the current list (overwriting any duplicate alias names); `overwrite_aliases` will overwrite all current aliases with the list from the file.
 
 The alias file format consists of lines containing `<alias_name> = <alias actions>`, e.g:
 
@@ -772,7 +772,7 @@ Other options:
 
 ## Using SoCo-CLI as a Python Library
 
-If you'd like to use SoCo-CLI as a high-level library in another Python program, it's simple to do so using its API capability. The goal is to provide the same added value, abtractions, and command structure as when using SoCo-CLI directly from the command line. Essentially, there is a single entry point that accepts exactly the same commands that would be used on the command line.
+If you'd like to use SoCo-CLI as a high-level library in another Python program, it's simple to do so using its API capability. The goal is to provide the same added value, abstractions, and command structure as when using SoCo-CLI directly from the command line. Essentially, there is a single entry point that accepts exactly the same commands that would be used on the command line.
 
 Using the SoCo-CLI API means that the expense of loading soco-cli is incurred only once during the operation of your program, and speaker discovery results are cached for efficiency.
 
