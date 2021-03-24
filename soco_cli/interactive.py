@@ -53,6 +53,7 @@ def interactive_loop(
     speaker = None
     saved_speaker = None
     pushed = False
+    temp_active_speaker = False
 
     # Is the speaker name set on the command line?
     # Note: ignores SPKR set as part of the environment
@@ -348,6 +349,20 @@ def interactive_loop(
                             )
                         )
                         continue
+                    else:
+                        # Temporarily establish an active speaker
+                        temp_active_speaker = True
+                        speaker_name = speaker.player_name
+                        logging.info(
+                            "Temporarily establish active speaker: '{}'".format(
+                                speaker_name
+                            )
+                        )
+                        # Replace the command sequence without the speaker name,
+                        # for processing next time round the loop
+                        command_sequences.insert(command_sequences.index(), args)
+                        logging.info("Reinserting command sequence: {}".format(args))
+                        continue
 
                 action = args.pop(0).lower()
                 logging.info("Action = '{}'; args = {}".format(action, args))
@@ -375,6 +390,13 @@ def interactive_loop(
                         _set_actions_and_commands_list(
                             use_local_speaker_list=use_local_speaker_list
                         )
+                if temp_active_speaker:
+                    logging.info(
+                        "Unsetting temporary active speaker: '{}'".format(speaker_name)
+                    )
+                    temp_active_speaker = False
+                    speaker = None
+                    speaker_name = None
             except:
                 print("Error: Invalid command")
 
@@ -614,7 +636,9 @@ class AliasProcessor:
             # Recurse if the sequence is itself an alias
             try:
                 if sequence[0] in am.alias_names():
-                    logging.info("Recursively unpacking the alias '{}'".format(sequence[0]))
+                    logging.info(
+                        "Recursively unpacking the alias '{}'".format(sequence[0])
+                    )
                     logging.info("Unpacking: '{}'".format(sequence + alias_parms_local))
                     if self.process(sequence + alias_parms_local, am, command_list):
                         index = command_list.index()
@@ -624,7 +648,9 @@ class AliasProcessor:
                 # Not an alias, so insert the sequence in the command list
                 # at the correct index, and increment the index
                 else:
-                    logging.info("Inserting new sequence {} at {}".format(sequence, index))
+                    logging.info(
+                        "Inserting new sequence {} at {}".format(sequence, index)
+                    )
                     command_list.insert(index, sequence)
                     index += 1
                     self._command_count += 1
