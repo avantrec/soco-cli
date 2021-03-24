@@ -562,38 +562,41 @@ SoCo-CLI [] > help
 
 This is SoCo-CLI interactive mode. Interactive commands are as follows:
 
-    '1', ...    :   Set the active speaker. Use the numbers shown by the
+    '1', ...     :  Set the active speaker. Use the numbers shown by the
                     'speakers' command. E.g., to set to speaker number 4
                     in the list, just type '4'.
                     '0' will unset the active speaker.
-    'actions'   :   Show the complete list of SoCo-CLI actions.
-    'alias'     :   Add an alias: alias <alias_name> <actions>
+    'actions'    :  Show the complete list of SoCo-CLI actions.
+    'alias'      :  Add an alias: alias <alias_name> <actions>
                     Remove an alias: alias <alias_name>
                     Update an alias by creating a new alias with the same name.
                     Using 'alias' without parameters shows the current list of
                     aliases.
                     Aliases override existing actions and can contain
                     sequences of actions.
-    'docs'      :   Print a link to the documentation.
-    'exit'      :   Exit the shell.
-    'help'      :   Show this help message (available shell commands).
-    'pop'       :   Restore saved active speaker state.
-    'push'      :   Save the current active speaker, and unset the active speaker.
-    'rescan'    :   If your speaker doesn't appear in the 'speakers' list,
+    'docs'       :  Print a link to the documentation.
+    'exit'       :  Exit the shell.
+    'help'       :  Show this help message (available shell commands).
+    'pop'        :  Restore saved active speaker state.
+    'push'       :  Save the current active speaker, and unset the active
+                    speaker.
+    'rescan'     :  If your speaker doesn't appear in the 'speakers' list,
                     use this to perform a more comprehensive scan.
-    'rescan_max':   Try this if you're having trouble finding all your speakers.
-    'set <spkr> :   Set the active speaker using its name.
+    'rescan_max' :  Try this if you're having still trouble finding all your
+                    speakers.
+    'set <spkr>' :  Set the active speaker using its name.
                     Use quotes when needed for the speaker name, e.g.,
-                    'set "Front Reception"'. Unambiguous, partial, case-insensitive
-                    matches are supported, e.g., 'set front'.
+                    'set "Front Reception"'. Unambiguous, partial,
+                    case-insensitive matches are supported, e.g., 'set front'.
                     To unset the active speaker, omit the speaker name,
-                    or just enter '0'.   
-    'sk'        :   Enters 'single keystroke' mode. (Also 'single-keystroke'.)
-    'speakers'  :   List the names of all available speakers.
-    'version'   :   Print the versions of SoCo-CLI, SoCo, and Python in use.
+                    or just enter '0'.
+    'sk'         :  Enters 'single keystroke' mode. (Also 'single-keystroke'.)
+    'speakers'   :  List the names of all available speakers.
+    'version'    :  Print the versions of SoCo-CLI, SoCo, and Python in use.
     
     The action syntax is the same as when using 'sonos' from the command line.
-    If a speaker has been set in the shell, omit the speaker name from the action.
+    If a speaker has been set in the shell, omit the speaker name from the
+    action.
 
     Use the arrow keys for command history and command editing.
     
