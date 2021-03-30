@@ -1,4 +1,4 @@
-"""Plays files from the local filesytem."""
+"""Plays files from the local filesystem."""
 
 import functools
 import logging

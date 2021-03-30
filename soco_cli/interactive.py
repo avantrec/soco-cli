@@ -376,13 +376,7 @@ def interactive_loop(
                     if not error_msg == "":
                         print(error_msg)
                 else:
-                    if not output == "":
-                        lines = output.splitlines()
-                        if len(lines) > 1 and lines[0] != "":
-                            print()
-                        print(output)
-                        if len(lines) > 1 and output[len(lines) - 1] != "":
-                            print()
+                    print(output)
                     if action == "rename":
                         speaker_name = speaker.get_speaker_info(refresh=True)[
                             "zone_name"

@@ -83,6 +83,13 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
         output_msg = output.getvalue().rstrip()
         error_out = error.getvalue().rstrip()
 
+        if not output_msg == "":
+            lines = output_msg.splitlines()
+            if len(lines) > 1 and lines[0] != "":
+                output_msg = "\n" + output_msg
+            if len(lines) > 1 and output_msg[len(lines) - 1] != "":
+                output_msg = output_msg + "\n"
+
         if exception_error:
             if error_out:
                 error_out = error_out + "\nError: " + str(exception_error)
