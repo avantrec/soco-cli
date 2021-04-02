@@ -1,3 +1,4 @@
+v0.3.31   -
 v0.3.30   - Fixes #18 (exception when no speakers are discovered in cached mode)
 v0.3.29   - Cosmetic change to multi-line output (fixes a regression)
 v0.3.28   - Minor bugfixes
