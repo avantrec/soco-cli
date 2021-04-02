@@ -386,7 +386,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 
 ### Speaker and Sonos System Information
 
-- **`alarms`**: List the alarms in the Sonos system.
+- **`alarms`**: List the alarms in the Sonos system. (Each alarm has a numeric ID that can be used in the `remove_alarm` action.)
 - **`available_actions`**: List the currently available speaker actions (play, pause, seek, next, etc.).  
 - **`battery`**: Shows the battery status for Sonos speakers that contain batteries.
 - **`buttons`**: Returns whether the speaker's control buttons are enabled, 'on' or 'off'.
@@ -396,6 +396,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
 - **`libraries`** (or **`shares`**): List the local music library shares.
 - **`reindex`**: Start a reindex of the local music libraries.
+- **`remove_alarm alarm_id[,alarm_id]`** (or **`remove_alarms`**): Removes one or more alarms by their numeric ID (obtainable using the `alarms` action). If multiple IDs are supplied, separate them by a commas without spaces, e.g., `1,5,6`.
 - **`rename <new_name>`**: Rename the speaker.
 - **`status_light` (or `light`)**: Returns the state of the speaker's status light, 'on' or 'off'.
 - **`status_light <on|off>` (or `light`)**: Switch the speaker's status light on or off.

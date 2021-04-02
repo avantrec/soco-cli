@@ -1294,6 +1294,32 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@one_parameter
+def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
+
+    alarm_ids_to_delete = args[0].split(",")
+    alarm_ids_to_delete = set(alarm_ids_to_delete)
+    logging.info("Attempting to delete alarm ID(s): {}".format(alarm_ids_to_delete))
+
+    alarms = soco.alarms.get_alarms(speaker)
+    alarm_ids = {alarm._alarm_id for alarm in alarms}
+    logging.info("Current alarm ID(s): {}".format(alarm_ids))
+
+    valid_alarm_ids_to_delete = alarm_ids.intersection(alarm_ids_to_delete)
+    logging.info("Valid alarm ID(s) to delete: {}".format(valid_alarm_ids_to_delete))
+
+    for alarm in alarms:
+        if alarm._alarm_id in valid_alarm_ids_to_delete:
+            logging.info("Deleting alarm ID: {}".format(alarm._alarm_id))
+            alarm.remove()
+
+    alarms_invalid = alarm_ids_to_delete.difference(valid_alarm_ids_to_delete)
+    if len(alarms_invalid) != 0:
+        print("Error: Alarm ID(s) not found: {}".format(alarms_invalid))
+
+    return True
+
+
 @zero_parameters
 def list_libraries(speaker, action, args, soco_function, use_local_speaker_list):
     shares = speaker.music_library.list_library_shares()
@@ -2457,4 +2483,6 @@ actions = {
     "playpause": SonosFunction(pauseplay, "", True),
     "available_actions": SonosFunction(available_actions, "", True),
     "wait_end_track": SonosFunction(wait_end_track, "", True),
+    "remove_alarms": SonosFunction(remove_alarms, "", False),
+    "remove_alarm": SonosFunction(remove_alarms, "", False),
 }
