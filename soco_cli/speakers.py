@@ -209,9 +209,12 @@ class Speakers:
             min_netmask=self._min_netmask,
         )
 
-        # Populate the device information for each speaker
-        for device in devices:
-            self._speakers.append(self.get_sonos_device_data(device.ip_address))
+        if devices is None:
+            logging.info("No devices discovered")
+        else:
+            # Populate the device information for each speaker
+            for device in devices:
+                self._speakers.append(self.get_sonos_device_data(device.ip_address))
 
     def find(self, speaker_name, require_visible=True):
         """Find a speaker by name and return its SoCo object."""
