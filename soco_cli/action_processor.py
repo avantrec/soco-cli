@@ -1264,6 +1264,7 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
             duration = "No Limit"
         details.append(
             [
+                alarm._alarm_id,  # Replace with .alarm_id with SoCo v0.22
                 alarm.zone.player_name,
                 time,
                 duration,
@@ -1276,6 +1277,7 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
             ]
         )
     headers = [
+        "Alarm ID",
         "Speaker",
         "Start Time",
         "Duration",
