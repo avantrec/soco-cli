@@ -2116,7 +2116,6 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
 
             elif event.variables["current_track"] != initial_track:
                 logging.info("Track number has changed")
-                speaker.pause()  # Mitigate initial audio from next track
                 event_unsubscribe(sub)
                 return True
 
