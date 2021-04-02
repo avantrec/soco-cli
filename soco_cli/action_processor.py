@@ -7,6 +7,7 @@ and needs to be converted to a Class.
 import logging
 import pprint
 import time
+from datetime import datetime
 from datetime import timedelta
 from distutils.version import StrictVersion
 from os import get_terminal_size
@@ -1315,8 +1316,116 @@ def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
 
     alarms_invalid = alarm_ids_to_delete.difference(valid_alarm_ids_to_delete)
     if len(alarms_invalid) != 0:
-        print("Error: Alarm ID(s) not found: {}".format(alarms_invalid))
+        print("Error: Alarm ID(s) {} not found".format(alarms_invalid))
 
+    return True
+
+
+@one_parameter
+def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
+    alarm_parameters = args[0].split(",")
+    if len(alarm_parameters) != 8:
+        error_and_exit("8 comma-separated parameters must be supplied")
+        return False
+
+    start_time = alarm_parameters[0]
+    try:
+        start_time = datetime.strptime(start_time, "%H:%M").time()
+    except ValueError:
+        error_and_exit("Invalid time format: {}".format(start_time))
+        return False
+
+    duration = alarm_parameters[1]
+    try:
+        duration = datetime.strptime(duration, "%H:%M").time()
+    except ValueError:
+        error_and_exit("Invalid time format: {}".format(duration))
+        return False
+
+    recurrence = alarm_parameters[2]
+    if not soco.alarms.is_valid_recurrence(recurrence):
+        error_and_exit("'{}' is not a valid recurrence string".format(recurrence))
+        return False
+
+    enabled = alarm_parameters[3].lower()
+    if enabled == "on":
+        enabled = True
+    elif enabled == "off":
+        enabled = False
+    else:
+        error_and_exit(
+            "Alarm must be enabled 'on' or 'off', not '{}'".format(alarm_parameters[3])
+        )
+        return False
+
+    uri = alarm_parameters[4]
+    if uri.lower() == "chime":
+        uri = None
+
+    play_mode = alarm_parameters[5].upper()
+    play_mode_options = [
+        "NORMAL",
+        "SHUFFLE_NOREPEAT",
+        "SHUFFLE",
+        "REPEAT_ALL",
+        "REPEAT_ONE",
+        "SHUFFLE_REPEAT_ONE",
+    ]
+    if play_mode not in play_mode_options:
+        error_and_exit(
+            "Play mode is '{}', should be one of:\n  {}".format(
+                alarm_parameters[5], play_mode_options
+            )
+        )
+        return False
+
+    volume = alarm_parameters[6]
+    try:
+        volume = int(volume)
+        if not 0 <= volume <= 100:
+            error_and_exit(
+                "Alarm volume must be between 0 and 100, not '{}'".format(
+                    alarm_parameters[6]
+                )
+            )
+            return False
+    except ValueError:
+        error_and_exit(
+            "Alarm volume must be an integer between 0 and 100, not '{}'".format(
+                alarm_parameters[6]
+            )
+        )
+        return False
+
+    include_linked = alarm_parameters[7].lower()
+    if include_linked == "on":
+        include_linked = True
+    elif include_linked == "off":
+        include_linked = False
+    else:
+        error_and_exit(
+            "Linked zones must be enabled 'on' or 'off', not '{}'".format(alarm_parameters[7])
+        )
+        return False
+
+    alarm = soco.alarms.Alarm(
+        speaker,
+        start_time=start_time,
+        duration=duration,
+        recurrence=recurrence,
+        enabled=enabled,
+        program_uri=uri,
+        play_mode=play_mode,
+        volume=volume,
+        include_linked_zones=include_linked,
+    )
+    try:
+        alarm.save()
+    except soco.exceptions.SoCoUPnPException:
+        error_and_exit("Failed to create alarm")
+        return False
+
+    print("Alarm ID '{}' created".format(alarm._alarm_id))
     return True
 
 
@@ -2485,4 +2594,6 @@ actions = {
     "wait_end_track": SonosFunction(wait_end_track, "", True),
     "remove_alarms": SonosFunction(remove_alarms, "", False),
     "remove_alarm": SonosFunction(remove_alarms, "", False),
+    "add_alarm": SonosFunction(add_alarm, "", False),
+    "create_alarm": SonosFunction(add_alarm, "", False),
 }

@@ -391,12 +391,28 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`battery`**: Shows the battery status for Sonos speakers that contain batteries.
 - **`buttons`**: Returns whether the speaker's control buttons are enabled, 'on' or 'off'.
 - **`buttons <on|off>`**: Sets whether the speaker's control buttons are on or off.  
+- **`create_alarm <alarm_spec>`** (or **`add_alarm`**): Creates a new alarm for the target speaker. The `alarm_spec` is a comma-separated list of exactly **eight** parameters (without spaces around the commas). The specification of the parameters is as follows:
+  1. Alarm start time: HH:MM
+  2. Alarm duration: HH:MM
+  3. Recurrence: A valid recurrence string is  `DAILY`, `ONCE`, `WEEKDAYS`,
+     `WEEKENDS` or of the form `ON_DDDDDD` where `D` is a number from 0-6
+     representing a day of the week (Sunday is 0), e.g. `ON_034` meaning
+     Sunday, Wednesday and Thursday
+  4. Whether the alarm is enabled: `ON` or `OFF`
+  5. What to play: `CHIME` or a URI (the URI should be enclosed in double quotes)
+  6. Play mode: One of `NORMAL`, `SHUFFLE_NOREPEAT`, `SHUFFLE`, `REPEAT_ALL`, `REPEAT_ONE`, `SHUFFLE_REPEAT_ONE`
+  7. The volume to play at: 0-100
+  8. Whether to include grouped speakers: `ON` or `OFF`
+ 
+  **Examples**:
+  - `07:00,01:30,WEEKDAYS,ON,"http://stream.live.vc.bbcmedia.co.uk/bbc_radio_fourfm",NORMAL,50,OFF`
+  - `06:30,00:01,WEEKDAYS,ON,CHIME,NORMAL,50,OFF`
 - **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
 - **`groupstatus`**: Indicates whether the speaker is part of a group, and whether it's part of a stereo pair or bonded home theatre configuration. Note that first can override the second: if a paired/bonded coordinator speaker is also part of a group, the group will be reported but not the paired/bonded status.
 - **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
 - **`libraries`** (or **`shares`**): List the local music library shares.
 - **`reindex`**: Start a reindex of the local music libraries.
-- **`remove_alarm alarm_id[,alarm_id]`** (or **`remove_alarms`**): Removes one or more alarms by their numeric ID (obtainable using the `alarms` action). If multiple IDs are supplied, separate them by a commas without spaces, e.g., `1,5,6`.
+- **`remove_alarm <alarm_id[,alarm_id]>`** (or **`remove_alarms`**): Removes one or more alarms by their numeric ID (obtainable using the `alarms` action). If multiple IDs are supplied, separate them by a commas without spaces, e.g., `1,5,6`.
 - **`rename <new_name>`**: Rename the speaker.
 - **`status_light` (or `light`)**: Returns the state of the speaker's status light, 'on' or 'off'.
 - **`status_light <on|off>` (or `light`)**: Switch the speaker's status light on or off.

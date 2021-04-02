@@ -1,4 +1,6 @@
-v0.3.31   - Add 'remove_alarm(s)' action to remove alarms by ID
+v0.3.31   - Add 'create_alarm/add_alarm' actions
+          - Add 'remove_alarm(s)' action to remove alarms by ID
+          - Include alarm ID in output from 'alarms' action
 v0.3.30   - Fixes #18 (exception when no speakers are discovered in cached mode)
 v0.3.29   - Cosmetic change to multi-line output (fixes a regression)
 v0.3.28   - Minor bugfixes
