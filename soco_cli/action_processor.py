@@ -2093,7 +2093,8 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
             event = sub.events.get(timeout=1.0)
             logging.info("Transport event received")
 
-            # The code below never works; retain for possible future use
+            # The code below didn't work; retain for possible future use
+            # Consider using a countdown?
             #
             # info = speaker.get_current_track_info()
             # position = convert_to_seconds(info["position"])
@@ -2115,6 +2116,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
 
             elif event.variables["current_track"] != initial_track:
                 logging.info("Track number has changed")
+                speaker.pause()  # Mitigate initial audio from next track
                 event_unsubscribe(sub)
                 return True
 
