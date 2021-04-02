@@ -296,7 +296,10 @@ class Speakers:
             print("Sonos Household: {}\n".format(household))
             print(
                 tabulate.tabulate(
-                    sorted(households[household]), headers, numalign="left"
+                    sorted(households[household]),
+                    headers,
+                    numalign="left",
+                    disable_numparse=True,
                 )
             )
             print()
