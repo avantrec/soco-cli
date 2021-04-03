@@ -1298,11 +1298,18 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
 @one_parameter
 def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
 
+    alarms = soco.alarms.get_alarms(speaker)
+
+    if args[0].lower() == "all":
+        for alarm in alarms:
+            logging.info("Removing alarm ID '{}'".format(alarm._alarm_id))
+            alarm.remove()
+        return True
+
     alarm_ids_to_delete = args[0].split(",")
     alarm_ids_to_delete = set(alarm_ids_to_delete)
     logging.info("Attempting to delete alarm ID(s): {}".format(alarm_ids_to_delete))
 
-    alarms = soco.alarms.get_alarms(speaker)
     alarm_ids = {alarm._alarm_id for alarm in alarms}
     logging.info("Current alarm ID(s): {}".format(alarm_ids))
 
