@@ -1411,7 +1411,9 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
         include_linked = False
     else:
         error_and_exit(
-            "Linked zones must be enabled 'on' or 'off', not '{}'".format(alarm_parameters[7])
+            "Linked zones must be enabled 'on' or 'off', not '{}'".format(
+                alarm_parameters[7]
+            )
         )
         return False
 
@@ -1433,6 +1435,39 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
         return False
 
     print("Alarm ID '{}' created".format(alarm._alarm_id))
+    return True
+
+
+@two_parameters
+def enable_alarms(speaker, action, args, soco_function, use_local_speaker_list):
+
+    if args[1].lower() == "on":
+        enabled = True
+    elif args[1].lower() == "off":
+        enabled = False
+    else:
+        error_and_exit("Second parameter must be 'on' or 'off'")
+        return False
+
+    alarms = soco.alarms.get_alarms(speaker)
+
+    alarm_ids = set(args[0].lower().split(","))
+    all_alarms = True if "all" in alarm_ids else False
+    if all_alarms:
+        alarm_ids.discard("all")
+
+    for alarm in alarms:
+        if all_alarms is True or alarm._alarm_id in alarm_ids:
+            logging.info(
+                "Setting alarm id '{}' to enabled = {}".format(alarm._alarm_id, enabled)
+            )
+            alarm.enabled = enabled
+            alarm.save()
+            alarm_ids.discard(alarm._alarm_id)
+
+    if len(alarm_ids) != 0:
+        print("Alarm IDs not found: {}".format(alarm_ids))
+
     return True
 
 
@@ -2603,4 +2638,6 @@ actions = {
     "remove_alarm": SonosFunction(remove_alarms, "", False),
     "add_alarm": SonosFunction(add_alarm, "", False),
     "create_alarm": SonosFunction(add_alarm, "", False),
+    "enable_alarm": SonosFunction(enable_alarms, "", False),
+    "enable_alarms": SonosFunction(enable_alarms, "", False),
 }

@@ -407,6 +407,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
   **Examples**:
   - `07:00,01:30,WEEKDAYS,ON,"http://stream.live.vc.bbcmedia.co.uk/bbc_radio_fourfm",NORMAL,50,OFF`
   - `06:30,00:01,WEEKDAYS,ON,CHIME,NORMAL,50,OFF`
+- **`enable_alarm <alarm_id[,alarm_id]|all> <on|off>`** (or **`enable_alarms`**): Enables or disables one or more (or all) alarms, by alarm_id.
 - **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
 - **`groupstatus`**: Indicates whether the speaker is part of a group, and whether it's part of a stereo pair or bonded home theatre configuration. Note that first can override the second: if a paired/bonded coordinator speaker is also part of a group, the group will be reported but not the paired/bonded status.
 - **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
