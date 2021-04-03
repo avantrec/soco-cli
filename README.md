@@ -592,7 +592,9 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     aliases.
                     Aliases override existing actions and can contain
                     sequences of actions.
+    'cd'         :  Change the working directory of the shell, e.g. 'cd ..'.
     'docs'       :  Print a link to the documentation.
+    'exec'       :  Run a shell command, e.g.: 'exec ls -l'.
     'exit'       :  Exit the shell.
     'help'       :  Show this help message (available shell commands).
     'pop'        :  Restore saved active speaker state.

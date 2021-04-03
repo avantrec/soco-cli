@@ -1,6 +1,7 @@
 """SoCo-CLI interactive mode handler."""
 
 import logging
+import subprocess
 
 # Readline is only available on Unix
 try:
@@ -11,6 +12,7 @@ except ImportError:
 
     RL = False
 
+from os import chdir
 from shlex import split as shlex_split
 
 from soco_cli.action_processor import get_actions, list_actions
@@ -227,6 +229,22 @@ def interactive_loop(
                 _rescan(use_local_speaker_list=use_local_speaker_list, max=True)
                 continue
 
+            if command_lower == "exec":
+                if len(command) > 1:
+                    try:
+                        subprocess.run(command[1:])
+                    except Exception as e:
+                        print(e)
+                continue
+
+            if command_lower == "cd":
+                if len(command) > 1:
+                    try:
+                        chdir(command[1])
+                    except Exception as e:
+                        print(e)
+                continue
+
             if command_lower == "push":
                 if pushed is True:
                     logging.info("Active speaker already pushed ... ignored")
@@ -399,7 +417,9 @@ def interactive_loop(
 COMMANDS = [
     "actions",
     "alias ",
+    "cd",
     "docs",
+    "exec",
     "exit",
     "help",
     "pop",
@@ -469,7 +489,9 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     aliases.
                     Aliases override existing actions and can contain
                     sequences of actions.
+    'cd'         :  Change the working directory of the shell, e.g. 'cd ..'.
     'docs'       :  Print a link to the documentation.
+    'exec'       :  Run a shell command, e.g.: 'exec ls -l'.
     'exit'       :  Exit the shell.
     'help'       :  Show this help message (available shell commands).
     'pop'        :  Restore saved active speaker state.
