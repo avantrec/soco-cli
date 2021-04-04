@@ -748,11 +748,6 @@ def sleep_at(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
-    if soco_function == "create_stereo_pair" and StrictVersion(
-        soco.__version__
-    ) < StrictVersion("0.20"):
-        error_and_exit("Pairing operations require SoCo v0.20 or greater")
-        return False
     speaker2 = get_speaker(args[0], use_local_speaker_list)
     if not speaker2:
         error_and_exit("Speaker '{}' not found".format(args[0]))
