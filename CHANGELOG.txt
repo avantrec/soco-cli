@@ -1,4 +1,6 @@
 v0.3.32   - Add 'exec' and 'cd' commands to the interactive shell
+          - Add '--subnets' option to 'sonos-discover', to specify
+            which IP addresses / subnets to search
 v0.3.31   - Add 'create_alarm/add_alarm' actions
           - Add 'remove_alarm(s)' action to remove alarms by ID
           - Add 'enable_alarm(s)' action to enable/disable alarms

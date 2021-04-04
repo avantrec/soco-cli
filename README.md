@@ -792,6 +792,7 @@ Other options:
 - **`--version, -v`**: Print the versions of SoCo-CLI, SoCo, Python, and exit.
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
+- **`--subnets <subnets_list>`**: Specify which subnet(s) to search, as a comma separated list (without spaces). E.g.: `--subnets 192.168.0.0/24,192.168.1.0/24` or `--subnets 192.168.0.30`.
 
 ## Using SoCo-CLI as a Python Library
 

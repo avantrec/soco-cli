@@ -38,6 +38,7 @@ class Speakers:
         network_threads=256,
         network_timeout=0.1,
         min_netmask=24,
+        subnets=None,
     ):
         self._save_directory = (
             save_directory
@@ -50,6 +51,7 @@ class Speakers:
         self._network_timeout = network_timeout
         self._min_netmask = min_netmask
         self._speakers = []
+        self.subnets = subnets  # Calls the setter
 
     def remove_deprecated_pickle_files(self):
         """Remove any older, incompatible versions of the pickle file"""
@@ -121,6 +123,27 @@ class Speakers:
     @min_netmask.setter
     def min_netmask(self, min_netmask):
         self._min_netmask = min_netmask
+
+    @property
+    def subnets(self):
+        return self._subnets
+
+    @subnets.setter
+    def subnets(self, subnets):
+        # Check for valid networks
+        if subnets is not None:
+            self._subnets_arg = True
+            for subnet in subnets:
+                try:
+                    _ = ipaddress.IPv4Network(subnet,strict=False)
+                except (ipaddress.AddressValueError, ValueError):
+                    logging.info("Invalid network/subnet: {}".format(subnet))
+                    subnets.remove(subnet)
+                    pass
+            logging.info("Setting search subnets to: {}".format(subnets))
+        else:
+            self._subnets_arg = False
+        self._subnets = subnets
 
     def save(self):
         """Saves the speaker list as a pickle file."""
@@ -200,14 +223,16 @@ class Speakers:
     def discover(self):
         """Discover the Sonos speakers on the network(s) to which
         this host is attached."""
-
-        devices = soco.discovery.scan_network(
-            include_invisible=True,
-            multi_household=True,
-            scan_timeout=self._network_timeout,
-            max_threads=self._network_threads,
-            min_netmask=self._min_netmask,
-        )
+        devices = None
+        if not (self._subnets_arg and len(self.subnets) == 0):
+            devices = soco.discovery.scan_network(
+                include_invisible=True,
+                multi_household=True,
+                scan_timeout=self._network_timeout,
+                max_threads=self._network_threads,
+                min_netmask=self._min_netmask,
+                networks_to_scan=self._subnets,
+            )
 
         if devices is None:
             logging.info("No devices discovered")

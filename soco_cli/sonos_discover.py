@@ -34,6 +34,11 @@ def main():
         default=False,
         help="Delete the local speaker cache, if it exists",
     )
+    parser.add_argument(
+        "--subnets",
+        type=str,
+        help="Specify the networks or IP addresses to search, in dotted decimal/CIDR format",
+    )
     # The rest of the optional args are common
     configure_common_args(parser)
 
@@ -76,6 +81,8 @@ def main():
     speaker_list._network_threads = args.network_discovery_threads
     speaker_list._network_timeout = args.network_discovery_timeout
     speaker_list._min_netmask = args.min_netmask
+    if args.subnets is not None:
+        speaker_list.subnets = args.subnets.split(",")
 
     try:
         speaker_list.discover()
