@@ -132,14 +132,13 @@ class Speakers:
     def subnets(self, subnets):
         # Check for valid networks
         if subnets is not None:
-            self._subnets_arg = True
+            self._subnets_arg = True  # True if subnets has been set
             for subnet in subnets:
                 try:
-                    _ = ipaddress.IPv4Network(subnet,strict=False)
+                    _ = ipaddress.IPv4Network(subnet, strict=False)
                 except (ipaddress.AddressValueError, ValueError):
                     logging.info("Invalid network/subnet: {}".format(subnet))
                     subnets.remove(subnet)
-                    pass
             logging.info("Setting search subnets to: {}".format(subnets))
         else:
             self._subnets_arg = False
