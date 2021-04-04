@@ -788,11 +788,11 @@ Other options:
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache file.
 - **`--network_discovery_threads, -t`**: The maximum number of parallel threads used to scan the local network.
 - **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). Use this if `sonos-discover` is not finding all of your Sonos devices.
-- **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
+- **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space. (Note that this option will never **increase** the search space, e.g., if one of the attached networks is 192.168.0.0/24, supplying a `--min_netmask` value of 16 will not increase the search space to 192.168.0.0/16.)
 - **`--version, -v`**: Print the versions of SoCo-CLI, SoCo, Python, and exit.
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
-- **`--subnets <subnets_list>`**: Specify which subnet(s) to search, as a comma separated list (without spaces). E.g.: `--subnets 192.168.0.0/24,192.168.1.0/24` or `--subnets 192.168.0.30`.
+- **`--subnets <subnets_list>`**: Specify which subnet(s) to search, as a comma separated list (without spaces). E.g.: `--subnets 192.168.0.0/24,192.168.1.0/24` or `--subnets 192.168.0.30`. When this option is used, only the specified subnet(s) will be searched, and the `--min_netmask` option (if supplied) is ignored.
 
 ## Using SoCo-CLI as a Python Library
 
