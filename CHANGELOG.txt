@@ -1,3 +1,4 @@
+v0.3.33   -
 v0.3.32   - Add 'exec' and 'cd' commands to the interactive shell
           - Add '--subnets' option to 'sonos-discover', to specify
             which IP addresses / subnets to search
