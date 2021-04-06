@@ -404,7 +404,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 
 ### Alarms
 
-- **`alarms`**: List the alarms in the Sonos system. (Each alarm has a numeric ID that can be used in other alarm actions.)
+- **`alarms`** (or **`list_alarms`**): List the alarms in the Sonos system. Each alarm has a numeric ID that can be used in other alarm actions.
 - **`alarm_enabled <alarm_id[,alarm_id]|all> <on|off>`** (or **`alarms_enabled`**): Enables or disables one or more (or all) alarms, by alarm_id.
 - **`create_alarm <alarm_spec>`** (or **`add_alarm`**): Creates a new alarm for the target speaker. The `alarm_spec` is a comma-separated list of exactly **eight** parameters (without spaces around the commas). The specification of the parameters is as follows:
   1. Alarm start time: HH:MM

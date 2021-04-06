@@ -2531,6 +2531,7 @@ actions = {
     "pfrs": SonosFunction(play_favourite_radio, "play_uri", True),
     # "tracks": SonosFunction(list_numbered_things, "get_tracks"),
     "alarms": SonosFunction(list_alarms, "get_alarms"),
+    "list_alarms": SonosFunction(list_alarms, "get_alarms"),
     "libraries": SonosFunction(list_libraries, "list_library_shares"),
     "shares": SonosFunction(list_libraries, "list_library_shares"),
     "sysinfo": SonosFunction(system_info, ""),
