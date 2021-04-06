@@ -232,6 +232,7 @@ def interactive_loop(
             if command_lower == "exec":
                 if len(command) > 1:
                     try:
+                        logging.info("Running command: '{}'".format(command[1:]))
                         subprocess.run(command[1:])
                     except Exception as e:
                         print(e)
@@ -240,6 +241,7 @@ def interactive_loop(
             if command_lower == "cd":
                 if len(command) > 1:
                     try:
+                        logging.info("Attempting to cd to: '{}'".format(command[1]))
                         chdir(command[1])
                     except Exception as e:
                         print(e)
