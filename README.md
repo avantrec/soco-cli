@@ -786,7 +786,9 @@ These options only have an effect when combined with the `-l` **and** `-r` optio
 
 Without options, `sonos-discover` will execute the discovery process and print out its results. It will create a speaker cache file, or replace it if already present.
 
-Other options:
+Discovery works by interrogating all network adapters on the device running SoCo-CLI, to build a list of the IP addresses to search for Sonos speakers. If your speakers reside on a subnet that is not directly attached (e.g., they're on a separate VLAN), then use the `--subnets` option to specify manually which networks to search.
+
+**Options**:
 
 - **`--print, -p`**: Print the the current contents of the speaker cache file
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache file.
