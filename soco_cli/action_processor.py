@@ -1434,7 +1434,7 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 
 
 @two_parameters
-def enable_alarms(speaker, action, args, soco_function, use_local_speaker_list):
+def alarms_enabled(speaker, action, args, soco_function, use_local_speaker_list):
 
     if args[1].lower() == "on":
         enabled = True
@@ -2633,6 +2633,8 @@ actions = {
     "remove_alarm": SonosFunction(remove_alarms, "", False),
     "add_alarm": SonosFunction(add_alarm, "", False),
     "create_alarm": SonosFunction(add_alarm, "", False),
-    "enable_alarm": SonosFunction(enable_alarms, "", False),
-    "enable_alarms": SonosFunction(enable_alarms, "", False),
+    "enable_alarm": SonosFunction(alarms_enabled, "", False),  # Legacy
+    "enable_alarms": SonosFunction(alarms_enabled, "", False),  # Legacy
+    "alarm_enabled": SonosFunction(alarms_enabled, "", False),
+    "alarms_enabled": SonosFunction(alarms_enabled, "", False),
 }

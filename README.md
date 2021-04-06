@@ -404,7 +404,8 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 
 ### Alarms
 
-- **`alarms`**: List the alarms in the Sonos system. (Each alarm has a numeric ID that can be used in the `remove_alarm` action.)
+- **`alarms`**: List the alarms in the Sonos system. (Each alarm has a numeric ID that can be used in other alarm actions.)
+- **`alarm_enabled <alarm_id[,alarm_id]|all> <on|off>`** (or **`alarms_enabled`**): Enables or disables one or more (or all) alarms, by alarm_id.
 - **`create_alarm <alarm_spec>`** (or **`add_alarm`**): Creates a new alarm for the target speaker. The `alarm_spec` is a comma-separated list of exactly **eight** parameters (without spaces around the commas). The specification of the parameters is as follows:
   1. Alarm start time: HH:MM
   2. Alarm duration: HH:MM
@@ -421,7 +422,6 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
   **Examples**:
   - `07:00,01:30,WEEKDAYS,ON,"http://stream.live.vc.bbcmedia.co.uk/bbc_radio_fourfm",NORMAL,50,OFF`
   - `06:30,00:01,WEEKDAYS,ON,CHIME,NORMAL,50,OFF`
-- **`enable_alarm <alarm_id[,alarm_id]|all> <on|off>`** (or **`enable_alarms`**): Enables or disables one or more (or all) alarms, by alarm_id.
 - **`remove_alarm <alarm_id[,alarm_id]>`** (or **`remove_alarms`**): Removes one or more alarms by their numeric ID (obtainable using the `alarms` action). If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To remove all alarms, use `all` as the `alarm_id`.
 
 ### Music Library Search Functions
