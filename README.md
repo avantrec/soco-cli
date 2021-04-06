@@ -30,6 +30,7 @@
          * [TuneIn Radio Station Favourites](#tunein-radio-station-favourites)
          * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
          * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
+         * [Alarms](#alarms)
          * [Music Library Search Functions](#music-library-search-functions)
       * [Multiple Sequential Commands](#multiple-sequential-commands)
          * [Chaining Commands Using the : Separator](#chaining-commands-using-the--separator)
@@ -64,7 +65,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Wed Feb 17 11:27:41 GMT 2021 -->
+<!-- Added by: pwt, at: Tue Apr  6 10:38:27 BST 2021 -->
 
 <!--te-->
 
@@ -386,11 +387,24 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 
 ### Speaker and Sonos System Information
 
-- **`alarms`**: List the alarms in the Sonos system. (Each alarm has a numeric ID that can be used in the `remove_alarm` action.)
 - **`available_actions`**: List the currently available speaker actions (play, pause, seek, next, etc.).  
 - **`battery`**: Shows the battery status for Sonos speakers that contain batteries.
 - **`buttons`**: Returns whether the speaker's control buttons are enabled, 'on' or 'off'.
-- **`buttons <on|off>`**: Sets whether the speaker's control buttons are on or off.  
+- **`buttons <on|off>`**: Sets whether the speaker's control buttons are on or off.
+- **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
+- **`groupstatus`**: Indicates whether the speaker is part of a group, and whether it's part of a stereo pair or bonded home theatre configuration. Note that first can override the second: if a paired/bonded coordinator speaker is also part of a group, the group will be reported but not the paired/bonded status.
+- **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
+- **`libraries`** (or **`shares`**): List the local music library shares.
+- **`reindex`**: Start a reindex of the local music libraries.
+- **`rename <new_name>`**: Rename the speaker.
+- **`status_light` (or `light`)**: Returns the state of the speaker's status light, 'on' or 'off'.
+- **`status_light <on|off>` (or `light`)**: Switch the speaker's status light on or off.
+- **`sysinfo`**: Prints a table of information about all speakers in the system.
+- **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Prints a simple list of comma separated visible zone/room names, each in double quotes. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
+
+### Alarms
+
+- **`alarms`**: List the alarms in the Sonos system. (Each alarm has a numeric ID that can be used in the `remove_alarm` action.)
 - **`create_alarm <alarm_spec>`** (or **`add_alarm`**): Creates a new alarm for the target speaker. The `alarm_spec` is a comma-separated list of exactly **eight** parameters (without spaces around the commas). The specification of the parameters is as follows:
   1. Alarm start time: HH:MM
   2. Alarm duration: HH:MM
@@ -408,17 +422,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
   - `07:00,01:30,WEEKDAYS,ON,"http://stream.live.vc.bbcmedia.co.uk/bbc_radio_fourfm",NORMAL,50,OFF`
   - `06:30,00:01,WEEKDAYS,ON,CHIME,NORMAL,50,OFF`
 - **`enable_alarm <alarm_id[,alarm_id]|all> <on|off>`** (or **`enable_alarms`**): Enables or disables one or more (or all) alarms, by alarm_id.
-- **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
-- **`groupstatus`**: Indicates whether the speaker is part of a group, and whether it's part of a stereo pair or bonded home theatre configuration. Note that first can override the second: if a paired/bonded coordinator speaker is also part of a group, the group will be reported but not the paired/bonded status.
-- **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
-- **`libraries`** (or **`shares`**): List the local music library shares.
-- **`reindex`**: Start a reindex of the local music libraries.
 - **`remove_alarm <alarm_id[,alarm_id]>`** (or **`remove_alarms`**): Removes one or more alarms by their numeric ID (obtainable using the `alarms` action). If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To remove all alarms, use `all` as the `alarm_id`.
-- **`rename <new_name>`**: Rename the speaker.
-- **`status_light` (or `light`)**: Returns the state of the speaker's status light, 'on' or 'off'.
-- **`status_light <on|off>` (or `light`)**: Switch the speaker's status light on or off.
-- **`sysinfo`**: Prints a table of information about all speakers in the system.
-- **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Prints a simple list of comma separated visible zone/room names, each in double quotes. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
 
 ### Music Library Search Functions
 
