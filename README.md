@@ -422,8 +422,8 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
   **Examples**:
   - `07:00,01:30,WEEKDAYS,ON,"http://stream.live.vc.bbcmedia.co.uk/bbc_radio_fourfm",NORMAL,50,OFF`
   - `06:30,00:01,WEEKDAYS,ON,CHIME,NORMAL,50,OFF`
-- **`modify_alarm <alarm_id> <alarm_spec>`**: Modifies an existing alarm, using the `alarm_spec` format described above. Alarm properties that are to be left unchanged should be denoted by an underscore. E.g., to change only the duration and volume of an alarm, use an alarm spec such as: `_,01:00,_,_,_,_,60,_`.
-- **`remove_alarm <alarm_id[,alarm_id]>`** (or **`remove_alarms`**): Removes one or more alarms by their numeric ID (obtainable using the `alarms` action). If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To remove all alarms, use `all` as the `alarm_id`.
+- **`modify_alarm <alarm_id,[alarm_id]|all> <alarm_spec>`** (or **`modify_alarms`**): Modifies an existing alarm or alarms, using the `alarm_spec` format described above. Alarm properties that are to be left unchanged should be denoted by an underscore. E.g., to change only the duration and volume of an alarm, use an alarm spec such as: `_,01:00,_,_,_,_,60,_`. To modify all alarms, use `all` as the `alarm_id`.
+- **`remove_alarm <alarm_id[,alarm_id]|all>`** (or **`remove_alarms`**): Removes one or more alarms by their numeric ID (obtainable using the `alarms` action). If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To remove all alarms, use `all` as the `alarm_id`.
 
 ### Music Library Search Functions
 

@@ -1435,123 +1435,136 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 
 @two_parameters
 def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
-    alarm_id = args[0]
-    for alarm in soco.alarms.get_alarms(speaker):
-        if alarm_id == alarm._alarm_id:
-            break
+
+    alarm_ids = args[0].lower().split(",")
+    all_alarms = soco.alarms.get_alarms(speaker)
+    if alarm_ids[0] == "all":
+        alarms = set(all_alarms)
     else:
-        error_and_exit("Alarm ID '{}' not found".format(alarm_id))
-        return False
+        alarms = set()
+        for alarm_id in alarm_ids:
+            for alarm in all_alarms:
+                if alarm_id == alarm._alarm_id:
+                    alarms.add(alarm)
+                    break
+            else:
+                print("Alarm ID '{}' not found".format(alarm_id))
 
     alarm_parameters = args[1].split(",")
     if len(alarm_parameters) != 8:
         error_and_exit("8 comma-separated parameters must be supplied")
         return False
 
-    start_time = alarm_parameters[0]
-    if not start_time == "_":
-        try:
-            alarm.start_time = datetime.strptime(start_time, "%H:%M").time()
-        except ValueError:
-            error_and_exit("Invalid time format: {}".format(start_time))
-            return False
+    for alarm in alarms:
+        start_time = alarm_parameters[0]
+        if not start_time == "_":
+            try:
+                alarm.start_time = datetime.strptime(start_time, "%H:%M").time()
+            except ValueError:
+                error_and_exit("Invalid time format: {}".format(start_time))
+                return False
 
-    duration = alarm_parameters[1]
-    if not duration == "_":
-        try:
-            alarm.duration = datetime.strptime(duration, "%H:%M").time()
-        except ValueError:
-            error_and_exit("Invalid time format: {}".format(duration))
-            return False
+        duration = alarm_parameters[1]
+        if not duration == "_":
+            try:
+                alarm.duration = datetime.strptime(duration, "%H:%M").time()
+            except ValueError:
+                error_and_exit("Invalid time format: {}".format(duration))
+                return False
 
-    recurrence = alarm_parameters[2]
-    if not recurrence == "_":
-        if not soco.alarms.is_valid_recurrence(recurrence):
-            error_and_exit("'{}' is not a valid recurrence string".format(recurrence))
-            return False
-        else:
-            alarm.recurrence = recurrence
-
-    enabled = alarm_parameters[3].lower()
-    if not enabled == "_":
-        if enabled == "on":
-            enabled = True
-        elif enabled == "off":
-            enabled = False
-        else:
-            error_and_exit(
-                "Alarm must be enabled 'on' or 'off', not '{}'".format(alarm_parameters[3])
-            )
-            return False
-        alarm.enabled = enabled
-
-    uri = alarm_parameters[4]
-    if not uri == "_":
-        if uri.lower() == "chime":
-            uri = None
-        alarm.program_uri = uri
-
-    play_mode = alarm_parameters[5].upper()
-    if not play_mode == "_":
-        play_mode_options = [
-            "NORMAL",
-            "SHUFFLE_NOREPEAT",
-            "SHUFFLE",
-            "REPEAT_ALL",
-            "REPEAT_ONE",
-            "SHUFFLE_REPEAT_ONE",
-        ]
-        if play_mode not in play_mode_options:
-            error_and_exit(
-                "Play mode is '{}', should be one of:\n  {}".format(
-                    alarm_parameters[5], play_mode_options
-                )
-            )
-            return False
-        alarm.play_mode = play_mode
-
-    volume = alarm_parameters[6]
-    if not volume == "_":
-        try:
-            volume = int(volume)
-            if not 0 <= volume <= 100:
+        recurrence = alarm_parameters[2]
+        if not recurrence == "_":
+            if not soco.alarms.is_valid_recurrence(recurrence):
                 error_and_exit(
-                    "Alarm volume must be between 0 and 100, not '{}'".format(
+                    "'{}' is not a valid recurrence string".format(recurrence)
+                )
+                return False
+            else:
+                alarm.recurrence = recurrence
+
+        enabled = alarm_parameters[3].lower()
+        if not enabled == "_":
+            if enabled == "on":
+                enabled = True
+            elif enabled == "off":
+                enabled = False
+            else:
+                error_and_exit(
+                    "Alarm must be enabled 'on' or 'off', not '{}'".format(
+                        alarm_parameters[3]
+                    )
+                )
+                return False
+            alarm.enabled = enabled
+
+        uri = alarm_parameters[4]
+        if not uri == "_":
+            if uri.lower() == "chime":
+                uri = None
+            alarm.program_uri = uri
+
+        play_mode = alarm_parameters[5].upper()
+        if not play_mode == "_":
+            play_mode_options = [
+                "NORMAL",
+                "SHUFFLE_NOREPEAT",
+                "SHUFFLE",
+                "REPEAT_ALL",
+                "REPEAT_ONE",
+                "SHUFFLE_REPEAT_ONE",
+            ]
+            if play_mode not in play_mode_options:
+                error_and_exit(
+                    "Play mode is '{}', should be one of:\n  {}".format(
+                        alarm_parameters[5], play_mode_options
+                    )
+                )
+                return False
+            alarm.play_mode = play_mode
+
+        volume = alarm_parameters[6]
+        if not volume == "_":
+            try:
+                volume = int(volume)
+                if not 0 <= volume <= 100:
+                    error_and_exit(
+                        "Alarm volume must be between 0 and 100, not '{}'".format(
+                            alarm_parameters[6]
+                        )
+                    )
+                    return False
+            except ValueError:
+                error_and_exit(
+                    "Alarm volume must be an integer between 0 and 100, not '{}'".format(
                         alarm_parameters[6]
                     )
                 )
                 return False
-        except ValueError:
-            error_and_exit(
-                "Alarm volume must be an integer between 0 and 100, not '{}'".format(
-                    alarm_parameters[6]
+            alarm.volume = volume
+
+        include_linked = alarm_parameters[7].lower()
+        if not include_linked == "_":
+            if include_linked == "on":
+                include_linked = True
+            elif include_linked == "off":
+                include_linked = False
+            else:
+                error_and_exit(
+                    "Linked zones must be enabled 'on' or 'off', not '{}'".format(
+                        alarm_parameters[7]
+                    )
                 )
-            )
+                return False
+            alarm.include_linked_zones = include_linked
+
+        try:
+            alarm.save()
+        except soco.exceptions.SoCoUPnPException:
+            error_and_exit("Failed to modify alarm")
             return False
-        alarm.volume = volume
 
-    include_linked = alarm_parameters[7].lower()
-    if not include_linked == "_":
-        if include_linked == "on":
-            include_linked = True
-        elif include_linked == "off":
-            include_linked = False
-        else:
-            error_and_exit(
-                "Linked zones must be enabled 'on' or 'off', not '{}'".format(
-                    alarm_parameters[7]
-                )
-            )
-            return False
-        alarm.include_linked_zones = include_linked
+        print("Alarm ID '{}' modified".format(alarm._alarm_id))
 
-    try:
-        alarm.save()
-    except soco.exceptions.SoCoUPnPException:
-        error_and_exit("Failed to modify alarm")
-        return False
-
-    print("Alarm ID '{}' modified".format(alarm._alarm_id))
     return True
 
 
@@ -2761,4 +2774,5 @@ actions = {
     "alarm_enabled": SonosFunction(alarms_enabled, "", False),
     "alarms_enabled": SonosFunction(alarms_enabled, "", False),
     "modify_alarm": SonosFunction(modify_alarm, "", False),
+    "modify_alarms": SonosFunction(modify_alarm, "", False),
 }

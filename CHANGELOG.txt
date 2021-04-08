@@ -1,7 +1,7 @@
 v0.3.33   - Rename 'enable_alarm(s)' actions to 'alarm(s)_enabled'
             (Original action names will still work, at least for now)
           - Add 'list_alarms' synonym for 'alarms' action
-          - Add 'modify_alarm' action
+          - Add 'modify_alarm(s)' action
 v0.3.32   - Add 'exec' and 'cd' commands to the interactive shell
           - Add '--subnets' option to 'sonos-discover', to specify
             which IP addresses / subnets to search
