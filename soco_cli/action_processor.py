@@ -1352,9 +1352,9 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
         return False
 
     enabled = alarm_parameters[3].lower()
-    if enabled == "on":
+    if enabled in ["on", "yes"]:
         enabled = True
-    elif enabled == "off":
+    elif enabled in ["off", "no"]:
         enabled = False
     else:
         error_and_exit(
@@ -1402,9 +1402,9 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
         return False
 
     include_linked = alarm_parameters[7].lower()
-    if include_linked == "on":
+    if include_linked in ["on", "yes"]:
         include_linked = True
-    elif include_linked == "off":
+    elif include_linked in ["off", "no"]:
         include_linked = False
     else:
         error_and_exit(
@@ -1486,9 +1486,9 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 
         enabled = alarm_parameters[3].lower()
         if not enabled == "_":
-            if enabled == "on":
+            if enabled in ["on", "yes"]:
                 enabled = True
-            elif enabled == "off":
+            elif enabled in ["off", "no"]:
                 enabled = False
             else:
                 error_and_exit(
@@ -1546,9 +1546,9 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 
         include_linked = alarm_parameters[7].lower()
         if not include_linked == "_":
-            if include_linked == "on":
+            if include_linked in ["on", "yes"]:
                 include_linked = True
-            elif include_linked == "off":
+            elif include_linked in ["off", "no"]:
                 include_linked = False
             else:
                 error_and_exit(
