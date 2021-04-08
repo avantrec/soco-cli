@@ -1262,26 +1262,28 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
             [
                 alarm._alarm_id,  # Replace with .alarm_id with SoCo v0.22
                 alarm.zone.player_name,
+                "|",
                 time,
                 duration,
-                title,
-                alarm.volume,
-                convert_true_false(alarm.enabled),
-                alarm.play_mode,
                 alarm.recurrence,
+                convert_true_false(alarm.enabled),
+                title,
+                alarm.play_mode,
+                alarm.volume,
                 convert_true_false(alarm.include_linked_zones),
             ]
         )
     headers = [
         "Alarm ID",
         "Speaker",
+        "|",
         "Start Time",
         "Duration",
-        "Title",
-        "Volume",
-        "Enabled",
-        "Play Mode",
         "Recurrence",
+        "Enabled",
+        "Title",
+        "Play Mode",
+        "Volume",
         "Include Grouped",
     ]
     print()
