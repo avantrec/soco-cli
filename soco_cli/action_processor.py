@@ -1570,6 +1570,32 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@one_parameter
+def copy_alarm(speaker, action, args, soco_function, use_local_speaker_list):
+    """Copy an alarm to the target speaker."""
+    alarms = soco.alarms.get_alarms(speaker)
+    for alarm in alarms:
+        if args[0] == alarm._alarm_id:
+            break
+    else:
+        error_and_exit("Alarm ID '{}' not found".format(args[0]))
+        return False
+
+    if alarm.zone == speaker:
+        error_and_exit("Cannot copy an alarm to the same speaker")
+        return False
+
+    alarm.zone = speaker
+    alarm._alarm_id = None
+    try:
+        alarm.save()
+    except soco.exceptions.SoCoUPnPException:
+        error_and_exit("Failed to copy alarm")
+        return False
+
+    return True
+
+
 @two_parameters
 def alarms_enabled(speaker, action, args, soco_function, use_local_speaker_list):
 
@@ -2777,4 +2803,5 @@ actions = {
     "alarms_enabled": SonosFunction(alarms_enabled, "", False),
     "modify_alarm": SonosFunction(modify_alarm, "", False),
     "modify_alarms": SonosFunction(modify_alarm, "", False),
+    "copy_alarm":  SonosFunction(copy_alarm, "", False),
 }

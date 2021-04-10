@@ -1,4 +1,6 @@
-v0.3.34   -
+v0.3.34   - Add 'copy_alarm' action.
+          - Reorder columns in output of 'alarms' to match the sequencing
+            used in 'create_alarm' and 'modify_alarm'
 v0.3.33   - Rename 'enable_alarm(s)' actions to 'alarm(s)_enabled'
             (Original action names will still work, at least for now)
           - Add 'list_alarms' synonym for 'alarms' action
