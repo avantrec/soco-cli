@@ -405,7 +405,6 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 ### Alarms
 
 - **`alarms`** (or **`list_alarms`**): List the alarms in the Sonos system. Each alarm has a numeric ID that can be used in other alarm actions.
-- **`alarm_enabled <alarm_id[,alarm_id]|all> <on|off>`** (or **`alarms_enabled`**): Enables or disables one or more (or all) alarms, by alarm_id.
 - **`copy_alarm <alarm_ID>`**: Copies the alarm with ID `alarm_ID` to the target speaker. Note that alarms cannot be copied back to the same speaker.
 - **`create_alarm <alarm_spec>`** (or **`add_alarm`**): Creates a new alarm for the target speaker. The `alarm_spec` is a comma-separated list of exactly **eight** parameters (without spaces around the commas). The specification of the parameters is as follows:
   1. Alarm start time: HH:MM
@@ -423,9 +422,11 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
   **Examples**:
   - `07:00,01:30,WEEKDAYS,ON,"http://stream.live.vc.bbcmedia.co.uk/bbc_radio_fourfm",NORMAL,50,OFF`
   - `06:30,00:01,WEEKDAYS,ON,CHIME,NORMAL,50,OFF`
+- **`disable_alarm <alarm_id,[alarm_id]|all>`** (or **`disable_alarms`**): Disables an existing alarm or alarms. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To disable all alarms, use `all` as the `alarm_id`.
+- **`enable_alarm <alarm_id,[alarm_id]|all>`** (or **`enable_alarms`**): Enables an existing alarm or alarms. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To enable all alarms, use `all` as the `alarm_id`.
 - **`modify_alarm <alarm_id,[alarm_id]|all> <alarm_spec>`** (or **`modify_alarms`**): Modifies an existing alarm or alarms, using the `alarm_spec` format described above. Alarm properties that are to be left unchanged should be denoted by an underscore. E.g., to change only the duration and volume of an alarm, use an alarm spec such as: `_,01:00,_,_,_,_,60,_`. To modify all alarms, use `all` as the `alarm_id`.
 - **`move_alarm <alarm_id>`**: Move the alarm with ID `alarm_ID` to the target speaker.
-- **`remove_alarm <alarm_id[,alarm_id]|all>`** (or **`remove_alarms`**): Removes one or more alarms by their numeric ID (obtainable using the `alarms` action). If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To remove all alarms, use `all` as the `alarm_id`.
+- **`remove_alarm <alarm_id[,alarm_id]|all>`** (or **`remove_alarms`**): Removes one or more alarms by their alarm IDs. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To remove all alarms, use `all` as the `alarm_id`.
 
 ### Music Library Search Functions
 

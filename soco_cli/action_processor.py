@@ -1606,20 +1606,20 @@ def move_or_copy_alarm(speaker, alarm_id, copy=True):
 
     return True
 
-@two_parameters
-def alarms_enabled(speaker, action, args, soco_function, use_local_speaker_list):
 
-    if args[1].lower() == "on":
-        enabled = True
-    elif args[1].lower() == "off":
-        enabled = False
-    else:
-        error_and_exit("Second parameter must be 'on' or 'off'")
-        return False
+@one_parameter
+def enable_alarms(speaker, action, args, soco_function, use_local_speaker_list):
+    return set_alarms(speaker, args[0], enabled=True)
 
+
+@one_parameter
+def disable_alarms(speaker, action, args, soco_function, use_local_speaker_list):
+    return set_alarms(speaker, args[0], enabled=False)
+
+
+def set_alarms(speaker, alarm_ids, enabled=True):
     alarms = soco.alarms.get_alarms(speaker)
-
-    alarm_ids = set(args[0].lower().split(","))
+    alarm_ids = set(alarm_ids.lower().split(","))
     all_alarms = True if "all" in alarm_ids else False
     if all_alarms:
         alarm_ids.discard("all")
@@ -2807,10 +2807,10 @@ actions = {
     "remove_alarm": SonosFunction(remove_alarms, "", False),
     "add_alarm": SonosFunction(add_alarm, "", False),
     "create_alarm": SonosFunction(add_alarm, "", False),
-    "enable_alarm": SonosFunction(alarms_enabled, "", False),  # Legacy
-    "enable_alarms": SonosFunction(alarms_enabled, "", False),  # Legacy
-    "alarm_enabled": SonosFunction(alarms_enabled, "", False),
-    "alarms_enabled": SonosFunction(alarms_enabled, "", False),
+    "enable_alarm": SonosFunction(enable_alarms, "", False),
+    "enable_alarms": SonosFunction(enable_alarms, "", False),
+    "disable_alarm": SonosFunction(disable_alarms, "", False),
+    "disable_alarms": SonosFunction(disable_alarms, "", False),
     "modify_alarm": SonosFunction(modify_alarm, "", False),
     "modify_alarms": SonosFunction(modify_alarm, "", False),
     "copy_alarm":  SonosFunction(copy_alarm, "", False),
