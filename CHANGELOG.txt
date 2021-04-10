@@ -1,5 +1,5 @@
-v0.3.35   -
-v0.3.34   - Add 'copy_alarm' action.
+v0.3.35   - Add 'move_alarm' action
+v0.3.34   - Add 'copy_alarm' action
           - Reorder columns in output of 'alarms' to match the sequencing
             used in 'create_alarm' and 'modify_alarm'
 v0.3.33   - Rename 'enable_alarm(s)' actions to 'alarm(s)_enabled'
