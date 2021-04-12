@@ -3,6 +3,7 @@
 import argparse
 import logging
 import pprint
+import sys
 import time
 from os import environ as env
 from signal import SIGINT, signal
@@ -228,6 +229,8 @@ def main():
     cli_parser.parse(args.parameters)
     sequences = cli_parser.get_sequences()
 
+    cumulative_exit_code = 0
+
     # Loop through processing command sequences
     logging.info("Found {} action sequence(s): {}".format(len(sequences), sequences))
     rewindable_sequences = RewindableList(sequences)
@@ -400,7 +403,8 @@ def main():
                         if exit_code == 0 and len(output_msg) != 0:
                             print(output_msg)
                         elif len(error_msg) != 0:
-                            print(error_msg)
+                            print(error_msg, file=sys.stderr)
+                        cumulative_exit_code += exit_code
             else:
                 speaker = get_speaker(speaker_name, use_local_speaker_list)
                 if not speaker:
@@ -414,13 +418,14 @@ def main():
                 if exit_code == 0 and len(output_msg) != 0:
                     print(output_msg)
                 elif len(error_msg) != 0:
-                    print(error_msg)
+                    print(error_msg, file=sys.stderr)
+                cumulative_exit_code += exit_code
 
         except Exception as e:
             error_and_exit(str(e))
         sequence_pointer += 1
 
-    exit(0)
+    exit(cumulative_exit_code)
 
 
 if __name__ == "__main__":
