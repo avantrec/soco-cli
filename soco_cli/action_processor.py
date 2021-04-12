@@ -1565,8 +1565,6 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
             error_and_exit("Failed to modify alarm")
             return False
 
-        print("Alarm ID '{}' modified".format(alarm._alarm_id))
-
     return True
 
 
