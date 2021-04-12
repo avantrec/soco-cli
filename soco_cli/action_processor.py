@@ -2811,6 +2811,6 @@ actions = {
     "disable_alarms": SonosFunction(disable_alarms, "", False),
     "modify_alarm": SonosFunction(modify_alarm, "", False),
     "modify_alarms": SonosFunction(modify_alarm, "", False),
-    "copy_alarm":  SonosFunction(copy_alarm, "", False),
-    "move_alarm":  SonosFunction(move_alarm, "", False),
+    "copy_alarm": SonosFunction(copy_alarm, "", False),
+    "move_alarm": SonosFunction(move_alarm, "", False),
 }

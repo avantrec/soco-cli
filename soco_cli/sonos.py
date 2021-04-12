@@ -408,21 +408,28 @@ def main():
             else:
                 speaker = get_speaker(speaker_name, use_local_speaker_list)
                 if not speaker:
-                    error_and_exit("Speaker '{}' not found".format(speaker_name))
-                exit_code, output_msg, error_msg = run_command(
-                    speaker,
-                    action,
-                    *args,
-                    use_local_speaker_list=use_local_speaker_list,
-                )
-                if exit_code == 0 and len(output_msg) != 0:
-                    print(output_msg)
-                elif len(error_msg) != 0:
-                    print(error_msg, file=sys.stderr)
-                cumulative_exit_code += exit_code
+                    print(
+                        "Error: Speaker '{}' not found".format(speaker_name),
+                        file=sys.stderr,
+                    )
+                    cumulative_exit_code += 1
+                else:
+                    exit_code, output_msg, error_msg = run_command(
+                        speaker,
+                        action,
+                        *args,
+                        use_local_speaker_list=use_local_speaker_list,
+                    )
+                    if exit_code == 0 and len(output_msg) != 0:
+                        print(output_msg)
+                    elif len(error_msg) != 0:
+                        print(error_msg, file=sys.stderr)
+                    cumulative_exit_code += exit_code
 
         except Exception as e:
-            error_and_exit(str(e))
+            print("Error: ", str(e))
+            cumulative_exit_code += 1
+
         sequence_pointer += 1
 
     exit(cumulative_exit_code)
