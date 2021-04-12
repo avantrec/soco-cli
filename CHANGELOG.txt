@@ -1,4 +1,5 @@
-v0.3.36   -
+v0.3.36   - Fix regression in exit code; send error messages to stderr
+          - Action 'copy_alarm' now returns the ID of the copy
 v0.3.35   - Add 'move_alarm' action
           - Remove 'alarm(s)_enabled' action ...
           - Replace with 'enable_alarm(s)' and 'disable_alarm(s)' actions

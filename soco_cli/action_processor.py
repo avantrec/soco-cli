@@ -1602,6 +1602,9 @@ def move_or_copy_alarm(speaker, alarm_id, copy=True):
         error_and_exit("Failed to copy/move alarm")
         return False
 
+    if copy is True:
+        print("Alarm ID '{}' created".format(alarm._alarm_id))
+
     return True
 
 
