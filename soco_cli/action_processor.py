@@ -1195,7 +1195,6 @@ def info(speaker, action, args, soco_function, use_local_speaker_list):
     if not ("boost" in model or "bridge" in model):
         info["volume"] = speaker.volume
         info["mute"] = speaker.mute
-        info["state"] = speaker.get_current_transport_info()["current_transport_state"]
         info["title"] = speaker.get_current_track_info()["title"]
         info["player_name"] = speaker.player_name
         info["ip_address"] = speaker.ip_address
@@ -1209,6 +1208,14 @@ def info(speaker, action, args, soco_function, use_local_speaker_list):
         info["is_coordinator"] = speaker.is_coordinator
         if speaker.is_coordinator:
             info["cross_fade"] = speaker.cross_fade
+            info["state"] = speaker.get_current_transport_info()[
+                "current_transport_state"
+            ]
+        else:
+            info["cross_fade"] = speaker.group.coordinator.cross_fade
+            info["state"] = speaker.group.coordinator.get_current_transport_info()[
+                "current_transport_state"
+            ]
         info["balance"] = speaker.balance
         info["night_mode"] = speaker.night_mode
         info["is_soundbar"] = speaker.is_soundbar
