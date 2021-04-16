@@ -43,15 +43,6 @@ def print_speaker_table(device):
             add_err_and_exc(sco.player_name, sco.ip_address, e)
             continue
 
-        # Find the coordinator IP
-        coord = sco.group.coordinator
-        if sco is coord:
-            coord_ip = ""
-        else:
-            coord_ip = coord.ip_address
-            # Overwrite the 'state'
-            state = "Grouped"
-
         # Boost and Bridge don't support some attributes
         if sco.is_bridge:
             not_applicable = "n/a"
@@ -82,7 +73,9 @@ def print_speaker_table(device):
             coord_ip = coord.ip_address
             # Overwrite the 'state'
             if state != "Bonded":
-                state = "Grouped"
+                state = sco.group.coordinator.get_current_transport_info()[
+                    "current_transport_state"
+                ]
 
         # Set up the information for the speaker
         speaker = [
