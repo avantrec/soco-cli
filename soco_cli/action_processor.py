@@ -1246,7 +1246,7 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
             duration = "No Limit"
         details.append(
             [
-                alarm._alarm_id,  # Replace with .alarm_id with SoCo v0.22
+                alarm.alarm_id,
                 alarm.zone.player_name,
                 "|",
                 time,
@@ -1285,7 +1285,7 @@ def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
 
     if args[0].lower() == "all":
         for alarm in alarms:
-            logging.info("Removing alarm ID '{}'".format(alarm._alarm_id))
+            logging.info("Removing alarm ID '{}'".format(alarm.alarm_id))
             alarm.remove()
         return True
 
@@ -1293,15 +1293,15 @@ def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
     alarm_ids_to_delete = set(alarm_ids_to_delete)
     logging.info("Attempting to delete alarm ID(s): {}".format(alarm_ids_to_delete))
 
-    alarm_ids = {alarm._alarm_id for alarm in alarms}
+    alarm_ids = {alarm.alarm_id for alarm in alarms}
     logging.info("Current alarm ID(s): {}".format(alarm_ids))
 
     valid_alarm_ids_to_delete = alarm_ids.intersection(alarm_ids_to_delete)
     logging.info("Valid alarm ID(s) to delete: {}".format(valid_alarm_ids_to_delete))
 
     for alarm in alarms:
-        if alarm._alarm_id in valid_alarm_ids_to_delete:
-            logging.info("Deleting alarm ID: {}".format(alarm._alarm_id))
+        if alarm.alarm_id in valid_alarm_ids_to_delete:
+            logging.info("Deleting alarm ID: {}".format(alarm.alarm_id))
             alarm.remove()
 
     alarms_invalid = alarm_ids_to_delete.difference(valid_alarm_ids_to_delete)
@@ -1417,7 +1417,7 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
         error_and_exit("Failed to create alarm")
         return False
 
-    print("Alarm ID '{}' created".format(alarm._alarm_id))
+    print("Alarm ID '{}' created".format(alarm.alarm_id))
     return True
 
 
@@ -1432,7 +1432,7 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
         alarms = set()
         for alarm_id in alarm_ids:
             for alarm in all_alarms:
-                if alarm_id == alarm._alarm_id:
+                if alarm_id == alarm.alarm_id:
                     alarms.add(alarm)
                     break
             else:
@@ -1569,7 +1569,7 @@ def move_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 def move_or_copy_alarm(speaker, alarm_id, copy=True):
     alarms = soco.alarms.get_alarms(speaker)
     for alarm in alarms:
-        if alarm_id == alarm._alarm_id:
+        if alarm_id == alarm.alarm_id:
             break
     else:
         error_and_exit("Alarm ID '{}' not found".format(alarm_id))
@@ -1589,7 +1589,7 @@ def move_or_copy_alarm(speaker, alarm_id, copy=True):
         return False
 
     if copy is True:
-        print("Alarm ID '{}' created".format(alarm._alarm_id))
+        print("Alarm ID '{}' created".format(alarm.alarm_id))
 
     return True
 
@@ -1612,13 +1612,13 @@ def set_alarms(speaker, alarm_ids, enabled=True):
         alarm_ids.discard("all")
 
     for alarm in alarms:
-        if all_alarms is True or alarm._alarm_id in alarm_ids:
+        if all_alarms is True or alarm.alarm_id in alarm_ids:
             logging.info(
-                "Setting alarm id '{}' to enabled = {}".format(alarm._alarm_id, enabled)
+                "Setting alarm id '{}' to enabled = {}".format(alarm.alarm_id, enabled)
             )
             alarm.enabled = enabled
             alarm.save()
-            alarm_ids.discard(alarm._alarm_id)
+            alarm_ids.discard(alarm.alarm_id)
 
     if len(alarm_ids) != 0:
         print("Alarm IDs not found: {}".format(alarm_ids))
