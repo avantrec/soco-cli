@@ -399,26 +399,16 @@ def playback_mode(speaker, action, args, soco_function, use_local_speaker_list):
 def shuffle(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if np == 0:
-        if "shuffle" in speaker.play_mode.lower():
+        if speaker.shuffle is True:
             print("on")
         else:
             print("off")
     elif np == 1:
         mode = speaker.play_mode.lower()
         if args[0].lower() == "on":
-            if mode == "normal":
-                speaker.play_mode = "shuffle_norepeat"
-            elif mode == "repeat_all":
-                speaker.play_mode = "shuffle"
-            elif mode == "repeat_one":
-                speaker.play_mode = "shuffle_repeat_one"
+            speaker.shuffle = True
         elif args[0].lower() == "off":
-            if mode == "shuffle_norepeat":
-                speaker.play_mode = "normal"
-            elif mode == "shuffle":
-                speaker.play_mode = "repeat_all"
-            elif mode == "shuffle_repeat_one":
-                speaker.play_mode = "repeat_one"
+            speaker.shuffle = False
         else:
             error_and_exit("Action '{}' takes parameter 'on' or 'off'".format(action))
             return False

@@ -1,5 +1,6 @@
 v0.3.37   - Actions 'info' and 'sysinfo' now report correct playback state
             for slave speakers
+          - Upgrade to SoCo v0.22.0, allowing some code simplification
 v0.3.36   - Fix regression in exit code; send error messages to stderr
           - Action 'copy_alarm' now returns the ID of the copy
 v0.3.35   - Add 'move_alarm' action
