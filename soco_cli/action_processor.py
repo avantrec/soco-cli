@@ -429,30 +429,19 @@ def shuffle(speaker, action, args, soco_function, use_local_speaker_list):
 def repeat(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if np == 0:
-        mode = speaker.play_mode.lower()
-        if mode in ["shuffle", "repeat_all"]:
+        if speaker.repeat is True:
             print("all")
-        elif mode in ["shuffle_norepeat", "normal"]:
+        elif speaker.repeat is False:
             print("off")
-        elif mode in ["shuffle_repeat_one", "repeat_one"]:
+        else:
             print("one")
     elif np == 1:
-        mode = speaker.play_mode.lower()
         if args[0].lower() in ["off", "none"]:
-            if mode in ["repeat_all", "repeat_one"]:
-                speaker.play_mode = "normal"
-            elif mode in ["shuffle", "shuffle_repeat_one"]:
-                speaker.play_mode = "shuffle_norepeat"
+            speaker.repeat = False
         elif args[0].lower() == "one":
-            if mode in ["shuffle_norepeat", "shuffle"]:
-                speaker.play_mode = "shuffle_repeat_one"
-            elif mode in ["normal", "repeat_all"]:
-                speaker.play_mode = "repeat_one"
+            speaker.repeat = "ONE"
         elif args[0].lower() == "all":
-            if mode in ["shuffle_repeat_one", "shuffle_norepeat"]:
-                speaker.play_mode = "shuffle"
-            elif mode in ["normal", "repeat_one"]:
-                speaker.play_mode = "repeat_all"
+            speaker.repeat = True
         else:
             error_and_exit(
                 "Action '{}' takes parameter 'off', 'one', or 'all'".format(action)
