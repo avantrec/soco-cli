@@ -2399,11 +2399,7 @@ def pauseplay(speaker, action, args, soco_function, use_local_speaker_list):
 @zero_parameters
 def available_actions(speaker, action, args, soco_function, use_local_speaker_list):
     """Determine the currently available playback control options."""
-    actions = speaker.avTransport.GetCurrentTransportActions([("InstanceID", 0)])[
-        "Actions"
-    ]
-    actions = actions.replace("X_DLNA_", "")
-    print("Currently available playback actions: {}".format(actions))
+    print("Currently available playback actions: {}".format(speaker.available_actions))
     return True
 
 
