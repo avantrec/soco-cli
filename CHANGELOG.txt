@@ -1,3 +1,4 @@
+v0.3.38   -
 v0.3.37   - Actions 'info' and 'sysinfo' now report correct playback state
             for slave speakers
           - Upgrade to SoCo v0.22.0, allowing some code simplification
