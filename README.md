@@ -718,7 +718,7 @@ sonos --load_aliases <filename>
 sonos --overwrite_aliases <filename>
 ```
 
-Aliases can be saved and loaded from plain text files using the command line options above. The command will terminate once the file operation is complete. Option `save_aliases` will write the current aliases to the supplied filename; `load_aliases` will load a list of aliases and merge them with the current list (overwriting any duplicate alias names); `overwrite_aliases` will overwrite all current aliases with the list from the file.
+Aliases can be exported to, and loaded from, plain text files using the command line options above. The command will terminate once the file operation is complete. Option `save_aliases` will export the current aliases to the supplied filename; `load_aliases` will load a list of aliases and merge them with the current list (overwriting any duplicate alias names); `overwrite_aliases` will overwrite all current aliases with the list from the file.
 
 The alias file format consists of lines containing `<alias_name> = <alias actions>`, e.g:
 
