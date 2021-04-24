@@ -655,6 +655,12 @@ def configure_common_args(parser):
         default=False,
         help="Print the URL to the SoCo-CLI logo",
     )
+    parser.add_argument(
+        "--check_for_update",
+        action="store_true",
+        default=False,
+        help="Check for a more recent version of SoCo-CLI",
+    )
 
 
 def check_args(args):

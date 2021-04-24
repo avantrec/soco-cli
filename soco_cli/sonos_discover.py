@@ -2,6 +2,7 @@
 
 import argparse
 
+from soco_cli.check_for_update import check_for_update
 from soco_cli.speakers import Speakers
 from soco_cli.utils import (
     check_args,
@@ -51,6 +52,10 @@ def main():
 
     if args.docs:
         docs()
+        exit(0)
+
+    if args.check_for_update:
+        check_for_update()
         exit(0)
 
     configure_logging(args.log)
