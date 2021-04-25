@@ -18,7 +18,7 @@ from shlex import split as shlex_split
 from soco_cli.action_processor import get_actions, list_actions
 from soco_cli.aliases import AliasManager
 from soco_cli.api import get_soco_object, run_command
-from soco_cli.check_for_update import check_for_update
+from soco_cli.check_for_update import print_update_status
 from soco_cli.cmd_parser import CLIParser
 from soco_cli.keystroke_capture import get_keystroke
 from soco_cli.utils import (
@@ -194,7 +194,7 @@ def interactive_loop(
 
             if command_lower in ["check_for_update"]:
                 print()
-                check_for_update()
+                print_update_status()
                 print()
                 continue
 

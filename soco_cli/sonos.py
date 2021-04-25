@@ -13,7 +13,7 @@ import soco
 from soco_cli.action_processor import list_actions
 from soco_cli.aliases import AliasManager
 from soco_cli.api import run_command
-from soco_cli.check_for_update import check_for_update
+from soco_cli.check_for_update import print_update_status
 from soco_cli.cmd_parser import CLIParser
 from soco_cli.interactive import interactive_loop
 from soco_cli.speakers import Speakers
@@ -140,7 +140,7 @@ def main():
         exit(0)
 
     if args.check_for_update:
-        check_for_update()
+        print_update_status()
         exit(0)
 
     if args.actions or args.commands:

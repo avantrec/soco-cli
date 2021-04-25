@@ -9,7 +9,7 @@ init_file_url = (
 )
 
 
-def check_for_update():
+def get_latest_version():
     try:
         file = urlopen(init_file_url, timeout=3.0)
     except Exception as e:
@@ -26,14 +26,32 @@ def check_for_update():
                 .replace('"', "")
                 .replace("\n", "")
             )
-            if __version__ == latest_version:
-                print(
-                    "You're running the latest released version of SoCo-CLI: v"
-                    + __version__
-                )
-            else:
-                print("The latest released version of SoCo-CLI is: v" + latest_version)
-                print("You are running SoCo-CLI version:           v" + __version__)
             break
+    else:
+        return None
 
-    return True
+    return latest_version
+
+
+def print_update_status():
+    latest_version = get_latest_version()
+    if latest_version is not None:
+        if __version__ == latest_version:
+            print(
+                "You're running the latest released version of SoCo-CLI: v"
+                + __version__
+            )
+        else:
+            print(
+                "The latest released version of SoCo-CLI is: v" + latest_version)
+            print("You are running SoCo-CLI version:           v" + __version__)
+        return True
+    else:
+        return False
+
+
+def update_available():
+    if __version__ == get_latest_version():
+        return False
+    else:
+        return True
