@@ -604,6 +604,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'cd'         :  Change the working directory of the shell, e.g. 'cd ..'.
                     Note that on Windows, backslashes must be doubled, e.g.:
                     'cd C:\\'
+    'check_for_update' : Check whether an update is available
     'docs'       :  Print a link to the documentation.
     'exec'       :  Run a shell command, e.g.: 'exec ls -l'.
     'exit'       :  Exit the shell.

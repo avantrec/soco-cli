@@ -18,6 +18,7 @@ from shlex import split as shlex_split
 from soco_cli.action_processor import get_actions, list_actions
 from soco_cli.aliases import AliasManager
 from soco_cli.api import get_soco_object, run_command
+from soco_cli.check_for_update import check_for_update
 from soco_cli.cmd_parser import CLIParser
 from soco_cli.keystroke_capture import get_keystroke
 from soco_cli.utils import (
@@ -189,6 +190,12 @@ def interactive_loop(
 
             if command_lower in ["docs"]:
                 docs()
+                continue
+
+            if command_lower in ["check_for_update"]:
+                print()
+                check_for_update()
+                print()
                 continue
 
             # Is the input a number in the range of speaker numbers?
@@ -420,6 +427,7 @@ COMMANDS = [
     "actions",
     "alias ",
     "cd",
+    "check_for_update",
     "docs",
     "exec",
     "exit",
@@ -494,6 +502,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'cd'         :  Change the working directory of the shell, e.g. 'cd ..'.
                     Note that on Windows, backslashes must be doubled, e.g.:
                     'cd C:\\'
+    'check_for_update' : Check whether an update is available
     'docs'       :  Print a link to the documentation.
     'exec'       :  Run a shell command, e.g.: 'exec ls -l'.
     'exit'       :  Exit the shell.
