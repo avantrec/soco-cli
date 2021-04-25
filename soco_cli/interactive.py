@@ -704,14 +704,17 @@ class AliasProcessor:
 
 
 def _rescan(use_local_speaker_list=False, max=False):
-    if use_local_speaker_list:
-        print("Using cached speaker list: no rescan performed")
-    elif max:
-        logging.info("Full network rescan at max strength (timeout = 10.0s)")
-        speaker_cache().scan(reset=True, scan_timeout_override=10.0)
-        _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
-    else:
-        logging.info("Full network rescan")
-        speaker_cache().scan(reset=True)
-        _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
-    _set_actions_and_commands_list(use_local_speaker_list=use_local_speaker_list)
+    try:
+        if use_local_speaker_list:
+            print("Using cached speaker list: no rescan performed")
+        elif max:
+            logging.info("Full network rescan at max strength (timeout = 10.0s)")
+            speaker_cache().scan(reset=True, scan_timeout_override=10.0)
+            _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
+        else:
+            logging.info("Full network rescan")
+            speaker_cache().scan(reset=True)
+            _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
+        _set_actions_and_commands_list(use_local_speaker_list=use_local_speaker_list)
+    except Exception as e:
+        print("Rescan failed: please check your network connection [{}]".format(e))
