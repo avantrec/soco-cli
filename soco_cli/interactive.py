@@ -539,17 +539,26 @@ def _get_speaker_names(use_local_speaker_list=False):
     if use_local_speaker_list:
         names = local_speaker_list().get_all_speaker_names()
     else:
-        names = speaker_cache().get_all_speaker_names()
+        try:
+            names = speaker_cache().get_all_speaker_names()
+        except Exception as e:
+            print(
+                "Speaker listing failed: please check your network connection [{}]".format(
+                    e
+                )
+            )
+            names = []
     return names
 
 
 def _print_speaker_list(use_local_speaker_list=False):
     print()
     names = _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
-    names.insert(0, "Unset the active speaker")
-    for index, name in enumerate(names, start=0):
-        print("  ", str(index).rjust(2), ":", name)
-    print()
+    if len(names) > 0:
+        names.insert(0, "Unset the active speaker")
+        for index, name in enumerate(names, start=0):
+            print("  ", str(index).rjust(2), ":", name)
+        print()
 
 
 def _save_readline_history():
