@@ -37,14 +37,9 @@ def print_update_status():
     latest_version = get_latest_version()
     if latest_version is not None:
         if __version__ == latest_version:
-            print(
-                "You're running the latest released version of SoCo-CLI: v"
-                + __version__
-            )
+            print("SoCo-CLI is up to date")
         else:
-            print(
-                "The latest released version of SoCo-CLI is: v" + latest_version)
-            print("You are running SoCo-CLI version:           v" + __version__)
+            print("An update is available: v" + latest_version)
         return True
     else:
         return False

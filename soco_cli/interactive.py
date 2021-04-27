@@ -193,9 +193,7 @@ def interactive_loop(
                 continue
 
             if command_lower in ["check_for_update"]:
-                print()
                 print_update_status()
-                print()
                 continue
 
             # Is the input a number in the range of speaker numbers?
