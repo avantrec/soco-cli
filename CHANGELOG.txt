@@ -1,3 +1,4 @@
+v0.3.39   -
 v0.3.38   - Add '--check_for_update' option
 v0.3.37   - Actions 'info' and 'sysinfo' now report correct playback state
             for slave speakers
