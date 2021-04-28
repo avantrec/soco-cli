@@ -127,6 +127,8 @@ def main():
     # Parse the command line
     args = parser.parse_args()
 
+    configure_logging(args.log)
+
     if args.version:
         version()
         exit(0)
@@ -186,8 +188,6 @@ def main():
     message = check_args(args)
     if message:
         error_and_exit(message)
-
-    configure_logging(args.log)
 
     use_local_speaker_list = args.use_local_speaker_list
     if env.get(ENV_LOCAL) == "TRUE" and not args.no_env:
