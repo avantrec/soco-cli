@@ -635,7 +635,7 @@ def configure_common_args(parser):
         "-v",
         action="store_true",
         default=False,
-        help="Print the soco-cli and SoCo versions and exit",
+        help="Print the SoCo-CLI and SoCo versions and exit",
     )
     parser.add_argument(
         "--log",
