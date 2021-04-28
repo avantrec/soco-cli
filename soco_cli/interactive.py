@@ -92,333 +92,354 @@ def interactive_loop(
 
     # Input loop
     while True:
-        if speaker_name and speaker:
-            prompt = "SoCo-CLI [{}] > ".format(speaker_name)
-        else:
-            prompt = "SoCo-CLI [] > "
-
-        if single_keystroke:
-            prompt = prompt.replace("SoCo-CLI", "SoCo-CLI SK")
-            prompt = prompt.replace(">", ">>")
-            print(prompt, flush=True, end="")
-            command_line = get_keystroke()
-            print(command_line)
-            # Catch exit, including Windows CTRL-C
-            if command_line in ["x", "\x03"]:
-                logging.info("Exit from single keystroke mode")
-                single_keystroke = False
-                continue
-        else:
-            command_line = input(prompt)
-
-        if command_line == "":
-            continue
-
-        # Parse multiple action sequences
-        cli_parser = CLIParser()
+        # Catch all exceptions raised in the input loop
         try:
-            cli_parser.parse(shlex_split(command_line))
-        except ValueError as error:
-            print("Error: {}".format(error))
-            continue
+            if speaker_name and speaker:
+                prompt = "SoCo-CLI [{}] > ".format(speaker_name)
+            else:
+                prompt = "SoCo-CLI [] > "
 
-        # Loop through action sequences
-        command_sequences = RewindableList(cli_parser.get_sequences())
-        logging.info("Command sequences = {}".format(command_sequences))
+            if single_keystroke:
+                prompt = prompt.replace("SoCo-CLI", "SoCo-CLI SK")
+                prompt = prompt.replace(">", ">>")
+                print(prompt, flush=True, end="")
+                command_line = get_keystroke()
+                print(command_line)
+                # Catch exit, including Windows CTRL-C
+                if command_line in ["x", "\x03"]:
+                    logging.info("Exit from single keystroke mode")
+                    single_keystroke = False
+                    continue
+            else:
+                command_line = input(prompt)
 
-        # The command_sequence list can change, so we use pop_next() until the
-        # list is exhausted
-        while True:
+            if command_line == "":
+                continue
+
+            # Parse multiple action sequences
+            cli_parser = CLIParser()
             try:
-                command = command_sequences.pop_next()
-                logging.info("Current sequence = {}".format(command))
-            except IndexError:
-                break
-
-            if len(command) == 0:
+                cli_parser.parse(shlex_split(command_line))
+            except ValueError as error:
+                print("Error: {}".format(error))
                 continue
 
-            # Is this an alias?
-            if command[0] in am.alias_names():
-                ap = AliasProcessor()
-                index = command_sequences.index()
-                ap.process(command, am, command_sequences)
-                command_sequences.rewind_to(index)
-                continue
+            # Loop through action sequences
+            command_sequences = RewindableList(cli_parser.get_sequences())
+            logging.info("Command sequences = {}".format(command_sequences))
 
-            if command[0] == "0":
-                # Unset the active speaker
-                logging.info("Unset active speaker")
-                speaker_name = None
-                speaker = None
-                continue
-
-            command_lower = command[0].lower()
-
-            if command_lower.startswith("exit"):
-                logging.info("Exiting interactive mode")
-                _save_readline_history()
-                return True
-
-            if command_lower in ["help", "?"]:
-                _interactive_help()
-                continue
-
-            if command_lower == "actions":
-                _show_actions()
-                continue
-
-            if command_lower in ["single-keystroke", "sk"]:
-                print("Single keystroke mode ... 'x' to exit")
-                single_keystroke = True
-                continue
-
-            if command_lower == "speakers":
-                _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
-                continue
-
-            if command_lower in ["wait", "wait_until", "wait_for"]:
-                logging.info("Processing a 'wait' action")
-                process_wait(command)
-                continue
-
-            if command_lower in ["version"]:
-                print()
-                version()
-                print()
-                continue
-
-            if command_lower in ["docs"]:
-                docs()
-                continue
-
-            if command_lower in ["check_for_update"]:
-                print_update_status()
-                continue
-
-            # Is the input a number in the range of speaker numbers?
-            try:
-                speaker_number = int(command_lower)
-                limit = len(
-                    _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
-                )
-                if 1 <= speaker_number <= limit:
-                    logging.info(
-                        "Setting to active speaker no. {} ".format(speaker_number)
-                    )
-                    speaker_name = _get_speaker_names(
-                        use_local_speaker_list=use_local_speaker_list
-                    )[speaker_number - 1]
-                    speaker = get_speaker(speaker_name, use_local_speaker_list)
-                    logging.info("{} : {}".format(speaker, speaker_name))
-                else:
-                    print(
-                        "Error: Speaker number is out of range (0 to {})".format(limit)
-                    )
-                continue
-            except ValueError:
-                pass
-
-            # if command_lower == "rediscover":
-            #     if use_local_speaker_list:
-            #         print("Using cached speaker list: no discovery performed")
-            #     else:
-            #         speaker_cache().discover(reset=True)
-            #     continue
-
-            if command_lower == "rescan":
-                _rescan(use_local_speaker_list=use_local_speaker_list)
-                continue
-
-            if command_lower == "rescan_max":
-                _rescan(use_local_speaker_list=use_local_speaker_list, max=True)
-                continue
-
-            if command_lower == "exec":
-                if len(command) > 1:
-                    try:
-                        logging.info("Running command: '{}'".format(command[1:]))
-                        subprocess.run(command[1:])
-                    except Exception as e:
-                        print(e)
-                continue
-
-            if command_lower == "cd":
-                if len(command) > 1:
-                    try:
-                        logging.info("Attempting to cd to: '{}'".format(command[1]))
-                        chdir(command[1])
-                    except Exception as e:
-                        print(e)
-                continue
-
-            if command_lower == "push":
-                if pushed is True:
-                    logging.info("Active speaker already pushed ... ignored")
-                    continue
-                if speaker:
-                    pushed = True
-                    logging.info(
-                        "Pushing current active speaker: {}".format(speaker.player_name)
-                    )
-                else:
-                    pushed = False
-                    logging.info("No active speaker to push")
-                saved_speaker = speaker
-                speaker_name = None
-                speaker = None
-                continue
-
-            if command_lower == "pop":
-                if pushed is False:
-                    logging.info("No active speaker state to pop ... ignored")
-                    continue
-                logging.info("Popping the saved speaker state")
-                if saved_speaker:
-                    speaker = saved_speaker
-                    speaker_name = speaker.player_name
-                    logging.info("Saved speaker = '{}'".format(speaker_name))
-                    saved_speaker = None
-                elif pushed:
-                    saved_speaker = None
-                    speaker = None
-                    speaker_name = None
-                else:
-                    logging.info("No saved speaker")
-                pushed = False
-                continue
-
-            # Alias creation, update, and deletion
-            if command_lower == "alias":
-                if len(command) == 1:
-                    am.print_aliases()
-                    continue
-                # Remove 'alias'
-                command.pop(0)
-                alias_name = command.pop(0)
-                if alias_name == "alias":
-                    print("Not permitted: cannot create alias for 'alias'")
-                    continue
-                if len(command) == 0:
-                    if am.create_alias(alias_name, None):
-                        print("Alias '{}' removed".format(alias_name))
-                    else:
-                        print("Alias '{}' not found".format(alias_name))
-                else:
-                    # Have to collect the remaining sequences: they're all
-                    # part of the alias. Reconstruction required.
-                    # Multi-word parameters need quotes reinstated
-                    _restore_quotes(command)
-                    actions = [" ".join(command)]
-                    logging.info("Action = '{}'".format(command))
-                    while True:
-                        try:
-                            command = command_sequences.pop_next()
-                            _restore_quotes(command)
-                            actions.append(" ".join(command))
-                            logging.info("Action = '{}'".format(command))
-                        except IndexError:
-                            break
-                    action = " : ".join(actions)
-                    logging.info("Action sequence = '{}'".format(action))
-                    _, new = am.create_alias(alias_name, action)
-                    if new:
-                        print("Alias '{}' created".format(alias_name))
-                    else:
-                        print("Alias '{}' updated".format(alias_name))
-                am.save_aliases()
-                _set_actions_and_commands_list(
-                    use_local_speaker_list=use_local_speaker_list
-                )
-                continue
-
-            # Command processing
-            try:
-                args = command
-
-                # Setting a speaker to operate on?
+            # The command_sequence list can change, so we use pop_next() until the
+            # list is exhausted
+            while True:
                 try:
-                    if args[0] == "set":
-                        new_speaker_name = args[1]
-                        new_speaker = get_speaker(
-                            new_speaker_name, use_local_speaker_list
-                        )
-                        if not new_speaker:
-                            print(
-                                "Error: Speaker '{}' not found".format(new_speaker_name)
-                            )
-                        else:
-                            logging.info(
-                                "Set new active speaker: '{}'".format(new_speaker_name)
-                            )
-                            speaker = new_speaker
-                            speaker_name = speaker.player_name
-                        continue
+                    command = command_sequences.pop_next()
+                    logging.info("Current sequence = {}".format(command))
                 except IndexError:
-                    # No speaker name given
-                    logging.info("Unset active speaker ('set' with no arguments)")
+                    break
+
+                if len(command) == 0:
+                    continue
+
+                # Is this an alias?
+                if command[0] in am.alias_names():
+                    ap = AliasProcessor()
+                    index = command_sequences.index()
+                    ap.process(command, am, command_sequences)
+                    command_sequences.rewind_to(index)
+                    continue
+
+                if command[0] == "0":
+                    # Unset the active speaker
+                    logging.info("Unset active speaker")
                     speaker_name = None
                     speaker = None
                     continue
 
-                if not speaker_name:
-                    logging.info(
-                        "Treating first parameter '{}' as speaker name".format(args[0])
+                command_lower = command[0].lower()
+
+                if command_lower.startswith("exit"):
+                    logging.info("Exiting interactive mode")
+                    _save_readline_history()
+                    return True
+
+                if command_lower in ["help", "?"]:
+                    _interactive_help()
+                    continue
+
+                if command_lower == "actions":
+                    _show_actions()
+                    continue
+
+                if command_lower in ["single-keystroke", "sk"]:
+                    print("Single keystroke mode ... 'x' to exit")
+                    single_keystroke = True
+                    continue
+
+                if command_lower == "speakers":
+                    _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
+                    continue
+
+                if command_lower in ["wait", "wait_until", "wait_for"]:
+                    logging.info("Processing a 'wait' action")
+                    process_wait(command)
+                    continue
+
+                if command_lower in ["version"]:
+                    print()
+                    version()
+                    print()
+                    continue
+
+                if command_lower in ["docs"]:
+                    docs()
+                    continue
+
+                if command_lower in ["check_for_update"]:
+                    print_update_status()
+                    continue
+
+                # Is the input a number in the range of speaker numbers?
+                try:
+                    speaker_number = int(command_lower)
+                    limit = len(
+                        _get_speaker_names(
+                            use_local_speaker_list=use_local_speaker_list
+                        )
                     )
-                    name = args.pop(0)
-                    speaker = get_speaker(name, use_local_speaker_list)
-                    if not speaker:
+                    if 1 <= speaker_number <= limit:
+                        logging.info(
+                            "Setting to active speaker no. {} ".format(speaker_number)
+                        )
+                        speaker_name = _get_speaker_names(
+                            use_local_speaker_list=use_local_speaker_list
+                        )[speaker_number - 1]
+                        speaker = get_speaker(speaker_name, use_local_speaker_list)
+                        logging.info("{} : {}".format(speaker, speaker_name))
+                    else:
                         print(
-                            "Error: Speaker '{}' not found; should an active speaker be set?".format(
-                                name
+                            "Error: Speaker number is out of range (0 to {})".format(
+                                limit
                             )
                         )
+                    continue
+                except ValueError:
+                    pass
+
+                # if command_lower == "rediscover":
+                #     if use_local_speaker_list:
+                #         print("Using cached speaker list: no discovery performed")
+                #     else:
+                #         speaker_cache().discover(reset=True)
+                #     continue
+
+                if command_lower == "rescan":
+                    _rescan(use_local_speaker_list=use_local_speaker_list)
+                    continue
+
+                if command_lower == "rescan_max":
+                    _rescan(use_local_speaker_list=use_local_speaker_list, max=True)
+                    continue
+
+                if command_lower == "exec":
+                    if len(command) > 1:
+                        try:
+                            logging.info("Running command: '{}'".format(command[1:]))
+                            subprocess.run(command[1:])
+                        except Exception as e:
+                            print(e)
+                    continue
+
+                if command_lower == "cd":
+                    if len(command) > 1:
+                        try:
+                            logging.info("Attempting to cd to: '{}'".format(command[1]))
+                            chdir(command[1])
+                        except Exception as e:
+                            print(e)
+                    continue
+
+                if command_lower == "push":
+                    if pushed is True:
+                        logging.info("Active speaker already pushed ... ignored")
                         continue
-                    else:
-                        # Temporarily establish an active speaker
-                        temp_active_speaker = True
-                        speaker_name = speaker.player_name
+                    if speaker:
+                        pushed = True
                         logging.info(
-                            "Temporarily establish active speaker: '{}'".format(
+                            "Pushing current active speaker: {}".format(
+                                speaker.player_name
+                            )
+                        )
+                    else:
+                        pushed = False
+                        logging.info("No active speaker to push")
+                    saved_speaker = speaker
+                    speaker_name = None
+                    speaker = None
+                    continue
+
+                if command_lower == "pop":
+                    if pushed is False:
+                        logging.info("No active speaker state to pop ... ignored")
+                        continue
+                    logging.info("Popping the saved speaker state")
+                    if saved_speaker:
+                        speaker = saved_speaker
+                        speaker_name = speaker.player_name
+                        logging.info("Saved speaker = '{}'".format(speaker_name))
+                        saved_speaker = None
+                    elif pushed:
+                        saved_speaker = None
+                        speaker = None
+                        speaker_name = None
+                    else:
+                        logging.info("No saved speaker")
+                    pushed = False
+                    continue
+
+                # Alias creation, update, and deletion
+                if command_lower == "alias":
+                    if len(command) == 1:
+                        am.print_aliases()
+                        continue
+                    # Remove 'alias'
+                    command.pop(0)
+                    alias_name = command.pop(0)
+                    if alias_name == "alias":
+                        print("Not permitted: cannot create alias for 'alias'")
+                        continue
+                    if len(command) == 0:
+                        if am.create_alias(alias_name, None):
+                            print("Alias '{}' removed".format(alias_name))
+                        else:
+                            print("Alias '{}' not found".format(alias_name))
+                    else:
+                        # Have to collect the remaining sequences: they're all
+                        # part of the alias. Reconstruction required.
+                        # Multi-word parameters need quotes reinstated
+                        _restore_quotes(command)
+                        actions = [" ".join(command)]
+                        logging.info("Action = '{}'".format(command))
+                        while True:
+                            try:
+                                command = command_sequences.pop_next()
+                                _restore_quotes(command)
+                                actions.append(" ".join(command))
+                                logging.info("Action = '{}'".format(command))
+                            except IndexError:
+                                break
+                        action = " : ".join(actions)
+                        logging.info("Action sequence = '{}'".format(action))
+                        _, new = am.create_alias(alias_name, action)
+                        if new:
+                            print("Alias '{}' created".format(alias_name))
+                        else:
+                            print("Alias '{}' updated".format(alias_name))
+                    am.save_aliases()
+                    _set_actions_and_commands_list(
+                        use_local_speaker_list=use_local_speaker_list
+                    )
+                    continue
+
+                # Command processing
+                try:
+                    args = command
+
+                    # Setting a speaker to operate on?
+                    try:
+                        if args[0] == "set":
+                            new_speaker_name = args[1]
+                            new_speaker = get_speaker(
+                                new_speaker_name, use_local_speaker_list
+                            )
+                            if not new_speaker:
+                                print(
+                                    "Error: Speaker '{}' not found".format(
+                                        new_speaker_name
+                                    )
+                                )
+                            else:
+                                logging.info(
+                                    "Set new active speaker: '{}'".format(
+                                        new_speaker_name
+                                    )
+                                )
+                                speaker = new_speaker
+                                speaker_name = speaker.player_name
+                            continue
+                    except IndexError:
+                        # No speaker name given
+                        logging.info("Unset active speaker ('set' with no arguments)")
+                        speaker_name = None
+                        speaker = None
+                        continue
+
+                    if not speaker_name:
+                        logging.info(
+                            "Treating first parameter '{}' as speaker name".format(
+                                args[0]
+                            )
+                        )
+                        name = args.pop(0)
+                        speaker = get_speaker(name, use_local_speaker_list)
+                        if not speaker:
+                            print(
+                                "Error: Speaker '{}' not found; should an active speaker be set?".format(
+                                    name
+                                )
+                            )
+                            continue
+                        else:
+                            # Temporarily establish an active speaker
+                            temp_active_speaker = True
+                            speaker_name = speaker.player_name
+                            logging.info(
+                                "Temporarily establish active speaker: '{}'".format(
+                                    speaker_name
+                                )
+                            )
+                            # Replace the command sequence without the speaker name,
+                            # for processing next time round the loop
+                            command_sequences.insert(command_sequences.index(), args)
+                            logging.info(
+                                "Reinserting command sequence: {}".format(args)
+                            )
+                            continue
+
+                    action = args.pop(0).lower()
+                    logging.info("Action = '{}'; args = {}".format(action, args))
+                    exit_code, output, error_msg = run_command(
+                        speaker,
+                        action,
+                        *args,
+                        use_local_speaker_list=use_local_speaker_list,
+                    )
+                    if exit_code:
+                        if not error_msg == "":
+                            print(error_msg)
+                    else:
+                        if not output == "":
+                            print(output)
+                        if action == "rename":
+                            speaker_name = speaker.get_speaker_info(refresh=True)[
+                                "zone_name"
+                            ]
+                            _set_actions_and_commands_list(
+                                use_local_speaker_list=use_local_speaker_list
+                            )
+                    if temp_active_speaker:
+                        logging.info(
+                            "Unsetting temporary active speaker: '{}'".format(
                                 speaker_name
                             )
                         )
-                        # Replace the command sequence without the speaker name,
-                        # for processing next time round the loop
-                        command_sequences.insert(command_sequences.index(), args)
-                        logging.info("Reinserting command sequence: {}".format(args))
-                        continue
-
-                action = args.pop(0).lower()
-                logging.info("Action = '{}'; args = {}".format(action, args))
-                exit_code, output, error_msg = run_command(
-                    speaker,
-                    action,
-                    *args,
-                    use_local_speaker_list=use_local_speaker_list,
-                )
-                if exit_code:
-                    if not error_msg == "":
-                        print(error_msg)
-                else:
-                    if not output == "":
-                        print(output)
-                    if action == "rename":
-                        speaker_name = speaker.get_speaker_info(refresh=True)[
-                            "zone_name"
-                        ]
-                        _set_actions_and_commands_list(
-                            use_local_speaker_list=use_local_speaker_list
-                        )
-                if temp_active_speaker:
-                    logging.info(
-                        "Unsetting temporary active speaker: '{}'".format(speaker_name)
-                    )
-                    temp_active_speaker = False
-                    speaker = None
-                    speaker_name = None
-            except:
-                print("Error: Invalid command")
+                        temp_active_speaker = False
+                        speaker = None
+                        speaker_name = None
+                except:
+                    print("Error: Invalid command")
+        # Catch all exceptions in the interactive loop
+        except Exception as e:
+            print("Error: {}".format(e))
 
 
 COMMANDS = [
