@@ -1,5 +1,7 @@
 """Checks GitHub for a later version of SoCo-CLI"""
 
+import logging
+
 from urllib.request import urlopen
 from soco_cli.__init__ import __version__
 from soco_cli.utils import error_and_exit
@@ -26,8 +28,10 @@ def get_latest_version():
                 .replace('"', "")
                 .replace("\n", "")
             )
+            logging.info("Latest version is v{}".format(latest_version))
             break
     else:
+        logging.info("Unable to find latest version")
         return None
 
     return latest_version
