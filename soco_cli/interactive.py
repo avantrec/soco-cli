@@ -61,14 +61,18 @@ def interactive_loop(
     # Is the speaker name set on the command line?
     # Note: ignores SPKR set as part of the environment
     if speaker_name:
-        speaker, error_msg = get_soco_object(
-            speaker_name, use_local_speaker_list=use_local_speaker_list
-        )
-        if not speaker:
-            print("Speaker '{}' not found {}".format(speaker_name, error_msg))
+        try:
+            speaker, error_msg = get_soco_object(
+                speaker_name, use_local_speaker_list=use_local_speaker_list
+            )
+            if not speaker:
+                print("Speaker '{}' not found {}".format(speaker_name, error_msg))
+                speaker_name = None
+            else:
+                speaker_name = speaker.player_name
+        except Exception as e:
+            print("Error finding speaker '{}': {}".format (speaker_name, e))
             speaker_name = None
-        else:
-            speaker_name = speaker.player_name
 
     print("\nEntering SoCo-CLI interactive shell.")
     if single_keystroke:
