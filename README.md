@@ -428,6 +428,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`modify_alarm <alarm_id,[alarm_id]|all> <alarm_spec>`** (or **`modify_alarms`**): Modifies an existing alarm or alarms, using the `alarm_spec` format described above. Alarm properties that are to be left unchanged should be denoted by an underscore. E.g., to change only the duration and volume of an alarm, use an alarm spec such as: `_,01:00,_,_,_,_,60,_`. To modify all alarms, use `all` as the `alarm_id`.
 - **`move_alarm <alarm_id>`**: Move the alarm with ID `alarm_ID` to the target speaker.
 - **`remove_alarm <alarm_id[,alarm_id]|all>`** (or **`remove_alarms`**): Removes one or more alarms by their alarm IDs. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To remove all alarms, use `all` as the `alarm_id`.
+- **`snooze_alarm <snooze_duration>`**: Snooze an alarm that's already playing on the target speaker. Snooze duration can be `Nm` to snooze for `N` minutes, where N must be between 1 and 59. Alternatively, the duration can be expressed as `HH:MM:SS`. E.g., `sonos bedroom snooze_alarm 10m` or `sonos bedroom snooze_alarm 01:00:00`.
 
 ### Music Library Search Functions
 

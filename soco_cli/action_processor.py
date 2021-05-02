@@ -1626,6 +1626,44 @@ def set_alarms(speaker, alarm_ids, enabled=True):
     return True
 
 
+@one_parameter
+def snooze_alarm(speaker, action, args, soco_function, use_local_speaker_list):
+    """Snooze an alarm that's playing"""
+
+    # Use simple 'Nm' for N minutes of snooze
+    if args[0].endswith("m"):
+        try:
+            duration = int(args[0].replace("m", ""))
+            if 0 < duration < 60:
+                duration = "00:" + str(duration) + ":00"
+            else:
+                parameter_type_error(action, "Snooze duration must be 1m to 59m")
+                return False
+            logging.info("Snooze duration set to: '{}'".format(duration))
+        except ValueError:
+            logging.info("Invalid snooze duration: '{}'".format(args[0]))
+            parameter_type_error(
+                action, "Snooze duration must be integer number of minutes (Nm)"
+            )
+            return False
+
+    # HH:MM:SS format
+    elif len(args[0].split(":")) == 3:
+        duration = args[0]
+
+    # Invalid parameters
+    else:
+        logging.info("Invalid snooze duration format: '{}'".format(args[0]))
+        parameter_type_error(
+            action, "Snooze duration must be Nm (for N minutes), or HH:MM:SS format"
+        )
+        return False
+
+    logging.info("Sending snooze command")
+    speaker.avTransport.SnoozeAlarm([("InstanceID", 0), ("Duration", duration)])
+    return True
+
+
 @zero_parameters
 def list_libraries(speaker, action, args, soco_function, use_local_speaker_list):
     shares = speaker.music_library.list_library_shares()
@@ -2798,4 +2836,5 @@ actions = {
     "modify_alarms": SonosFunction(modify_alarm, "", False),
     "copy_alarm": SonosFunction(copy_alarm, "", False),
     "move_alarm": SonosFunction(move_alarm, "", False),
+    "snooze_alarm": SonosFunction(snooze_alarm, "", False),
 }
