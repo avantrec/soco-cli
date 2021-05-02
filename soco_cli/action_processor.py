@@ -1628,38 +1628,45 @@ def set_alarms(speaker, alarm_ids, enabled=True):
 
 @one_parameter
 def snooze_alarm(speaker, action, args, soco_function, use_local_speaker_list):
-    """Snooze an alarm that's playing"""
+    """Snooze an alarm that's currently playing"""
 
     duration = args[0].lower()
 
-    # Use simple 'Nm' for N minutes of snooze
-    if duration.endswith("m"):
+    # HH:MM:SS format
+    h_m_s = duration.split(":")
+    if len(h_m_s) == 3:
+        try:
+            if not (
+                0 <= int(h_m_s[0]) <= 23
+                and 0 <= int(h_m_s[1]) <= 59
+                and 0 <= int(h_m_s[2]) <= 59
+            ):
+                raise ValueError
+        except (ValueError, TypeError):
+            parameter_type_error(
+                action,
+                "A valid HH:MM:SS duration, or an integer number of minutes".format(
+                    args[0]
+                ),
+            )
+            return False
+
+    # Simple 'Nm' or 'N' for N minutes of snooze
+    else:
         try:
             duration = abs(int(duration.replace("m", "")))
             minutes = str(duration % 60).zfill(2)
             hours = str(int(duration / 60)).zfill(2)
             duration = hours + ":" + minutes + ":00"
-            logging.info("Snooze duration set to: '{}'".format(duration))
         except ValueError:
             logging.info("Invalid snooze duration: '{}'".format(args[0]))
             parameter_type_error(
-                action, "Snooze duration must be integer number of minutes (Nm)"
+                action,
+                "An integer number of minutes, or HH:MM:SS format",
             )
             return False
 
-    # HH:MM:SS format
-    elif len(duration.split(":")) == 3:
-        duration = args[0]
-
-    # Invalid parameters
-    else:
-        logging.info("Invalid snooze duration format: '{}'".format(args[0]))
-        parameter_type_error(
-            action, "Snooze duration must be Nm (for N minutes), or HH:MM:SS format"
-        )
-        return False
-
-    logging.info("Sending snooze command")
+    logging.info("Sending snooze command using duration '{}'".format(duration))
     speaker.avTransport.SnoozeAlarm([("InstanceID", 0), ("Duration", duration)])
     return True
 
