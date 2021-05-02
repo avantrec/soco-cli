@@ -1630,15 +1630,15 @@ def set_alarms(speaker, alarm_ids, enabled=True):
 def snooze_alarm(speaker, action, args, soco_function, use_local_speaker_list):
     """Snooze an alarm that's playing"""
 
+    duration = args[0].lower()
+
     # Use simple 'Nm' for N minutes of snooze
-    if args[0].endswith("m"):
+    if duration.endswith("m"):
         try:
-            duration = int(args[0].replace("m", ""))
-            if 0 < duration < 60:
-                duration = "00:" + str(duration) + ":00"
-            else:
-                parameter_type_error(action, "Snooze duration must be 1m to 59m")
-                return False
+            duration = abs(int(duration.replace("m", "")))
+            minutes = str(duration % 60).zfill(2)
+            hours = str(int(duration / 60)).zfill(2)
+            duration = hours + ":" + minutes + ":00"
             logging.info("Snooze duration set to: '{}'".format(duration))
         except ValueError:
             logging.info("Invalid snooze duration: '{}'".format(args[0]))
@@ -1648,7 +1648,7 @@ def snooze_alarm(speaker, action, args, soco_function, use_local_speaker_list):
             return False
 
     # HH:MM:SS format
-    elif len(args[0].split(":")) == 3:
+    elif len(duration.split(":")) == 3:
         duration = args[0]
 
     # Invalid parameters
