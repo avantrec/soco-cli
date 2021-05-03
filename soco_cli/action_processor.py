@@ -2843,5 +2843,5 @@ actions = {
     "modify_alarms": SonosFunction(modify_alarm, "", False),
     "copy_alarm": SonosFunction(copy_alarm, "", False),
     "move_alarm": SonosFunction(move_alarm, "", False),
-    "snooze_alarm": SonosFunction(snooze_alarm, "", False),
+    "snooze_alarm": SonosFunction(snooze_alarm, "", True),
 }
