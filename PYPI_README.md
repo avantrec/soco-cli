@@ -14,6 +14,8 @@ SoCo-CLI also has a **shell mode** for more efficient interactive use at the com
 
 Finally, SoCo-CLI provides a simple **API** to allow its use as a high-level library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library.
 
+**Want to help support SoCo-CLI development?** You can **[Buy Me a Coffee](https://buymeacoffee.com/avantrec)**.
+
 ## Supported Environments
 
 - Requires Python 3.5 or greater.

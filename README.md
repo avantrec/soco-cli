@@ -1,5 +1,7 @@
 # SoCo-CLI: Control Sonos from the Command Line
 
+**Want to help support SoCo-CLI development?** You can **[Buy Me a Coffee](https://buymeacoffee.com/avantrec)** ...
+
 ![SoCo-CLI Logo](assets/soco-cli-logo-03-small.png)
 
 <!--ts-->
@@ -80,6 +82,8 @@ SoCo-CLI has an orderly command structure and consistent return values, making i
 SoCo-CLI can also be used as a simple, high-level library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library.
 
 For interactive command line use, SoCo-CLI provides an [Interactive Shell Mode](#interactive-shell-mode) that improves speed of operation and reduces typing.
+
+If you find SoCo-CLI useful and would like to **help support its development**, you might want to consider **[Buying Me a Coffee](https://buymeacoffee.com/avantrec)**.
 
 ## Supported Environments
 
