@@ -1643,6 +1643,7 @@ def snooze_alarm(speaker, action, args, soco_function, use_local_speaker_list):
             ):
                 raise ValueError
         except (ValueError, TypeError):
+            logging.info("Invalid snooze duration: '{}'".format(args[0]))
             parameter_type_error(
                 action,
                 "A valid HH:MM:SS duration, or an integer number of minutes".format(

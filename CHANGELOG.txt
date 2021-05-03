@@ -1,4 +1,4 @@
-v0.3.40   -
+v0.3.40   - Simplify 'snooze_alarm' action (backward-compatible)
 v0.3.39   - Add 'snooze_alarm' action
 v0.3.38   - Add '--check_for_update' option
 v0.3.37   - Actions 'info' and 'sysinfo' now report correct playback state
