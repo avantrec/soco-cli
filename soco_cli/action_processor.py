@@ -17,7 +17,7 @@ from random import randint
 import soco
 import soco.alarms
 import tabulate
-from soco.exceptions import NotSupportedException
+from soco.exceptions import NotSupportedException, SoCoUPnPException
 from xmltodict import parse
 
 from soco_cli.play_local_file import play_local_file
@@ -1668,7 +1668,18 @@ def snooze_alarm(speaker, action, args, soco_function, use_local_speaker_list):
             return False
 
     logging.info("Sending snooze command using duration '{}'".format(duration))
-    speaker.avTransport.SnoozeAlarm([("InstanceID", 0), ("Duration", duration)])
+    try:
+        speaker.avTransport.SnoozeAlarm([("InstanceID", 0), ("Duration", duration)])
+    except SoCoUPnPException as error:
+        logging.info("Exception: {}".format(error))
+        if error.error_code == "701":
+            error_and_exit("Can only snooze a playing alarm")
+        elif error.error_code == "402":
+            error_and_exit("Invalid snooze duration: '{}'".format(duration))
+        else:
+            error_and_exit("{}".format(error))
+        return False
+
     return True
 
 
