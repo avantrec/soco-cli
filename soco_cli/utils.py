@@ -248,13 +248,23 @@ def logo():
 # TODO: Remove with SIGTERM fix
 use_sigterm = False
 
-# Stop a stream if playing a local file
-speaker_playing_local_file = None
-
 
 def set_sigterm(sigterm):
     global use_sigterm
     use_sigterm = sigterm
+
+
+# Suspend SIGTERM processing for 'exec' in interactive shell
+suspend_sigterm = False
+
+
+def set_suspend_sigterm(suspend=True):
+    global suspend_sigterm
+    suspend_sigterm = suspend
+
+
+# Stop a stream if playing a local file
+speaker_playing_local_file = None
 
 
 def set_speaker_playing_local_file(speaker):
@@ -263,27 +273,27 @@ def set_speaker_playing_local_file(speaker):
 
 
 def sig_handler(signal_received, frame):
-    # Exit silently without stack dump
-    logging.info("Caught signal, exiting.")
-    print(" CTRL-C ... exiting.")
+    if not suspend_sigterm:
+        # Exit silently without stack dump
+        logging.info("Caught signal, exiting.")
+        print(" CTRL-C ... exiting.")
 
-    if speaker_playing_local_file:
-        logging.info(
-            "Speaker '{}': 'play_file' active ... stopping".format(
-                speaker_playing_local_file.player_name
+        if speaker_playing_local_file:
+            logging.info(
+                "Speaker '{}': 'play_file' active ... stopping".format(
+                    speaker_playing_local_file.player_name
+                )
             )
-        )
-        speaker_playing_local_file.stop()
+            speaker_playing_local_file.stop()
 
-    if INTERACTIVE:
-        save_readline_history()
+        if INTERACTIVE:
+            save_readline_history()
 
-    # TODO: Temporary for now; hard kill required to get out of wait
-    if use_sigterm:
-        os.kill(os.getpid(), SIGTERM)
-    else:
-        exit(0)
-
+        # TODO: Temporary for now; hard kill required to get out of wait
+        if use_sigterm:
+            os.kill(os.getpid(), SIGTERM)
+        else:
+            exit(0)
 
 class RewindableList(Sequence):
     """This is a just-enough-implementation class to provide a list

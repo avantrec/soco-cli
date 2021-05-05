@@ -29,6 +29,7 @@ from soco_cli.utils import (
     local_speaker_list,
     save_readline_history,
     set_interactive,
+    set_suspend_sigterm,
     speaker_cache,
     version,
 )
@@ -245,12 +246,14 @@ def interactive_loop(
                     continue
 
                 if command_lower == "exec":
+                    set_suspend_sigterm(suspend=True)
                     if len(command) > 1:
                         try:
                             logging.info("Running command: '{}'".format(command[1:]))
                             subprocess.run(command[1:])
                         except Exception as e:
                             print(e)
+                    set_suspend_sigterm(suspend=False)
                     continue
 
                 if command_lower == "cd":
