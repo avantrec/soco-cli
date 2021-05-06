@@ -102,4 +102,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Catch all untrapped exceptions
+    try:
+        main()
+        exit(0)
+    except Exception as error:
+        error_and_exit(str(error))
+        exit(1)
