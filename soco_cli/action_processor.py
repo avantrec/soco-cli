@@ -7,8 +7,7 @@ and needs to be converted to a Class.
 import logging
 import pprint
 import time
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from distutils.version import StrictVersion
 from os import get_terminal_size
 from queue import Empty

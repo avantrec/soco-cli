@@ -295,6 +295,7 @@ def sig_handler(signal_received, frame):
         else:
             exit(0)
 
+
 class RewindableList(Sequence):
     """This is a just-enough-implementation class to provide a list
     that can be rewound during iteration.

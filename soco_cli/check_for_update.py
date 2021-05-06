@@ -1,8 +1,8 @@
 """Checks GitHub for a later version of SoCo-CLI"""
 
 import logging
-
 from urllib.request import urlopen
+
 from soco_cli.__init__ import __version__
 from soco_cli.utils import error_and_exit
 

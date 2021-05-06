@@ -72,7 +72,7 @@ def interactive_loop(
             else:
                 speaker_name = speaker.player_name
         except Exception as e:
-            print("Error finding speaker '{}': {}".format (speaker_name, e))
+            print("Error finding speaker '{}': {}".format(speaker_name, e))
             speaker_name = None
 
     print("\nEntering SoCo-CLI interactive shell.")
