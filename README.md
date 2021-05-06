@@ -79,7 +79,7 @@ SoCo-CLI has an orderly command structure and consistent return values, making i
 
 SoCo-CLI can also be used as a simple, high-level library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library.
 
-For interactive command line use, SoCo-CLI provides an [Interactive Shell Mode](#interactive-shell-mode) that improves speed of operation and reduces typing.
+For interactive command line use, SoCo-CLI provides a powerful [Interactive Shell Mode](#interactive-shell-mode) that improves speed of operation and reduces typing.
 
 ## Supported Environments
 

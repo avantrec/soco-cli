@@ -1,6 +1,6 @@
 # SoCo-CLI: Control Sonos from the Command Line
 
-![SoCo-CLI Logo](https://raw.githubusercontent.com/avantrec/soco-cli/master/assets/soco-cli-logo-03-small.png)
+[![Buy Me A Coffee](https://github.com/avantrec/soco-cli/raw/next_version/assets/bmc-button.png)](https://www.buymeacoffee.com/avantrec)
 
 ## Overview
 
@@ -10,11 +10,9 @@ A simple `sonos` command is provided which allows easy control of a huge range o
 
 SoCo-CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, cron jobs, etc.
 
-SoCo-CLI also has a **shell mode** for more efficient interactive use at the command line.
+SoCo-CLI also has a powerful **shell mode** for more efficient interactive use at the command line.
 
 Finally, SoCo-CLI provides a simple **API** to allow its use as a high-level library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library.
-
-**Want to help support SoCo-CLI development?** You can **[Buy Me a Coffee](https://buymeacoffee.com/avantrec)**.
 
 ## Supported Environments
 
