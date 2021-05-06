@@ -1,6 +1,6 @@
-# SoCo-CLI: Control Sonos from the Command Line
-
 [![Buy Me A Coffee](assets/bmc-button.png)](https://www.buymeacoffee.com/avantrec)
+
+# SoCo-CLI: Control Sonos from the Command Line
 
 <!--ts-->
    * [SoCo-CLI: Control Sonos from the Command Line](#soco-cli-control-sonos-from-the-command-line)
