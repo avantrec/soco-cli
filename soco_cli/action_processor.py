@@ -1135,12 +1135,12 @@ def eq(speaker, action, args, soco_function, use_local_speaker_list):
 @one_parameter
 def eq_relative(speaker, action, args, soco_function, use_local_speaker_list):
     """Set an EQ value by a relative amount"""
-    current = getattr(speaker, soco_function)
     try:
         delta = int(args[0])
     except:
         parameter_type_error(action, "integer from -10 to 10")
         return False
+    current = getattr(speaker, soco_function)
     new_value = current + delta
     new_value = -10 if new_value < -10 else 10 if new_value > 10 else new_value
     logging.info("Requested delta = '{}', new_value = '{}'".format(delta, new_value))
