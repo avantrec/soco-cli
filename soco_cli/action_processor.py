@@ -2871,8 +2871,8 @@ actions = {
     "copy_alarm": SonosFunction(copy_alarm, "", False),
     "move_alarm": SonosFunction(move_alarm, "", False),
     "snooze_alarm": SonosFunction(snooze_alarm, "", True),
-    "relative_bass": SonosFunction(eq_relative, "bass", True),
-    "rb": SonosFunction(eq_relative, "bass", True),
-    "relative_treble": SonosFunction(eq_relative, "treble", True),
-    "rt": SonosFunction(eq_relative, "treble", True),
+    "relative_bass": SonosFunction(eq_relative, "bass", False),
+    "rb": SonosFunction(eq_relative, "bass", False),
+    "relative_treble": SonosFunction(eq_relative, "treble", False),
+    "rt": SonosFunction(eq_relative, "treble", False),
 }
