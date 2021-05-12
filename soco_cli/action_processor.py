@@ -1132,6 +1132,22 @@ def eq(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@one_parameter
+def eq_relative(speaker, action, args, soco_function, use_local_speaker_list):
+    """Set an EQ value by a relative amount"""
+    current = getattr(speaker, soco_function)
+    try:
+        delta = int(args[0])
+    except:
+        parameter_type_error(action, "integer from -10 to 10")
+        return False
+    new_value = current + delta
+    new_value = -10 if new_value < -10 else 10 if new_value > 10 else new_value
+    logging.info("Requested delta = '{}', new_value = '{}'".format(delta, new_value))
+    setattr(speaker, soco_function, new_value)
+    return True
+
+
 @zero_or_one_parameter
 def balance(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
@@ -2855,4 +2871,8 @@ actions = {
     "copy_alarm": SonosFunction(copy_alarm, "", False),
     "move_alarm": SonosFunction(move_alarm, "", False),
     "snooze_alarm": SonosFunction(snooze_alarm, "", True),
+    "relative_bass": SonosFunction(eq_relative, "bass", True),
+    "rb": SonosFunction(eq_relative, "bass", True),
+    "relative_treble": SonosFunction(eq_relative, "treble", True),
+    "rt": SonosFunction(eq_relative, "treble", True),
 }

@@ -289,6 +289,8 @@ This feature works by invoking the `play_file` action for each file in the playl
 - **`night_mode`** (or **`night`**): Returns the night mode setting of the speaker, 'on' or 'off' (if applicable).
 - **`night_mode <on|off>`** (or **`night`**): Sets the night mode setting of the speaker to 'on' or 'off' (if applicable).
 - **`ramp_to_volume <volume>` (or `ramp`)**: Gently raise or reduce the volume to `<volume>`, which is between 0 and 100. Returns the number of seconds to complete the ramp.
+- **`relative_bass <adjustment>` (or `rb`)** Increase or reduce the bass setting by `<adjustment>`, a value between -10 and 10.
+- **`relative_treble <adjustment>` (or `rt`)** Increase or reduce the treble setting by `<adjustment>`, a value between -10 and 10.
 - **`relative_volume <adjustment>` (or `rel_vol`, `rv`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
 - **`treble`**: Returns the treble setting of the speaker, from -10 to 10.
 - **`treble <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.
