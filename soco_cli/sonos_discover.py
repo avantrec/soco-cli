@@ -10,6 +10,7 @@ from soco_cli.utils import (
     configure_logging,
     docs,
     error_and_exit,
+    logo,
     version,
 )
 
@@ -52,6 +53,10 @@ def main():
 
     if args.docs:
         docs()
+        exit(0)
+
+    if args.logo:
+        logo()
         exit(0)
 
     if args.check_for_update:
