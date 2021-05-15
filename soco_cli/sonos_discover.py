@@ -47,6 +47,8 @@ def main():
     # Parse the command line
     args = parser.parse_args()
 
+    configure_logging(args.log)
+
     if args.version:
         version()
         exit(0)
@@ -62,8 +64,6 @@ def main():
     if args.check_for_update:
         print_update_status()
         exit(0)
-
-    configure_logging(args.log)
 
     # Create the Speakers object
     speaker_list = Speakers()
