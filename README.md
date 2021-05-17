@@ -449,9 +449,9 @@ The actions below search the Sonos Music library.
 
 Multiple commands can be run as part of the same `sonos` invocation by using the `:` separator to add multiple `SPEAKER ACTION <parameters>` sequences to the command line. **The `:` separator must be surrounded by spaces** to disambiguate from other uses of `:` in sonos actions.
 
-The benefit of using this approach instead of multiple separate `sonos` commands is that cost of starting the program is only incurred once. In addition, it allows for the introduction of wait states and loops.
+The benefit of using this approach instead of multiple separate `sonos` commands is that the cost of starting the program is only incurred once. In addition, it allows for the introduction of wait states and loops.
 
-An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will report the error, and will generally attempt to execute subsequent commands.
+An arbitrary number of commands can be supplied as part of a single `sonos` invocation. If a failure is encountered with any command, `sonos` will report the error, but will generally attempt to execute subsequent commands.
 
 **Example:** `sonos Kitchen volume 25 : Kitchen play`
 
