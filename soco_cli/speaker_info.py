@@ -52,7 +52,7 @@ def print_speaker_table(device):
             title = not_applicable
         else:
             volume = sco.volume
-            mute = sco.mute
+            mute = "On" if sco.mute else "Off"
             # Bonded speakers return errors for transport and track info.
             # Wrap in an exception, and ignore.
             try:
