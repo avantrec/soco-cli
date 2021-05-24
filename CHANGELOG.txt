@@ -1,4 +1,4 @@
-v0.3.42   -
+v0.3.42   - Minor bugfixes only
 v0.3.41   - Add 'relative_bass' and 'relative_treble' actions
 v0.3.40   - Simplify 'snooze_alarm' action (backward-compatible)
 v0.3.39   - Add 'snooze_alarm' action
