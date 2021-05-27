@@ -49,9 +49,13 @@ pp = pprint.PrettyPrinter(width=120)
 sonos_max_items = 66000
 
 
-def get_playlist(speaker, name):
+def get_playlist(speaker, name, library=False):
     """Returns the playlist object with 'name' otherwise None."""
-    playlists = speaker.get_sonos_playlists(complete_result=True)
+    if library:
+        playlists = speaker.music_library.get_playlists(complete_result=True)
+    else:
+        playlists = speaker.get_sonos_playlists(complete_result=True)
+
     # Strict match
     for playlist in playlists:
         if name == playlist.title:
@@ -59,31 +63,14 @@ def get_playlist(speaker, name):
                 "Found playlist '{}' using strict match".format(playlist.title)
             )
             return playlist
+
     # Fuzzy match
     name = name.lower()
     for playlist in playlists:
         if name in playlist.title.lower():
             logging.info("Found playlist '{}' using fuzzy match".format(playlist.title))
             return playlist
-    return None
 
-
-def get_library_playlist(speaker, name):
-    """Returns the playlist object with 'name' otherwise None."""
-    playlists = speaker.music_library.get_playlists(complete_result=True)
-    # Strict match
-    for playlist in playlists:
-        if name == playlist.title:
-            logging.info(
-                "Found playlist '{}' using strict match".format(playlist.title)
-            )
-            return playlist
-    # Fuzzy match
-    name = name.lower()
-    for playlist in playlists:
-        if name in playlist.title.lower():
-            logging.info("Found playlist '{}' using fuzzy match".format(playlist.title))
-            return playlist
     return None
 
 
@@ -1017,7 +1004,7 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     if soco_function == "add_to_queue":
         playlist = get_playlist(speaker, name)
     elif soco_function == "add_library_playlist_to_queue":
-        playlist = get_library_playlist(speaker, name)
+        playlist = get_playlist(speaker, name, library=True)
 
     if playlist is not None:
         if soco_function in ["add_to_queue", "add_library_playlist_to_queue"]:
@@ -1075,7 +1062,7 @@ def list_playlist_tracks(speaker, action, args, soco_function, use_local_speaker
 def list_library_playlist_tracks(
     speaker, action, args, soco_function, use_local_speaker_list
 ):
-    playlist = get_library_playlist(speaker, args[0])
+    playlist = get_playlist(speaker, args[0], library=True)
     if playlist:
         print()
         print_list_header("Library Playlist:", playlist.title)
