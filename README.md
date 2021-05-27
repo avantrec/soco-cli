@@ -239,6 +239,8 @@ sonos <speaker_name> add_playlist_to_queue <playlist>
 sonos <speaker_name> play_from_queue 24
 ```
 
+To add imported playlists from local libraries to the queue, use the `add_library_playlist_to_queue` action.
+
 Albums from local music libraries can also be added to the queue using `sonos <speaker> queue_album <album_name>`. The action returns the queue position of the first track in the album, which can then be played as in the example above:
 
 ### Audio Files on the Local Filesystem
@@ -334,6 +336,7 @@ This feature works by invoking the `play_file` action for each file in the playl
 ### Queue Actions
 
 - **`add_playlist_to_queue <playlist_name> <play_next|next or first|start>`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. The number in the queue of the first track in the playlist will be returned. Optionally, `play_next` or `next` can be added to insert the playlist at the next queue position. To start playback, follow with action `play_from_queue`.
+- **`add_library_playlist_to_queue <playlist_name> <play_next|next or first|start>`** (or **`alpq`**): As above, but targets local library imported playlists instead of Sonos playlists. 
 - **`add_uri_to_queue <uri> <queue position or next>`** Adds a URI to the queue. The URI is added to the end of the queue if no queue position (an integer, or `next`) is supplied. Returns the queue position of the URI.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
@@ -361,7 +364,9 @@ The following has issues and requires further development. For example, it's cur
 - **`delete_playlist <playlist>`** (or **`remove_playlist`**): Delete the Sonos playlist named `<playlist>`.
 - **`list_all_playlist_tracks`** (or **`lapt`**): Lists all tracks in all Sonos Playlists.
 - **`list_favs`** (or **`list_favorites`, `list_favourites`, `lf`**): Lists all Sonos favourites.
+- **`list_library_playlists`** (or **`llp`**): List all local library imported playlists.
 - **`list_playlists`** (or **`playlists`, `lp`**): Lists the Sonos playlists.
+- **`list_library_playlist_tracks <playlist_name>`** (or **`llpt`**): List the tracks in a local library imported playlist.
 - **`list_playlist_tracks <playlist_name>`** (or **`lpt`**): List the tracks in a given Sonos Playlist.
 - **`play_favourite <favourite_name>` (or `play_favorite`, `favourite`, `favorite`, `fav`, `pf`, `play_fav`)**: Plays the Sonos favourite identified by `<favourite_name>`. The name is loosely matched; if `<favourite_name>` is a (case insensitive) substring of a Sonos favourite, it will match. In the case of duplicates, the first match encountered will be used. If a queueable item, the favourite will be added to the end of the current queue and played. **Note: this currently works only for certain types of favourite: local library tracks and playlists, radio stations, single Spotify tracks, etc.**
 - **`play_favourite_number <number>`** (or **`play_favorite_number`**, **`pfn`**): Play a Sonos favourite by its index number in the list of favourites.  

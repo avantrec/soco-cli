@@ -68,6 +68,25 @@ def get_playlist(speaker, name):
     return None
 
 
+def get_library_playlist(speaker, name):
+    """Returns the playlist object with 'name' otherwise None."""
+    playlists = speaker.music_library.get_playlists(complete_result=True)
+    # Strict match
+    for playlist in playlists:
+        if name == playlist.title:
+            logging.info(
+                "Found playlist '{}' using strict match".format(playlist.title)
+            )
+            return playlist
+    # Fuzzy match
+    name = name.lower()
+    for playlist in playlists:
+        if name in playlist.title.lower():
+            logging.info("Found playlist '{}' using fuzzy match".format(playlist.title))
+            return playlist
+    return None
+
+
 def print_list_header(prefix, name):
     spacer = "  "
     title = "{} {}".format(prefix, name)
@@ -262,6 +281,7 @@ def list_numbered_things(speaker, action, args, soco_function, use_local_speaker
     if soco_function in [
         "get_sonos_favorites",
         "get_favorite_radio_stations",
+        "get_playlists",
         # "get_tracks",
     ]:
         things = getattr(speaker.music_library, soco_function)(complete_result=True)
@@ -992,9 +1012,15 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
     if soco_function == "add_uri_to_queue":
         getattr(speaker, soco_function)(name)
         return True
-    playlist = get_playlist(speaker, name)
+
+    playlist = None
+    if soco_function == "add_to_queue":
+        playlist = get_playlist(speaker, name)
+    elif soco_function == "add_library_playlist_to_queue":
+        playlist = get_library_playlist(speaker, name)
+
     if playlist is not None:
-        if soco_function == "add_to_queue":
+        if soco_function in ["add_to_queue", "add_library_playlist_to_queue"]:
             position = 0
             if len(args) == 2:
                 position = 1
@@ -1020,7 +1046,7 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
             result = speaker.add_to_queue(playlist, position=position)
             print(result)
         else:
-            result = getattr(speaker, soco_function)(playlist)
+            getattr(speaker, soco_function)(playlist)
     else:
         error_and_exit("Playlist '{}' not found".format(args[0]))
         return False
@@ -1035,6 +1061,26 @@ def list_playlist_tracks(speaker, action, args, soco_function, use_local_speaker
         print_list_header("Sonos Playlist:", playlist.title)
         tracks = speaker.music_library.browse_by_idstring(
             "sonos_playlists", playlist.item_id, max_items=sonos_max_items
+        )
+        print_tracks(tracks)
+        print()
+        save_search(tracks)
+        return True
+
+    error_and_exit("Playlist '{}' not found".format(args[0]))
+    return False
+
+
+@one_parameter
+def list_library_playlist_tracks(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
+    playlist = get_library_playlist(speaker, args[0])
+    if playlist:
+        print()
+        print_list_header("Library Playlist:", playlist.title)
+        tracks = speaker.music_library.browse_by_idstring(
+            "playlists", playlist.item_id, max_items=sonos_max_items
         )
         print_tracks(tracks)
         print()
@@ -2875,4 +2921,16 @@ actions = {
     "rb": SonosFunction(eq_relative, "bass", False),
     "relative_treble": SonosFunction(eq_relative, "treble", False),
     "rt": SonosFunction(eq_relative, "treble", False),
+    "list_library_playlists": SonosFunction(
+        list_numbered_things, "get_playlists", False
+    ),
+    "llp": SonosFunction(list_numbered_things, "get_playlists", False),
+    "list_library_playlist_tracks": SonosFunction(
+        list_library_playlist_tracks, "", False
+    ),
+    "llpt": SonosFunction(list_library_playlist_tracks, "", False),
+    "add_library_playlist_to_queue": SonosFunction(
+        playlist_operations, "add_library_playlist_to_queue", True
+    ),
+    "alpq": SonosFunction(playlist_operations, "add_library_playlist_to_queue", True),
 }
