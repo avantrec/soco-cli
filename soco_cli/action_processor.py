@@ -2521,7 +2521,8 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
         error_and_exit("Exception {}".format(e))
         return False
 
-    initial_track = None
+    initial_playlist_number = None
+    initial_title = None
 
     while True:
         try:
@@ -2546,13 +2547,37 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                 event_unsubscribe(sub)
                 return True
 
-            if not initial_track:
-                initial_track = event.variables["current_track"]
+            if initial_playlist_number is None:
+                initial_playlist_number = event.variables["current_track"]
+                try:
+                    initial_title = speaker.get_current_track_info()["title"]
+                except:
+                    initial_title = None
+                logging.info(
+                    "Initial title = '{}', initial playlist no. = {}".format(
+                        initial_title, initial_playlist_number
+                    )
+                )
 
-            elif event.variables["current_track"] != initial_track:
-                logging.info("Track number has changed")
-                event_unsubscribe(sub)
-                return True
+            else:
+                current_playlist_number = event.variables["current_track"]
+                try:
+                    current_title = speaker.get_current_track_info()["title"]
+                except:
+                    current_title = None
+                logging.info(
+                    "Current title = '{}', current playlist no. = {}".format(
+                        current_title, current_playlist_number
+                    )
+                )
+                # Check whether playlist number or track title have changed
+                if (
+                    current_playlist_number != initial_playlist_number
+                    or current_title != initial_title
+                ):
+                    logging.info("Track has changed")
+                    event_unsubscribe(sub)
+                    return True
 
         except Empty:
             pass
