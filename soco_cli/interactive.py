@@ -2,6 +2,7 @@
 
 import logging
 import subprocess
+import time
 
 # Readline is only available on Unix
 try:
@@ -303,6 +304,10 @@ def interactive_loop(
                     pushed = False
                     continue
 
+                if command_lower == "track_follow":
+                    _track_follow(speaker, use_local_speaker_list)
+                    continue
+
                 # Alias creation, update, and deletion
                 if command_lower == "alias":
                     if len(command) == 1:
@@ -466,6 +471,7 @@ COMMANDS = [
     "single-keystroke",
     "sk",
     "speakers",
+    "track_follow",
     "version",
 ]
 
@@ -548,6 +554,9 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     or just enter '0'.
     'sk'         :  Enters 'single keystroke' mode. (Also 'single-keystroke'.)
     'speakers'   :  List the names of all available speakers.
+    'track_follow' : Prints the track details each time they change. Execution
+                    stops when speaker playback ends. Termination using
+                    CTRL-C will exit the interactive shell.
     'version'    :  Print the versions of SoCo-CLI, SoCo, and Python in use.
     
     The action syntax is the same as when using 'sonos' from the command line.
@@ -753,3 +762,35 @@ def _rescan(use_local_speaker_list=False, max=False):
         _set_actions_and_commands_list(use_local_speaker_list=use_local_speaker_list)
     except Exception as e:
         print("Rescan failed: please check your network connection [{}]".format(e))
+
+
+def _track_follow(speaker, use_local_speaker_list):
+    first = True
+    while True:
+        # Print the track info
+        code, output, _ = run_command(
+            speaker, "track", use_local_speaker_list=use_local_speaker_list
+        )
+        if code == 0:
+            output = output.replace("Playback state is 'PLAYING':\n", "")
+            output = output.replace("Playback state is 'TRANSITIONING':\n", "")
+            if not first:
+                output = output.split("\n", 1)[1]
+            print(output)
+            if first:
+                first = False
+
+        # Wait until the track changes
+        code, _, _ = run_command(
+            speaker, "wait_end_track", use_local_speaker_list=use_local_speaker_list
+        )
+        if code != 0:
+            break
+
+        # Check to see if the speaker has stopped playing, and exit loop
+        time.sleep(3)
+        if speaker.get_current_transport_info()["current_transport_state"] in [
+            "STOPPED",
+            "PAUSED_PLAYBACK",
+        ]:
+            break

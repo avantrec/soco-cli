@@ -1,4 +1,4 @@
-v0.3.44   -
+v0.3.44   - Add 'track_follow' command to the interactive shell
 v0.3.43   - Add support for imported local library playlists
 v0.3.42   - Minor bugfixes only
 v0.3.41   - Add 'relative_bass' and 'relative_treble' actions
