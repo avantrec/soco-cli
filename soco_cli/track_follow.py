@@ -1,4 +1,5 @@
 import logging
+import re
 
 from time import sleep
 from soco_cli.api import run_command, get_soco_object
@@ -35,8 +36,16 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
             speaker, "track", use_local_speaker_list=use_local_speaker_list
         )
         if exit_code == 0:
-            output = output.replace("Playback state is 'PLAYING':\n", "")
-            output = output.replace("Playback state is 'TRANSITIONING':\n", "")
+            # Remove some of the 'track' output lines & reformat
+            output = re.sub("Playback.*\\n", "", output)
+            output = re.sub("  URI.*\\n", "", output)
+            output = re.sub("  Uri.*\\n", "", output)
+            output = re.sub("  Position.*\\n", "", output)
+            output = output.replace("Playlist_position:", "Position:   ")
+            output = output.replace("Album:", "Album:      ")
+            output = output.replace("Artist:", "Artist:     ")
+            output = output.replace("Duration:", "Duration:   ")
+            output = output.replace("Title:", "Title:      ")
             if not first:
                 output = output.split("\n", 1)[1]
             else:
