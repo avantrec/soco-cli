@@ -17,6 +17,7 @@ from soco_cli.check_for_update import print_update_status
 from soco_cli.cmd_parser import CLIParser
 from soco_cli.interactive import interactive_loop
 from soco_cli.speakers import Speakers
+from soco_cli.track_follow import track_follow
 from soco_cli.utils import (
     RewindableList,
     check_args,
@@ -419,6 +420,15 @@ def main():
                     )
                     cumulative_exit_code += 1
                 else:
+                    # Special case of 'track_follow' action
+                    if action == "track_follow":
+                        # Does not return
+                        track_follow(
+                            speaker,
+                            use_local_speaker_list=use_local_speaker_list,
+                            break_on_pause=False,
+                        )
+                    # Standard action processing
                     exit_code, output_msg, error_msg = run_command(
                         speaker,
                         action,

@@ -332,6 +332,7 @@ This feature works by invoking the `play_file` action for each file in the playl
 - **`sleep_at <HH:MM:SS>`**: Sets the sleep timer to sleep at a time up to 24 hours in the future. For example, to set the speaker to sleep at 4pm, use `sleep_at 16:00`.
 - **`stop`**: Stop playback.
 - **`track`**: Return information about the currently playing track.
+- **`track_follow`**: Returns information about the currently playing track, and each subsequent track when the track changes. This action keeps running until cancelled using CTRL-C.
 
 ### Queue Actions
 
