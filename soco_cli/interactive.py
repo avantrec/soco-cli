@@ -2,7 +2,6 @@
 
 import logging
 import subprocess
-import time
 
 # Readline is only available on Unix
 try:
@@ -22,6 +21,7 @@ from soco_cli.api import get_soco_object, run_command
 from soco_cli.check_for_update import print_update_status
 from soco_cli.cmd_parser import CLIParser
 from soco_cli.keystroke_capture import get_keystroke
+from soco_cli.track_follow import track_follow
 from soco_cli.utils import (
     RewindableList,
     docs,
@@ -305,7 +305,11 @@ def interactive_loop(
                     continue
 
                 if command_lower == "track_follow":
-                    _track_follow(speaker, use_local_speaker_list)
+                    track_follow(
+                        speaker,
+                        use_local_speaker_list=use_local_speaker_list,
+                        break_on_pause=True,
+                    )
                     continue
 
                 # Alias creation, update, and deletion
@@ -762,35 +766,3 @@ def _rescan(use_local_speaker_list=False, max=False):
         _set_actions_and_commands_list(use_local_speaker_list=use_local_speaker_list)
     except Exception as e:
         print("Rescan failed: please check your network connection [{}]".format(e))
-
-
-def _track_follow(speaker, use_local_speaker_list):
-    first = True
-    while True:
-        # Print the track info
-        code, output, _ = run_command(
-            speaker, "track", use_local_speaker_list=use_local_speaker_list
-        )
-        if code == 0:
-            output = output.replace("Playback state is 'PLAYING':\n", "")
-            output = output.replace("Playback state is 'TRANSITIONING':\n", "")
-            if not first:
-                output = output.split("\n", 1)[1]
-            print(output)
-            if first:
-                first = False
-
-        # Wait until the track changes
-        code, _, _ = run_command(
-            speaker, "wait_end_track", use_local_speaker_list=use_local_speaker_list
-        )
-        if code != 0:
-            break
-
-        # Check to see if the speaker has stopped playing, and exit loop
-        time.sleep(3)
-        if speaker.get_current_transport_info()["current_transport_state"] in [
-            "STOPPED",
-            "PAUSED_PLAYBACK",
-        ]:
-            break
