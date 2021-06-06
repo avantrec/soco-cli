@@ -2,8 +2,7 @@ import logging
 import re
 
 from time import sleep
-from soco_cli.api import run_command, get_soco_object
-from soco_cli.utils import error_and_exit
+from soco_cli.api import run_command
 
 
 def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
@@ -13,15 +12,23 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
         speaker (SoCo): The speaker to follow.
         break_on_pause (bool, optional): Whether to return control if the
             speaker enters the paused or stopped playback states.
+
+    This function operates as if 'outside' the main program logic, because
+    it needs to output intermediate results as it executes. Hence, the
+    'run_command()' API call is used.
     """
 
-    first = True
+    print()
     while True:
         # If stopped, wait for the speaker to start playback
-        if speaker.get_current_transport_info()["current_transport_state"] in [
+        _, state, _ = run_command(
+            speaker, "state", use_local_speaker_list=use_local_speaker_list
+        )
+        if state in [
             "STOPPED",
             "PAUSED_PLAYBACK",
         ]:
+            print("  Playback is stopped or paused\n")
             if break_on_pause:
                 logging.info("Playback is paused/stopped; returning")
                 break
@@ -37,6 +44,7 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
         )
         if exit_code == 0:
             # Remove some of the 'track' output lines & reformat
+            output = output.split("\n", 1)[1]
             output = re.sub("Playback.*\\n", "", output)
             output = re.sub("  URI.*\\n", "", output)
             output = re.sub("  Uri.*\\n", "", output)
@@ -46,10 +54,6 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
             output = output.replace("Artist:", "Artist:     ")
             output = output.replace("Duration:", "Duration:   ")
             output = output.replace("Title:", "Title:      ")
-            if not first:
-                output = output.split("\n", 1)[1]
-            else:
-                first = False
             print(output)
         else:
             print(error_msg)
