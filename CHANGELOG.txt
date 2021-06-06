@@ -1,4 +1,4 @@
-v0.3.46   -
+v0.3.46   - Improve output of 'track_follow'
 v0.3.45   - Add 'track_follow' action outside interactive mode
 v0.3.44   - Add 'track_follow' command to the interactive shell
 v0.3.43   - Add support for imported local library playlists
