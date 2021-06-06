@@ -841,7 +841,7 @@ The API entry point is **`api.run_command(speaker_name, action, *args, use_local
 
 **Parameters:**
 
-- **`speaker_name (str)`**: The speaker name or speaker IP address supplied as a string. Partial, case-insensitive names will be matched, but the match must be unambiguous.
+- **`speaker_name (str)`**: The speaker name or speaker IP address supplied as a string. Partial, case-insensitive names will be matched, but the match must be unambiguous. A `SoCo` object may be passed in place of the speaker name.
 - **`action (str)`**: The action to perform, supplied as a string. Almost all of the SoCo-CLI actions are available for use, with the exception of the `loop` actions, the `wait_until` and `wait_for` actions, and the `track_follow` action.
 - **`*args (tuple)`**: The arguments for the action, supplied as strings. There can be zero or more argumants, depending on the action.
 - **`use_local_speaker_list (bool)`**: Whether to use the local speaker cache for speaker discovery. Optional, defaults to `False`.

@@ -35,7 +35,8 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     will be returned in the error message string.
 
     Args:
-        speaker_name (str): The name of the speaker, or its IP address
+        speaker_name (str): The name of the speaker, or its IP address.
+            Alternatively, a 'SoCo' object can be supplied.
         action (str): The The name of the SoCo-CLI action to perform
         *args (list[str]): The set of arguments that accompany the action
 
@@ -56,7 +57,7 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     speaker = None
     exception_error = None
 
-    # Can pass a SoCo object instead of the speaker name (not documented)
+    # Can pass a SoCo object instead of the speaker name
     if isinstance(speaker_name, SoCo):
         speaker = speaker_name
 
