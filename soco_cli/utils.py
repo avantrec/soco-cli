@@ -51,7 +51,7 @@ def set_api():
 # Error handling
 def error_and_exit(msg):
     # Print to stderr
-    print("Error:", msg, file=sys.stderr)
+    print("Error:", msg, file=sys.stderr, flush=True)
     # Use os._exit() to avoid the catch-all 'except'
     if not (INTERACTIVE or API):
         os._exit(1)
@@ -220,9 +220,9 @@ def convert_true_false(true_or_false, conversion="YesOrNo"):
 
 
 def version():
-    print("soco-cli version: {}".format(__version__))
-    print("soco version:     {}".format(soco.__version__))
-    print("python version:   {}".format(python_version()))
+    print("soco-cli version: {}".format(__version__), flush=True)
+    print("soco version:     {}".format(soco.__version__), flush=True)
+    print("python version:   {}".format(python_version()), flush=True)
 
 
 def docs():
@@ -231,7 +231,7 @@ def docs():
         url = "https://github.com/avantrec/soco-cli/blob/next_version/README.md"
     else:
         url = "https://github.com/avantrec/soco-cli/blob/{}/README.md".format(version)
-    print("Online documentation for {}: {}".format(version, url))
+    print("Online documentation for {}: {}".format(version, url), flush=True)
 
 
 def logo():
@@ -242,7 +242,7 @@ def logo():
         url = "https://raw.githubusercontent.com/avantrec/soco-cli/{}/assets/soco-cli-logo-01-large.png".format(
             version
         )
-    print("SoCo-CLI Logo: {}".format(url))
+    print("SoCo-CLI Logo: {}".format(url), flush=True)
 
 
 # TODO: Remove with SIGTERM fix
@@ -276,7 +276,7 @@ def sig_handler(signal_received, frame):
     if not suspend_sigterm:
         # Exit silently without stack dump
         logging.info("Caught signal, exiting.")
-        print(" CTRL-C ... exiting.")
+        print(" CTRL-C ... exiting.", flush=True)
 
         if speaker_playing_local_file:
             logging.info(

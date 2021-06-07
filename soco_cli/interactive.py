@@ -310,7 +310,9 @@ def interactive_loop(
                     for arg in sys.argv[1:]:
                         if arg.startswith("--log"):
                             command_line.append(arg)
-                    print("\n Running 'track_follow' in a subprocess. Terminate using CTRL-C.")
+                    print(
+                        "\n Running 'track_follow' in a subprocess. Terminate using CTRL-C."
+                    )
                     _exec(command_line)
                     continue
 

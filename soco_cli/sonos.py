@@ -154,18 +154,27 @@ def main():
         am = AliasManager()
         am.load_aliases()
         if am.save_aliases_to_file(args.save_aliases):
-            print("Saved shell aliases to '{}'".format(args.save_aliases))
+            print("Saved shell aliases to '{}'".format(args.save_aliases), flush=True)
         else:
-            print("Failed to save shell aliases to '{}'".format(args.save_aliases))
+            print(
+                "Failed to save shell aliases to '{}'".format(args.save_aliases),
+                flush=True,
+            )
         exit(0)
 
     if args.load_aliases:
         am = AliasManager()
         am.load_aliases()
         if am.load_aliases_from_file(args.load_aliases):
-            print("Loaded and merged shell aliases from '{}'".format(args.load_aliases))
+            print(
+                "Loaded and merged shell aliases from '{}'".format(args.load_aliases),
+                flush=True,
+            )
         else:
-            print("Failed to load shell aliases from '{}'".format(args.load_aliases))
+            print(
+                "Failed to load shell aliases from '{}'".format(args.load_aliases),
+                flush=True,
+            )
         exit(0)
 
     if args.overwrite_aliases:
@@ -174,16 +183,18 @@ def main():
             print(
                 "Loaded and saved shell aliases from '{}'".format(
                     args.overwrite_aliases
-                )
+                ),
+                flush=True,
             )
         else:
             print(
-                "Failed to load shell aliases from '{}'".format(args.overwrite_aliases)
+                "Failed to load shell aliases from '{}'".format(args.overwrite_aliases),
+                flush=True,
             )
         exit(0)
 
     if len(args.parameters) == 0 and not args.interactive:
-        print("No parameters. Use 'sonos --help' for usage information")
+        print("No parameters. Use 'sonos --help' for usage information", flush=True)
         exit(0)
 
     message = check_args(args)
@@ -407,9 +418,9 @@ def main():
                             use_local_speaker_list=use_local_speaker_list,
                         )
                         if exit_code == 0 and len(output_msg) != 0:
-                            print(output_msg)
+                            print(output_msg, flush=True)
                         elif len(error_msg) != 0:
-                            print(error_msg, file=sys.stderr)
+                            print(error_msg, file=sys.stderr, flush=True)
                         cumulative_exit_code += exit_code
             else:
                 speaker = get_speaker(speaker_name, use_local_speaker_list)
@@ -417,6 +428,7 @@ def main():
                     print(
                         "Error: Speaker '{}' not found".format(speaker_name),
                         file=sys.stderr,
+                        flush=True,
                     )
                     cumulative_exit_code += 1
                 else:
@@ -436,13 +448,13 @@ def main():
                         use_local_speaker_list=use_local_speaker_list,
                     )
                     if exit_code == 0 and len(output_msg) != 0:
-                        print(output_msg)
+                        print(output_msg, flush=True)
                     elif len(error_msg) != 0:
-                        print(error_msg, file=sys.stderr)
+                        print(error_msg, file=sys.stderr, flush=True)
                     cumulative_exit_code += exit_code
 
         except Exception as e:
-            print("Error: ", str(e))
+            print("Error: ", str(e), flush=True)
             cumulative_exit_code += 1
 
         sequence_pointer += 1
