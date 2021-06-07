@@ -2,6 +2,7 @@
 
 import logging
 import subprocess
+import sys
 
 # Readline is only available on Unix
 try:
@@ -247,14 +248,8 @@ def interactive_loop(
                     continue
 
                 if command_lower == "exec":
-                    set_suspend_sigterm(suspend=True)
                     if len(command) > 1:
-                        try:
-                            logging.info("Running command: '{}'".format(command[1:]))
-                            subprocess.run(command[1:])
-                        except Exception as e:
-                            print(e)
-                    set_suspend_sigterm(suspend=False)
+                        _exec(command[1:])
                     continue
 
                 if command_lower == "cd":
@@ -305,11 +300,26 @@ def interactive_loop(
                     continue
 
                 if command_lower == "track_follow":
-                    track_follow(
-                        speaker,
-                        use_local_speaker_list=use_local_speaker_list,
-                        break_on_pause=True,
-                    )
+                    # This runs in a subprocess, to allow CTRL-C
+                    # to exit the subprocess only, and not the shell.
+                    command_line = [sys.argv[0]]  # Path to 'sonos'
+                    # Use speaker IP address to avoid discovery cost
+                    command_line.append(speaker.ip_address)
+                    command_line.append("track_follow")
+                    # Pass through any appropriate command line options
+                    for arg in sys.argv[1:]:
+                        if arg.startswith("-") and arg not in [
+                            "-i",
+                            "--interactive",
+                            "-r",
+                            "--refresh-speaker-list",
+                            "--sk",
+                            "-l",
+                            "--use-local-speaker-list",
+                        ]:
+                            command_line.append(arg)
+                    print("\n Running 'track_follow' in a subprocess. Terminate using CTRL-C.")
+                    _exec(command_line)
                     continue
 
                 # Alias creation, update, and deletion
@@ -558,9 +568,8 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     or just enter '0'.
     'sk'         :  Enters 'single keystroke' mode. (Also 'single-keystroke'.)
     'speakers'   :  List the names of all available speakers.
-    'track_follow' : Prints the track details each time they change. Execution
-                    stops when speaker playback ends. Termination using
-                    CTRL-C will exit the interactive shell.
+    'track_follow' : Prints the track details each time they change. Runs in a
+                     subprocess. Terminate execution using CTRL-C.
     'version'    :  Print the versions of SoCo-CLI, SoCo, and Python in use.
     
     The action syntax is the same as when using 'sonos' from the command line.
@@ -766,3 +775,17 @@ def _rescan(use_local_speaker_list=False, max=False):
         _set_actions_and_commands_list(use_local_speaker_list=use_local_speaker_list)
     except Exception as e:
         print("Rescan failed: please check your network connection [{}]".format(e))
+
+
+def _exec(command_line):
+    """Runs a command as a subprocess.
+
+    command_line (list): The command to execute.
+    """
+    set_suspend_sigterm(suspend=True)
+    try:
+        logging.info("Running command: '{}'".format(command_line))
+        subprocess.run(command_line)
+    except Exception as e:
+        print(e)
+    set_suspend_sigterm(suspend=False)
