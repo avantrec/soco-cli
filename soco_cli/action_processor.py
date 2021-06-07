@@ -367,7 +367,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
             else:
                 # Assume it's a radio stream
                 print(
-                    "Playback state is '{}':\n  Title = {}\n  URI = {}".format(
+                    "Playback state is '{}':\n  Title: {}\n  URI: {}".format(
                         state, track_info["title"], track_info["uri"]
                     )
                 )
