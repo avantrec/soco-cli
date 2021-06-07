@@ -1,4 +1,4 @@
-v0.3.48   -
+v0.3.48   - Bugfix
 v0.3.47   - Interactive mode 'track_follow' now runs in a subprocess
 v0.3.46   - Improve output of 'track_follow'
 v0.3.45   - Add 'track_follow' action outside interactive mode

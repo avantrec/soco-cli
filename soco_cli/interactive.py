@@ -306,17 +306,9 @@ def interactive_loop(
                     # Use speaker IP address to avoid discovery cost
                     command_line.append(speaker.ip_address)
                     command_line.append("track_follow")
-                    # Pass through any appropriate command line options
+                    # Pass through log option
                     for arg in sys.argv[1:]:
-                        if arg.startswith("-") and arg not in [
-                            "-i",
-                            "--interactive",
-                            "-r",
-                            "--refresh-speaker-list",
-                            "--sk",
-                            "-l",
-                            "--use-local-speaker-list",
-                        ]:
+                        if arg.startswith("--log"):
                             command_line.append(arg)
                     print("\n Running 'track_follow' in a subprocess. Terminate using CTRL-C.")
                     _exec(command_line)
