@@ -250,6 +250,7 @@ def interactive_loop(
                 if command_lower == "exec":
                     if len(command) > 1:
                         _exec(command[1:])
+                        print()
                     continue
 
                 if command_lower == "cd":
@@ -300,13 +301,16 @@ def interactive_loop(
                     continue
 
                 if command_lower == "track_follow":
+                    if not speaker:
+                        print("Please set or specify an active speaker")
+                        continue
                     # This runs in a subprocess, to allow CTRL-C
                     # to exit the subprocess only, and not the shell.
                     command_line = [sys.argv[0]]  # Path to 'sonos'
                     # Use speaker IP address to avoid discovery cost
                     command_line.append(speaker.ip_address)
                     command_line.append("track_follow")
-                    # Pass through log option
+                    # Pass through the log option if present
                     for arg in sys.argv[1:]:
                         if arg.startswith("--log"):
                             command_line.append(arg)
@@ -314,6 +318,7 @@ def interactive_loop(
                         "\n Running 'track_follow' in a subprocess. Terminate using CTRL-C."
                     )
                     _exec(command_line)
+                    print()
                     continue
 
                 # Alias creation, update, and deletion
@@ -774,7 +779,8 @@ def _rescan(use_local_speaker_list=False, max=False):
 def _exec(command_line):
     """Runs a command as a subprocess.
 
-    command_line (list): The command to execute.
+    Args:
+        command_line (list): The command to execute.
     """
     set_suspend_sigterm(suspend=True)
     try:
