@@ -300,27 +300,6 @@ def interactive_loop(
                     pushed = False
                     continue
 
-                if command_lower == "track_follow":
-                    if not speaker:
-                        print("Please set or specify an active speaker")
-                        continue
-                    # This runs in a subprocess, to allow CTRL-C
-                    # to exit the subprocess only, and not the shell.
-                    command_line = [sys.argv[0]]  # Path to 'sonos'
-                    # Use speaker IP address to avoid discovery cost
-                    command_line.append(speaker.ip_address)
-                    command_line.append("track_follow")
-                    # Pass through the log option if present
-                    for arg in sys.argv[1:]:
-                        if arg.startswith("--log"):
-                            command_line.append(arg)
-                    print(
-                        "\n Running 'track_follow' in a subprocess. Terminate using CTRL-C."
-                    )
-                    _exec(command_line)
-                    print()
-                    continue
-
                 # Alias creation, update, and deletion
                 if command_lower == "alias":
                     if len(command) == 1:
@@ -432,25 +411,28 @@ def interactive_loop(
 
                     action = args.pop(0).lower()
                     logging.info("Action = '{}'; args = {}".format(action, args))
-                    exit_code, output, error_msg = run_command(
-                        speaker,
-                        action,
-                        *args,
-                        use_local_speaker_list=use_local_speaker_list,
-                    )
-                    if exit_code:
-                        if not error_msg == "":
-                            print(error_msg)
+                    if action == "track_follow":
+                        _track_follow(speaker.ip_address)
                     else:
-                        if not output == "":
-                            print(output)
-                        if action == "rename":
-                            speaker_name = speaker.get_speaker_info(refresh=True)[
-                                "zone_name"
-                            ]
-                            _set_actions_and_commands_list(
-                                use_local_speaker_list=use_local_speaker_list
-                            )
+                        exit_code, output, error_msg = run_command(
+                            speaker,
+                            action,
+                            *args,
+                            use_local_speaker_list=use_local_speaker_list,
+                        )
+                        if exit_code:
+                            if not error_msg == "":
+                                print(error_msg)
+                        else:
+                            if not output == "":
+                                print(output)
+                            if action == "rename":
+                                speaker_name = speaker.get_speaker_info(refresh=True)[
+                                    "zone_name"
+                                ]
+                                _set_actions_and_commands_list(
+                                    use_local_speaker_list=use_local_speaker_list
+                                )
                     if temp_active_speaker:
                         logging.info(
                             "Unsetting temporary active speaker: '{}'".format(
@@ -462,6 +444,7 @@ def interactive_loop(
                         speaker_name = None
                 except:
                     print("Error: Invalid command")
+
         # Catch all exceptions in the interactive loop
         except Exception as e:
             print("Error: {}".format(e))
@@ -789,3 +772,21 @@ def _exec(command_line):
     except Exception as e:
         print(e)
     set_suspend_sigterm(suspend=False)
+
+
+def _track_follow(speaker_ip):
+    # This runs in a subprocess, to allow CTRL-C
+    # to exit the subprocess only, and not the shell.
+
+    command_line = [sys.argv[0]]  # Path to 'sonos'
+    command_line.append(speaker_ip)
+    command_line.append("track_follow")
+    for arg in sys.argv[1:]:
+        if arg.startswith("--log"):
+            command_line.append(arg)
+
+    print(
+        "\n Running 'track_follow' in a subprocess. Terminate using CTRL-C."
+    )
+    _exec(command_line)
+    print()
