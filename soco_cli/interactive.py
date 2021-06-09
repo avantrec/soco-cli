@@ -781,9 +781,14 @@ def _track_follow(speaker_ip):
     command_line = [sys.argv[0]]  # Path to 'sonos'
     command_line.append(speaker_ip)
     command_line.append("track_follow")
-    for arg in sys.argv[1:]:
-        if arg.startswith("--log"):
+    for position, arg in enumerate(sys.argv[1:]):
+        if arg.startswith("--log="):
             command_line.append(arg)
+            break
+        elif arg == "--log":
+            command_line.append(arg)
+            command_line.append(sys.argv[1:][position + 1])
+            break
 
     print(
         "\n Running 'track_follow' in a subprocess. Terminate using CTRL-C."
