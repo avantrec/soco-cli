@@ -46,7 +46,7 @@ from soco_cli.utils import (
 )
 
 pp = pprint.PrettyPrinter(width=120)
-sonos_max_items = 66000
+SONOS_MAX_ITEMS = 66000
 
 
 def get_playlist(speaker, name, library=False):
@@ -238,7 +238,7 @@ def no_args_one_output(speaker, action, args, soco_function, use_local_speaker_l
 
 @zero_or_one_parameter
 def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
-    queue = speaker.get_queue(max_items=sonos_max_items)
+    queue = speaker.get_queue(max_items=SONOS_MAX_ITEMS)
     if len(queue) == 0:
         print("Queue is empty")
         return True
@@ -1047,7 +1047,7 @@ def list_playlist_tracks(speaker, action, args, soco_function, use_local_speaker
         print()
         print_list_header("Sonos Playlist:", playlist.title)
         tracks = speaker.music_library.browse_by_idstring(
-            "sonos_playlists", playlist.item_id, max_items=sonos_max_items
+            "sonos_playlists", playlist.item_id, max_items=SONOS_MAX_ITEMS
         )
         print_tracks(tracks)
         print()
@@ -1067,7 +1067,7 @@ def list_library_playlist_tracks(
         print()
         print_list_header("Library Playlist:", playlist.title)
         tracks = speaker.music_library.browse_by_idstring(
-            "playlists", playlist.item_id, max_items=sonos_max_items
+            "playlists", playlist.item_id, max_items=SONOS_MAX_ITEMS
         )
         print_tracks(tracks)
         print()
@@ -1296,7 +1296,6 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
             [
                 alarm.alarm_id,
                 alarm.zone.player_name,
-                "|",
                 time,
                 duration,
                 alarm.recurrence,
@@ -1310,18 +1309,17 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
     headers = [
         "Alarm ID",
         "Speaker",
-        "|",
         "Start Time",
         "Duration",
         "Recurrence",
         "Enabled",
         "Title",
         "Play Mode",
-        "Volume",
-        "Include Grouped",
+        "Vol.",
+        "Incl. Grouped",
     ]
     print()
-    print(tabulate.tabulate(sorted(details), headers, numalign="center"))
+    print(tabulate.tabulate(sorted(details), headers, tablefmt="github", numalign="left"))
     print()
     return True
 
@@ -1924,7 +1922,7 @@ def search_artists(speaker, action, args, soco_function, use_local_speaker_list)
         print()
         print_list_header("Sonos Music Library Albums including Artist:", artist.title)
         albums = ml.get_music_library_information(
-            "artists", subcategories=[artist.title], max_items=sonos_max_items
+            "artists", subcategories=[artist.title], max_items=SONOS_MAX_ITEMS
         )
         print_albums(albums, omit_first=True)  # Omit the first (empty) entry
         print()
