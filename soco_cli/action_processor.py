@@ -1319,7 +1319,9 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
         "Incl. Grouped",
     ]
     print()
-    print(tabulate.tabulate(sorted(details), headers, tablefmt="github", numalign="left"))
+    print(
+        tabulate.tabulate(sorted(details), headers, tablefmt="github", numalign="left")
+    )
     print()
     return True
 

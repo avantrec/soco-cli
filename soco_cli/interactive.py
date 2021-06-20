@@ -790,8 +790,6 @@ def _track_follow(speaker_ip):
             command_line.append(sys.argv[1:][position + 1])
             break
 
-    print(
-        "\n Running 'track_follow' in a subprocess. Terminate using CTRL-C."
-    )
+    print("\n Running 'track_follow' in a subprocess. Terminate using CTRL-C.")
     _exec(command_line)
     print()

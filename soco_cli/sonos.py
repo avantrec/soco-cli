@@ -226,8 +226,11 @@ def main():
     # Is $SPKR set in the environment?
     env_speaker = None
     if not args.no_env:
-        logging.info("Ignoring 'SPKR' environment variable")
         env_speaker = env.get(ENV_SPKR)
+        if env_speaker:
+            logging.info("Found 'SPKR' environment variable: '{}'".format(env_speaker))
+        else:
+            logging.info("No 'SPKR' environment variable set")
 
     if args.interactive:
         sk = True if args.sk else False
