@@ -69,7 +69,7 @@ def interactive_loop(
                 speaker_name, use_local_speaker_list=use_local_speaker_list
             )
             if not speaker:
-                print("Speaker '{}' not found {}".format(speaker_name, error_msg))
+                print("Speaker '{}' not found [{}]".format(speaker_name, error_msg))
                 speaker_name = None
             else:
                 speaker_name = speaker.player_name
@@ -96,18 +96,18 @@ def interactive_loop(
         _get_readline_history()
 
     single_keystroke = single_keystroke
+    root_prompt = "Sonos"
 
     # Input loop
     while True:
         # Catch all exceptions raised in the input loop
         try:
             if speaker_name and speaker:
-                prompt = "SoCo-CLI [{}] > ".format(speaker_name)
+                prompt = (root_prompt + " [{}] > ").format(speaker_name)
             else:
-                prompt = "SoCo-CLI [] > "
+                prompt = root_prompt + " [] > "
 
             if single_keystroke:
-                prompt = prompt.replace("SoCo-CLI", "SoCo-CLI SK")
                 prompt = prompt.replace(">", ">>")
                 print(prompt, flush=True, end="")
                 command_line = get_keystroke()

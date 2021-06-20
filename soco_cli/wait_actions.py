@@ -7,7 +7,6 @@ from soco_cli.utils import convert_to_seconds, error_and_exit, seconds_until
 
 
 def process_wait(sequence):
-    # Special case: the 'wait' action
     if sequence[0] in ["wait", "wait_for"]:
         duration = 0
         if len(sequence) != 2:

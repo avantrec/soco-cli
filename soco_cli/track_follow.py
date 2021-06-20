@@ -65,5 +65,5 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
         )
 
         # Allow speaker state to stabilise
-        logging.info("Waiting 3s for playback to stabilise")
-        sleep(3)
+        logging.info("Waiting 1s for playback to stabilise")
+        sleep(1.0)
