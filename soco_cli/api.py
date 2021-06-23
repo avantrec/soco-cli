@@ -134,10 +134,10 @@ def handle_sigint():
     signal(SIGINT, sig_handler)
 
 
-def rescan_speakers():
+def rescan_speakers(timeout=None):
     """Run full network scan to find speakers."""
     _check_for_speaker_cache()
-    speaker_cache().scan(reset=True)
+    speaker_cache().scan(reset=True, scan_timeout_override=timeout)
 
 
 def rediscover_speakers():

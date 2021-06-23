@@ -37,6 +37,8 @@ setuptools.setup(
             "soco=soco_cli.sonos:main",
             "sonos-discover=soco_cli.sonos_discover:main",
             "soco-discover=soco_cli.sonos_discover:main",
+            "sonos-http-server=soco_cli.rest_api:main",
+            "soco-http-server=soco_cli.rest_api:main",
         ]
     },
 )

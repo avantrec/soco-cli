@@ -56,6 +56,12 @@
          * [Discovery Options](#discovery-options)
          * [The sonos-discover Command](#the-sonos-discover-command)
          * [Options for the sonos-discover Command](#options-for-the-sonos-discover-command)
+      * [The SoCo-CLI HTTP API](#the-soco-cli-http-api)
+         * [Server Usage](#server-usage)
+         * [HTTP Request Structure](#http-request-structure)
+         * [Return Values](#return-values)
+         * [Rediscovering Speakers](#rediscovering-speakers)
+         * [Inspecting the HTTP API](#inspecting-the-http-api)
       * [Using SoCo-CLI as a Python Library](#using-soco-cli-as-a-python-library)
          * [Importing the API](#importing-the-api)
          * [Using the API](#using-the-api)
@@ -65,7 +71,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Tue Apr  6 10:38:27 BST 2021 -->
+<!-- Added by: pwt, at: Wed Jun 23 17:08:32 BST 2021 -->
 
 <!--te-->
 
@@ -77,13 +83,15 @@ A simple `sonos` command is provided which allows easy control of a huge range o
 
 SoCo-CLI has an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
-SoCo-CLI can also be used as a simple, high-level [API](#using-soco-cli-as-a-python-library) library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library.
+SoCo-CLI can be used as a simple, high-level [API](#using-soco-cli-as-a-python-library) library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library.
 
 For interactive command line use, SoCo-CLI provides a powerful [Interactive Shell Mode](#interactive-shell-mode) that improves speed of operation and reduces typing.
 
+SoCo-CLI can also run as a simple [HTTP REST API server](#the-soco-cli-http-api), providing access to a huge range of actions via simple HTTP requests. (Note that using this functionality requires Python 3.6 or above.)
+
 ## Supported Environments
 
-- Requires Python 3.5+.
+- Requires Python 3.5+. Using the HTTP REST API Server requires Python 3.6 or above. 
 - Should run on all platforms supported by Python. Tested on various versions of Linux, macOS and Windows.
 - Works with Sonos 'S1' and 'S2' systems, as well as split S1/S2 systems.
 
@@ -198,6 +206,8 @@ The TCP/1400 range is used to receive notification events from Sonos players (us
 When opening ports, SoCo-CLI will try port numbers starting at the beginning of the range and incrementing by one until a free port is found, up to the limit of the range. This allows multiple invocations of SoCo-CLI to run in parallel on the same host.
 
 UDP port 1900 is used when discovering speakers by name using standard multicast discovery.
+
+If using the HTTP REST API Server functionality, its listen port must be open to incoming TCP requests. The default port is 8000.
 
 ### Operating on All Speakers: Using `_all_`
 
@@ -819,6 +829,101 @@ Discovery works by interrogating all network adapters on the device running SoCo
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 - **`--subnets <subnets_list>`**: Specify which subnet(s) to search, as a comma separated list (without spaces). E.g.: `--subnets 192.168.0.0/24,192.168.1.0/24` or `--subnets 192.168.0.30`. When this option is used, only the specified subnet(s) will be searched, and the `--min_netmask` option (if supplied) is ignored.
+
+## The SoCo-CLI HTTP API
+
+(Note that this functionality requires Python 3.6 or above.)
+
+```
+sonos-http-server
+soco-http-server
+```
+
+SoCo-CLI can be run as a simple HTTP REST API server, allowing most of its features to be accessed via HTTP requests. It's very simple to run the server and to construct HTTP requests that invoke it.
+
+### Server Usage
+
+The server is started using the `sonos-http-server` or `soco-http-server` commands:
+
+```
+% sonos-http-server
+Starting SoCo-CLI HTTP REST API Server v0.4.00
+INFO:     Started server process [57357]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+```
+
+By default, the server listens for incoming requests on **port 8000**. This can be changed using the **`--port (or -p)`** command line option (e.g., `sonos-http-server -p 51000`). The listen port must be available, otherwise the server will terminate with an error.
+
+If accessing the HTTP server from another machine on the network, make sure that your firewall allows incoming TCP requests on your chosen port.
+
+The server will log requests and their associated HTTP response codes, e.g.:
+
+```
+INFO:     127.0.0.1:51016 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51017 - "GET /study/volume HTTP/1.1" 200 OK
+```
+
+The server will continue running until stopped using CTRL-C (etc.).
+
+### HTTP Request Structure
+
+All requests are simple HTTP `GET` requests. Request URLs have the form:
+
+```
+http://<server>:<port>/<speaker_name>/<action>[/parameter_1/parameter_2/parameter_3]
+```
+
+- **`<server>`** is the IP address or hostname of the server on which the HTTP API server is running.
+- **`<port>`** is the TCP port on which the server is listening.
+- **`<speaker_name>`** is the target speaker for the action. Use the same naming conventions as for other forms of SoCo-CLI usage; unambiguous partial names can be used, as can IP addresses.
+- **`<action>`** is the SoCo-CLI action to perform. Almost all of the main SoCo-CLI actions are available for use.
+- **`<parameter_1>`** (etc.) are the parameter(s) required by the action, if any.
+
+Strings with spaces and other characters invalid in URLs should be appropriately escaped (e.g., space should be replaced by `%20`, comma by `%2C`, colon by `%3A`).
+
+Usage examples:
+
+```
+http://192.168.0.100:8000/Study/volume
+http://192.168.0.100:8000/Study/volume/50
+http://192.168.0.100:8000/Front%20Reception/pause
+http://192.168.0.100:8000/Kitchen/group/hallway
+```
+
+### Return Values
+
+Return values are supplied in a JSON string, which always contains the same fields. A formatted example is shown below:
+
+```
+{
+  "speaker": "Study",
+  "action": "volume",
+  "args": [],
+  "exit_code": 0,
+  "result": "35",
+  "error_msg": ""
+}
+```
+
+The **`speaker`**, **`action`**, and **`args`** fields confirm the data that was sent in the HTTP request, with the speaker's name replaced by its full Sonos name if a shortened version was used in the invocation URL.
+
+The **`exit_code`** field is an integer. This will be zero if the command completed successfully, and non-zero otherwise.
+
+If the command is successful, the **`result`** field contains the result string, which is exactly the string that would have been printed if the action had been performed on the command line.
+
+If the command is unsuccessful, the **`error_msg`** field contains an error message describing the error.
+
+### Rediscovering Speakers
+
+If the configuration of your speakers changes in some way (e.g., if speakers are renamed or if there are IP address changes), the server can be instructed to reload its speaker data using the `/rediscover` URL path, e.g.: `http://192.168.0.100:8000/rediscover`.
+
+### Inspecting the HTTP API
+
+The HTTP API can be inspected and tested using its Swagger live documentation, at the `/docs` URL path, e.g.:
+
+`http://192.168.0.100:8000/docs`
 
 ## Using SoCo-CLI as a Python Library
 
