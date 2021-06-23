@@ -890,11 +890,12 @@ http://192.168.0.100:8000/Study/volume
 http://192.168.0.100:8000/Study/volume/50
 http://192.168.0.100:8000/Front%20Reception/pause
 http://192.168.0.100:8000/Kitchen/group/hallway
+http://192.168.0.100:8000/Kitchen/line_in/Lounge/right_input
 ```
 
 ### Return Values
 
-Return values are supplied in a JSON string, which always contains the same fields. A formatted example is shown below:
+Return values are supplied in JSON format, and always contain the same fields. A formatted example is shown below:
 
 ```
 {
@@ -917,7 +918,7 @@ If the command is unsuccessful, the **`error_msg`** field contains an error mess
 
 ### Rediscovering Speakers
 
-If the configuration of your speakers changes in some way (e.g., if speakers are renamed or if there are IP address changes), the server can be instructed to reload its speaker data using the `/rediscover` URL path, e.g.: `http://192.168.0.100:8000/rediscover`.
+If the configuration of your speakers changes in some way (e.g., if speakers are renamed or if there are IP address changes), the server can be instructed to reload its speaker data using the `/rediscover` URL path, e.g.: `http://192.168.0.100:8000/rediscover`. The returned JSON string will list the speakers discovered. (Note that this action does not overwrite any existing speaker data saved in the local speaker cache file.)
 
 ### Inspecting the HTTP API
 
@@ -947,7 +948,7 @@ The API entry point is **`api.run_command(speaker_name, action, *args, use_local
 
 - **`speaker_name (str)`**: The speaker name or speaker IP address supplied as a string. Partial, case-insensitive names will be matched, but the match must be unambiguous. A `SoCo` object may be passed in place of the speaker name.
 - **`action (str)`**: The action to perform, supplied as a string. Almost all of the SoCo-CLI actions are available for use, with the exception of the `loop` actions, the `wait_until` and `wait_for` actions, and the `track_follow` action.
-- **`*args (tuple)`**: The arguments for the action, supplied as strings. There can be zero or more argumants, depending on the action.
+- **`*args (tuple)`**: The arguments for the action, supplied as strings. There can be zero or more arguments, depending on the action.
 - **`use_local_speaker_list (bool)`**: Whether to use the local speaker cache for speaker discovery. Optional, defaults to `False`.
 
 **Return Values:**
