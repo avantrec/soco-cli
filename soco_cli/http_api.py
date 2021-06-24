@@ -23,6 +23,7 @@ sc_app = FastAPI()
 USE_LOCAL = False
 PORT = 8000
 INFO = "SoCo-CLI HTTP API Server v" + version
+PREFIX = "SoCo-CLI: "
 
 
 def command_core(speaker, action, *args, use_local=False):
@@ -35,6 +36,12 @@ def command_core(speaker, action, *args, use_local=False):
     else:
         exit_code = 1
         result = ""
+
+    if exit_code == 0:
+        print(PREFIX + "Exit code = {}".format(exit_code))
+    else:
+        print(PREFIX + "Exit code = {} [{}]".format(exit_code, error_msg))
+
     return {
         "speaker": speaker,
         "action": action,
