@@ -59,7 +59,6 @@ async def root():
 
 @sc_app.get("/rediscover")
 async def rediscover():
-    # Currently always uses a network scan
     rescan_speakers(timeout=5.0)
     return {"Speakers discovered": get_all_speaker_names()}
 
@@ -103,6 +102,13 @@ def args_processor():
         default=False,
         help="Print the SoCo-CLI and SoCo versions, and exit",
     )
+    parser.add_argument(
+        "--use-local-speaker-list",
+        "-l",
+        action="store_true",
+        default=False,
+        help="Use the local speaker list instead of SoCo discovery",
+    )
 
     args = parser.parse_args()
 
@@ -113,6 +119,10 @@ def args_processor():
     global PORT
     if args.port is not None:
         PORT = args.port
+
+    global USE_LOCAL
+    if args.use_local_speaker_list is not None:
+        USE_LOCAL = args.use_local_speaker_list
 
 
 def main():
