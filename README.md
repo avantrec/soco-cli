@@ -71,7 +71,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Wed Jun 23 17:08:32 BST 2021 -->
+<!-- Added by: pwt, at: Thu Jun 24 09:12:12 BST 2021 -->
 
 <!--te-->
 
@@ -87,11 +87,11 @@ SoCo-CLI can be used as a simple, high-level [API](#using-soco-cli-as-a-python-l
 
 For interactive command line use, SoCo-CLI provides a powerful [Interactive Shell Mode](#interactive-shell-mode) that improves speed of operation and reduces typing.
 
-SoCo-CLI can also run as a simple [HTTP REST API server](#the-soco-cli-http-api), providing access to a huge range of actions via simple HTTP requests. (Note that using this functionality requires Python 3.6 or above.)
+SoCo-CLI can also run as a simple [HTTP API server](#the-soco-cli-http-api), providing access to a huge range of actions via simple HTTP requests. (Note that using this functionality requires Python 3.6 or above.)
 
 ## Supported Environments
 
-- Requires Python 3.5+. Using the HTTP REST API Server requires Python 3.6 or above. 
+- Requires Python 3.5+. Using the HTTP API Server requires Python 3.6 or above. 
 - Should run on all platforms supported by Python. Tested on various versions of Linux, macOS and Windows.
 - Works with Sonos 'S1' and 'S2' systems, as well as split S1/S2 systems.
 
@@ -207,7 +207,7 @@ When opening ports, SoCo-CLI will try port numbers starting at the beginning of 
 
 UDP port 1900 is used when discovering speakers by name using standard multicast discovery.
 
-If using the HTTP REST API Server functionality, its listen port must be open to incoming TCP requests. The default port is 8000.
+If using the HTTP API Server functionality, its listen port must be open to incoming TCP requests. The default port is 8000.
 
 ### Operating on All Speakers: Using `_all_`
 
@@ -839,7 +839,7 @@ sonos-http-server
 soco-http-server
 ```
 
-SoCo-CLI can be run as a simple HTTP REST API server, allowing most of its features to be accessed via HTTP requests. It's very simple to run the server and to construct HTTP requests that invoke it.
+SoCo-CLI can be run as a simple HTTP API server, allowing most of its features to be accessed via HTTP requests. It's very simple to run the server and to construct HTTP requests that invoke it.
 
 ### Server Usage
 
@@ -847,7 +847,7 @@ The server is started using the `sonos-http-server` or `soco-http-server` comman
 
 ```
 % sonos-http-server
-Starting SoCo-CLI HTTP REST API Server v0.4.00
+Starting SoCo-CLI HTTP API Server v0.4.00
 INFO:     Started server process [57357]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.

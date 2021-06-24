@@ -1,8 +1,8 @@
-"""Implements a REST API for SoCo-CLI commands."""
+"""Implements an HTTP API for SoCo-CLI commands."""
 
 from sys import version_info
 if version_info.major == 3 and version_info.minor < 6:
-    print("HTTP REST API Server requires Python 3.6 or above")
+    print("HTTP API Server requires Python 3.6 or above")
     exit(1)
 
 import argparse
@@ -15,7 +15,6 @@ from soco_cli.api import get_all_speaker_names
 from soco_cli.api import get_soco_object as get_speaker
 from soco_cli.api import rediscover_speakers, rescan_speakers
 from soco_cli.api import run_command as sc_run
-from soco_cli.utils import configure_common_args, configure_logging
 from soco_cli.utils import version as print_version
 
 sc_app = FastAPI()
@@ -23,7 +22,7 @@ sc_app = FastAPI()
 # Globals
 USE_LOCAL = False
 PORT = 8000
-INFO = "SoCo-CLI HTTP REST API Server v" + version
+INFO = "SoCo-CLI HTTP API Server v" + version
 
 
 def command_core(speaker, action, *args, use_local=False):
@@ -80,7 +79,7 @@ async def action_3(speaker: str, action: str, arg_1: str, arg_2: str, arg_3: str
 
 def args_processor():
     parser = argparse.ArgumentParser(
-        prog="sonos-rest-api",
+        prog="sonos-http-api",
         usage="%(prog)s",
         description=INFO,
     )
