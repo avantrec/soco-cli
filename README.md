@@ -56,7 +56,7 @@
          * [Discovery Options](#discovery-options)
          * [The sonos-discover Command](#the-sonos-discover-command)
          * [Options for the sonos-discover Command](#options-for-the-sonos-discover-command)
-      * [The SoCo-CLI HTTP API](#the-soco-cli-http-api)
+      * [The SoCo-CLI HTTP API Server](#the-soco-cli-http-api-server)
          * [Server Usage](#server-usage)
          * [HTTP Request Structure](#http-request-structure)
          * [Return Values](#return-values)
@@ -71,7 +71,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Thu Jun 24 09:12:12 BST 2021 -->
+<!-- Added by: pwt, at: Thu Jun 24 21:05:10 BST 2021 -->
 
 <!--te-->
 
@@ -87,7 +87,7 @@ SoCo-CLI can be used as a simple, high-level [API](#using-soco-cli-as-a-python-l
 
 For interactive command line use, SoCo-CLI provides a powerful [Interactive Shell Mode](#interactive-shell-mode) that improves speed of operation and reduces typing.
 
-SoCo-CLI can also run as a simple [HTTP API server](#the-soco-cli-http-api), providing access to a huge range of actions via simple HTTP requests. (Note that using this functionality requires Python 3.6 or above.)
+SoCo-CLI can also run as a simple [HTTP API server](#the-soco-cli-http-api-server), providing access to a huge range of actions via simple HTTP requests. (Note that using this functionality requires Python 3.6 or above.)
 
 ## Supported Environments
 
@@ -830,31 +830,31 @@ Discovery works by interrogating all network adapters on the device running SoCo
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
 - **`--subnets <subnets_list>`**: Specify which subnet(s) to search, as a comma separated list (without spaces). E.g.: `--subnets 192.168.0.0/24,192.168.1.0/24` or `--subnets 192.168.0.30`. When this option is used, only the specified subnet(s) will be searched, and the `--min_netmask` option (if supplied) is ignored.
 
-## The SoCo-CLI HTTP API
+## The SoCo-CLI HTTP API Server
 
 (Note that this functionality requires Python 3.6 or above.)
 
 ```
-sonos-http-server
-soco-http-server
+sonos-http-api-server
+soco-http-api-server
 ```
 
 SoCo-CLI can be run as a simple HTTP API server, allowing most of its features to be accessed via HTTP requests. It's very simple to run the server and to construct HTTP requests that invoke it.
 
 ### Server Usage
 
-The server is started using the `sonos-http-server` or `soco-http-server` commands:
+The server is started using the `sonos-http-api-server` or `soco-http-api-server` commands:
 
 ```
-% sonos-http-server
-Starting SoCo-CLI HTTP API Server v0.4.00
+% sonos-http-api-server
+Starting SoCo-CLI HTTP API Server v0.4.1
 INFO:     Started server process [57357]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 ```
 
-By default, the server listens for incoming requests on **port 8000**. This can be changed using the **`--port (or -p)`** command line option (e.g., `sonos-http-server -p 51000`). The listen port must be available, otherwise the server will terminate with an error.
+By default, the server listens for incoming requests on **port 8000**. This can be changed using the **`--port (or -p)`** command line option (e.g., `sonos-http-api-server -p 51000`). The listen port must be available, otherwise the server will terminate with an error.
 
 If accessing the HTTP server from another machine on the network, make sure that your firewall allows incoming TCP requests on your chosen port.
 

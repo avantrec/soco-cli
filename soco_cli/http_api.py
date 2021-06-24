@@ -85,7 +85,7 @@ async def action_3(speaker: str, action: str, arg_1: str, arg_2: str, arg_3: str
 
 def args_processor():
     parser = argparse.ArgumentParser(
-        prog="sonos-http-api",
+        prog="sonos-http-api-server",
         usage="%(prog)s",
         description=INFO,
     )
