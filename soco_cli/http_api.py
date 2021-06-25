@@ -1,4 +1,4 @@
-"""Implements an HTTP API for SoCo-CLI commands."""
+"""Implements an HTTP API server for SoCo-CLI commands."""
 
 from sys import version_info
 
@@ -38,9 +38,11 @@ def command_core(speaker, action, *args, use_local=False):
         exit_code = 1
         result = ""
 
-    # Quote speaker names & arguments with spaces, for neatness
+    # Quote speaker names & arguments containing spaces, for neatness
     if " " in speaker:
-        speaker = '"' + speaker + '"'
+        quoted_speaker = '"' + speaker + '"'
+    else:
+        quoted_speaker = speaker
     new_args = []
     for i in range(len(args)):
         if " " in args[i]:
@@ -48,15 +50,15 @@ def command_core(speaker, action, *args, use_local=False):
         else:
             new_args.append(args[i])
 
-    # Print 'sonos' command and exit code
+    # Print the equivalent 'sonos' command and exit code
     if len(new_args) != 0:
         arguments = (" ".join([arg for arg in new_args])).rstrip()
         print(
-            PREFIX + "Command = 'sonos {} {} {}', ".format(speaker, action, arguments),
+            PREFIX + "Command = 'sonos {} {} {}', ".format(quoted_speaker, action, arguments),
             end="",
         )
     else:
-        print(PREFIX + "Command = 'sonos {} {}', ".format(speaker, action), end="")
+        print(PREFIX + "Command = 'sonos {} {}', ".format(quoted_speaker, action), end="")
     if exit_code == 0:
         print("exit code = {}".format(exit_code))
     else:
