@@ -1,4 +1,4 @@
-v0.4.3    -
+v0.4.3    - Add 'get_uri' action
 v0.4.2    - Rename 'sonos-http-server' to 'sonos-http-api-server'
           - Additional HTTP API server logging
 v0.4.1    - Minor changes to HTTP API server

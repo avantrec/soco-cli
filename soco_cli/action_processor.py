@@ -2583,6 +2583,13 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
             pass
 
 
+@zero_parameters
+def get_uri(speaker, action, args, soco_function, use_local_speaker_list):
+    track_info = speaker.get_current_track_info()
+    print(track_info["uri"])
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2935,4 +2942,5 @@ actions = {
         playlist_operations, "add_library_playlist_to_queue", True
     ),
     "alpq": SonosFunction(playlist_operations, "add_library_playlist_to_queue", True),
+    "get_uri": SonosFunction(get_uri, "", True),
 }
