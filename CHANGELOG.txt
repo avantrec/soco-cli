@@ -1,4 +1,5 @@
 v0.4.2    - Rename 'sonos-http-server' to 'sonos-http-api-server'
+          - Additional HTTP API server logging
 v0.4.1    - Minor changes to HTTP API server
 v0.4.0    - Add HTTP API server functionality
 v0.3.50   - Minor cosmetic improvements & bugfixes

@@ -1,6 +1,7 @@
 """Implements an HTTP API for SoCo-CLI commands."""
 
 from sys import version_info
+
 if version_info.major == 3 and version_info.minor < 6:
     print("HTTP API Server requires Python 3.6 or above")
     exit(1)
@@ -37,10 +38,29 @@ def command_core(speaker, action, *args, use_local=False):
         exit_code = 1
         result = ""
 
-    if exit_code == 0:
-        print(PREFIX + "Exit code = {}".format(exit_code))
+    # Quote speaker names & arguments with spaces, for neatness
+    if " " in speaker:
+        speaker = '"' + speaker + '"'
+    new_args = []
+    for i in range(len(args)):
+        if " " in args[i]:
+            new_args.append('"' + args[i] + '"')
+        else:
+            new_args.append(args[i])
+
+    # Print 'sonos' command and exit code
+    if len(new_args) != 0:
+        arguments = (" ".join([arg for arg in new_args])).rstrip()
+        print(
+            PREFIX + "Command = 'sonos {} {} {}', ".format(speaker, action, arguments),
+            end="",
+        )
     else:
-        print(PREFIX + "Exit code = {} [{}]".format(exit_code, error_msg))
+        print(PREFIX + "Command = 'sonos {} {}', ".format(speaker, action), end="")
+    if exit_code == 0:
+        print("exit code = {}".format(exit_code))
+    else:
+        print("exit code = {} [{}]".format(exit_code, error_msg))
 
     return {
         "speaker": speaker,
