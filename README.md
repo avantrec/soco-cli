@@ -910,7 +910,7 @@ Return values are supplied in JSON format, and always contain the same fields. A
 
 The **`speaker`**, **`action`**, and **`args`** fields confirm the data that was sent in the HTTP request, with the speaker's name replaced by its full Sonos name if a shortened version was used in the invocation URL.
 
-The **`exit_code`** field is an integer. This will be zero if the command completed successfully, and non-zero otherwise.
+The **`exit_code`** field is an integer. This will be zero if the command completed successfully, and non-zero otherwise. (Note that the HTTP response code will indicate success (200) even if the SoCo-CLI action fails, so inspect the `exit_code` for failure detection.)
 
 If the command is successful, the **`result`** field contains the result string, which is exactly the string that would have been printed if the action had been performed on the command line.
 
