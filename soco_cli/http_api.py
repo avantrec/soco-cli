@@ -82,7 +82,9 @@ async def root():
 @sc_app.get("/rediscover")
 async def rediscover():
     rescan_speakers(timeout=5.0)
-    return {"Speakers discovered": get_all_speaker_names()}
+    speakers = get_all_speaker_names()
+    print(PREFIX + "Speakers (re)discovered: {}".format(speakers))
+    return {"speakers_discovered": speakers}
 
 
 @sc_app.get("/{speaker}/{action}")

@@ -859,11 +859,13 @@ By default, the server listens for incoming requests on **port 8000**. This can 
 
 If accessing the HTTP server from another machine on the network, make sure that your firewall allows incoming TCP requests on your chosen port.
 
-The server will log requests and their associated HTTP response codes, e.g.:
+For each request, the server will output the equivalent `sonos` command line (if applicable) and exit code/error, followed by the URL requested and the HTTP response code, e.g.:
 
 ```
-INFO:     127.0.0.1:51016 - "GET / HTTP/1.1" 200 OK
+SoCo-CLI: Command = 'sonos Study volume', exit code = 0
 INFO:     127.0.0.1:51017 - "GET /study/volume HTTP/1.1" 200 OK
+SoCo-CLI: Command = 'sonos Study volume 30', exit code = 0
+INFO:     127.0.0.1:64948 - "GET /Study/volume/30 HTTP/1.1" 200 OK
 ```
 
 The server will continue running until stopped using CTRL-C (etc.).
@@ -882,7 +884,7 @@ http://<server>:<port>/<speaker_name>/<action>[/parameter_1/parameter_2/paramete
 - **`<action>`** is the SoCo-CLI action to perform. Almost all of the main SoCo-CLI actions are available for use.
 - **`<parameter_1>`** (etc.) are the parameter(s) required by the action, if any.
 
-Strings with spaces and other characters invalid in URLs should be appropriately escaped (e.g., space should be replaced by `%20`, comma by `%2C`, colon by `%3A`).
+Strings with characters that are invalid within URLs should be substituted by their URL-friendly replacements  (e.g., space should be replaced by `%20`, comma by `%2C`, and colon by `%3A`).
 
 Usage examples:
 
@@ -890,7 +892,7 @@ Usage examples:
 http://192.168.0.100:8000/Study/volume
 http://192.168.0.100:8000/Study/volume/50
 http://192.168.0.100:8000/Front%20Reception/pause
-http://192.168.0.100:8000/Kitchen/group/hallway
+http://192.168.0.100:8000/Kitchen/group/Hallway
 http://192.168.0.100:8000/Kitchen/line_in/Lounge/right_input
 ```
 
@@ -931,7 +933,9 @@ The HTTP API can be inspected and tested using its Swagger live documentation, a
 
 If you'd like to use SoCo-CLI as a high-level library in another Python program, it's simple to do so using its API capability. The goal is to provide the same added value, abstractions, and command structure as when using SoCo-CLI directly from the command line. Essentially, there is a single entry point that accepts exactly the same commands that would be used on the command line.
 
-Using the SoCo-CLI API means that the expense of loading soco-cli is incurred only once during the operation of your program, and speaker discovery results are cached for efficiency.
+Using the SoCo-CLI API means that the expense of loading SoCo-CLI is incurred only once during the operation of your program, and speaker discovery results are cached for efficiency.
+
+Note that the native SoCo library can be used alongside the SoCo-CLI API, as needed.
 
 ### Importing the API
 
@@ -987,7 +991,7 @@ Please report any problems you find using GitHub Issues [3].
 
 ## Acknowledgments
 
-Developed with **[PyCharm](https://www.jetbrains.com/pycharm/)**, with many thanks to JetBrains for the free license for open source development.
+Developed with **[PyCharm](https://www.jetbrains.com/pycharm/)**, with many thanks to JetBrains for the free Professional licence for open source development.
 
 All trademarks acknowledged. Avantrec Ltd has no connection with Sonos Inc.
 
