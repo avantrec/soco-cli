@@ -1,6 +1,7 @@
 import logging
 import re
 
+from datetime import datetime, timezone
 from time import sleep
 from soco_cli.api import run_command
 
@@ -10,6 +11,7 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
 
     Args:
         speaker (SoCo): The speaker to follow.
+        use_local_speaker_list (bool, optional): Use cached discovery.
         break_on_pause (bool, optional): Whether to return control if the
             speaker enters the paused or stopped playback states.
 
@@ -17,6 +19,10 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
     it needs to output intermediate results as it executes. Hence, the
     'run_command()' API call is used.
     """
+
+    def timestamp():
+        local_tz = datetime.now(timezone.utc).astimezone().tzinfo
+        return datetime.now(tz=local_tz).strftime("%d-%b-%Y %H:%M:%S %Z")
 
     print(flush=True)
     while True:
@@ -28,7 +34,9 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
             "STOPPED",
             "PAUSED_PLAYBACK",
         ]:
-            print("  Playback is stopped or paused\n", flush=True)
+            print(
+                "  Playback is stopped or paused at: {}\n".format(timestamp()), flush=True
+            )
             if break_on_pause:
                 logging.info("Playback is paused/stopped; returning")
                 break
@@ -45,6 +53,7 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
         if exit_code == 0:
             # Remove some of the 'track' output lines & reformat
             output = output.split("\n", 1)[1]
+            output = "  Time now:    " + timestamp() + "\n" + output
             output = re.sub("Playback.*\\n", "", output)
             output = re.sub("  URI.*\\n", "", output)
             output = re.sub("  Uri.*\\n", "", output)

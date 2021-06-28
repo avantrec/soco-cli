@@ -54,11 +54,14 @@ def command_core(speaker, action, *args, use_local=False):
     if len(new_args) != 0:
         arguments = (" ".join([arg for arg in new_args])).rstrip()
         print(
-            PREFIX + "Command = 'sonos {} {} {}', ".format(quoted_speaker, action, arguments),
+            PREFIX
+            + "Command = 'sonos {} {} {}', ".format(quoted_speaker, action, arguments),
             end="",
         )
     else:
-        print(PREFIX + "Command = 'sonos {} {}', ".format(quoted_speaker, action), end="")
+        print(
+            PREFIX + "Command = 'sonos {} {}', ".format(quoted_speaker, action), end=""
+        )
     if exit_code == 0:
         print("exit code = {}".format(exit_code))
     else:
