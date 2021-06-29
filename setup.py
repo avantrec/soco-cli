@@ -18,7 +18,7 @@ setuptools.setup(
     version=VERSION,
     author="Avantrec Ltd",
     author_email="soco_cli@avantrec.com",
-    description="Sonos command line utility, based on SoCo",
+    description="Sonos command line control utility, based on SoCo",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/avantrec/soco-cli",

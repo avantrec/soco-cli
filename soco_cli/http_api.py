@@ -154,11 +154,23 @@ def args_processor():
 
 def main():
     args_processor()
+    print(PREFIX + "Starting " + INFO)
+
     try:
-        print("Starting " + INFO)
+        # Pre-load speaker cache
+        print(PREFIX + "Finding speakers ... ", end="", flush=True)
+        try:
+            # Try to discover a speaker that doesn't exist
+            get_speaker("NULL_54983")
+            print(get_all_speaker_names())
+        except:
+            print("discovery failed, will retry on first request")
+
+        # Start the server
         uvicorn.run(sc_app, host="0.0.0.0", use_colors=False, port=PORT)
         print(INFO + " stopped")
         exit(0)
+
     except Exception as error:
         print("Error: {}".format(error))
         exit(1)

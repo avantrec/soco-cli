@@ -53,7 +53,7 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
         if exit_code == 0:
             # Remove some of the 'track' output lines & reformat
             output = output.split("\n", 1)[1]
-            output = "  Time now:    " + timestamp() + "\n" + output
+            output = "  Time:        " + timestamp() + "\n" + output
             output = re.sub("Playback.*\\n", "", output)
             output = re.sub("  URI.*\\n", "", output)
             output = re.sub("  Uri.*\\n", "", output)
