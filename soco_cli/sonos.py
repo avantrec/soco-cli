@@ -44,7 +44,9 @@ pp = pprint.PrettyPrinter(width=100)
 
 # Speaker name environment variable
 ENV_SPKR = "SPKR"
-ENV_LOCAL = "USE_LOCAL"
+
+# Local speaker cache environment variable
+ENV_LOCAL = "USE_LOCAL_SPKR_CACHE"
 
 
 def main():
@@ -203,6 +205,11 @@ def main():
 
     use_local_speaker_list = args.use_local_speaker_list
     if env.get(ENV_LOCAL) == "TRUE" and not args.no_env:
+        logging.info(
+            "Env. var. '{}' set to 'TRUE ... using local speaker list".format(
+                ENV_LOCAL
+            )
+        )
         use_local_speaker_list = True
     if use_local_speaker_list:
         speaker_list = Speakers(

@@ -35,7 +35,8 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
             "PAUSED_PLAYBACK",
         ]:
             print(
-                "  Playback is stopped or paused at: {}\n".format(timestamp()), flush=True
+                "  Playback is stopped or paused at: {}\n".format(timestamp()),
+                flush=True,
             )
             if break_on_pause:
                 logging.info("Playback is paused/stopped; returning")

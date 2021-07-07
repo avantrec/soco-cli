@@ -11,7 +11,7 @@
          * [The sonos Command](#the-sonos-command)
          * [Speaker Discovery by Name](#speaker-discovery-by-name)
          * [Simple Usage Examples](#simple-usage-examples)
-         * [Using the SPKR Environment Variable](#using-the-spkr-environment-variable)
+         * [The SPKR Environment Variable](#the-spkr-environment-variable)
          * [Using Shell Aliases](#using-shell-aliases)
          * [Options for the sonos Command](#options-for-the-sonos-command)
          * [Firewall Rules](#firewall-rules)
@@ -71,7 +71,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Thu Jun 24 21:05:10 BST 2021 -->
+<!-- Added by: pwt, at: Wed Jul  7 11:39:09 BST 2021 -->
 
 <!--te-->
 
@@ -133,7 +133,7 @@ SoCo-CLI will try a number of approaches to find a speaker's IP address by speak
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`** Plays 'Jazz24' for 30 minutes, then stops playback.
 
-### Using the `SPKR` Environment Variable
+### The `SPKR` Environment Variable
 
 To avoid typing the speaker name, or to parameterise the use of SoCo-CLI commands, it's possible to use the `SPKR` environment variable instead of supplying the speaker name (or IP address) on the command line.
 
@@ -196,6 +196,8 @@ The following options are for use with the cached discovery mechanism:
 - **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list. This is the recommended way of using cached discovery: first run `sonos-discover` to create the local speaker database, then use `sonos` with the `-l` option to use the local database when invoking `sonos` actions.
+
+If you set the environment variable **`USE_LOCAL_CACHE`** to `TRUE`, the `--use_local_speaker_list` option will always be used.
 
 ### Firewall Rules
 
