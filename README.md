@@ -850,8 +850,9 @@ The server is started using the `sonos-http-api-server` or `soco-http-api-server
 
 ```
 % sonos-http-api-server
-Starting SoCo-CLI HTTP API Server v0.4.1
-INFO:     Started server process [57357]
+SoCo-CLI: Starting SoCo-CLI HTTP API Server v0.4.3
+SoCo-CLI: Finding speakers ... ['Bedroom', 'Front Reception', 'Kitchen', 'Move', 'Rear Reception', 'Study']
+INFO:     Started server process [52137]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
