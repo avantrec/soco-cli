@@ -25,7 +25,7 @@ from soco_cli.speaker_info import print_speaker_table
 from soco_cli.utils import (
     convert_to_seconds,
     convert_true_false,
-    error_and_exit,
+    error_report,
     event_unsubscribe,
     get_right_hand_speaker,
     get_speaker,
@@ -220,7 +220,7 @@ def no_args_no_output(speaker, action, args, soco_function, use_local_speaker_li
     if soco_function == "separate_stereo_pair" and StrictVersion(
         soco.__version__
     ) < StrictVersion("0.20"):
-        error_and_exit("Pairing operations require SoCo v0.20 or greater")
+        error_report("Pairing operations require SoCo v0.20 or greater")
         return False
     getattr(speaker, soco_function)()
     return True
@@ -246,7 +246,7 @@ def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
         try:
             track_number = int(args[0])
             if not 0 < track_number <= len(queue):
-                error_and_exit(
+                error_report(
                     "Track number {} is out of queue range".format(track_number)
                 )
                 return False
@@ -415,7 +415,7 @@ def shuffle(speaker, action, args, soco_function, use_local_speaker_list):
         elif args[0].lower() == "off":
             speaker.shuffle = False
         else:
-            error_and_exit("Action '{}' takes parameter 'on' or 'off'".format(action))
+            error_report("Action '{}' takes parameter 'on' or 'off'".format(action))
             return False
     return True
 
@@ -438,7 +438,7 @@ def repeat(speaker, action, args, soco_function, use_local_speaker_list):
         elif args[0].lower() == "all":
             speaker.repeat = True
         else:
-            error_and_exit(
+            error_report(
                 "Action '{}' takes parameter 'off', 'one', or 'all'".format(action)
             )
             return False
@@ -523,7 +523,7 @@ def play_favourite_core(speaker, favourite, favourite_number=None):
 def play_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     result, msg = play_favourite_core(speaker, args[0])
     if not result:
-        error_and_exit(msg)
+        error_report(msg)
         return False
 
     return True
@@ -534,7 +534,7 @@ def play_favourite_number(speaker, action, args, soco_function, use_local_speake
     logging.info("Playing favourite number {}".format(args[0]))
     result, msg = play_favourite_core(speaker, "", args[0])
     if not result:
-        error_and_exit(msg)
+        error_report(msg)
         return False
 
     return True
@@ -577,7 +577,7 @@ def add_favourite_to_queue(
                     else:
                         position = int(current_position) + 1
                 else:
-                    error_and_exit(
+                    error_report(
                         "Second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
                             action
                         )
@@ -588,9 +588,9 @@ def add_favourite_to_queue(
             print(speaker.add_to_queue(the_fav, position=position))
             return True
         except Exception as e:
-            error_and_exit("{}".format(str(e)))
+            error_report("{}".format(str(e)))
             return False
-    error_and_exit("Favourite '{}' not found".format(args[0]))
+    error_report("Favourite '{}' not found".format(args[0]))
     return False
 
 
@@ -664,7 +664,7 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
         speaker.play_uri(uri=uri, meta=metadata)
         return True
 
-    error_and_exit("Favourite '{}' not found".format(args[0]))
+    error_report("Favourite '{}' not found".format(args[0]))
     return False
 
 
@@ -679,7 +679,7 @@ def play_uri(speaker, action, args, soco_function, use_local_speaker_list):
         except:
             continue
 
-    error_and_exit("Failed to play URI: '{}'".format(uri))
+    error_report("Failed to play URI: '{}'".format(uri))
     return False
 
 
@@ -734,10 +734,10 @@ def sleep_at(speaker, action, args, soco_function, use_local_speaker_list):
 def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
     speaker2 = get_speaker(args[0], use_local_speaker_list)
     if not speaker2:
-        error_and_exit("Speaker '{}' not found".format(args[0]))
+        error_report("Speaker '{}' not found".format(args[0]))
         return False
     if speaker == speaker2:
-        error_and_exit("Speakers are the same")
+        error_report("Speakers are the same")
         return False
     getattr(speaker, soco_function)(speaker2)
     return True
@@ -789,7 +789,7 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
         if 1 <= index <= speaker.queue_size:
             speaker.play_from_queue(index - 1)
         else:
-            error_and_exit("Queue index '{}' is out of range".format(index))
+            error_report("Queue index '{}' is out of range".format(index))
             return False
     return True
 
@@ -839,7 +839,7 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
         return False
     # Catch any out-of-range values
     except IndexError:
-        error_and_exit(
+        error_report(
             "Queue index(es) must be between 1 and {} (inclusive)".format(len(queue))
         )
         return False
@@ -866,7 +866,7 @@ def remove_current_track_from_queue(
     speaker, action, args, soco_function, use_local_speaker_list
 ):
     if speaker.queue_size == 0:
-        error_and_exit("No tracks in queue")
+        error_report("No tracks in queue")
         return False
     current_track = int(speaker.get_current_track_info()["playlist_position"])
     logging.info("Removing track {}".format(current_track))
@@ -881,7 +881,7 @@ def remove_last_track_from_queue(
     queue_size = speaker.queue_size
     logging.info("Queue size is {}".format(queue_size))
     if queue_size == 0:
-        error_and_exit("No tracks in queue")
+        error_report("No tracks in queue")
         return False
     if len(args) == 1:
         try:
@@ -889,7 +889,7 @@ def remove_last_track_from_queue(
         except ValueError:
             parameter_type_error(action, "an integer > 1")
         if not 1 <= count <= queue_size:
-            error_and_exit("parameter must be between 1 and {}".format(queue_size))
+            error_report("parameter must be between 1 and {}".format(queue_size))
             return False
     else:
         count = 1
@@ -1022,7 +1022,7 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
                         else:
                             position = int(current_position) + 1
                     else:
-                        error_and_exit(
+                        error_report(
                             "Second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
                                 action
                             )
@@ -1034,7 +1034,7 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
         else:
             getattr(speaker, soco_function)(playlist)
     else:
-        error_and_exit("Playlist '{}' not found".format(args[0]))
+        error_report("Playlist '{}' not found".format(args[0]))
         return False
     return True
 
@@ -1053,7 +1053,7 @@ def list_playlist_tracks(speaker, action, args, soco_function, use_local_speaker
         save_search(tracks)
         return True
 
-    error_and_exit("Playlist '{}' not found".format(args[0]))
+    error_report("Playlist '{}' not found".format(args[0]))
     return False
 
 
@@ -1073,7 +1073,7 @@ def list_library_playlist_tracks(
         save_search(tracks)
         return True
 
-    error_and_exit("Playlist '{}' not found".format(args[0]))
+    error_report("Playlist '{}' not found".format(args[0]))
     return False
 
 
@@ -1090,7 +1090,7 @@ def remove_from_playlist(speaker, action, args, soco_function, use_local_speaker
         speaker.remove_from_sonos_playlist(playlist, track_number - 1)
         return True
 
-    error_and_exit("Playlist '{}' not found".format(args[0]))
+    error_report("Playlist '{}' not found".format(args[0]))
     return False
 
 
@@ -1137,7 +1137,7 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
                     logging.info("Using left-hand speaker's input")
                     line_in_source = get_speaker(source, use_local_speaker_list)
             if not line_in_source:
-                error_and_exit("Speaker or input '{}' not found".format(source))
+                error_report("Speaker or input '{}' not found".format(source))
                 return False
             logging.info("Switching to Line-In and starting playback")
             speaker.switch_to_line_in(line_in_source)
@@ -1362,26 +1362,26 @@ def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
 def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
     alarm_parameters = args[0].split(",")
     if len(alarm_parameters) != 8:
-        error_and_exit("8 comma-separated parameters must be supplied")
+        error_report("8 comma-separated parameters must be supplied")
         return False
 
     start_time = alarm_parameters[0]
     try:
         start_time = datetime.strptime(start_time, "%H:%M").time()
     except ValueError:
-        error_and_exit("Invalid time format: {}".format(start_time))
+        error_report("Invalid time format: {}".format(start_time))
         return False
 
     duration = alarm_parameters[1]
     try:
         duration = datetime.strptime(duration, "%H:%M").time()
     except ValueError:
-        error_and_exit("Invalid time format: {}".format(duration))
+        error_report("Invalid time format: {}".format(duration))
         return False
 
     recurrence = alarm_parameters[2]
     if not soco.alarms.is_valid_recurrence(recurrence):
-        error_and_exit("'{}' is not a valid recurrence string".format(recurrence))
+        error_report("'{}' is not a valid recurrence string".format(recurrence))
         return False
 
     enabled = alarm_parameters[3].lower()
@@ -1390,7 +1390,7 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
     elif enabled in ["off", "no"]:
         enabled = False
     else:
-        error_and_exit(
+        error_report(
             "Alarm must be enabled 'on' or 'off', not '{}'".format(alarm_parameters[3])
         )
         return False
@@ -1409,7 +1409,7 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
         "SHUFFLE_REPEAT_ONE",
     ]
     if play_mode not in play_mode_options:
-        error_and_exit(
+        error_report(
             "Play mode is '{}', should be one of:\n  {}".format(
                 alarm_parameters[5], play_mode_options
             )
@@ -1420,14 +1420,14 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
     try:
         volume = int(volume)
         if not 0 <= volume <= 100:
-            error_and_exit(
+            error_report(
                 "Alarm volume must be between 0 and 100, not '{}'".format(
                     alarm_parameters[6]
                 )
             )
             return False
     except ValueError:
-        error_and_exit(
+        error_report(
             "Alarm volume must be an integer between 0 and 100, not '{}'".format(
                 alarm_parameters[6]
             )
@@ -1440,7 +1440,7 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
     elif include_linked in ["off", "no"]:
         include_linked = False
     else:
-        error_and_exit(
+        error_report(
             "Linked zones must be enabled 'on' or 'off', not '{}'".format(
                 alarm_parameters[7]
             )
@@ -1461,7 +1461,7 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
     try:
         alarm.save()
     except soco.exceptions.SoCoUPnPException:
-        error_and_exit("Failed to create alarm")
+        error_report("Failed to create alarm")
         return False
 
     print("Alarm ID '{}' created".format(alarm.alarm_id))
@@ -1487,7 +1487,7 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 
     alarm_parameters = args[1].split(",")
     if len(alarm_parameters) != 8:
-        error_and_exit("8 comma-separated parameters must be supplied")
+        error_report("8 comma-separated parameters must be supplied")
         return False
 
     for alarm in alarms:
@@ -1496,7 +1496,7 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
             try:
                 alarm.start_time = datetime.strptime(start_time, "%H:%M").time()
             except ValueError:
-                error_and_exit("Invalid time format: {}".format(start_time))
+                error_report("Invalid time format: {}".format(start_time))
                 return False
 
         duration = alarm_parameters[1]
@@ -1504,15 +1504,13 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
             try:
                 alarm.duration = datetime.strptime(duration, "%H:%M").time()
             except ValueError:
-                error_and_exit("Invalid time format: {}".format(duration))
+                error_report("Invalid time format: {}".format(duration))
                 return False
 
         recurrence = alarm_parameters[2]
         if not recurrence == "_":
             if not soco.alarms.is_valid_recurrence(recurrence):
-                error_and_exit(
-                    "'{}' is not a valid recurrence string".format(recurrence)
-                )
+                error_report("'{}' is not a valid recurrence string".format(recurrence))
                 return False
             alarm.recurrence = recurrence
 
@@ -1523,7 +1521,7 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
             elif enabled in ["off", "no"]:
                 enabled = False
             else:
-                error_and_exit(
+                error_report(
                     "Alarm must be enabled 'on' or 'off', not '{}'".format(
                         alarm_parameters[3]
                     )
@@ -1548,7 +1546,7 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
                 "SHUFFLE_REPEAT_ONE",
             ]
             if play_mode not in play_mode_options:
-                error_and_exit(
+                error_report(
                     "Play mode is '{}', should be one of:\n  {}".format(
                         alarm_parameters[5], play_mode_options
                     )
@@ -1561,14 +1559,14 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
             try:
                 volume = int(volume)
                 if not 0 <= volume <= 100:
-                    error_and_exit(
+                    error_report(
                         "Alarm volume must be between 0 and 100, not '{}'".format(
                             alarm_parameters[6]
                         )
                     )
                     return False
             except ValueError:
-                error_and_exit(
+                error_report(
                     "Alarm volume must be an integer between 0 and 100, not '{}'".format(
                         alarm_parameters[6]
                     )
@@ -1583,7 +1581,7 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
             elif include_linked in ["off", "no"]:
                 include_linked = False
             else:
-                error_and_exit(
+                error_report(
                     "Linked zones must be enabled 'on' or 'off', not '{}'".format(
                         alarm_parameters[7]
                     )
@@ -1594,7 +1592,7 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
         try:
             alarm.save()
         except soco.exceptions.SoCoUPnPException:
-            error_and_exit("Failed to modify alarm")
+            error_report("Failed to modify alarm")
             return False
 
     return True
@@ -1618,11 +1616,11 @@ def move_or_copy_alarm(speaker, alarm_id, copy=True):
         if alarm_id == alarm.alarm_id:
             break
     else:
-        error_and_exit("Alarm ID '{}' not found".format(alarm_id))
+        error_report("Alarm ID '{}' not found".format(alarm_id))
         return False
 
     if alarm.zone == speaker:
-        error_and_exit("Cannot copy/move an alarm to the same speaker")
+        error_report("Cannot copy/move an alarm to the same speaker")
         return False
 
     alarm.zone = speaker
@@ -1631,7 +1629,7 @@ def move_or_copy_alarm(speaker, alarm_id, copy=True):
     try:
         alarm.save()
     except soco.exceptions.SoCoUPnPException:
-        error_and_exit("Failed to copy/move alarm")
+        error_report("Failed to copy/move alarm")
         return False
 
     if copy is True:
@@ -1719,11 +1717,11 @@ def snooze_alarm(speaker, action, args, soco_function, use_local_speaker_list):
     except SoCoUPnPException as error:
         logging.info("Exception: {}".format(error))
         if error.error_code == "701":
-            error_and_exit("Can only snooze a playing alarm")
+            error_report("Can only snooze a playing alarm")
         elif error.error_code == "402":
-            error_and_exit("Invalid snooze duration: '{}'".format(duration))
+            error_report("Invalid snooze duration: '{}'".format(duration))
         else:
-            error_and_exit("{}".format(error))
+            error_report("{}".format(error))
         return False
 
     return True
@@ -1771,7 +1769,7 @@ def wait_stop_core(speaker, not_paused=False):
     try:
         sub = speaker.avTransport.subscribe(auto_renew=True)
     except Exception as e:
-        error_and_exit("Exception {}".format(e))
+        error_report("Exception {}".format(e))
         return False
 
     while True:
@@ -1810,7 +1808,7 @@ def wait_stopped_for_core(speaker, action, duration_arg, not_paused=False):
     try:
         sub = speaker.avTransport.subscribe(auto_renew=True)
     except Exception as e:
-        error_and_exit("Exception {}".format(e))
+        error_report("Exception {}".format(e))
         return False
 
     playing_states = ["PLAYING", "TRANSITIONING"]
@@ -1893,7 +1891,7 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
     try:
         sub = speaker.avTransport.subscribe(auto_renew=True)
     except Exception as e:
-        error_and_exit("Exception {}".format(e))
+        error_report("Exception {}".format(e))
         return False
     while True:
         try:
@@ -2048,7 +2046,7 @@ def queue_item_core(speaker, action, args, info_type):
                 except ValueError:
                     # Note that 'first/start' option is now redundant, but included
                     # here for backward compatibility
-                    error_and_exit(
+                    error_report(
                         "Second parameter for '{}' must be integer or 'next/play_next'".format(
                             action
                         )
@@ -2059,7 +2057,7 @@ def queue_item_core(speaker, action, args, info_type):
         print(speaker.add_to_queue(item, position=position))
         return True
 
-    error_and_exit("'{}' not found".format(name))
+    error_report("'{}' not found".format(name))
     return False
 
 
@@ -2104,9 +2102,7 @@ def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     Preserve the mute state
     """
     if not speaker.is_coordinator:
-        error_and_exit(
-            "Action '{}' can only be applied to a coordinator".format(action)
-        )
+        error_report("Action '{}' can only be applied to a coordinator".format(action))
         return False
     unmute = False
     unmute_group = False
@@ -2129,7 +2125,7 @@ def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     if unmute_group:
         speaker.group.mute = False
     if not result:
-        error_and_exit(msg)
+        error_report(msg)
         return False
     return True
 
@@ -2138,18 +2134,18 @@ def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
 def transfer_playback(speaker, action, args, soco_function, use_local_speaker_list):
     """Transfer playback from one speaker to another, by grouping and ungrouping."""
     if not speaker.is_coordinator:
-        error_and_exit("Speaker '{}' is not a coordinator".format(speaker.player_name))
+        error_report("Speaker '{}' is not a coordinator".format(speaker.player_name))
         return False
     speaker2 = get_speaker(args[0], use_local_speaker_list)
     if speaker == speaker2:
-        error_and_exit("Source and target speakers are the same")
+        error_report("Source and target speakers are the same")
         return False
     if speaker2:
         speaker2.join(speaker)
         speaker.unjoin()
         return True
 
-    error_and_exit("Speaker '{}' not found".format(args[0]))
+    error_report("Speaker '{}' not found".format(args[0]))
     return False
 
 
@@ -2180,7 +2176,7 @@ def last_search(speaker, action, args, soco_function, use_local_speaker_list):
                 print_tracks(items)
             print()
     else:
-        error_and_exit("No saved search")
+        error_report("No saved search")
         return False
     return True
 
@@ -2198,7 +2194,7 @@ def queue_search_result_number(
         return False
     items = read_search()
     if not items:
-        error_and_exit("No saved search")
+        error_report("No saved search")
         return False
     logging.info("Loaded saved search")
     position = 0
@@ -2224,7 +2220,7 @@ def queue_search_result_number(
         elif args[1].lower() in ["first", "start"]:
             position = 1
         else:
-            error_and_exit(
+            error_report(
                 "Second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
                     action
                 )
@@ -2236,7 +2232,7 @@ def queue_search_result_number(
         print(speaker.add_to_queue(item, position=position))
         return True
 
-    error_and_exit("Item search index must be between 1 and {}".format(len(items)))
+    error_report("Item search index must be between 1 and {}".format(len(items)))
     return False
 
 
@@ -2251,12 +2247,10 @@ def battery(speaker, action, args, soco_function, use_local_speaker_list):
     try:
         battery_status = speaker.get_battery_info()
     except NotSupportedException:
-        error_and_exit(
-            "Battery status not supported by '{}'".format(speaker.player_name)
-        )
+        error_report("Battery status not supported by '{}'".format(speaker.player_name))
         return False
     except:
-        error_and_exit("Unable to retrieve battery status")
+        error_report("Unable to retrieve battery status")
         return False
 
     for key, value in battery_status.items():
@@ -2272,7 +2266,7 @@ def rename(speaker, action, args, soco_function, use_local_speaker_list):
     old_name = speaker.player_name
     new_name = args[0]
     if old_name == new_name:
-        error_and_exit("Current and new names are identical")
+        error_report("Current and new names are identical")
         return False
     speaker.player_name = new_name
     rename_speaker_in_cache(
@@ -2325,7 +2319,7 @@ def add_uri_to_queue(speaker, action, args, soco_function, use_local_speaker_lis
             except ValueError:
                 # Note that 'first/start' option is now redundant, but included
                 # here for backward compatibility
-                error_and_exit(
+                error_report(
                     "Second parameter for '{}' must be integer or 'next/play_next'".format(
                         action
                     )
@@ -2390,7 +2384,7 @@ def fixed_volume(speaker, action, args, soco_function, use_local_speaker_list):
             else:
                 parameter_type_error(action, "on|off")
         except:
-            error_and_exit(
+            error_report(
                 "Fixed Volume feature not supported by '{}'".format(speaker.player_name)
             )
             return False
@@ -2414,7 +2408,7 @@ def trueplay(speaker, action, args, soco_function, use_local_speaker_list):
             else:
                 parameter_type_error(action, "on|off")
         except:
-            error_and_exit(
+            error_report(
                 "No Trueplay profile available for '{}' (or Trueplay not supported)".format(
                     speaker.player_name
                 )
@@ -2516,7 +2510,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
             "Subscribing to transport events from {}".format(speaker.player_name)
         )
     except Exception as e:
-        error_and_exit("Exception {}".format(e))
+        error_report("Exception {}".format(e))
         return False
 
     initial_playlist_number = None

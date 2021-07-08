@@ -15,7 +15,7 @@ import ifaddr
 from RangeHTTPServer import RangeRequestHandler
 
 from soco_cli.utils import (
-    error_and_exit,
+    error_report,
     event_unsubscribe,
     set_sigterm,
     set_speaker_playing_local_file,
@@ -197,13 +197,13 @@ def play_local_file(speaker, pathname):
     # pathname is the local file to be played
 
     if not path.exists(pathname):
-        error_and_exit("File '{}' not found".format(pathname))
+        error_report("File '{}' not found".format(pathname))
         return False
 
     directory, filename = path.split(pathname)
 
     if not is_supported_type(filename):
-        error_and_exit(
+        error_report(
             "Unsupported file type; must be one of: {}".format(SUPPORTED_TYPES)
         )
         return False
@@ -213,7 +213,7 @@ def play_local_file(speaker, pathname):
 
     server_ip = get_server_ip(speaker)
     if not server_ip:
-        error_and_exit("Can't determine an IP address for web server")
+        error_report("Can't determine an IP address for web server")
         return False
     logging.info("Using server IP address: {}".format(server_ip))
 
@@ -223,7 +223,7 @@ def play_local_file(speaker, pathname):
         speaker_ips.append(zone.ip_address)
     httpd = http_server(server_ip, directory, url_filename, speaker_ips)
     if not httpd:
-        error_and_exit("Cannot create HTTP server")
+        error_report("Cannot create HTTP server")
         return False
 
     # This ensures that other running invocations of 'play_file'

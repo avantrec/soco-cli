@@ -26,7 +26,7 @@ from soco_cli.utils import (
     convert_to_seconds,
     create_speaker_cache,
     docs,
-    error_and_exit,
+    error_report,
     get_speaker,
     logo,
     seconds_until,
@@ -201,7 +201,7 @@ def main():
 
     message = check_args(args)
     if message:
-        error_and_exit(message)
+        error_report(message)
 
     use_local_speaker_list = args.use_local_speaker_list
     if env.get(ENV_LOCAL) == "TRUE" and not args.no_env:
@@ -273,7 +273,7 @@ def main():
             # Special case: the 'loop_to_start' action
             if speaker_name.lower() == "loop_to_start":
                 if len(sequence) != 1:
-                    error_and_exit("Action 'loop_to_start' takes no parameters")
+                    error_report("Action 'loop_to_start' takes no parameters")
                 # Reset pointers, rewind and continue
                 loop_pointer = -1
                 sequence_pointer = 0
@@ -293,7 +293,7 @@ def main():
                                 "Looping for {} iteration(s)".format(loop_iterator)
                             )
                         except ValueError:
-                            error_and_exit(
+                            error_report(
                                 "Action 'loop' takes no parameters, or a number of iterations (> 0)"
                             )
                     loop_iterator -= 1
@@ -312,7 +312,7 @@ def main():
             # Special case: the 'loop_for' action
             if speaker_name.lower() == "loop_for":
                 if len(sequence) != 2:
-                    error_and_exit(
+                    error_report(
                         "Action 'loop_for' requires one parameter (check spaces around the ':' separator)"
                     )
                 loop_duration = 0
@@ -321,7 +321,7 @@ def main():
                     try:
                         loop_duration = convert_to_seconds(sequence[1])
                     except ValueError:
-                        error_and_exit(
+                        error_report(
                             "Action 'loop_for' requires one parameter (duration >= 0)"
                         )
                     logging.info(
@@ -347,7 +347,7 @@ def main():
             if speaker_name.lower() == "loop_until":
                 loop_duration = 0
                 if len(sequence) != 2:
-                    error_and_exit(
+                    error_report(
                         "Action 'loop_until' requires one parameter (check spaces around the ':' separator)"
                     )
                 if loop_start_time is None:
@@ -355,7 +355,7 @@ def main():
                     try:
                         loop_duration = seconds_until(sequence[1])
                     except:
-                        error_and_exit(
+                        error_report(
                             "Action 'loop_until' requires one parameter (stop time)"
                         )
                     logging.info(
@@ -394,7 +394,7 @@ def main():
 
             # General action processing
             if len(sequence) < 2:
-                error_and_exit(
+                error_report(
                     "At least 2 parameters required in action sequence '{}'".format(
                         sequence
                     )
@@ -476,5 +476,5 @@ if __name__ == "__main__":
         main()
         exit(0)
     except Exception as error:
-        error_and_exit(str(error))
+        error_report(str(error))
         exit(1)

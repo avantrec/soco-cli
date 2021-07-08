@@ -5,7 +5,7 @@
 # more info on the M3U file format available here:
 # http://n4k3d.com/the-m3u-file-format/
 
-from soco_cli.utils import error_and_exit
+from soco_cli.utils import error_report
 
 
 class Track:
@@ -28,9 +28,7 @@ def parse_m3u(m3u_file):
         if m3u_file.lower().endswith(".m3u") or m3u_file.lower().endswith(".m3u8"):
             line = infile.readline()
             if not line.startswith("#EXTM3U"):
-                error_and_exit(
-                    "File '{}' lacks '#EXTM3U' as first line".format(m3u_file)
-                )
+                error_report("File '{}' lacks '#EXTM3U' as first line".format(m3u_file))
                 return None
 
         playlist = []

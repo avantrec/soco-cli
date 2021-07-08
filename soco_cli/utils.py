@@ -49,7 +49,7 @@ def set_api():
 
 
 # Error handling
-def error_and_exit(msg):
+def error_report(msg):
     # Print to stderr
     print("Error:", msg, file=sys.stderr, flush=True)
     # Use os._exit() to avoid the catch-all 'except'
@@ -59,12 +59,12 @@ def error_and_exit(msg):
 
 def parameter_type_error(action, required_params):
     msg = "Action '{}' takes parameter(s): {}".format(action, required_params)
-    error_and_exit(msg)
+    error_report(msg)
 
 
 def parameter_number_error(action, parameter_number):
     msg = "Action '{}' takes {} parameter(s)".format(action, parameter_number)
-    error_and_exit(msg)
+    error_report(msg)
 
 
 # Parameter count checking
@@ -367,7 +367,7 @@ def configure_logging(log_level):
         elif log_level == "critical":
             logging.basicConfig(format=log_format, level=logging.CRITICAL)
         else:
-            error_and_exit(
+            error_report(
                 "--log takes one of: NONE, DEBUG, INFO, WARN(ING), ERROR, CRITICAL"
             )
 
@@ -460,7 +460,7 @@ class SpeakerCache:
             return speakers_found.pop()
 
         if len(speakers_found) > 1:
-            error_and_exit("'{}' is ambiguous: {}".format(name, speakers_found_names))
+            error_report("'{}' is ambiguous: {}".format(name, speakers_found_names))
 
         return None
 
@@ -479,7 +479,7 @@ class SpeakerCache:
             return speakers_found.pop()
 
         if len(speakers_found) > 1:
-            error_and_exit(
+            error_report(
                 "Speaker name '{}' is ambiguous within {}".format(
                     name, speakers_found_names
                 )
@@ -714,7 +714,7 @@ def save_readline_history():
         try:
             os.mkdir(SOCO_CLI_DIR)
         except:
-            error_and_exit("Failed to create directory '{}'".format(SOCO_CLI_DIR))
+            error_report("Failed to create directory '{}'".format(SOCO_CLI_DIR))
             return
 
     logging.info("Saving shell history file: {}".format(HIST_FILE))

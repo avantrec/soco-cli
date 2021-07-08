@@ -4,7 +4,7 @@ import logging
 from urllib.request import urlopen
 
 from soco_cli.__init__ import __version__
-from soco_cli.utils import error_and_exit
+from soco_cli.utils import error_report
 
 init_file_url = (
     "https://raw.githubusercontent.com/avantrec/soco-cli/master/soco_cli/__init__.py"
@@ -15,7 +15,7 @@ def get_latest_version():
     try:
         file = urlopen(init_file_url, timeout=3.0)
     except Exception as e:
-        error_and_exit(
+        error_report(
             "Unable to get latest version information from GitHub: {}".format(e)
         )
         return False

@@ -3,14 +3,14 @@
 import logging
 import time
 
-from soco_cli.utils import convert_to_seconds, error_and_exit, seconds_until
+from soco_cli.utils import convert_to_seconds, error_report, seconds_until
 
 
 def process_wait(sequence):
     if sequence[0] in ["wait", "wait_for"]:
         duration = 0
         if len(sequence) != 2:
-            error_and_exit(
+            error_report(
                 "Action 'wait' requires 1 parameter (check spaces around the ':' separator?)"
             )
             return
@@ -18,7 +18,7 @@ def process_wait(sequence):
         try:
             duration = convert_to_seconds(action)
         except ValueError:
-            error_and_exit(
+            error_report(
                 "Action 'wait' requires positive number of hours, seconds or minutes + 'h/m/s', or HH:MM(:SS)"
             )
         logging.info("Waiting for {}s".format(duration))
@@ -27,7 +27,7 @@ def process_wait(sequence):
     # Special case: the 'wait_until' action
     elif sequence[0] in ["wait_until"]:
         if len(sequence) != 2:
-            error_and_exit(
+            error_report(
                 "'wait_until' requires 1 parameter (check spaces around the ':' separator?)"
             )
             return
@@ -37,6 +37,6 @@ def process_wait(sequence):
             logging.info("Waiting for {}s".format(duration))
             time.sleep(duration)
         except ValueError:
-            error_and_exit(
+            error_report(
                 "'wait_until' requires parameter: time in 24hr HH:MM(:SS) format"
             )

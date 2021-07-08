@@ -9,7 +9,7 @@ from soco_cli.utils import (
     configure_common_args,
     configure_logging,
     docs,
-    error_and_exit,
+    error_report,
     logo,
     version,
 )
@@ -73,7 +73,7 @@ def main():
             speaker_list.print()
             exit(0)
         else:
-            error_and_exit("No current speaker data")
+            error_report("No current speaker data")
 
     if args.delete_local_speaker_cache:
         try:
@@ -81,12 +81,12 @@ def main():
             print("Removed file: {}".format(file))
             exit(0)
         except Exception:
-            error_and_exit("No current speaker data file")
+            error_report("No current speaker data file")
 
     # Parameter validation for various args
     message = check_args(args)
     if message:
-        error_and_exit(message)
+        error_report(message)
 
     speaker_list._network_threads = args.network_discovery_threads
     speaker_list._network_timeout = args.network_discovery_timeout
@@ -103,7 +103,7 @@ def main():
         else:
             print("No speakers discovered. No cache data saved or overwritten.")
     except Exception as e:
-        error_and_exit(str(e))
+        error_report(str(e))
 
 
 if __name__ == "__main__":
@@ -112,5 +112,5 @@ if __name__ == "__main__":
         main()
         exit(0)
     except Exception as error:
-        error_and_exit(str(error))
+        error_report(str(error))
         exit(1)

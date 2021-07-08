@@ -12,7 +12,7 @@ from soco import SoCo
 
 from soco_cli.m3u_parser import parse_m3u
 from soco_cli.play_local_file import is_supported_type, play_local_file
-from soco_cli.utils import error_and_exit
+from soco_cli.utils import error_report
 
 # def wait_for_keypress():
 #     # Wait for a key press on the console and return it
@@ -93,11 +93,11 @@ def play_m3u_file(speaker, m3u_file, options=""):
     # Check for invalid options
     invalid = set(options) - set("psri")
     if invalid:
-        error_and_exit("Invalid option(s) '{}' supplied".format(invalid))
+        error_report("Invalid option(s) '{}' supplied".format(invalid))
         return False
 
     if not path.exists(m3u_file):
-        error_and_exit("File '{}' not found".format(m3u_file))
+        error_report("File '{}' not found".format(m3u_file))
         return False
 
     # if not (m3u_file.lower().endswith(".m3u") or m3u_file.lower().endswith(".m3u8")):
@@ -109,7 +109,7 @@ def play_m3u_file(speaker, m3u_file, options=""):
     logging.info("Parsing file contents'{}'".format(m3u_file))
     tracks = parse_m3u(m3u_file)
     if not tracks:
-        error_and_exit("No tracks found in '{}'".format(m3u_file))
+        error_report("No tracks found in '{}'".format(m3u_file))
 
     logging.info("Found {} tracks".format(len(tracks)))
 
