@@ -14,7 +14,7 @@ from fastapi import FastAPI
 from soco_cli.__init__ import __version__ as version
 from soco_cli.api import get_all_speaker_names
 from soco_cli.api import get_soco_object as get_speaker
-from soco_cli.api import rediscover_speakers, rescan_speakers
+from soco_cli.api import rescan_speakers
 from soco_cli.api import run_command as sc_run
 from soco_cli.utils import version as print_version
 
@@ -52,7 +52,7 @@ def command_core(speaker, action, *args, use_local=False):
 
     # Print the equivalent 'sonos' command and exit code
     if len(new_args) != 0:
-        arguments = (" ".join([arg for arg in new_args])).rstrip()
+        arguments = " ".join(new_args).rstrip()
         print(
             PREFIX
             + "Command = 'sonos {} {} {}', ".format(quoted_speaker, action, arguments),

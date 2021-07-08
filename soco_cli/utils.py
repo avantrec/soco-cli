@@ -73,8 +73,8 @@ def zero_parameters(f):
         if len(args[2]) != 0:
             parameter_number_error(args[1], "no")
             return False
-        else:
-            return f(*args, **kwargs)
+
+        return f(*args, **kwargs)
 
     return wrapper
 
@@ -84,8 +84,7 @@ def one_parameter(f):
         if len(args[2]) != 1:
             parameter_number_error(args[1], "1")
             return False
-        else:
-            return f(*args, **kwargs)
+        return f(*args, **kwargs)
 
     return wrapper
 
@@ -95,8 +94,7 @@ def zero_or_one_parameter(f):
         if len(args[2]) not in [0, 1]:
             parameter_number_error(args[1], "0 or 1")
             return False
-        else:
-            return f(*args, **kwargs)
+        return f(*args, **kwargs)
 
     return wrapper
 
@@ -106,8 +104,7 @@ def one_or_two_parameters(f):
         if len(args[2]) not in [1, 2]:
             parameter_number_error(args[1], "1 or 2")
             return False
-        else:
-            return f(*args, **kwargs)
+        return f(*args, **kwargs)
 
     return wrapper
 
@@ -117,8 +114,7 @@ def two_parameters(f):
         if len(args[2]) != 2:
             parameter_number_error(args[1], "2")
             return False
-        else:
-            return f(*args, **kwargs)
+        return f(*args, **kwargs)
 
     return wrapper
 
@@ -128,8 +124,7 @@ def zero_one_or_two_parameters(f):
         if len(args[2]) > 2:
             parameter_number_error(args[1], "zero, one or two")
             return False
-        else:
-            return f(*args, **kwargs)
+        return f(*args, **kwargs)
 
     return wrapper
 
@@ -139,8 +134,7 @@ def one_or_more_parameters(f):
         if len(args[2]) < 1:
             parameter_number_error(args[1], "1 or more")
             return False
-        else:
-            return f(*args, **kwargs)
+        return f(*args, **kwargs)
 
     return wrapper
 
@@ -177,8 +171,8 @@ def create_time_from_str(time_str):
     # Accept time strings from 00:00:00 to 23:59:59
     if 0 <= hours <= 23 and 0 <= minutes <= 59 and 0 <= seconds <= 59:
         return datetime.time(hour=hours, minute=minutes, second=seconds)
-    else:
-        raise ValueError
+
+    raise ValueError
 
 
 def convert_to_seconds(time_str):
@@ -198,7 +192,8 @@ def convert_to_seconds(time_str):
             else:  # HH:MM
                 td = datetime.timedelta(hours=int(parts[0]), minutes=int(parts[1]))
             return td.seconds
-        elif time_str.endswith("s"):  # Seconds (explicit)
+
+        if time_str.endswith("s"):  # Seconds (explicit)
             duration = float(time_str[:-1])
         elif time_str.endswith("m"):  # Minutes
             duration = float(time_str[:-1]) * 60
@@ -217,6 +212,7 @@ def convert_true_false(true_or_false, conversion="YesOrNo"):
         return "Yes" if true_or_false is True else "No"
     if conversion == "onoroff":
         return "on" if true_or_false is True else "off"
+    return None
 
 
 def version():
@@ -319,8 +315,7 @@ class RewindableList(Sequence):
             item = self._items[self._index]
             self._index += 1
             return item
-        else:
-            raise StopIteration
+        raise StopIteration
 
     def rewind(self):
         self._index = 0
@@ -398,7 +393,7 @@ class SpeakerCache:
 
     @property
     def exists(self):
-        return True if self._cache else False
+        return bool(self._cache)
 
     def cache_speakers(self, speakers):
         logging.info("Adding speakers to cache: {}".format(speakers))
@@ -420,7 +415,6 @@ class SpeakerCache:
             else:
                 logging.info("No speakers found to cache")
             self._discovery_done = True
-        return None
 
     def scan(self, reset=False, scan_timeout_override=None):
         if not self._scan_done or reset:
@@ -445,7 +439,6 @@ class SpeakerCache:
                 logging.info("No speakers found to cache")
         else:
             logging.info("Full discovery scan already done, and reset not requested")
-        return None
 
     def add(self, speaker):
         logging.info("Adding speaker to cache")
@@ -454,7 +447,7 @@ class SpeakerCache:
     def find_indirect(self, name):
         speakers_found = set()
         speakers_found_names = set()
-        for cached, cached_name in self._cache:
+        for cached, _ in self._cache:
             for speaker in cached.visible_zones:
                 match, exact = speaker_name_matches(name, speaker.player_name)
                 if match and exact:
@@ -466,12 +459,10 @@ class SpeakerCache:
         if len(speakers_found) == 1:
             return speakers_found.pop()
 
-        elif len(speakers_found) > 1:
+        if len(speakers_found) > 1:
             error_and_exit("'{}' is ambiguous: {}".format(name, speakers_found_names))
-            return None
 
-        else:
-            return None
+        return None
 
     def find(self, name):
         speakers_found = set()
@@ -487,16 +478,14 @@ class SpeakerCache:
         if len(speakers_found) == 1:
             return speakers_found.pop()
 
-        elif len(speakers_found) > 1:
+        if len(speakers_found) > 1:
             error_and_exit(
                 "Speaker name '{}' is ambiguous within {}".format(
                     name, speakers_found_names
                 )
             )
-            return None
 
-        else:
-            return None
+        return None
 
     def get_all_speakers(self, use_scan=False):
         if use_scan:
@@ -559,29 +548,28 @@ def get_speaker(name, local=False):
         return speaker_list.find(name)
 
     # Use discovery
+    # Try various lookup methods in order of expense,
+    # and cache results where possible
+    speaker = None
+    if not speaker:
+        logging.info("Trying direct cache lookup")
+        speaker = SPKR_CACHE.find(name)
+    if not speaker:
+        logging.info("Trying indirect cache lookup")
+        speaker = SPKR_CACHE.find_indirect(name)
+    if not speaker:
+        logging.info("Trying standard discovery with network scan fallback")
+        SPKR_CACHE.discover()
+        speaker = SPKR_CACHE.find(name)
+    if not speaker:
+        logging.info("Trying network scan discovery")
+        SPKR_CACHE.scan()
+        speaker = SPKR_CACHE.find(name)
+    if speaker:
+        logging.info("Successful speaker discovery")
     else:
-        # Try various lookup methods in order of expense,
-        # and cache results where possible
-        speaker = None
-        if not speaker:
-            logging.info("Trying direct cache lookup")
-            speaker = SPKR_CACHE.find(name)
-        if not speaker:
-            logging.info("Trying indirect cache lookup")
-            speaker = SPKR_CACHE.find_indirect(name)
-        if not speaker:
-            logging.info("Trying standard discovery with network scan fallback")
-            SPKR_CACHE.discover()
-            speaker = SPKR_CACHE.find(name)
-        if not speaker:
-            logging.info("Trying network scan discovery")
-            SPKR_CACHE.scan()
-            speaker = SPKR_CACHE.find(name)
-        if speaker:
-            logging.info("Successful speaker discovery")
-        else:
-            logging.info("Failed to discover speaker")
-        return speaker
+        logging.info("Failed to discover speaker")
+    return speaker
 
 
 def get_right_hand_speaker(left_hand_speaker):
@@ -591,30 +579,29 @@ def get_right_hand_speaker(left_hand_speaker):
         # If not visible, this is not a left-hand speaker
         logging.info("Speaker is visible: not a left-hand speaker")
         return None
-    else:
-        # Find the speaker which is not visible, for which the
-        # left-hand speaker is the coordinator, and not a Sub
-        for rh_speaker in left_hand_speaker.all_zones:
-            if (
-                rh_speaker.group.coordinator.ip_address == left_hand_speaker.ip_address
-                and not rh_speaker.is_visible
-                and "sub" not in rh_speaker.get_speaker_info()["model_name"].lower()
-            ):
-                logging.info(
-                    "Found right-hand speaker: {} / {}".format(
-                        rh_speaker.player_name, rh_speaker.ip_address
-                    )
+
+    # Find the speaker which is not visible, for which the
+    # left-hand speaker is the coordinator, and not a Sub
+    for rh_speaker in left_hand_speaker.all_zones:
+        if (
+            rh_speaker.group.coordinator.ip_address == left_hand_speaker.ip_address
+            and not rh_speaker.is_visible
+            and "sub" not in rh_speaker.get_speaker_info()["model_name"].lower()
+        ):
+            logging.info(
+                "Found right-hand speaker: {} / {}".format(
+                    rh_speaker.player_name, rh_speaker.ip_address
                 )
-                return rh_speaker
-        logging.info("Right-hand speaker not found")
-        return None
+            )
+            return rh_speaker
+    logging.info("Right-hand speaker not found")
+    return None
 
 
 def rename_speaker_in_cache(old_name, new_name, use_local_speaker_list=True):
     if use_local_speaker_list:
         return speaker_list.rename(old_name, new_name)
-    else:
-        return SPKR_CACHE.rename_speaker(old_name, new_name)
+    return SPKR_CACHE.rename_speaker(old_name, new_name)
 
 
 # Argument processing
@@ -687,8 +674,7 @@ def check_args(args):
         message = message + "\n    Option 'threads' must be between 1 and 32000"
     if message == "":
         return None
-    else:
-        return message
+    return message
 
 
 path = os.path.expanduser("~") + "/.soco-cli/"
@@ -713,7 +699,6 @@ def read_search():
                 return pickle.load(f)
         except Exception as e:
             logging.info("Failed to load search results: %s", e)
-            pass
     return None
 
 
@@ -737,7 +722,6 @@ def save_readline_history():
         readline.write_history_file(HIST_FILE)
     except Exception as e:
         logging.info("Error saving shell history file: {}".format(e))
-        pass
 
 
 def get_readline_history():
@@ -751,4 +735,3 @@ def get_readline_history():
         readline.set_history_length(HIST_LEN)
     except Exception as e:
         logging.info("Error reading shell history file: {}".format(e))
-        pass

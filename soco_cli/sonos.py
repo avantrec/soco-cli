@@ -206,9 +206,7 @@ def main():
     use_local_speaker_list = args.use_local_speaker_list
     if env.get(ENV_LOCAL) == "TRUE" and not args.no_env:
         logging.info(
-            "Env. var. '{}' set to 'TRUE ... using local speaker list".format(
-                ENV_LOCAL
-            )
+            "Env. var. '{}' set to 'TRUE ... using local speaker list".format(ENV_LOCAL)
         )
         use_local_speaker_list = True
     if use_local_speaker_list:
@@ -240,7 +238,7 @@ def main():
             logging.info("No 'SPKR' environment variable set")
 
     if args.interactive:
-        sk = True if args.sk else False
+        sk = bool(args.sk)
         speaker_name = None
         if len(args.parameters):
             speaker_name = args.parameters[0]

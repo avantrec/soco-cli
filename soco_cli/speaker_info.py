@@ -49,7 +49,6 @@ def print_speaker_table(device):
             volume = not_applicable
             mute = not_applicable
             state = not_applicable
-            title = not_applicable
         else:
             volume = sco.volume
             mute = "On" if sco.mute else "Off"
@@ -57,13 +56,10 @@ def print_speaker_table(device):
             # Wrap in an exception, and ignore.
             try:
                 state = sco.get_current_transport_info()["current_transport_state"]
-                title = sco.get_current_track_info()["title"]
             except BaseException as e:
                 # If we're here, assume the speakers are bonded
                 # in a Home Theatre configuration
                 state = "Bonded"
-                title = ""
-                pass
 
         # Find the coordinator IP
         coord = sco.group.coordinator
@@ -87,7 +83,6 @@ def print_speaker_table(device):
             volume,
             mute,
             state,
-            # title,
             sco.speaker_info["model_name"].replace("Sonos ", ""),
             sco.speaker_info["model_number"],
             sco.speaker_info["hardware_version"],

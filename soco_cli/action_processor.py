@@ -410,7 +410,6 @@ def shuffle(speaker, action, args, soco_function, use_local_speaker_list):
         else:
             print("off")
     elif np == 1:
-        mode = speaker.play_mode.lower()
         if args[0].lower() == "on":
             speaker.shuffle = True
         elif args[0].lower() == "off":
@@ -1515,8 +1514,7 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
                     "'{}' is not a valid recurrence string".format(recurrence)
                 )
                 return False
-            else:
-                alarm.recurrence = recurrence
+            alarm.recurrence = recurrence
 
         enabled = alarm_parameters[3].lower()
         if not enabled == "_":
@@ -1655,7 +1653,7 @@ def disable_alarms(speaker, action, args, soco_function, use_local_speaker_list)
 def set_alarms(speaker, alarm_ids, enabled=True):
     alarms = soco.alarms.get_alarms(speaker)
     alarm_ids = set(alarm_ids.lower().split(","))
-    all_alarms = True if "all" in alarm_ids else False
+    all_alarms = bool("all" in alarm_ids)
     if all_alarms:
         alarm_ids.discard("all")
 

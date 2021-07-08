@@ -22,7 +22,6 @@ from soco_cli.api import get_soco_object, run_command
 from soco_cli.check_for_update import print_update_status
 from soco_cli.cmd_parser import CLIParser
 from soco_cli.keystroke_capture import get_keystroke
-from soco_cli.track_follow import track_follow
 from soco_cli.utils import (
     RewindableList,
     docs,
@@ -95,7 +94,6 @@ def interactive_loop(
         readline.set_completer_delims(" ")
         _get_readline_history()
 
-    single_keystroke = single_keystroke
     root_prompt = "Sonos"
 
     # Input loop
@@ -244,7 +242,9 @@ def interactive_loop(
                     continue
 
                 if command_lower == "rescan_max":
-                    _rescan(use_local_speaker_list=use_local_speaker_list, max=True)
+                    _rescan(
+                        use_local_speaker_list=use_local_speaker_list, max_scan=True
+                    )
                     continue
 
                 if command_lower == "exec":
@@ -392,22 +392,20 @@ def interactive_loop(
                                 )
                             )
                             continue
-                        else:
-                            # Temporarily establish an active speaker
-                            temp_active_speaker = True
-                            speaker_name = speaker.player_name
-                            logging.info(
-                                "Temporarily establish active speaker: '{}'".format(
-                                    speaker_name
-                                )
+
+                        # Temporarily establish an active speaker
+                        temp_active_speaker = True
+                        speaker_name = speaker.player_name
+                        logging.info(
+                            "Temporarily establish active speaker: '{}'".format(
+                                speaker_name
                             )
-                            # Replace the command sequence without the speaker name,
-                            # for processing next time round the loop
-                            command_sequences.insert(command_sequences.index(), args)
-                            logging.info(
-                                "Reinserting command sequence: {}".format(args)
-                            )
-                            continue
+                        )
+                        # Replace the command sequence without the speaker name,
+                        # for processing next time round the loop
+                        command_sequences.insert(command_sequences.index(), args)
+                        logging.info("Reinserting command sequence: {}".format(args))
+                        continue
 
                     action = args.pop(0).lower()
                     logging.info("Action = '{}'; args = {}".format(action, args))
@@ -421,10 +419,10 @@ def interactive_loop(
                             use_local_speaker_list=use_local_speaker_list,
                         )
                         if exit_code:
-                            if not error_msg == "":
+                            if error_msg != "":
                                 print(error_msg)
                         else:
-                            if not output == "":
+                            if output != "":
                                 print(output)
                             if action == "rename":
                                 speaker_name = speaker.get_speaker_info(refresh=True)[
@@ -646,10 +644,7 @@ class AliasProcessor:
                     print("Error: Alias loop detected ... stopping".format(alias_name))
                     self._remove_added_commands()
                     return False
-        else:
-            self._used_aliases.append(
-                (self._recurse_level, self._seq_number, alias_name)
-            )
+        self._used_aliases.append((self._recurse_level, self._seq_number, alias_name))
 
         alias_actions = am.action(alias_name)
         try:
@@ -695,7 +690,6 @@ class AliasProcessor:
                         except IndexError:
                             logging.info("No value found for arg. {}".format(item))
                             sequence[i] = None
-                            pass
 
                 # Remove unsatisfied arguments and substituted parameters
                 sequence = [x for x in sequence if x is not None]
@@ -742,11 +736,11 @@ class AliasProcessor:
             logging.info("Removing command {}".format(cmd))
 
 
-def _rescan(use_local_speaker_list=False, max=False):
+def _rescan(use_local_speaker_list=False, max_scan=False):
     try:
         if use_local_speaker_list:
             print("Using cached speaker list: no rescan performed")
-        elif max:
+        elif max_scan:
             logging.info("Full network rescan at max strength (timeout = 10.0s)")
             speaker_cache().scan(reset=True, scan_timeout_override=10.0)
             _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
@@ -768,7 +762,7 @@ def _exec(command_line):
     set_suspend_sigterm(suspend=True)
     try:
         logging.info("Running command: '{}'".format(command_line))
-        subprocess.run(command_line)
+        subprocess.run(command_line, check=True)
     except Exception as e:
         print(e)
     set_suspend_sigterm(suspend=False)
@@ -785,7 +779,7 @@ def _track_follow(speaker_ip):
         if arg.startswith("--log="):
             command_line.append(arg)
             break
-        elif arg == "--log":
+        if arg == "--log":
             command_line.append(arg)
             command_line.append(sys.argv[1:][position + 1])
             break

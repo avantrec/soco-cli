@@ -27,7 +27,8 @@ PORT_END = 54099
 
 SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WMA", "WAV", "AAC"]
 
-PY37PLUS = True if pyversion.major >= 3 and pyversion.minor >= 7 else False
+# Need to know whether this is Python >= 3.7
+PY37PLUS = bool((pyversion.major == 3 and pyversion.minor >= 7) or pyversion.major > 3)
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -84,7 +85,6 @@ class MyHTTPHandler(RangeRequestHandler):
         except Exception as e:
             # It's normal to hit some exceptions with Sonos.
             logging.info("Exception ignored: {}".format(e))
-            pass
 
     def log_message(self, format, *args):
         # Suppress HTTP logging
@@ -114,8 +114,7 @@ def http_server(server_ip, directory, filename, speaker_ips):
         except OSError:
             # Assume this means that the port is in use
             continue
-    else:
-        return None
+    return None
 
 
 def get_server_ip(speaker):
@@ -130,8 +129,7 @@ def get_server_ip(speaker):
                 )
                 if IPv4Address(speaker.ip_address) in network:
                     return ip.ip
-    else:
-        return None
+    return None
 
 
 def wait_until_stopped(speaker, uri, aac_file=False):
@@ -170,8 +168,7 @@ def wait_until_stopped(speaker, uri, aac_file=False):
                         event_unsubscribe(sub)
                         speaker.stop()
                         return True
-                    else:
-                        logging.info("AAC: transition event before playback")
+                    logging.info("AAC: transition event before playback")
                 if event.variables["transport_state"] == "PLAYING":
                     has_played = True
                     logging.info("AAC: has_played set to True")
@@ -188,12 +185,11 @@ def wait_until_stopped(speaker, uri, aac_file=False):
 
 def is_supported_type(filename):
     file_upper = filename.upper()
-    for type in SUPPORTED_TYPES:
-        if file_upper.endswith("." + type):
+    for file_type in SUPPORTED_TYPES:
+        if file_upper.endswith("." + file_type):
             # Supported file type
             return True
-    else:
-        return False
+    return False
 
 
 def play_local_file(speaker, pathname):

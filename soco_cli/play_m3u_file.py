@@ -48,7 +48,6 @@ def interaction_manager(speaker_ip):
             keypress = input("")[0]
         except:
             keypress = None
-            pass
         if keypress in ["N", "n"]:
             action = "NEXT"
             print("Next track ...")
@@ -63,7 +62,6 @@ def interaction_manager(speaker_ip):
                 speaker.pause()
             except Exception as e:
                 logging.info("Exception ignored: {}".format(e))
-                pass
             logging.info(
                 "Interactive mode: key = '{}', action = '{}'".format(keypress, action)
             )
@@ -74,7 +72,6 @@ def interaction_manager(speaker_ip):
                 speaker.play()
             except Exception as e:
                 logging.info("Exception ignored: {}".format(e))
-                pass
             logging.info(
                 "Interactive mode: key = '{}', action = '{}'".format(keypress, action)
             )
@@ -145,7 +142,6 @@ def play_m3u_file(speaker, m3u_file, options=""):
         except Exception as e:
             logging.info("Exception ignored: {}".format(e))
             keypress_process = None
-            pass
 
     zero_pad = len(str(len(tracks)))
     for index, track in enumerate(tracks):

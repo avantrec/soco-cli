@@ -15,21 +15,16 @@ class Track:
         self.path = path
 
 
-"""
-    song info lines are formatted like:
-    EXTINF:419,Alice In Chains - Rotten Apple
-    length (seconds)
-    Song title
-    file name - relative or absolute path of file
-"""
+# song info lines are formatted like:
+# EXTINF:419,Alice In Chains - Rotten Apple
+# length (seconds)
+# Song title
+# file name - relative or absolute path of file
 
 
 def parse_m3u(m3u_file):
     with open(m3u_file, "r") as infile:
-        """
-        Parse file contents. Files with an M3U/M3U8 extension must follow conventions.
-        """
-
+        # Parse file contents. Files with an M3U/M3U8 extension must follow conventions.
         if m3u_file.lower().endswith(".m3u") or m3u_file.lower().endswith(".m3u8"):
             line = infile.readline()
             if not line.startswith("#EXTM3U"):

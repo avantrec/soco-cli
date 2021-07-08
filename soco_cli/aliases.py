@@ -18,14 +18,13 @@ class AliasManager:
             alias_actions = alias_actions.strip()
         if alias_actions in [None, ""]:
             return self.remove_alias(alias_name)
+        if self._aliases.get(alias_name, None):
+            new = False
         else:
-            if self._aliases.get(alias_name, None):
-                new = False
-            else:
-                new = True
-            logging.info("Adding alias '{}', new = {}".format(alias_name, new))
-            self._aliases[alias_name] = alias_actions
-            return True, new
+            new = True
+        logging.info("Adding alias '{}', new = {}".format(alias_name, new))
+        self._aliases[alias_name] = alias_actions
+        return True, new
 
     def action(self, alias_name):
         return self._aliases.get(alias_name, None)
@@ -61,7 +60,6 @@ class AliasManager:
                 self._aliases = pickle.load(f)
         except:
             logging.info("Failed to read aliases from file")
-            pass
 
     def print_aliases(self):
         if len(self._aliases) == 0:

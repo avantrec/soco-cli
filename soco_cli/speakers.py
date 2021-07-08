@@ -64,17 +64,11 @@ class Speakers:
 
     @property
     def speaker_cache_loaded(self):
-        if self._speakers:
-            return True
-        else:
-            return False
+        return bool(self._speakers)
 
     @property
     def speaker_cache_file_exists(self):
-        if os.path.exists(self.save_pathname):
-            return True
-        else:
-            return False
+        return os.path.exists(self.save_pathname)
 
     @property
     def speakers(self):
@@ -152,8 +146,7 @@ class Speakers:
             with open(self.save_pathname, "wb") as f:
                 pickle.dump(self._speakers, f)
             return True
-        else:
-            return False
+        return False
 
     def load(self):
         """Loads a saved speaker list"""
@@ -164,8 +157,7 @@ class Speakers:
             except:
                 return False
             return True
-        else:
-            return False
+        return False
 
     def clear(self):
         """Clears the in-memory speaker list"""
@@ -277,8 +269,7 @@ class Speakers:
             soco_speakers.append(soco.SoCo(speaker.ip_address))
         if soco_speakers:
             return soco_speakers
-        else:
-            return None
+        return None
 
     def get_all_speaker_names(self, include_invisible=False):
         soco_speaker_names = []

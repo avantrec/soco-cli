@@ -197,7 +197,7 @@ The following options are for use with the cached discovery mechanism:
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list. This is the recommended way of using cached discovery: first run `sonos-discover` to create the local speaker database, then use `sonos` with the `-l` option to use the local database when invoking `sonos` actions.
 
-If you set the environment variable **`USE_LOCAL_CACHE`** to `TRUE`, the `--use_local_speaker_list` option will always be used.
+If you set the environment variable **`USE_LOCAL_CACHE=TRUE`**, the `--use_local_speaker_list` option will always be used.
 
 ### Firewall Rules
 
@@ -261,7 +261,7 @@ It's possible to play local audio files in **MP3, M4A, MP4, FLAC, OGG, WMA, and 
 
 **Example**: `sonos Lounge play_file mozart.mp3`
 
-SoCo-CLI establishes a temporary internal HTTP server from which the specified audio file can be streamed, and then instructs the speaker to play it. The `play_file` action will terminate only once playback ends. Note that playback can be paused using a Sonos app (or SoCo-CLI), and the HTTP server will remain active so that playback can be resumed. (Unfortunately, one can't actually fully stop playback using the Sonos apps. Instead, do this either by issuing a 'CTRL-C' to the active SoCo-CLI action, or by issuing `sonos <SPEAKER> stop` from another command line.)
+SoCo-CLI establishes a temporary internal HTTP server from which the specified audio file can be streamed, and then instructs the speaker to play it. The `play_file` action will terminate only once playback ends. Note that playback can be paused using a Sonos app (or SoCo-CLI), and the HTTP server will remain active so that playback can be resumed. (Unfortunately, one can't actually fully stop playback using the Sonos apps. Instead, do this by playing something else on Sonos, by issuing a 'CTRL-C' to the active SoCo-CLI `play_file` action, or by issuing `sonos <SPEAKER> stop` from another command line.)
 
 The host running SoCo-CLI must remain on and connected to the network during playback, in order to serve the file to the speaker. The internal HTTP server is active only for the duration of the `play_file` action. For security reasons, it will only serve the specified audio file, and only to the IP addresses of the Sonos speakers in the system.
 

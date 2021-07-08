@@ -45,12 +45,12 @@ def print_update_status():
         else:
             print("An update is available: v" + latest_version)
         return True
-    else:
-        return False
+
+    return False
 
 
 def update_available():
     if __version__ == get_latest_version():
         return False
-    else:
-        return True
+
+    return True
