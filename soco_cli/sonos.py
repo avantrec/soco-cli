@@ -12,7 +12,7 @@ import soco
 
 from soco_cli.action_processor import list_actions
 from soco_cli.aliases import AliasManager
-from soco_cli.api import run_command
+from soco_cli.api import get_all_speakers, run_command
 from soco_cli.check_for_update import print_update_status
 from soco_cli.cmd_parser import CLIParser
 from soco_cli.interactive import interactive_loop
@@ -405,7 +405,7 @@ def main():
                 if use_local_speaker_list:
                     speakers = speaker_list.get_all_speakers()
                 else:
-                    speakers = soco.discovery.any_soco().all_zones
+                    speakers = get_all_speakers()
                 logging.info(
                     "Performing action '{}' on all visible, coordinator speakers".format(
                         action
