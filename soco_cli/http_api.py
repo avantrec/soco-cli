@@ -12,7 +12,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from soco_cli.__init__ import __version__ as version
-from soco_cli.api import get_all_speakers, get_all_speaker_names
+from soco_cli.api import get_all_speaker_names
 from soco_cli.api import get_soco_object as get_speaker
 from soco_cli.api import rescan_speakers
 from soco_cli.api import run_command as sc_run
@@ -149,7 +149,9 @@ def main():
         # Pre-load speaker cache
         print(PREFIX + "Finding speakers ... ", end="", flush=True)
         try:
-            get_all_speakers()
+            # This forces speaker discovery
+            # For some reason, using 'get_all_speakers()' provokes Uvicorn errors
+            get_speaker("")
             print(get_all_speaker_names())
         except:
             print("discovery failed, will retry on first request")
