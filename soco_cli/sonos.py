@@ -418,15 +418,18 @@ def main():
                                 action, speaker.player_name
                             )
                         )
-                        print(speaker.player_name)
+                        print(speaker.player_name + ": ", end="", flush=True)
                         exit_code, output_msg, error_msg = run_command(
                             speaker,
                             action,
                             *args,
                             use_local_speaker_list=use_local_speaker_list,
                         )
-                        if exit_code == 0 and len(output_msg) != 0:
-                            print(output_msg, flush=True)
+                        if exit_code == 0:
+                            if len(output_msg) != 0:
+                                print(output_msg, flush=True)
+                            else:
+                                print("OK", flush=True)
                         elif len(error_msg) != 0:
                             print(error_msg, file=sys.stderr, flush=True)
                         cumulative_exit_code += exit_code

@@ -158,7 +158,7 @@ def main():
 
         # Start the server
         uvicorn.run(sc_app, host="0.0.0.0", use_colors=False, port=PORT)
-        print(INFO + " stopped")
+        print(PREFIX + INFO + " stopped")
         exit(0)
 
     except Exception as error:
