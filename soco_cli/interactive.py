@@ -529,7 +529,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     Note that on Windows, backslashes must be doubled, e.g.:
                     'cd C:\\'
     'check_for_update' : Check whether an update is available
-    'docs'       :  Print a link to the documentation.
+    'docs'       :  Print a link to the online documentation.
     'exec'       :  Run a shell command, e.g.: 'exec ls -l'.
     'exit'       :  Exit the shell.
     'help'       :  Show this help message (available shell commands).
@@ -538,7 +538,7 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     speaker.
     'rescan'     :  If your speaker doesn't appear in the 'speakers' list,
                     use this to perform a more comprehensive scan.
-    'rescan_max' :  Try this if you're having still trouble finding all your
+    'rescan_max' :  Try this if you're having having trouble finding all your
                     speakers.
     'set <spkr>' :  Set the active speaker using its name.
                     Use quotes when needed for the speaker name, e.g.,
