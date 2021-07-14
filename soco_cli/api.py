@@ -146,16 +146,16 @@ def rediscover_speakers():
     speaker_cache().discover(reset=True)
 
 
-def get_all_speakers():
+def get_all_speakers(use_scan=False):
     """Return all SoCo instances."""
     _check_for_speaker_cache()
-    return [s[0] for s in speaker_cache().get_all_speakers()]
+    return [s[0] for s in speaker_cache().get_all_speakers(use_scan=use_scan)]
 
 
-def get_all_speaker_names():
+def get_all_speaker_names(use_scan=False):
     """Return all speaker names."""
     _check_for_speaker_cache()
-    return speaker_cache().get_all_speaker_names()
+    return speaker_cache().get_all_speaker_names(use_scan=use_scan)
 
 
 def get_soco_object(speaker_name, use_local_speaker_list=False):

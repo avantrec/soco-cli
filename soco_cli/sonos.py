@@ -405,7 +405,7 @@ def main():
                 if use_local_speaker_list:
                     speakers = speaker_list.get_all_speakers()
                 else:
-                    speakers = get_all_speakers()
+                    speakers = get_all_speakers(use_scan=True)
                 logging.info(
                     "Performing action '{}' on all visible, coordinator speakers".format(
                         action
