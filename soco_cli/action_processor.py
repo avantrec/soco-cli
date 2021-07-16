@@ -2501,6 +2501,17 @@ def available_actions(speaker, action, args, soco_function, use_local_speaker_li
 
 
 @zero_parameters
+def end_control_session(speaker, action, args, soco_function, use_local_speaker_list):
+    """Ends a direct control session (e.g., Spotify Connect)."""
+    try:
+        speaker.end_direct_control_session()
+    except SoCoUPnPException:
+        error_report("Invalid operation")
+        return False
+    return True
+
+
+@zero_parameters
 def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list):
     """Wait for the end of the current track, or until playback stops/pauses."""
 
@@ -2935,4 +2946,5 @@ actions = {
     ),
     "alpq": SonosFunction(playlist_operations, "add_library_playlist_to_queue", True),
     "get_uri": SonosFunction(get_uri, "", True),
+    "end_session": SonosFunction(end_control_session, "", True),
 }
