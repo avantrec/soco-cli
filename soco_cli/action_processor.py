@@ -2602,6 +2602,7 @@ def get_channel(speaker, action, args, soco_function, use_local_speaker_list):
     print(media_info["channel"])
     return True
 
+
 @one_parameter
 def add_sharelink_to_queue(
     speaker, action, args, soco_function, use_local_speaker_list
@@ -2978,6 +2979,7 @@ actions = {
     "get_uri": SonosFunction(get_uri, "", True),
     "end_session": SonosFunction(end_control_session, "", True),
     "get_channel": SonosFunction(get_channel, "", True),
+    "channel": SonosFunction(get_channel, "", True),
     "add_sharelink_to_queue": SonosFunction(add_sharelink_to_queue, "", True),
     "sharelink": SonosFunction(add_sharelink_to_queue, "", True),
 }
