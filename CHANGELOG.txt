@@ -1,7 +1,7 @@
-v0.4.4    - Update to SoCo v0.23+
+v0.4.4    - Require SoCo v0.23.1+
+          - Add 'add_sharelink_to_queue/sharelink' action for Spotify/Tidal
           - Add 'end_session' action
           - Add 'get_channel' action
-          - Minor cosmetic improvements & bugfixes
 v0.4.3    - Add 'get_uri' action
           - Add support for 'USE_LOCAL_SPKR_CACHE' env. variable
 v0.4.2    - Rename 'sonos-http-server' to 'sonos-http-api-server'

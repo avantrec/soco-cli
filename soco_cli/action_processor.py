@@ -19,6 +19,8 @@ import tabulate
 from soco.exceptions import NotSupportedException, SoCoUPnPException
 from xmltodict import parse
 
+from soco.plugins.sharelink import ShareLinkPlugin
+
 from soco_cli.play_local_file import play_local_file
 from soco_cli.play_m3u_file import play_m3u_file
 from soco_cli.speaker_info import print_speaker_table
@@ -2600,6 +2602,26 @@ def get_channel(speaker, action, args, soco_function, use_local_speaker_list):
     print(media_info["channel"])
     return True
 
+@one_parameter
+def add_sharelink_to_queue(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
+    share_link = ShareLinkPlugin(speaker)
+    uri = args[0]
+
+    if not share_link.is_share_link(uri):
+        error_report("Invalid sharelink: '{}'".format(uri))
+        return False
+
+    try:
+        # Return the queue position of the first added item
+        print(share_link.add_share_link_to_queue(uri))
+    except SoCoUPnPException as e:
+        error_report("Unable to add sharelink to queue: {}".format(e))
+        return False
+
+    return True
+
 
 def process_action(speaker, action, args, use_local_speaker_list=False):
     sonos_function = actions.get(action, None)
@@ -2956,4 +2978,6 @@ actions = {
     "get_uri": SonosFunction(get_uri, "", True),
     "end_session": SonosFunction(end_control_session, "", True),
     "get_channel": SonosFunction(get_channel, "", True),
+    "add_sharelink_to_queue": SonosFunction(add_sharelink_to_queue, "", True),
+    "sharelink": SonosFunction(add_sharelink_to_queue, "", True),
 }
