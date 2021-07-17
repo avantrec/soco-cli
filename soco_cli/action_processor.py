@@ -366,9 +366,10 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                         print("  {}: {}".format(item.capitalize(), track_info[item]))
             else:
                 # Assume it's a radio stream
+                channel = speaker.get_current_media_info()["channel"]
                 print(
-                    "Playback state is '{}':\n  Title: {}\n  URI: {}".format(
-                        state, track_info["title"], track_info["uri"]
+                    "Playback state is '{}':\n  Channel: {}\n  Title:   {}\n  URI:     {}".format(
+                        state, channel, track_info["title"], track_info["uri"]
                     )
                 )
         # Normal track
