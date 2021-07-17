@@ -2593,6 +2593,13 @@ def get_uri(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
+def get_channel(speaker, action, args, soco_function, use_local_speaker_list):
+    media_info = speaker.get_current_media_info()
+    print(media_info["channel"])
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2947,4 +2954,5 @@ actions = {
     "alpq": SonosFunction(playlist_operations, "add_library_playlist_to_queue", True),
     "get_uri": SonosFunction(get_uri, "", True),
     "end_session": SonosFunction(end_control_session, "", True),
+    "get_channel": SonosFunction(get_channel, "", True),
 }

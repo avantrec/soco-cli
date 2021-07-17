@@ -1,5 +1,6 @@
 v0.4.4    - Update to SoCo v0.23+
           - Add 'end_session' action
+          - Add 'get_channel' action
           - Minor cosmetic improvements & bugfixes
 v0.4.3    - Add 'get_uri' action
           - Add support for 'USE_LOCAL_SPKR_CACHE' env. variable

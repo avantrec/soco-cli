@@ -317,6 +317,7 @@ This feature works by invoking the `play_file` action for each file in the playl
 - **`cross_fade`** (or **`crossfade`, `fade`**): Returns the cross fade setting of the speaker, 'on' or 'off'.
 - **`cross_fade <on|off>`** (or **`crossfade`, `fade`**): Sets the cross fade setting of the speaker to 'on' or 'off'.
 - **`end_session`**: Ends a third-party controlled session, e.g. Spotify Connect.
+- **`get_channel`**: Get the channel name of the current radio stream, if available.
 - **`get_uri`**: Get the URI of the current track or stream. (Note: the output format is subject to change.)  
 - **`line_in`**: Returns a speaker's Line-In state, 'on' if its input is set to a Line-In source, 'off' otherwise. (Use `state` to check whether the Line-In is actually playing.)
 - **`line_in <on | line_in_speaker | left_input, right_input | line_in_speaker right_input>`**: Switch a speaker to a Line-In input. Playback is started automatically. A speaker can be switched to its own Line-In input (`<on>`), **or** the Line-In input of another `<line_in_speaker>` (if applicable). For the case where there is a stereo pair of Play:5 or Five speakers, the left hand speaker's Line-In source is selected using `left_input` (default), and the right-hand speaker's Line-In input is selected using `right_input`. (Complicated example: `sonos Bedroom line_in Lounge right_input`, switches the Bedroom to the right-hand input of the stereo pair in the Lounge, and starts playback.)
