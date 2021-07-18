@@ -392,6 +392,13 @@ def interactive_loop(
                                 )
                             )
                             continue
+                        if len(args) == 0:
+                            print(
+                                "Error: no action or arguments supplied for speaker '{}'".format(
+                                    speaker.player_name
+                                )
+                            )
+                            continue
 
                         # Temporarily establish an active speaker
                         temp_active_speaker = True
