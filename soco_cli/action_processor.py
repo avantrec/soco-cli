@@ -374,12 +374,33 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                         state, channel, track_info["title"], track_info["uri"]
                     )
                 )
-        # Normal track
+        # Normal track or podcast
         else:
             print("Playback state is '{}':".format(state))
-            for item in sorted(track_info):
-                if item not in ["metadata", "uri", "album_art"]:
-                    print("  {}: {}".format(item.capitalize(), track_info[item]))
+            metadata = parse(track_info["metadata"])
+            # Podcast
+            if (
+                metadata["DIDL-Lite"]["item"]["upnp:class"]
+                == "object.item.audioItem.podcast"
+            ):
+                try:
+                    print(
+                        "  Podcast: {}".format(
+                            metadata["DIDL-Lite"]["item"]["r:podcast"]
+                        )
+                    )
+                    release_date = metadata["DIDL-Lite"]["item"]["r:releaseDate"][:10]
+                    print("  Release date: {}".format(release_date))
+                except:
+                    pass
+                for item in sorted(track_info):
+                    if item not in ["metadata", "uri", "album_art", "album", "artist"]:
+                        print("  {}: {}".format(item.capitalize(), track_info[item]))
+            # Not podcast
+            else:
+                for item in sorted(track_info):
+                    if item not in ["metadata", "uri", "album_art"]:
+                        print("  {}: {}".format(item.capitalize(), track_info[item]))
     return True
 
 

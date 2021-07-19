@@ -1,4 +1,4 @@
-v0.4.5    -
+v0.4.5    - Add podcast information to 'track' output
 v0.4.4    - Require SoCo v0.23.1+
           - Add 'add_sharelink_to_queue/sharelink' action for Spotify/Tidal
           - Add 'end_session' action
