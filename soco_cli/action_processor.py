@@ -147,21 +147,27 @@ def print_tracks(tracks, speaker=None, single_track=False, track_number=None):
         except:
             title = ""
         if not qp or qp != item_number:
-            print(
-                "{:7d}: Artist: {} | Album: {} | Title: {}".format(
-                    item_number, artist, album, title
+            if track.item_class == "object.item.audioItem.podcast":
+                print("{:7d}: Podcast: {}".format(item_number, title))
+            else:
+                print(
+                    "{:7d}: Artist: {} | Album: {} | Title: {}".format(
+                        item_number, artist, album, title
+                    )
                 )
-            )
         elif qp == item_number:
             if is_playing:
                 prefix = " *> "
             else:
                 prefix = "  * "
-            print(
-                "{}{:3d}: Artist: {} | Album: {} | Title: {}".format(
-                    prefix, item_number, artist, album, title
+            if track.item_class == "object.item.audioItem.podcast":
+                print("{}{:3d}: Podcast: {}".format(prefix, item_number, title))
+            else:
+                print(
+                    "{}{:3d}: Artist: {} | Album: {} | Title: {}".format(
+                        prefix, item_number, artist, album, title
+                    )
                 )
-            )
         item_number += 1
     return True
 
