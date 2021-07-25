@@ -2311,9 +2311,11 @@ def album_art(speaker, action, args, soco_function, use_local_speaker_list):
 
     try:
         info = speaker.get_current_track_info()
-        metadata = info["metadata"]
-        data = parse(metadata)
-        album_art_uri = data["DIDL-Lite"]["item"]["upnp:albumArtURI"]
+        album_art_uri = info["album_art"]
+        if album_art_uri == "":
+            metadata = info["metadata"]
+            data = parse(metadata)
+            album_art_uri = data["DIDL-Lite"]["item"]["upnp:albumArtURI"]
         logging.info("Album art URI = ".format(album_art_uri))
     except:
         logging.info("No album art URI available")

@@ -1,4 +1,6 @@
 v0.4.5    - Add podcast information to 'track' output
+          - Improve 'album_art': now returns a URL in more cases
+            (e.g., Spotify).
 v0.4.4    - Require SoCo v0.23.1+
           - Add 'add_sharelink_to_queue/sharelink' action for Spotify/Tidal
           - Add 'end_session' action
