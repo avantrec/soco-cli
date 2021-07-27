@@ -52,13 +52,15 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
             speaker, "track", use_local_speaker_list=use_local_speaker_list
         )
         if exit_code == 0:
-            # Remove some of the 'track' output lines
-            output = output.split("\n", 1)[1]
+            # Restructure output
+            output = output.split("\n ", 1)[1]
             output = " Time: " + timestamp() + "\n" + output
+            output = re.sub("Playlist_position", "Playlist Position", output)
+            # Remove some of the entries
             output = re.sub("Playback.*\\n", "", output)
-            output = re.sub("  URI.*\\n", "", output)
-            output = re.sub("  Uri.*\\n", "", output)
-            output = re.sub("  Position.*\\n", "", output)
+            output = re.sub("   Position.*\\n", "", output)
+            output = re.sub("   URI.*\\n", "", output)
+            output = re.sub("   Uri.*\\n", "", output)
             print(output, flush=True)
         else:
             print(error_msg, flush=True)
