@@ -66,6 +66,7 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
             output = output.replace("Title:", "Title:        ")
             output = output.replace("Podcast:", "Podcast:      ")
             output = output.replace("Release date:", "Release date: ")
+            output = output.replace("Channel:", "Channel:      ")
             print(output, flush=True)
         else:
             print(error_msg, flush=True)
