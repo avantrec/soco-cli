@@ -735,3 +735,26 @@ def get_readline_history():
         readline.set_history_length(HIST_LEN)
     except Exception as e:
         logging.info("Error reading shell history file: {}".format(e))
+
+
+def pretty_print_values(items, indent=2, separator=":", spacing=3):
+    """Print a list of keys and values.
+
+    Args:
+        items (dict): The keys and values to print.
+        indent (int): Number of spaces to use as indentation.
+        separator (str): The separator between the key and value.
+        spacing (int): The minimum gap between the separator and
+            the value.
+
+    Example:
+        One:     First
+        Two:     Second
+        Three:   Third
+    """
+
+    longest = max(len(key) for key in items)
+    prefix = " " * indent
+    for key, value in items.items():
+        spacer = " " * (spacing + longest - len(key))
+        print("{}{}{}{}{}".format(prefix, key, separator, spacer, value))

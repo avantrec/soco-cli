@@ -36,6 +36,7 @@ from soco_cli.utils import (
     one_parameter,
     parameter_number_error,
     parameter_type_error,
+    pretty_print_values,
     read_search,
     rename_speaker_in_cache,
     save_search,
@@ -354,59 +355,63 @@ def print_info(speaker, action, args, soco_function, use_local_speaker_list):
 @zero_parameters
 def track(speaker, action, args, soco_function, use_local_speaker_list):
     state = speaker.get_current_transport_info()["current_transport_state"]
+
     if speaker.is_playing_line_in:
         print("Using Line In (state: {})".format(state))
-    else:
-        track_info = speaker.get_current_track_info()
-        logging.info("Current track info:\n{}".format(track_info))
-        # Stream
-        if track_info["duration"] == "0:00:00":
-            if track_info["artist"] != "":
-                print("Playback state is '{}':".format(state))
-                for item in sorted(track_info):
-                    if item not in [
-                        "metadata",
-                        "album_art",
-                        "duration",
-                        "playlist_position",
-                        "position",
-                    ]:
-                        print("  {}: {}".format(item.capitalize(), track_info[item]))
-            else:
-                # Assume it's a radio stream
-                channel = speaker.get_current_media_info()["channel"]
-                print(
-                    "Playback state is '{}':\n  Channel: {}\n  Title: {}\n  URI: {}".format(
-                        state, channel, track_info["title"], track_info["uri"]
-                    )
-                )
-        # Normal track or podcast
+        return True
+
+    print("Playback state is '{}':".format(state))
+    track_info = speaker.get_current_track_info()
+    logging.info("Current track info:\n{}".format(track_info))
+
+    # Accumulate items to be printed
+    items = {}
+
+    # Stream
+    if track_info["duration"] == "0:00:00":
+        if track_info["artist"] != "":
+            for item in sorted(track_info):
+                if item not in [
+                    "metadata",
+                    "album_art",
+                    "duration",
+                    "playlist_position",
+                    "position",
+                ]:
+                    items[item.capitalize()] = track_info[item]
         else:
-            print("Playback state is '{}':".format(state))
-            metadata = parse(track_info["metadata"])
-            # Podcast
-            if (
-                metadata["DIDL-Lite"]["item"]["upnp:class"]
-                == "object.item.audioItem.podcast"
-            ):
-                try:
-                    print(
-                        "  Podcast: {}".format(
-                            metadata["DIDL-Lite"]["item"]["r:podcast"]
-                        )
-                    )
-                    release_date = metadata["DIDL-Lite"]["item"]["r:releaseDate"][:10]
-                    print("  Release date: {}".format(release_date))
-                except:
-                    pass
-                for item in sorted(track_info):
-                    if item not in ["metadata", "uri", "album_art", "album", "artist"]:
-                        print("  {}: {}".format(item.capitalize(), track_info[item]))
-            # Not podcast
-            else:
-                for item in sorted(track_info):
-                    if item not in ["metadata", "uri", "album_art"]:
-                        print("  {}: {}".format(item.capitalize(), track_info[item]))
+            # Assume it's a radio stream
+            channel = speaker.get_current_media_info()["channel"]
+            items["Channel"] = channel
+            items["Title"] = track_info["title"]
+            items["URI"] = track_info["uri"]
+
+    # Normal track or podcast
+    else:
+        metadata = parse(track_info["metadata"])
+        # Podcast
+        if (
+            metadata["DIDL-Lite"]["item"]["upnp:class"]
+            == "object.item.audioItem.podcast"
+        ):
+            try:
+                items["Podcast"] = metadata["DIDL-Lite"]["item"]["r:podcast"]
+                items["Release date"] = metadata["DIDL-Lite"]["item"]["r:releaseDate"][
+                    :10
+                ]
+            except:
+                pass
+            for item in sorted(track_info):
+                if item not in ["metadata", "uri", "album_art", "album", "artist"]:
+                    items[item.capitalize()] = track_info[item]
+        # Not podcast
+        else:
+            for item in sorted(track_info):
+                if item not in ["metadata", "uri", "album_art"]:
+                    items[item.capitalize()] = track_info[item]
+
+    logging.info("Items to be printed: {}".format(items))
+    pretty_print_values(items, indent=3)
     return True
 
 

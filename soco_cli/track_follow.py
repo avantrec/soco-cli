@@ -35,7 +35,7 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
             "PAUSED_PLAYBACK",
         ]:
             print(
-                "  Playback is stopped or paused at: {}\n".format(timestamp()),
+                " Playback is stopped or paused at: {}\n".format(timestamp()),
                 flush=True,
             )
             if break_on_pause:
@@ -52,21 +52,13 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
             speaker, "track", use_local_speaker_list=use_local_speaker_list
         )
         if exit_code == 0:
-            # Remove some of the 'track' output lines & reformat
+            # Remove some of the 'track' output lines
             output = output.split("\n", 1)[1]
-            output = "  Time:          " + timestamp() + "\n" + output
+            output = " Time: " + timestamp() + "\n" + output
             output = re.sub("Playback.*\\n", "", output)
             output = re.sub("  URI.*\\n", "", output)
             output = re.sub("  Uri.*\\n", "", output)
             output = re.sub("  Position.*\\n", "", output)
-            output = output.replace("Playlist_position:", "Position:     ")
-            output = output.replace("Album:", "Album:        ")
-            output = output.replace("Artist:", "Artist:       ")
-            output = output.replace("Duration:", "Duration:     ")
-            output = output.replace("Title:", "Title:        ")
-            output = output.replace("Podcast:", "Podcast:      ")
-            output = output.replace("Release date:", "Release date: ")
-            output = output.replace("Channel:", "Channel:      ")
             print(output, flush=True)
         else:
             print(error_msg, flush=True)
