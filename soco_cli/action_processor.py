@@ -360,7 +360,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
         print("Using Line In (state: {})".format(state))
         return True
 
-    print("Playback state is '{}':".format(state))
+    print(" Playback state is '{}':".format(state))
     track_info = speaker.get_current_track_info()
     logging.info("Current track info:\n{}".format(track_info))
 

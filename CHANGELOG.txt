@@ -1,3 +1,4 @@
+v0.4.6    -
 v0.4.5    - Add podcast information to 'track' output
           - Improve 'album_art': now returns a URL in more cases
             (e.g., Spotify).
