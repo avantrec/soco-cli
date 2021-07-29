@@ -737,15 +737,16 @@ def get_readline_history():
         logging.info("Error reading shell history file: {}".format(e))
 
 
-def pretty_print_values(items, indent=2, separator=":", spacing=3):
+def pretty_print_values(items, indent=2, separator=":", spacing=3, sort_by_key=False):
     """Print a list of keys and values.
 
     Args:
         items (dict): The keys and values to print.
-        indent (int): Number of spaces to use as indentation.
-        separator (str): The separator between the key and value.
+        indent (int): Number of spaces to use as initial indentation.
+        separator (str): The separator character(s) between the key and value.
         spacing (int): The minimum gap between the separator and
             the value.
+        sort_by_key (bool): Whether to sort by item key.
 
     Example:
         One:     First
@@ -755,6 +756,9 @@ def pretty_print_values(items, indent=2, separator=":", spacing=3):
 
     longest = max(len(key) for key in items)
     prefix = " " * indent
-    for key, value in items.items():
+    key_vals = items.items()
+    if sort_by_key:
+        key_vals = sorted(key_vals)
+    for key, value in key_vals:
         spacer = " " * (spacing + longest - len(key))
         print("{}{}{}{}{}".format(prefix, key, separator, spacer, value))

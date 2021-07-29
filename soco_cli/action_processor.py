@@ -411,7 +411,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                     items[item.capitalize()] = track_info[item]
 
     logging.info("Items to be printed: {}".format(items))
-    pretty_print_values(items, indent=3)
+    pretty_print_values(items, indent=3, spacing=5, sort_by_key=True)
     return True
 
 
