@@ -47,7 +47,7 @@ def track_follow(
                 )
             else:
                 print(
-                    "{:7d}: [{}] Playback is stopped or paused".format(
+                    "{:5d}: [{}] Playback is stopped or paused".format(
                         counter, timestamp(short=True)
                     )
                 )
@@ -85,14 +85,13 @@ def track_follow(
                     "Title:",
                     "Channel:",
                     "Release date:",
-                    "Duration:",
                 ]
                 elements = {}
                 for line in output.splitlines():
                     for key in keys:
                         if key in line:
                             elements[key] = line.replace(key, "").lstrip()
-                output = "{:7d}: [{}] ".format(counter, timestamp(short=True))
+                output = "{:5d}: [{}] ".format(counter, timestamp(short=True))
                 # Don't want both 'Channel:' and 'Title:'
                 if "Channel:" in elements:
                     elements.pop("Title:", None)
