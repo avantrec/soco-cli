@@ -416,8 +416,10 @@ def interactive_loop(
 
                     action = args.pop(0).lower()
                     logging.info("Action = '{}'; args = {}".format(action, args))
-                    if action == "track_follow":
+                    if action in ["track_follow", "tf"]:
                         _track_follow(speaker.ip_address)
+                    elif action in ["track_follow_compact", "tfc"]:
+                        _track_follow(speaker.ip_address, compact=True)
                     else:
                         exit_code, output, error_msg = run_command(
                             speaker,
@@ -473,6 +475,9 @@ COMMANDS = [
     "sk",
     "speakers",
     "track_follow",
+    "tf",
+    "track_follow_compact",
+    "tfc",
     "version",
 ]
 
@@ -556,7 +561,9 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'sk'         :  Enters 'single keystroke' mode. (Also 'single-keystroke'.)
     'speakers'   :  List the names of all available speakers.
     'track_follow' : Prints the track details each time they change. Runs in a
-                     subprocess. Terminate execution using CTRL-C.
+                     subprocess. Terminate execution using CTRL-C. Also 'tf'.
+    'track_follow_compact' : As above, but with a more compact, single-line
+                             format. Also 'tfc'.
     'version'    :  Print the versions of SoCo-CLI, SoCo, and Python in use.
     
     The action syntax is the same as when using 'sonos' from the command line.
@@ -775,13 +782,16 @@ def _exec(command_line):
     set_suspend_sigterm(suspend=False)
 
 
-def _track_follow(speaker_ip):
+def _track_follow(speaker_ip, compact=False):
     # This runs in a subprocess, to allow CTRL-C
     # to exit the subprocess only, and not the shell.
 
     command_line = [sys.argv[0]]  # Path to 'sonos'
     command_line.append(speaker_ip)
-    command_line.append("track_follow")
+    if compact:
+        command_line.append("track_follow_compact")
+    else:
+        command_line.append("track_follow")
     for position, arg in enumerate(sys.argv[1:]):
         if arg.startswith("--log="):
             command_line.append(arg)

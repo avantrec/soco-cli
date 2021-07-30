@@ -444,12 +444,14 @@ def main():
                     cumulative_exit_code += 1
                 else:
                     # Special case of 'track_follow' action
-                    if action == "track_follow":
+                    if action in ["track_follow", "tf", "track_follow_compact", "tfc"]:
                         # Does not return
+                        compact = action in ["track_follow_compact", "tfc"]
                         track_follow(
                             speaker,
                             use_local_speaker_list=use_local_speaker_list,
                             break_on_pause=False,
+                            compact=compact,
                         )
                     # Standard action processing
                     exit_code, output_msg, error_msg = run_command(

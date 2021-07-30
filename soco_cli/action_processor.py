@@ -381,8 +381,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                     items[item.capitalize()] = track_info[item]
         else:
             # Assume it's a radio stream
-            channel = speaker.get_current_media_info()["channel"]
-            items["Channel"] = channel
+            items["Channel"] = speaker.get_current_media_info()["channel"]
             items["Title"] = track_info["title"]
             items["URI"] = track_info["uri"]
 

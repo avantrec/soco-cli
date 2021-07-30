@@ -365,7 +365,8 @@ sonos Kitchen play_from_queue 5
 - **`sleep_at <HH:MM:SS>`**: Sets the sleep timer to sleep at a time up to 24 hours in the future. For example, to set the speaker to sleep at 4pm, use `sleep_at 16:00`.
 - **`stop`**: Stop playback.
 - **`track`**: Return information about the currently playing track.
-- **`track_follow`**: Returns information about the currently playing track, and each subsequent track when the track changes. This action keeps running until cancelled using CTRL-C.
+- **`track_follow`** (or **`tf`**): Returns information about the currently playing track, and each subsequent track when the track changes. This action keeps running until cancelled using CTRL-C.
+- **`track_follow_compact`** (or **`tfc`**): As `track_follow`, but with a more compact single line representation for each track.
 
 ### Queue Actions
 
@@ -668,7 +669,9 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'sk'         :  Enters 'single keystroke' mode. (Also 'single-keystroke'.)
     'speakers'   :  List the names of all available speakers.
     'track_follow' : Prints the track details each time they change. Runs in a
-                     subprocess. Terminate execution using CTRL-C.
+                     subprocess. Terminate execution using CTRL-C. Also 'tf'.
+    'track_follow_compact' : As above, but with a more compact, single-line
+                             format. Also 'tfc'.
     'version'    :  Print the versions of SoCo-CLI, SoCo, and Python in use.
     
     The action syntax is the same as when using 'sonos' from the command line.

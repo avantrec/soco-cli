@@ -6,7 +6,9 @@ from time import sleep
 from soco_cli.api import run_command
 
 
-def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
+def track_follow(
+    speaker, use_local_speaker_list=False, break_on_pause=True, compact=False
+):
     """Print out the 'track' details each time the track changes.
 
     Args:
@@ -20,10 +22,14 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
     'run_command()' API call is used.
     """
 
-    def timestamp():
+    def timestamp(short=False):
         local_tz = datetime.now(timezone.utc).astimezone().tzinfo
-        return datetime.now(tz=local_tz).strftime("%d-%b-%Y %H:%M:%S %Z")
+        if not short:
+            return datetime.now(tz=local_tz).strftime("%d-%b-%Y %H:%M:%S %Z")
+        else:
+            return datetime.now(tz=local_tz).strftime("%H:%M")
 
+    counter = 1
     print(flush=True)
     while True:
         # If stopped, wait for the speaker to start playback
@@ -34,10 +40,18 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
             "STOPPED",
             "PAUSED_PLAYBACK",
         ]:
-            print(
-                " Playback is stopped or paused at: {}\n".format(timestamp()),
-                flush=True,
-            )
+            if not compact:
+                print(
+                    " Playback is stopped or paused at: {}\n".format(timestamp()),
+                    flush=True,
+                )
+            else:
+                print(
+                    "{:7d}: [{}] Playback is stopped or paused".format(
+                        counter, timestamp(short=True)
+                    )
+                )
+                counter += 1
             if break_on_pause:
                 logging.info("Playback is paused/stopped; returning")
                 break
@@ -54,14 +68,42 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
         if exit_code == 0:
             # Manipulate output
             output = output.split("\n ", 1)[1]
-            # Remove some of the entries
-            output = re.sub(".*Playback.*\\n", "", output)
-            output = re.sub(".*Position.*\\n", "", output)
-            output = re.sub(".*URI.*\\n", "", output)
-            output = re.sub(".*Uri.*\\n", "", output)
-            # Add timestamp, etc.
-            output = " Time: " + timestamp() + "\n" + output
-            output = re.sub("Playlist_position", "Playlist Position", output)
+            if not compact:
+                # Remove some of the entries
+                output = re.sub(".*Playback.*\\n", "", output)
+                output = re.sub(".*Position.*\\n", "", output)
+                output = re.sub(".*URI.*\\n", "", output)
+                output = re.sub(".*Uri.*\\n", "", output)
+                # Add timestamp, etc.
+                output = " Time: " + timestamp() + "\n" + output
+                output = re.sub("Playlist_position", "Playlist Position", output)
+            else:
+                keys = [
+                    "Artist:",
+                    "Album:",
+                    "Podcast:",
+                    "Title:",
+                    "Channel:",
+                    "Release date:",
+                ]
+                elements = {}
+                for line in output.splitlines():
+                    for key in keys:
+                        if key in line:
+                            elements[key] = line.replace(key, "").lstrip()
+                output = "{:7d}: [{}] ".format(counter, timestamp(short=True))
+                # Don't want both 'Channel:' and 'Title:'
+                if "Channel:" in elements:
+                    elements.pop("Title:", None)
+                first = True
+                for key in keys:
+                    value = elements.pop(key, None)
+                    if value:
+                        if not first:
+                            output = output + "| "
+                        else:
+                            first = False
+                        output = output + key + " " + value + " "
             print(output, flush=True)
         else:
             print(error_msg, flush=True)
@@ -75,3 +117,4 @@ def track_follow(speaker, use_local_speaker_list=False, break_on_pause=True):
         # Allow speaker state to stabilise
         logging.info("Waiting 1s for playback to stabilise")
         sleep(1.0)
+        counter += 1
