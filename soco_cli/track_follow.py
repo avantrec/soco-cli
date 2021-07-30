@@ -85,6 +85,7 @@ def track_follow(
                     "Title:",
                     "Channel:",
                     "Release date:",
+                    "Duration:",
                 ]
                 elements = {}
                 for line in output.splitlines():
