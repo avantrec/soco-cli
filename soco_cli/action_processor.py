@@ -365,7 +365,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     logging.info("Current track info:\n{}".format(track_info))
 
     # Accumulate items to be printed
-    items = {}
+    items = {"Channel": speaker.get_current_media_info()["channel"]}
 
     # Stream
     if track_info["duration"] == "0:00:00":
@@ -377,15 +377,20 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                     "duration",
                     "playlist_position",
                     "position",
+                    "uri",
                 ]:
                     items[item.capitalize()] = track_info[item]
         else:
             # Assume it's a radio stream
-            items["Channel"] = speaker.get_current_media_info()["channel"]
+            logging.info("Assuming track is a radio stream")
             items["Title"] = track_info["title"]
-            items["URI"] = track_info["uri"]
+            try:
+                metadata = parse(track_info["metadata"])
+                items["Artist"] = metadata["DIDL-Lite"]["item"]["dc:creator"]
+            except:
+                pass
 
-    # Normal track or podcast
+    # Podcast, Audio Book, or normal track
     else:
         metadata = parse(track_info["metadata"])
         # Podcast
@@ -393,21 +398,53 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
             metadata["DIDL-Lite"]["item"]["upnp:class"]
             == "object.item.audioItem.podcast"
         ):
+            logging.info("Track is a podcast")
             try:
                 items["Podcast"] = metadata["DIDL-Lite"]["item"]["r:podcast"]
-                items["Release date"] = metadata["DIDL-Lite"]["item"]["r:releaseDate"][
+                items["Release Date"] = metadata["DIDL-Lite"]["item"]["r:releaseDate"][
                     :10
                 ]
             except:
                 pass
+            if items["Channel"] == "":
+                items.pop("Channel", None)
             for item in sorted(track_info):
                 if item not in ["metadata", "uri", "album_art", "album", "artist"]:
                     items[item.capitalize()] = track_info[item]
-        # Not podcast
+        # Audio book
+        elif (
+            "object.item.audioItem.audioBook"
+            in metadata["DIDL-Lite"]["item"]["upnp:class"]
+        ):
+            logging.info("Track is an audio book")
+            try:
+                items["Book Title"] = items.pop("Channel", "")
+                items["Creator"] = track_info["artist"]
+                items["Narrator"] = metadata["DIDL-Lite"]["item"]["r:narrator"]
+                items["Chapter"] = metadata["DIDL-Lite"]["item"]["dc:title"]
+            except:
+                pass
+            for item in sorted(track_info):
+                if item not in [
+                    "metadata",
+                    "uri",
+                    "album_art",
+                    "album",
+                    "artist",
+                    "title",
+                ]:
+                    items[item.capitalize()] = track_info[item]
+        # Regular track
         else:
+            if items["Channel"] == "":
+                items.pop("Channel")
+            logging.info("Track is a normal audio track")
             for item in sorted(track_info):
                 if item not in ["metadata", "uri", "album_art"]:
                     items[item.capitalize()] = track_info[item]
+
+    # Remove blank items
+    items = {key: value for key, value in items.items() if value != ""}
 
     logging.info("Items to be printed: {}".format(items))
     pretty_print_values(items, indent=3, spacing=5, sort_by_key=True)

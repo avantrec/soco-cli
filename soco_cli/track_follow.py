@@ -79,12 +79,16 @@ def track_follow(
                 output = re.sub("Playlist_position", "Playlist Position", output)
             else:
                 keys = [
+                    "Channel:",
                     "Artist:",
+                    "Creator:",
+                    "Book Title:",
+                    "Chapter:",
                     "Album:",
                     "Podcast:",
                     "Title:",
-                    "Channel:",
-                    "Release date:",
+                    "Release Date:",
+                    "Narrator:",
                 ]
                 elements = {}
                 for line in output.splitlines():
@@ -92,9 +96,16 @@ def track_follow(
                         if key in line:
                             elements[key] = line.replace(key, "").lstrip()
                 output = "{:5d}: [{}] ".format(counter, timestamp(short=True))
-                # Don't want both 'Channel:' and 'Title:'
-                if "Channel:" in elements:
+                # Don't want duplicated 'Channel:' and 'Title:'
+                try:
+                    if elements["Channel:"] == elements["Title"]:
+                        elements.pop("Title:", None)
+                except:
+                    pass
+                # Prune fields for audio books
+                if "Book Title:" in elements:
                     elements.pop("Title:", None)
+                    elements.pop("Narrator:", None)
                 first = True
                 for key in keys:
                     value = elements.pop(key, None)
