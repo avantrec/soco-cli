@@ -560,10 +560,6 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
                     or just enter '0'.
     'sk'         :  Enters 'single keystroke' mode. (Also 'single-keystroke'.)
     'speakers'   :  List the names of all available speakers.
-    'track_follow' : Prints the track details each time they change. Runs in a
-                     subprocess. Terminate execution using CTRL-C. Also 'tf'.
-    'track_follow_compact' : As above, but with a more compact, single-line
-                             format. Also 'tfc'.
     'version'    :  Print the versions of SoCo-CLI, SoCo, and Python in use.
     
     The action syntax is the same as when using 'sonos' from the command line.
