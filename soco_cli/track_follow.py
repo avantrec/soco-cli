@@ -25,7 +25,7 @@ def track_follow(
     def timestamp(short=False):
         local_tz = datetime.now(timezone.utc).astimezone().tzinfo
         if not short:
-            return datetime.now(tz=local_tz).strftime("%d-%b-%Y %H:%M:%S %Z")
+            return datetime.now(tz=local_tz).strftime("%H:%M:%S (%Z) %d-%b-%Y")
         else:
             return datetime.now(tz=local_tz).strftime("%H:%M")
 
@@ -71,23 +71,23 @@ def track_follow(
             if not compact:
                 # Remove some of the line entries
                 output = re.sub(".*Playback.*\\n", "", output)
-                output = re.sub(".*Point in Track.*\\n", "", output)
+                # output = re.sub(".*Elapsed.*\\n", "", output)
                 output = re.sub(".*URI.*\\n", "", output)
                 output = re.sub(".*Uri.*\\n", "", output)
                 # Add timestamp at start
-                output = " Time: " + timestamp() + "\n" + output
+                output = " Time Now: " + timestamp() + "\n" + output
             else:  # Compact (one line) output
                 keys = [
                     "Channel:",
                     "Artist:",
-                    "Creator:",
+                    "Creator(s):",
                     "Book Title:",
                     "Chapter:",
                     "Album:",
                     "Podcast:",
                     "Title:",
                     "Release Date:",
-                    "Narrator:",
+                    "Narrator(s):",
                 ]
                 elements = {}
                 for line in output.splitlines():
@@ -98,7 +98,7 @@ def track_follow(
                 # Prune fields for audio books
                 if "Book Title:" in elements:
                     elements.pop("Title:", None)
-                    elements.pop("Narrator:", None)
+                    elements.pop("Narrator(s):", None)
                 first = True
                 for key in keys:
                     value = elements.pop(key, None)

@@ -1,4 +1,5 @@
-v0.4.7    -
+v0.4.7    - Improve output of 'track' and related actions, including support
+            for Audible audio book content.
 v0.4.6    - Add 'track_follow_compact' action, and 'tf' and 'tfc' synonyms.
 v0.4.5    - Add podcast information to 'track' output
           - Improve 'album_art': now returns a URL in more cases

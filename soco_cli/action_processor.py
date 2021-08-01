@@ -369,29 +369,28 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
 
     # Stream
     if track_info["duration"] == "0:00:00":
-        if track_info["artist"] != "":
-            for item in sorted(track_info):
-                if item not in [
-                    "metadata",
-                    "album_art",
-                    "duration",
-                    "playlist_position",
-                    "position",
-                    "uri",
-                ]:
-                    elements[item.capitalize()] = track_info[item]
-        else:
-            logging.info("Assuming track is a radio stream")
-            try:
-                elements["Title"] = track_info["title"]
-                metadata = parse(track_info["metadata"])
+        logging.info("Track is a stream")
+        for item in sorted(track_info):
+            if item not in [
+                "metadata",
+                "album_art",
+                "duration",
+                "playlist_position",
+                "position",
+                "uri",
+            ]:
+                elements[item.capitalize()] = track_info[item]
+        try:
+            metadata = parse(track_info["metadata"])
+            if elements["Artist"] == "":
                 elements["Artist"] = metadata["DIDL-Lite"]["item"]["dc:creator"]
-            except:
-                pass
+        except:
+            pass
 
     # Podcast, Audio Book, or normal track
     else:  # Track has duration
         metadata = parse(track_info["metadata"])
+
         # Podcast
         if (
             metadata["DIDL-Lite"]["item"]["upnp:class"]
@@ -408,6 +407,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
             for item in sorted(track_info):
                 if item not in ["metadata", "uri", "album_art", "album", "artist"]:
                     elements[item.capitalize()] = track_info[item]
+
         # Audio book
         elif (
             "object.item.audioItem.audioBook"
@@ -416,8 +416,8 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
             logging.info("Track is an audio book")
             try:
                 elements["Book Title"] = elements.pop("Channel", "")
-                elements["Creator"] = track_info["artist"]
-                elements["Narrator"] = metadata["DIDL-Lite"]["item"]["r:narrator"]
+                elements["Creator(s)"] = track_info["artist"]
+                elements["Narrator(s)"] = metadata["DIDL-Lite"]["item"]["r:narrator"]
                 elements["Chapter"] = metadata["DIDL-Lite"]["item"]["dc:title"]
             except:
                 pass
@@ -432,6 +432,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                     "playlist_position",
                 ]:
                     elements[item.capitalize()] = track_info[item]
+
         # Regular track
         else:
             logging.info("Track is a normal audio track")
@@ -460,7 +461,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     except KeyError:
         pass
     try:
-        elements["Point in Track"] = elements["Position"]
+        elements["Elapsed"] = elements["Position"]
         elements.pop("Position", None)
     except KeyError:
         pass
