@@ -42,7 +42,7 @@ def track_follow(
         ]:
             if not compact:
                 print(
-                    " [{}] Playback is stopped or paused at: {}\n".format(
+                    " [{}] Playback is stopped or paused at {}\n".format(
                         speaker.player_name, timestamp()
                     ),
                     flush=True,
@@ -78,12 +78,13 @@ def track_follow(
                 output = re.sub(".*Uri.*\\n", "", output)
                 # Prefix speaker name and timestamp
                 output = (
-                    " [{}] Time Now: ".format(speaker.player_name)
+                    " [{}] Playing at ".format(speaker.player_name)
                     + timestamp()
-                    + "\n"
+                    + ":\n"
                     + output
                 )
             else:  # Compact (one line) output
+                # Ordering of keys determines output order
                 keys = [
                     "Channel:",
                     "Artist:",
@@ -102,6 +103,7 @@ def track_follow(
                         if key in line:
                             elements[key] = line.replace(key, "").lstrip()
                 output = "{:5d}: [{}] ".format(counter, timestamp(short=True))
+
                 # Prune fields for audio books
                 if "Book Title:" in elements:
                     elements.pop("Title:", None)
@@ -115,17 +117,16 @@ def track_follow(
                         else:
                             first = False
                         output = output + key + " " + value + " "
+
             print(output, flush=True)
         else:
             print(error_msg, flush=True)
 
-        # Wait until the track changes
         logging.info("Waiting for end of track")
         run_command(
             speaker, "wait_end_track", use_local_speaker_list=use_local_speaker_list
         )
 
-        # Allow speaker state to stabilise
         logging.info("Waiting 1s for playback to stabilise")
         sleep(1.0)
         counter += 1

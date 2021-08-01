@@ -36,6 +36,7 @@ from soco_cli.utils import (
     one_parameter,
     parameter_number_error,
     parameter_type_error,
+    playback_state,
     pretty_print_values,
     read_search,
     rename_speaker_in_cache,
@@ -360,7 +361,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
         print("Using Line In (state: {})".format(state))
         return True
 
-    print(" Playback state is '{}':".format(state))
+    print(" Playback is {}:".format(playback_state(state)))
     track_info = speaker.get_current_track_info()
     logging.info("Current track info:\n{}".format(track_info))
 

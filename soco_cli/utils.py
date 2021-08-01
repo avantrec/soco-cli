@@ -762,3 +762,24 @@ def pretty_print_values(items, indent=2, separator=":", spacing=3, sort_by_key=F
     for key, value in key_vals:
         spacer = " " * (spacing + longest - len(key))
         print("{}{}{}{}{}".format(prefix, key, separator, spacer, value))
+
+
+def playback_state(state):
+    """Generate user-friendly playback states.
+
+    Args:
+        state (str): The Sonos-supplied state string.
+
+    Returns:
+        str: A user-friendly playback state description.
+    """
+    playback_mapping = {
+        "STOPPED": "stopped",
+        "PAUSED_PLAYBACK": "paused",
+        "PLAYING": "in progress",
+        "TRANSITIONING": "in a transitioning state",
+    }
+    try:
+        return playback_mapping[state]
+    except KeyError:
+        return "unknown"
