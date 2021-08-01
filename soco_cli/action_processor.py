@@ -364,8 +364,8 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     track_info = speaker.get_current_track_info()
     logging.info("Current track info:\n{}".format(track_info))
 
-    # Accumulate items to be printed
-    items = {"Channel": speaker.get_current_media_info()["channel"]}
+    # Accumulate info elements to be printed
+    elements = {"Channel": speaker.get_current_media_info()["channel"]}
 
     # Stream
     if track_info["duration"] == "0:00:00":
@@ -379,19 +379,18 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                     "position",
                     "uri",
                 ]:
-                    items[item.capitalize()] = track_info[item]
+                    elements[item.capitalize()] = track_info[item]
         else:
-            # Assume it's a radio stream
             logging.info("Assuming track is a radio stream")
-            items["Title"] = track_info["title"]
             try:
+                elements["Title"] = track_info["title"]
                 metadata = parse(track_info["metadata"])
-                items["Artist"] = metadata["DIDL-Lite"]["item"]["dc:creator"]
+                elements["Artist"] = metadata["DIDL-Lite"]["item"]["dc:creator"]
             except:
                 pass
 
     # Podcast, Audio Book, or normal track
-    else:
+    else:  # Track has duration
         metadata = parse(track_info["metadata"])
         # Podcast
         if (
@@ -400,17 +399,15 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
         ):
             logging.info("Track is a podcast")
             try:
-                items["Podcast"] = metadata["DIDL-Lite"]["item"]["r:podcast"]
-                items["Release Date"] = metadata["DIDL-Lite"]["item"]["r:releaseDate"][
-                    :10
-                ]
+                elements["Podcast"] = metadata["DIDL-Lite"]["item"]["r:podcast"]
+                elements["Release Date"] = metadata["DIDL-Lite"]["item"][
+                    "r:releaseDate"
+                ][:10]
             except:
                 pass
-            if items["Channel"] == "":
-                items.pop("Channel", None)
             for item in sorted(track_info):
                 if item not in ["metadata", "uri", "album_art", "album", "artist"]:
-                    items[item.capitalize()] = track_info[item]
+                    elements[item.capitalize()] = track_info[item]
         # Audio book
         elif (
             "object.item.audioItem.audioBook"
@@ -418,10 +415,10 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
         ):
             logging.info("Track is an audio book")
             try:
-                items["Book Title"] = items.pop("Channel", "")
-                items["Creator"] = track_info["artist"]
-                items["Narrator"] = metadata["DIDL-Lite"]["item"]["r:narrator"]
-                items["Chapter"] = metadata["DIDL-Lite"]["item"]["dc:title"]
+                elements["Book Title"] = elements.pop("Channel", "")
+                elements["Creator"] = track_info["artist"]
+                elements["Narrator"] = metadata["DIDL-Lite"]["item"]["r:narrator"]
+                elements["Chapter"] = metadata["DIDL-Lite"]["item"]["dc:title"]
             except:
                 pass
             for item in sorted(track_info):
@@ -432,22 +429,44 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                     "album",
                     "artist",
                     "title",
+                    "playlist_position",
                 ]:
-                    items[item.capitalize()] = track_info[item]
+                    elements[item.capitalize()] = track_info[item]
         # Regular track
         else:
-            if items["Channel"] == "":
-                items.pop("Channel")
             logging.info("Track is a normal audio track")
             for item in sorted(track_info):
                 if item not in ["metadata", "uri", "album_art"]:
-                    items[item.capitalize()] = track_info[item]
+                    elements[item.capitalize()] = track_info[item]
 
-    # Remove blank items
-    items = {key: value for key, value in items.items() if value != ""}
+    # Remove blank and 'None' items
+    elements = {
+        key: value
+        for key, value in elements.items()
+        if value != "" and value is not None
+    }
 
-    logging.info("Items to be printed: {}".format(items))
-    pretty_print_values(items, indent=3, spacing=5, sort_by_key=True)
+    # Deduplicate 'Channel' and 'Title'
+    try:
+        if elements["Channel"] == elements["Title"]:
+            elements.pop("Title", None)
+    except KeyError:
+        pass
+
+    # Rename 'Playlist_position' and 'Position'
+    try:
+        elements["Playlist Position"] = elements["Playlist_position"]
+        elements.pop("Playlist_position", None)
+    except KeyError:
+        pass
+    try:
+        elements["Point in Track"] = elements["Position"]
+        elements.pop("Position", None)
+    except KeyError:
+        pass
+
+    logging.info("Items to be printed: {}".format(elements))
+    pretty_print_values(elements, indent=3, spacing=5, sort_by_key=True)
     return True
 
 

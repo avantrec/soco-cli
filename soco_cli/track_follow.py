@@ -69,15 +69,14 @@ def track_follow(
             # Manipulate output
             output = output.split("\n ", 1)[1]
             if not compact:
-                # Remove some of the entries
+                # Remove some of the line entries
                 output = re.sub(".*Playback.*\\n", "", output)
-                output = re.sub(".*Position.*\\n", "", output)
+                output = re.sub(".*Point in Track.*\\n", "", output)
                 output = re.sub(".*URI.*\\n", "", output)
                 output = re.sub(".*Uri.*\\n", "", output)
-                # Add timestamp, etc.
+                # Add timestamp at start
                 output = " Time: " + timestamp() + "\n" + output
-                output = re.sub("Playlist_position", "Playlist Position", output)
-            else:
+            else:  # Compact (one line) output
                 keys = [
                     "Channel:",
                     "Artist:",
@@ -96,12 +95,6 @@ def track_follow(
                         if key in line:
                             elements[key] = line.replace(key, "").lstrip()
                 output = "{:5d}: [{}] ".format(counter, timestamp(short=True))
-                # Don't want duplicated 'Channel:' and 'Title:'
-                try:
-                    if elements["Channel:"] == elements["Title"]:
-                        elements.pop("Title:", None)
-                except:
-                    pass
                 # Prune fields for audio books
                 if "Book Title:" in elements:
                     elements.pop("Title:", None)
