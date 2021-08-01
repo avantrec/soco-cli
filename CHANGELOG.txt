@@ -1,3 +1,4 @@
+v0.4.8    -
 v0.4.7    - Improve output of 'track' and related actions, including support
             for Audible audio book content.
 v0.4.6    - Add 'track_follow_compact' action, and 'tf' and 'tfc' synonyms.
