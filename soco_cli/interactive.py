@@ -782,12 +782,12 @@ def _track_follow(speaker_ip, compact=False):
     # This runs in a subprocess, to allow CTRL-C
     # to exit the subprocess only, and not the shell.
 
-    command_line = [sys.argv[0]]  # Path to 'sonos'
-    command_line.append(speaker_ip)
+    command_line = [sys.argv[0], speaker_ip]
+    action = "track_follow"
     if compact:
-        command_line.append("track_follow_compact")
-    else:
-        command_line.append("track_follow")
+        action += "_compact"
+    command_line.append(action)
+
     for position, arg in enumerate(sys.argv[1:]):
         if arg.startswith("--log="):
             command_line.append(arg)
@@ -797,6 +797,6 @@ def _track_follow(speaker_ip, compact=False):
             command_line.append(sys.argv[1:][position + 1])
             break
 
-    print("\n Running 'track_follow' in a subprocess. Terminate using CTRL-C.")
+    print("\n Running '{}' in a subprocess. Terminate using CTRL-C.".format(action))
     _exec(command_line)
     print()
