@@ -130,6 +130,6 @@ def track_follow(
             speaker, "wait_end_track", use_local_speaker_list=use_local_speaker_list
         )
 
-        logging.info("Waiting 1s for playback to stabilise")
-        sleep(1.0)
+        logging.info("Waiting 3s for playback to stabilise")
+        sleep(3.0)
         counter += 1
