@@ -1752,8 +1752,13 @@ def set_alarms(speaker, alarm_ids, enabled=True):
             logging.info(
                 "Setting alarm id '{}' to enabled = {}".format(alarm.alarm_id, enabled)
             )
-            alarm.enabled = enabled
-            alarm.save()
+            if alarm.enabled != enabled:
+                alarm.enabled = enabled
+                alarm.save()
+                if len(alarm_ids) != 0 or all_alarms:
+                    # Allow alarm update time to quiesce if there are subsequent
+                    # updates
+                    time.sleep(1.0)
             alarm_ids.discard(alarm.alarm_id)
 
     if len(alarm_ids) != 0:
