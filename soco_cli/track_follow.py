@@ -120,7 +120,10 @@ def track_follow(
 
             print(output, flush=True)
         else:
-            print(error_msg, flush=True)
+            error_out = "{:5d}: [{}] {}".format(
+                counter, timestamp(short=True), error_msg
+            )
+            print(error_out, flush=True)
 
         logging.info("Waiting for end of track")
         run_command(
