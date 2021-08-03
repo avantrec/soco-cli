@@ -753,7 +753,8 @@ def pretty_print_values(items, indent=2, separator=":", spacing=3, sort_by_key=F
         Two:     Second
         Three:   Third
     """
-
+    if len(items) == 0:
+        return
     longest = max(len(key) for key in items)
     prefix = " " * indent
     key_vals = items.items()
