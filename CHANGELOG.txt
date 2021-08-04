@@ -1,4 +1,4 @@
-v0.4.9    -
+v0.4.9    - Minor bugfixes
 v0.4.8    - Bugfixes and minor cosmetic changes
 v0.4.7    - Improve output of 'track' and related actions, including support
             for Audible audio book content.

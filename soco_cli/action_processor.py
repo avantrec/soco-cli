@@ -2623,8 +2623,8 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
         error_report("Exception {}".format(e))
         return False
 
-    initial_playlist_number = None
     initial_title = None
+    initial_duration = None
 
     while True:
         try:
@@ -2649,33 +2649,29 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                 event_unsubscribe(sub)
                 return True
 
-            if initial_playlist_number is None:
-                initial_playlist_number = event.variables["current_track"]
-                try:
-                    initial_title = speaker.get_current_track_info()["title"]
-                except:
-                    initial_title = None
+            if initial_title is None:
+                track_info = speaker.get_current_track_info()
+                initial_title = track_info.pop("title", None)
+                initial_duration = track_info.pop("duration", None)
                 logging.info(
-                    "Initial title = '{}', initial playlist no. = {}".format(
-                        initial_title, initial_playlist_number
+                    "Initial title = '{}', initial duration = '{}'".format(
+                        initial_title, initial_duration
                     )
                 )
 
             else:
-                current_playlist_number = event.variables["current_track"]
-                try:
-                    current_title = speaker.get_current_track_info()["title"]
-                except:
-                    current_title = None
+                track_info = speaker.get_current_track_info()
+                current_title = track_info.pop("title", None)
+                current_duration = track_info.pop("duration", None)
                 logging.info(
-                    "Current title = '{}', current playlist no. = {}".format(
-                        current_title, current_playlist_number
+                    "Current title = '{}', current duration = '{}'".format(
+                        current_title, current_duration
                     )
                 )
-                # Check whether playlist number or track title have changed
+                # Check whether track title or duration have changed
                 if (
-                    current_playlist_number != initial_playlist_number
-                    or current_title != initial_title
+                    current_title != initial_title
+                    or current_duration != initial_duration
                 ):
                     logging.info("Track has changed")
                     event_unsubscribe(sub)
