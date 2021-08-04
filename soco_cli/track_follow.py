@@ -69,7 +69,12 @@ def track_follow(
         )
         if exit_code == 0:
             # Manipulate output
-            output = output.split("\n ", 1)[1]
+            if "Using Line In" in output:
+                line_in = True
+                output = "   Playing from Line In\n"
+            else:
+                line_in = False
+                output = output.split("\n ", 1)[1]
             if not compact:
                 # Remove some of the line entries
                 output = re.sub(".*Playback.*\\n", "", output)
@@ -84,39 +89,44 @@ def track_follow(
                     + output
                 )
             else:  # Compact (one line) output
-                # Ordering of keys determines output order
-                keys = [
-                    "Channel:",
-                    "Artist:",
-                    "Creator(s):",
-                    "Book Title:",
-                    "Chapter:",
-                    "Album:",
-                    "Podcast:",
-                    "Title:",
-                    "Release Date:",
-                    "Narrator(s):",
-                ]
-                elements = {}
-                for line in output.splitlines():
-                    for key in keys:
-                        if key in line:
-                            elements[key] = line.replace(key, "").lstrip()
-                output = "{:5d}: [{}] ".format(counter, timestamp(short=True))
+                if line_in:
+                    output = "{:5d}: [{}] Playing from Line In".format(
+                        counter, timestamp(short=True)
+                    )
+                else:
+                    # Ordering of keys determines output order
+                    keys = [
+                        "Channel:",
+                        "Artist:",
+                        "Creator(s):",
+                        "Book Title:",
+                        "Chapter:",
+                        "Album:",
+                        "Podcast:",
+                        "Title:",
+                        "Release Date:",
+                        "Narrator(s):",
+                    ]
+                    elements = {}
+                    for line in output.splitlines():
+                        for key in keys:
+                            if key in line:
+                                elements[key] = line.replace(key, "").lstrip()
+                    output = "{:5d}: [{}] ".format(counter, timestamp(short=True))
 
-                # Prune fields for audio books
-                if "Book Title:" in elements:
-                    elements.pop("Title:", None)
-                    elements.pop("Narrator(s):", None)
-                first = True
-                for key in keys:
-                    value = elements.pop(key, None)
-                    if value:
-                        if not first:
-                            output = output + "| "
-                        else:
-                            first = False
-                        output = output + key + " " + value + " "
+                    # Prune fields for audio books
+                    if "Book Title:" in elements:
+                        elements.pop("Title:", None)
+                        elements.pop("Narrator(s):", None)
+                    first = True
+                    for key in keys:
+                        value = elements.pop(key, None)
+                        if value:
+                            if not first:
+                                output = output + "| "
+                            else:
+                                first = False
+                            output = output + key + " " + value + " "
 
             print(output, flush=True)
         else:
