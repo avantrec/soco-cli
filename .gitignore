@@ -8,3 +8,6 @@ __pycache__/
 *.pyc
 /README.md.orig.*
 /README.md.toc.*
+/exploration
+/audio_files
+/examples

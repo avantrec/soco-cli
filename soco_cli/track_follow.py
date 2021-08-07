@@ -97,6 +97,7 @@ def track_follow(
                     # Ordering of keys determines output order
                     keys = [
                         "Channel:",
+                        "Radio Show:",
                         "Artist:",
                         "Creator(s):",
                         "Book Title:",
@@ -140,6 +141,6 @@ def track_follow(
             speaker, "wait_end_track", use_local_speaker_list=use_local_speaker_list
         )
 
-        logging.info("Waiting 3s for playback to stabilise")
-        sleep(3.0)
+        logging.info("Waiting 1.5s for playback to stabilise")
+        sleep(1.5)
         counter += 1

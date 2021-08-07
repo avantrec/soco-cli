@@ -370,7 +370,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
 
     # Stream
     if track_info["duration"] == "0:00:00":
-        logging.info("Track is a stream")
+        logging.info("Track is a radio stream")
         for item in sorted(track_info):
             if item not in [
                 "metadata",
@@ -382,15 +382,28 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
             ]:
                 elements[item.capitalize()] = track_info[item]
         try:
+            logging.info("Attempting to find 'Artist'")
             metadata = parse(track_info["metadata"])
             if elements["Artist"] == "":
                 elements["Artist"] = metadata["DIDL-Lite"]["item"]["dc:creator"]
         except:
-            pass
+            logging.info("Unable to find 'Artist'")
+        try:
+            logging.info("Attempting to find 'Radio Show' using events")
+            sub = speaker.avTransport.subscribe()
+            event = sub.events.get(timeout=0.5)
+            elements["Radio Show"] = event.variables[
+                "current_track_meta_data"
+            ].radio_show.rpartition(",")[0]
+            sub.unsubscribe()
+        except:
+            logging.info("Unable to find 'Radio Show'")
 
     # Podcast, Audio Book, or normal track
-    else:  # Track has duration
+    else:
+        logging.info("Track has a non-zero duration")
         metadata = parse(track_info["metadata"])
+        logging.info("Track metadata: {}".format(metadata))
 
         # Podcast
         if (
@@ -404,7 +417,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                     "r:releaseDate"
                 ][:10]
             except:
-                pass
+                logging.info("Failed to find 'Podcast' and/or 'Release Date'")
             for item in sorted(track_info):
                 if item not in ["metadata", "uri", "album_art", "album", "artist"]:
                     elements[item.capitalize()] = track_info[item]
@@ -421,7 +434,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                 elements["Narrator(s)"] = metadata["DIDL-Lite"]["item"]["r:narrator"]
                 elements["Chapter"] = metadata["DIDL-Lite"]["item"]["dc:title"]
             except:
-                pass
+                logging.info("Failed to find book details")
             for item in sorted(track_info):
                 if item not in [
                     "metadata",
@@ -449,8 +462,9 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     }
 
     # Deduplicate 'Channel' and 'Title'
+    # Remove 'Title' if it contains no spaces (likely to be a URI or similar)
     try:
-        if elements["Channel"] == elements["Title"]:
+        if elements["Channel"] == elements["Title"] or not " " in elements["Title"]:
             elements.pop("Title", None)
     except KeyError:
         pass
@@ -2625,6 +2639,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
 
     initial_title = None
     initial_duration = None
+    initial_radio_show = None
 
     while True:
         try:
@@ -2653,9 +2668,13 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                 track_info = speaker.get_current_track_info()
                 initial_title = track_info.pop("title", None)
                 initial_duration = track_info.pop("duration", None)
+                try:
+                    initial_radio_show = event.variables["current_track_meta_data"].radio_show
+                except:
+                    pass
                 logging.info(
-                    "Initial title = '{}', initial duration = '{}'".format(
-                        initial_title, initial_duration
+                    "Initial title = '{}', initial duration = '{}', initial radio show = '{}'".format(
+                        initial_title, initial_duration, initial_radio_show
                     )
                 )
 
@@ -2663,17 +2682,23 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                 track_info = speaker.get_current_track_info()
                 current_title = track_info.pop("title", None)
                 current_duration = track_info.pop("duration", None)
+                try:
+                    current_radio_show = event.variables["current_track_meta_data"].radio_show
+                except:
+                    pass
                 logging.info(
-                    "Current title = '{}', current duration = '{}'".format(
-                        current_title, current_duration
+                    "Current title = '{}', current duration = '{}', current radio show = '{}'".format(
+                        current_title, current_duration, current_radio_show
                     )
                 )
                 # Check whether track title or duration have changed
                 if (
                     current_title != initial_title
                     or current_duration != initial_duration
+                    or current_radio_show != initial_radio_show
                 ):
-                    logging.info("Track has changed")
+                    logging.info("Track/show has changed")
+                    logging.info("Unsubscribing from events")
                     event_unsubscribe(sub)
                     return True
 
