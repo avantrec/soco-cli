@@ -285,6 +285,9 @@ def sig_handler(signal_received, frame):
         if INTERACTIVE:
             save_readline_history()
 
+        # Try to clean up subscriptions
+        sub_unsub_all()
+
         # TODO: Temporary for now; hard kill required to get out of wait
         if use_sigterm:
             os.kill(os.getpid(), SIGTERM)
@@ -784,3 +787,33 @@ def playback_state(state):
         return playback_mapping[state]
     except KeyError:
         return "unknown"
+
+
+# Ensure that event subscriptions are cleared on CTRL-C
+SUBS_LIST = set()
+
+
+def add_sub(sub):
+    global SUBS_LIST
+    logging.info("Adding event subscription: '{}'".format(sub))
+    SUBS_LIST.add(sub)
+
+
+def remove_sub(sub):
+    global SUBS_LIST
+    try:
+        logging.info("Removing event subscription: '{}'".format(sub))
+        SUBS_LIST.remove(sub)
+    except KeyError:
+        pass
+
+
+def sub_unsub_all():
+    global SUBS_LIST
+    for sub in SUBS_LIST:
+        try:
+            logging.info("Unsubscribing: '{}'".format(sub))
+            sub.unsubscribe()
+        except:
+            pass
+    SUBS_LIST.clear()
