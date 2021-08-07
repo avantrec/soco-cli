@@ -1,3 +1,4 @@
+v0.4.10   -
 v0.4.9    - Add 'Radio Show' details to output of 'track', etc.
           - 'wait_end_track' now detects a change of radio show
 v0.4.8    - Bugfixes and minor cosmetic changes
