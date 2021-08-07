@@ -361,6 +361,15 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
         print("Using Line In (state: {})".format(state))
         return True
 
+    def title_not_useful(title):
+        indicators = ["m3u", "stream", "sonos", "http", "="]
+        for indicator in indicators:
+            if indicator in title:
+                return True
+        return False
+
+    stream = False
+
     print(" Playback is {}:".format(playback_state(state)))
     track_info = speaker.get_current_track_info()
     logging.info("Current track info:\n{}".format(track_info))
@@ -371,6 +380,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     # Stream
     if track_info["duration"] == "0:00:00":
         logging.info("Track is a radio stream")
+        stream = True
         for item in sorted(track_info):
             if item not in [
                 "metadata",
@@ -462,9 +472,12 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     }
 
     # Deduplicate 'Channel' and 'Title'
-    # Remove 'Title' if it contains no spaces (likely to be a URI or similar)
+    # Remove 'Title' if it looks unuseful
     try:
-        if elements["Channel"] == elements["Title"] or not " " in elements["Title"]:
+        if (elements["Channel"] == elements["Title"]) or (
+            stream and title_not_useful(elements["Title"])
+        ):
+            logging.info("Removing Title: '{}'".format(elements["Title"]))
             elements.pop("Title", None)
     except KeyError:
         pass
@@ -2669,7 +2682,9 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                 initial_title = track_info.pop("title", None)
                 initial_duration = track_info.pop("duration", None)
                 try:
-                    initial_radio_show = event.variables["current_track_meta_data"].radio_show
+                    initial_radio_show = event.variables[
+                        "current_track_meta_data"
+                    ].radio_show
                 except:
                     pass
                 logging.info(
@@ -2683,7 +2698,9 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                 current_title = track_info.pop("title", None)
                 current_duration = track_info.pop("duration", None)
                 try:
-                    current_radio_show = event.variables["current_track_meta_data"].radio_show
+                    current_radio_show = event.variables[
+                        "current_track_meta_data"
+                    ].radio_show
                 except:
                     pass
                 logging.info(
