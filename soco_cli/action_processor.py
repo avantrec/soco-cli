@@ -252,7 +252,7 @@ def no_args_one_output(speaker, action, args, soco_function, use_local_speaker_l
 def list_queue(speaker, action, args, soco_function, use_local_speaker_list):
     queue = speaker.get_queue(max_items=SONOS_MAX_ITEMS)
     if len(queue) == 0:
-        print("Queue is empty")
+        # print("Queue is empty")
         return True
     if len(args) == 1:
         try:

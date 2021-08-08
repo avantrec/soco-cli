@@ -1,4 +1,5 @@
-v0.4.11   -
+v0.4.11   - Internal improvements
+          - Action 'list_queue' now returns silently if the queue is empty
 v0.4.10   - Fix regression: removal of 'Title' in 'track' output in some cases
 v0.4.9    - Add 'Radio Show' details to output of 'track', etc.
           - 'wait_end_track' now detects a change of radio show
