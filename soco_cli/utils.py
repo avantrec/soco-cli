@@ -247,6 +247,7 @@ use_sigterm = False
 
 def set_sigterm(sigterm):
     global use_sigterm
+    logging.info("Setting 'use_sigterm' to '{}'".format(sigterm))
     use_sigterm = sigterm
 
 
@@ -256,6 +257,7 @@ suspend_sigterm = False
 
 def set_suspend_sigterm(suspend=True):
     global suspend_sigterm
+    logging.info("Setting 'suspend_sigterm' to '{}'".format(suspend))
     suspend_sigterm = suspend
 
 
@@ -265,6 +267,7 @@ speaker_playing_local_file = None
 
 def set_speaker_playing_local_file(speaker):
     global speaker_playing_local_file
+    logging.info("Speaker playing local file = '{}'".format(speaker.player_name))
     speaker_playing_local_file = speaker
 
 
@@ -283,6 +286,7 @@ def sig_handler(signal_received, frame):
             speaker_playing_local_file.stop()
 
         if INTERACTIVE:
+            logging.info("Saving readline history")
             save_readline_history()
 
         # Try to clean up subscriptions
@@ -290,8 +294,10 @@ def sig_handler(signal_received, frame):
 
         # TODO: Temporary for now; hard kill required to get out of wait
         if use_sigterm:
+            logging.info("Using os.kill() with SIGTERM (hard kill) to exit")
             os.kill(os.getpid(), SIGTERM)
         else:
+            logging.info("Exiting program normally")
             exit(0)
 
 
