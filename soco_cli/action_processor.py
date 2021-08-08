@@ -1935,75 +1935,47 @@ def wait_stopped_for_core(speaker, action, duration_arg, not_paused=False):
 
     logging.info("Waiting until playback stopped for {}s".format(duration))
 
-    try:
-        sub = speaker.avTransport.subscribe(auto_renew=True)
-        add_sub(sub)
-    except Exception as e:
-        error_report("Exception {}".format(e))
-        return False
+    wait_stop_core(speaker, not_paused=not_paused)
 
     playing_states = ["PLAYING", "TRANSITIONING"]
     if not_paused:
         # Also treat 'paused' as a playing state
         playing_states.append("PAUSED_PLAYBACK")
 
-    while True:
-        try:
-            # TODO: Remove temporary fix for CTRL-C not exiting
-            set_sigterm(True)
-            event = sub.events.get(timeout=1.0)
-            logging.info(
-                "Event received: transport_state = '{}'".format(
-                    event.variables["transport_state"]
-                )
+    # Poll for changes; count down reset timer
+    # TODO: Polling is not ideal; should be redesigned using events
+    original_start_time = start_time = current_time = time.time()
+    poll_interval = 10
+    logging.info(
+        "Checking for not {}, poll interval = {}s".format(playing_states, poll_interval)
+    )
+    while (current_time - start_time) < duration:
+        state = speaker.get_current_transport_info()["current_transport_state"]
+        logging.info("Transport state = '{}'".format(state))
+        if state in playing_states:
+            # Restart the timer
+            logging.info("Restarting the timer")
+            start_time = current_time
+        remaining_time = duration - (current_time - start_time)
+        logging.info(
+            "Elapsed since last 'STOPPED' = {}s | total elapsed = {}s | remaining = {}s".format(
+                int(current_time - start_time),
+                int(current_time - original_start_time),
+                int(remaining_time),
             )
-            if event.variables["transport_state"] not in playing_states:
-                logging.info("Speaker is not in states {}".format(playing_states))
-                event_unsubscribe(sub)
-                remove_sub(sub)
-                # TODO: Should really return here and do this some other way ...
-                #       this is what's requiring the SIGKILL
-
-                # Poll for changes; count down reset timer
-                # TODO: Polling is not ideal; should be redesigned using events
-                original_start_time = start_time = current_time = time.time()
-                poll_interval = 10
-                logging.info(
-                    "Checking for not PLAYING, poll interval = {}s".format(
-                        poll_interval
-                    )
-                )
-                while (current_time - start_time) < duration:
-                    state = speaker.get_current_transport_info()[
-                        "current_transport_state"
-                    ]
-                    logging.info("Transport state = '{}'".format(state))
-                    if state in playing_states:
-                        # Restart the timer
-                        start_time = current_time
-                    remaining_time = duration - (current_time - start_time)
-                    logging.info(
-                        "Elapsed since last 'STOPPED' = {}s | total elapsed = {}s | remaining = {}s".format(
-                            int(current_time - start_time),
-                            int(current_time - original_start_time),
-                            int(remaining_time),
-                        )
-                    )
-                    if remaining_time <= poll_interval:
-                        time.sleep(remaining_time)
-                    else:
-                        time.sleep(poll_interval)
-                    current_time = time.time()
-                logging.info(
-                    "Timer expired after 'STOPPED' for {}s | total elapsed = {}s".format(
-                        int(current_time - start_time),
-                        int(current_time - original_start_time),
-                    )
-                )
-                set_sigterm(False)
-                return True
-        except:
-            set_sigterm(False)
+        )
+        if remaining_time <= poll_interval:
+            time.sleep(remaining_time)
+        else:
+            time.sleep(poll_interval)
+        current_time = time.time()
+    logging.info(
+        "Timer expired after 'STOPPED' for {}s | total elapsed = {}s".format(
+            int(current_time - start_time),
+            int(current_time - original_start_time),
+        )
+    )
+    return True
 
 
 @one_parameter
