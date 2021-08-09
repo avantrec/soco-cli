@@ -7,6 +7,7 @@ and needs to be converted to a Class.
 import logging
 import pprint
 import time
+from collections import OrderedDict
 from datetime import datetime, timedelta
 from distutils.version import StrictVersion
 from os import get_terminal_size
@@ -498,8 +499,34 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     except KeyError:
         pass
 
-    logging.info("Items to be printed: {}".format(elements))
-    pretty_print_values(elements, indent=3, spacing=5, sort_by_key=True)
+    # Reorder the elements
+    element_order = [
+        "Channel",
+        "Radio Show",
+        "Podcast",
+        "Artist",
+        "Creator(s)",
+        "Narrator(s)",
+        "Book Title",
+        "Chapter",
+        "Album",
+        "Title",
+        "Release Date",
+        "Playlist Position",
+        "Duration",
+        "Elapsed",
+    ]
+    ordered_elements = OrderedDict()
+    for element in element_order:
+        try:
+            ordered_elements[element] = elements.pop(element)
+        except KeyError:
+            pass
+    # Add any elements we've missed
+    ordered_elements.update(elements)
+
+    logging.info("Items to be printed: {}".format(ordered_elements))
+    pretty_print_values(ordered_elements, indent=3, spacing=5, sort_by_key=False)
     return True
 
 
