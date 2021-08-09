@@ -389,7 +389,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                 "album_art",
                 "duration",
                 "playlist_position",
-                "position",
+                # "position",
                 "uri",
             ]:
                 elements[item.capitalize()] = track_info[item]
