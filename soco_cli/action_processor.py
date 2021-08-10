@@ -139,45 +139,46 @@ def print_tracks(tracks, speaker=None, single_track=False, track_number=None):
         item_number = 1
 
     for track in tracks:
+        # Assemble available track data
+        info_items = OrderedDict()
         try:
-            artist = track.creator
+            info_items["Artist"] = track.creator
         except AttributeError:
-            artist = ""
+            pass
         try:
-            album = track.album
+            info_items["Album"] = track.album
         except AttributeError:
-            album = ""
+            pass
         try:
-            title = track.title
+            info_items["Title"] = track.title
         except AttributeError:
-            title = ""
+            pass
         try:
-            podcast = track.item_class == "object.item.audioItem.podcast"
-        except AttributeError:
-            podcast = False
+            if track.item_class == "object.item.audioItem.podcast":
+                info_items["Podcast Episode"] = info_items.pop("Title")
+        except (AttributeError, KeyError):
+            pass
 
-        if not qp or qp != item_number:
-            if podcast:
-                print("{:7d}: Podcast Episode: {}".format(item_number, title))
+        # Assemble the info string to be printed
+        info_string = ""
+        first = True
+        for item, info in info_items.items():
+            if first:
+                first = False
             else:
-                print(
-                    "{:7d}: Artist: {} | Album: {} | Title: {}".format(
-                        item_number, artist, album, title
-                    )
-                )
+                info_string += " | "
+            info_string += "{}: {}".format(item, info)
+
+        # Print the information; show position and play state if available
+        if not qp or qp != item_number:
+            prefix = "    "
         elif qp == item_number:
             if is_playing:
                 prefix = " *> "
             else:
-                prefix = "  * "
-            if podcast:
-                print("{}{:3d}: Podcast Episode: {}".format(prefix, item_number, title))
-            else:
-                print(
-                    "{}{:3d}: Artist: {} | Album: {} | Title: {}".format(
-                        prefix, item_number, artist, album, title
-                    )
-                )
+                prefix = " *  "
+        print("{}{:3d}: {}".format(prefix, item_number, info_string))
+
         item_number += 1
 
     return True
