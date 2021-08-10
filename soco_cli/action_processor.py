@@ -1375,6 +1375,15 @@ def reindex(speaker, action, args, soco_function, use_local_speaker_list):
 
 
 @zero_parameters
+def is_indexing(speaker, action, args, soco_function, use_local_speaker_list):
+    if speaker.music_library.library_updating:
+        print("yes")
+    else:
+        print("no")
+    return True
+
+
+@zero_parameters
 def info(speaker, action, args, soco_function, use_local_speaker_list):
     info = speaker.get_speaker_info()
     model = info["model_name"].lower()
@@ -3138,4 +3147,5 @@ actions = {
     "channel": SonosFunction(get_channel, "", True),
     "add_sharelink_to_queue": SonosFunction(add_sharelink_to_queue, "", True),
     "sharelink": SonosFunction(add_sharelink_to_queue, "", True),
+    "is_indexing": SonosFunction(is_indexing, "", False),
 }

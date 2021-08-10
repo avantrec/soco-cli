@@ -437,6 +437,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
 - **`groupstatus`**: Indicates whether the speaker is part of a group, and whether it's part of a stereo pair or bonded home theatre configuration. Note that first can override the second: if a paired/bonded coordinator speaker is also part of a group, the group will be reported but not the paired/bonded status.
 - **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
+- **`is_indexing`**: Reports on whether the system is currently in the process of reindexing its local libraries: possible responses are `yes` or `no`.
 - **`libraries`** (or **`shares`**): List the local music library shares.
 - **`reindex`**: Start a reindex of the local music libraries. Will not proceed if a reindex is already underway.
 - **`rename <new_name>`**: Rename the speaker.
