@@ -105,6 +105,7 @@ def track_follow(
                         "Album:",
                         "Podcast:",
                         "Title:",
+                        "Episode:",
                         "Release Date:",
                         "Narrator(s):",
                     ]

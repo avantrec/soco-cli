@@ -442,6 +442,10 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
             for item in sorted(track_info):
                 if item not in ["metadata", "uri", "album_art", "album", "artist"]:
                     elements[item.capitalize()] = track_info[item]
+            try:
+                elements["Episode"] = elements.pop("Title")
+            except KeyError:
+                pass
 
         # Audio book
         elif (
@@ -517,6 +521,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
         "Chapter",
         "Album",
         "Title",
+        "Episode",
         "Release Date",
         "Playlist Position",
         "Duration",
