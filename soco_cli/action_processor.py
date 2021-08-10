@@ -170,9 +170,8 @@ def print_tracks(tracks, speaker=None, single_track=False, track_number=None):
             info_string += "{}: {}".format(item, info)
 
         # Print the information; show position and play state if available
-        if not qp or qp != item_number:
-            prefix = "    "
-        elif qp == item_number:
+        prefix = "    "
+        if qp == item_number:
             if is_playing:
                 prefix = " *> "
             else:
@@ -1367,7 +1366,11 @@ def balance(speaker, action, args, soco_function, use_local_speaker_list):
 
 @zero_parameters
 def reindex(speaker, action, args, soco_function, use_local_speaker_list):
-    speaker.music_library.start_library_update()
+    if not speaker.music_library.library_updating:
+        speaker.music_library.start_library_update()
+        print("Library reindex started")
+    else:
+        print("A library reindex is already in progress")
     return True
 
 

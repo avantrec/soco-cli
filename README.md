@@ -438,7 +438,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`groupstatus`**: Indicates whether the speaker is part of a group, and whether it's part of a stereo pair or bonded home theatre configuration. Note that first can override the second: if a paired/bonded coordinator speaker is also part of a group, the group will be reported but not the paired/bonded status.
 - **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
 - **`libraries`** (or **`shares`**): List the local music library shares.
-- **`reindex`**: Start a reindex of the local music libraries.
+- **`reindex`**: Start a reindex of the local music libraries. Will not proceed if a reindex is already underway.
 - **`rename <new_name>`**: Rename the speaker.
 - **`state`** (or **`status`, `playback`**): Returns the current playback state for the speaker, one of: `PAUSED_PLAYBACK`, `PLAYING`, `STOPPED`, or `TRANSITIONING`.
 - **`status_light` (or `light`)**: Returns the state of the speaker's status light, 'on' or 'off'.
