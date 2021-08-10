@@ -1,3 +1,4 @@
+v0.4.12   -
 v0.4.11   - Internal improvements
           - Action 'list_queue' now returns silently if the queue is empty
 v0.4.10   - Fix regression: removal of 'Title' in 'track' output in some cases
