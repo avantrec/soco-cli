@@ -45,7 +45,6 @@ from soco_cli.utils import (
     rename_speaker_in_cache,
     save_search,
     seconds_until,
-    set_sigterm,
     two_parameters,
     zero_one_or_two_parameters,
     zero_or_one_parameter,
@@ -152,25 +151,39 @@ def print_tracks(tracks, speaker=None, single_track=False, track_number=None):
         except:
             title = ""
         if not qp or qp != item_number:
-            if track.item_class == "object.item.audioItem.podcast":
-                print("{:7d}: Podcast: {}".format(item_number, title))
-            else:
-                print(
-                    "{:7d}: Artist: {} | Album: {} | Title: {}".format(
-                        item_number, artist, album, title
+            try:
+                if track.item_class == "object.item.audioItem.podcast":
+                    print("{:7d}: Podcast Episode: {}".format(item_number, title))
+                else:
+                    print(
+                        "{:7d}: Artist: {} | Album: {} | Title: {}".format(
+                            item_number, artist, album, title
+                        )
                     )
-                )
+            except:
+                print("{:7d}: <Unable to obtain item information>".format(item_number))
         elif qp == item_number:
             if is_playing:
                 prefix = " *> "
             else:
                 prefix = "  * "
-            if track.item_class == "object.item.audioItem.podcast":
-                print("{}{:3d}: Podcast: {}".format(prefix, item_number, title))
-            else:
+            try:
+                if track.item_class == "object.item.audioItem.podcast":
+                    print(
+                        "{}{:3d}: Podcast Episode: {}".format(
+                            prefix, item_number, title
+                        )
+                    )
+                else:
+                    print(
+                        "{}{:3d}: Artist: {} | Album: {} | Title: {}".format(
+                            prefix, item_number, artist, album, title
+                        )
+                    )
+            except:
                 print(
-                    "{}{:3d}: Artist: {} | Album: {} | Title: {}".format(
-                        prefix, item_number, artist, album, title
+                    "{}{:3d}: <Unable to obtain item information>".format(
+                        prefix, item_number
                     )
                 )
         item_number += 1
