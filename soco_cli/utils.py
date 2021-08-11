@@ -27,7 +27,7 @@ def event_unsubscribe(sub):
     # by yielding the thread
     pause_seconds = 0.2
     logging.info(
-        "Unsubscribing from events ... yield by pausing for {}s".format(pause_seconds)
+        "Unsubscribing ... yield by pausing for {}s".format(pause_seconds)
     )
     sleep(pause_seconds)
     sub.unsubscribe()
@@ -293,7 +293,7 @@ def sig_handler(signal_received, frame):
             logging.info("Saving readline history")
             save_readline_history()
 
-        # Try to clean up subscriptions
+        logging.info("Cleaning up subscriptions")
         sub_unsub_all()
 
         # TODO: Temporary for now; hard kill required to get out of wait
@@ -823,7 +823,7 @@ def sub_unsub_all():
     for sub in SUBS_LIST:
         try:
             logging.info("Unsubscribing: '{}'".format(sub))
-            sub.unsubscribe()
+            event_unsubscribe(sub)
         except:
-            pass
+            break
     SUBS_LIST.clear()
