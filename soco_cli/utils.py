@@ -26,9 +26,7 @@ def event_unsubscribe(sub):
     # Insert a brief pause before event unsubscription to prevent lockups,
     # by yielding the thread
     pause_seconds = 0.2
-    logging.info(
-        "Unsubscribing ... yield by pausing for {}s".format(pause_seconds)
-    )
+    logging.info("Unsubscribing ... yield by pausing for {}s".format(pause_seconds))
     sleep(pause_seconds)
     sub.unsubscribe()
     logging.info("Unsubscribed")
@@ -270,8 +268,7 @@ def set_speaker_playing_local_file(speaker):
     if speaker:
         logging.info("Speaker playing local file = '{}'".format(speaker.player_name))
     else:
-        logging.info(
-            "Speaker playing local file = 'None'")
+        logging.info("Speaker playing local file = 'None'")
     speaker_playing_local_file = speaker
 
 

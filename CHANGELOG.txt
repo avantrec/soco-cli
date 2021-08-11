@@ -1,3 +1,4 @@
+v0.4.13   -
 v0.4.12   - Display Plex track data in the output of 'list_queue'
           - Add 'is_indexing' action
 v0.4.11   - Internal improvements

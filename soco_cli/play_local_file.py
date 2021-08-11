@@ -7,7 +7,6 @@ import urllib.parse
 from http.server import HTTPServer
 from ipaddress import IPv4Address, IPv4Network
 from os import chdir, path
-from queue import Empty
 from socketserver import ThreadingMixIn
 from sys import version_info as pyversion
 from threading import Thread
