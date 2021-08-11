@@ -224,7 +224,9 @@ def play_local_file(speaker, pathname):
     set_speaker_playing_local_file(speaker)
 
     logging.info("Waiting for playback to stop")
+    set_sigterm(True)
     wait_until_stopped(speaker)
+    set_sigterm(False)
     logging.info("Playback stopped ... terminating web server")
     httpd.shutdown()
     logging.info("Web server terminated")

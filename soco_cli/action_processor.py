@@ -45,6 +45,7 @@ from soco_cli.utils import (
     rename_speaker_in_cache,
     save_search,
     seconds_until,
+    set_sigterm,
     two_parameters,
     zero_one_or_two_parameters,
     zero_or_one_parameter,
@@ -1952,6 +1953,7 @@ def wait_stop_core(speaker, not_paused=False):
         error_report("Exception {}".format(e))
         return False
 
+    set_sigterm(True)
     while True:
         try:
             event = sub.events.get(timeout=1.0)
@@ -1963,6 +1965,7 @@ def wait_stop_core(speaker, not_paused=False):
                 )
                 event_unsubscribe(sub)
                 remove_sub(sub)
+                set_sigterm(False)
                 return True
         except Exception as e:
             pass
@@ -2049,6 +2052,7 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
     except Exception as e:
         error_report("Exception {}".format(e))
         return False
+    set_sigterm(True)
     while True:
         try:
             event = sub.events.get(timeout=1.0)
@@ -2060,6 +2064,7 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
                 )
                 event_unsubscribe(sub)
                 remove_sub(sub)
+                set_sigterm(False)
                 return True
         except:
             pass
