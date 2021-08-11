@@ -27,7 +27,7 @@ from soco_cli.utils import (
 PORT_START = 54000
 PORT_END = 54099
 
-SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WMA", "WAV", "AAC"]
+SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WMA", "WAV"]
 
 # Need to know whether this is Python >= 3.7
 PY37PLUS = bool((pyversion.major == 3 and pyversion.minor >= 7) or pyversion.major > 3)
@@ -134,7 +134,7 @@ def get_server_ip(speaker):
     return None
 
 
-def wait_until_stopped(speaker, uri, aac_file=False):
+def wait_until_stopped(speaker):
     # Note that this is largely copied from the action_processor to avoid
     # circular imports. Fix when action_processor is refactored
 
@@ -217,33 +217,18 @@ def play_local_file(speaker, pathname):
     logging.info("Playing file '{}' from directory '{}'".format(filename, directory))
     logging.info("Playback URI: {}".format(uri))
 
-    # Send the URI to the speaker for playback
-    # A special hack is required for AAC files, which have to be treated like radio.
-    if filename.lower().endswith(".aac"):
-        aac_file = True
-        # speaker.play_uri(uri, force_radio=True)
-        speaker.play_uri(uri)
-    else:
-        aac_file = False
-        speaker.play_uri(uri)
+    logging.info("Send URI to '{}' for playback".format(speaker.player_name))
+    speaker.play_uri(uri)
 
     logging.info("Setting flag to stop playback on CTRL-C")
     set_speaker_playing_local_file(speaker)
 
     logging.info("Waiting for playback to stop")
-    # SIGTERM enablement experiment for AAC files only
-    # Also needed for Python < 3.7
-    if aac_file or not PY37PLUS:
-        set_sigterm(True)
-        wait_until_stopped(speaker, uri, aac_file=aac_file)
-        set_sigterm(False)
-    else:
-        wait_until_stopped(speaker, uri, aac_file=aac_file)
-
+    wait_until_stopped(speaker)
     logging.info("Playback stopped ... terminating web server")
     httpd.shutdown()
-
     logging.info("Web server terminated")
+
     set_speaker_playing_local_file(None)
 
     return True
