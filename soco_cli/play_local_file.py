@@ -146,6 +146,7 @@ def wait_until_stopped(speaker):
         error_report("Exception {}".format(e))
         return
 
+    set_sigterm(True)
     while True:
         try:
             event = sub.events.get(timeout=1.0)
@@ -159,6 +160,7 @@ def wait_until_stopped(speaker):
                 )
                 event_unsubscribe(sub)
                 remove_sub(sub)
+                set_sigterm(False)
                 return
         except:
             pass
@@ -224,9 +226,7 @@ def play_local_file(speaker, pathname):
     set_speaker_playing_local_file(speaker)
 
     logging.info("Waiting for playback to stop")
-    set_sigterm(True)
     wait_until_stopped(speaker)
-    set_sigterm(False)
     logging.info("Playback stopped ... terminating web server")
     httpd.shutdown()
     logging.info("Web server terminated")
