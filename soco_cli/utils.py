@@ -267,7 +267,11 @@ speaker_playing_local_file = None
 
 def set_speaker_playing_local_file(speaker):
     global speaker_playing_local_file
-    logging.info("Speaker playing local file = '{}'".format(speaker.player_name))
+    if speaker:
+        logging.info("Speaker playing local file = '{}'".format(speaker.player_name))
+    else:
+        logging.info(
+            "Speaker playing local file = 'None'")
     speaker_playing_local_file = speaker
 
 

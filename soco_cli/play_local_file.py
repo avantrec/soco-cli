@@ -15,8 +15,10 @@ import ifaddr
 from RangeHTTPServer import RangeRequestHandler
 
 from soco_cli.utils import (
+    add_sub,
     error_report,
     event_unsubscribe,
+    remove_sub,
     set_sigterm,
     set_speaker_playing_local_file,
 )
@@ -133,53 +135,32 @@ def get_server_ip(speaker):
 
 
 def wait_until_stopped(speaker, uri, aac_file=False):
-    sub = speaker.avTransport.subscribe(auto_renew=True)
-    # Includes a hack for AAC files, which would be played in a repeat loop.
-    # The speaker never goes into a 'STOPPED' state, so we have
-    # to detect the shift into a 'TRANSITIONING' state after playback
-    has_played = False
+    # Note that this is largely copied from the action_processor to avoid
+    # circular imports. Fix when action_processor is refactored
+
+    playing_states = ["PLAYING", "TRANSITIONING", "PAUSED_PLAYBACK"]
+    try:
+        sub = speaker.avTransport.subscribe(auto_renew=True)
+        add_sub(sub)
+    except Exception as e:
+        error_report("Exception {}".format(e))
+        return
+
     while True:
         try:
             event = sub.events.get(timeout=1.0)
-            logging.info(
-                "Transport event: State = '{}'".format(
-                    event.variables["transport_state"]
+            state = event.variables["transport_state"]
+            logging.info("Event received: playback state = '{}'".format(state))
+            if state not in playing_states:
+                logging.info(
+                    "Speaker '{}' in state '{}'".format(
+                        speaker.player_name, event.variables["transport_state"]
+                    )
                 )
-            )
-
-            # In case there's no STOPPED state event, check that the expected URI
-            # is still playing
-            try:
-                current_uri = event.variables["current_track_meta_data"].get_uri()
-            except:
-                # Can only call get_uri() on certain datatypes
-                current_uri = ""
-            if current_uri != uri:
-                logging.info("Playback URI changed: exit event wait loop")
                 event_unsubscribe(sub)
-                return True
-
-            # Special case for AAC files
-            if aac_file:
-                if event.variables["transport_state"] == "TRANSITIONING":
-                    logging.info("Transitioning event received")
-                    if has_played:
-                        logging.info("AAC: transition event indicating end of track")
-                        event_unsubscribe(sub)
-                        speaker.stop()
-                        return True
-                    logging.info("AAC: transition event before playback")
-                if event.variables["transport_state"] == "PLAYING":
-                    has_played = True
-                    logging.info("AAC: has_played set to True")
-
-            # General case for other file types. Note that pausing (PAUSED_PLAYBACK)
-            # does not terminate the loop, to allow playback to be resumed
-            if event.variables["transport_state"] == "STOPPED":
-                event_unsubscribe(sub)
-                return True
-
-        except Empty:
+                remove_sub(sub)
+                return
+        except:
             pass
 
 
