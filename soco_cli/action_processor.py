@@ -1964,7 +1964,7 @@ def wait_stop_core(speaker, not_paused=False):
                 event_unsubscribe(sub)
                 remove_sub(sub)
                 return True
-        except Empty:
+        except Exception as e:
             pass
 
 
@@ -2061,7 +2061,7 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
                 event_unsubscribe(sub)
                 remove_sub(sub)
                 return True
-        except Empty:
+        except:
             pass
 
 
