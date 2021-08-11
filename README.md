@@ -256,7 +256,7 @@ Albums from local music libraries can also be added to the queue using `sonos <s
 
 ### Audio Files on the Local Filesystem
 
-It's possible to play local audio files in **MP3, M4A, MP4, FLAC, OGG, WMA, and WAV** formats directly on your Sonos speakers using the `play_file` (or `play_local_file`) action. (**AAC** files might work, but there are problems on some platforms, and absent metadata, album art, and ability to seek within the track.)
+It's possible to play local audio files in **MP3, M4A, MP4, FLAC, OGG, WMA, and WAV** formats directly on your Sonos speakers using the `play_file` (or `play_local_file`) action.
 
 **Example**: `sonos Lounge play_file mozart.mp3`
 
