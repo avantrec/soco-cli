@@ -2,6 +2,7 @@
 
 import functools
 import logging
+import time
 import urllib.parse
 from http.server import HTTPServer
 from ipaddress import IPv4Address, IPv4Network
@@ -134,10 +135,7 @@ def get_server_ip(speaker):
     return None
 
 
-def wait_until_stopped(speaker):
-    # Note that this is largely copied from the action_processor to avoid
-    # circular imports. Fix when action_processor is refactored
-
+def wait_until_stopped(speaker, uri):
     playing_states = ["PLAYING", "TRANSITIONING", "PAUSED_PLAYBACK"]
     try:
         sub = speaker.avTransport.subscribe(auto_renew=True)
@@ -152,18 +150,32 @@ def wait_until_stopped(speaker):
             event = sub.events.get(timeout=1.0)
             state = event.variables["transport_state"]
             logging.info("Event received: playback state = '{}'".format(state))
+
             if state not in playing_states:
                 logging.info(
                     "Speaker '{}' in state '{}'".format(
                         speaker.player_name, event.variables["transport_state"]
                     )
                 )
-                event_unsubscribe(sub)
-                remove_sub(sub)
-                set_sigterm(False)
-                return
+                break
+
+            # Check that the expected URI is still playing
+            try:
+                current_uri = event.variables["current_track_meta_data"].get_uri()
+            except:
+                # Can only call get_uri() on certain datatypes
+                current_uri = ""
+            if current_uri != uri:
+                logging.info("Playback URI changed: exit event wait loop")
+                break
+
         except:
             pass
+
+    event_unsubscribe(sub)
+    remove_sub(sub)
+    set_sigterm(False)
+    return
 
 
 def is_supported_type(filename):
@@ -225,8 +237,10 @@ def play_local_file(speaker, pathname):
     logging.info("Setting flag to stop playback on CTRL-C")
     set_speaker_playing_local_file(speaker)
 
+    logging.info("Waiting 3s for playback to start")
+    time.sleep(3.0)
     logging.info("Waiting for playback to stop")
-    wait_until_stopped(speaker)
+    wait_until_stopped(speaker, uri)
     logging.info("Playback stopped ... terminating web server")
     httpd.shutdown()
     logging.info("Web server terminated")
