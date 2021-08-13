@@ -275,7 +275,7 @@ def interactive_loop(
                 if command_lower == "exec":
                     if len(command) > 1:
                         _exec(command[1:])
-                        print()
+                        # print()
                     continue
 
                 if command_lower == "cd":
@@ -791,15 +791,23 @@ def _rescan(use_local_speaker_list=False, max_scan=False):
 
 
 def _exec(command_line):
-    """Runs a command as a subprocess.
+    """Runs a command as a subprocess, in its own shell.
 
     Args:
         command_line (list): The command to execute.
     """
+
+    # Check for spaces in the script pathname
+    if " " in command_line[0]:
+        command_line[0] = '"' + command_line[0] + '"'
+
+    # Convert command list to a unified command line
+    command_line = " ".join(command_line)
+
     set_suspend_sigterm(suspend=True)
     try:
         logging.info("Running command: '{}'".format(command_line))
-        subprocess.run(command_line, check=True)
+        subprocess.call(command_line, shell=True)
     except Exception as e:
         print(e)
     set_suspend_sigterm(suspend=False)
