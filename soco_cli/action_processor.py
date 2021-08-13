@@ -2839,25 +2839,27 @@ class SonosFunction:
         return self._switch_to_coordinator
 
 
-def get_actions(include_additional=True):
+def get_actions(include_loop_actions=True, include_wait_actions=True):
     action_list = list(actions.keys())
-    if include_additional:
-        additional_commands = [
+    if include_loop_actions:
+        loop_actions = [
             "loop",
             "loop_until",
             "loop_for",
             "loop_to_start",
-            "track_follow",
-            "wait_until",
-            "wait",
-            "wait_for",
         ]
-        action_list = action_list + additional_commands
+        action_list += loop_actions
+    if include_wait_actions:
+        wait_actions = ["wait", "wait_for", "wait_until"]
+        action_list += wait_actions
     return sorted(action_list)
 
 
-def list_actions(include_additional=True):
-    action_list = get_actions(include_additional=include_additional)
+def list_actions(include_loop_actions=True, include_wait_actions=True):
+    action_list = get_actions(
+        include_loop_actions=include_loop_actions,
+        include_wait_actions=include_wait_actions,
+    )
     action_list = sorted(action_list, reverse=True)
 
     longest_command = len(max(action_list, key=len))

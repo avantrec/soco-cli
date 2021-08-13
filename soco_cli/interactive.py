@@ -40,6 +40,31 @@ from .wait_actions import process_wait
 # Alias Manager
 am = AliasManager()
 
+# The following actions are run in a subprocess, to allow them to be terminated
+# without dropping out of the interactive shell.
+ACTIONS_TO_EXEC = [
+    "track_follow",
+    "tf",
+    "track_follow_compact",
+    "tfc",
+    "wait_stop",
+    "wait_start",
+    "wait_stopped_for",
+    "wsf",
+    "wait_stop_not_pause",
+    "wsnp",
+    "wait_stopped_for_not_pause",
+    "wsfnp",
+    "wait_end_track",
+]
+
+
+ACTIONS_TO_EXEC_NO_SPEAKER = [
+    "wait",
+    "wait_until",
+    "wait_for",
+]
+
 
 def interactive_loop(
     speaker_name, use_local_speaker_list=False, no_env=False, single_keystroke=False
@@ -184,10 +209,10 @@ def interactive_loop(
                     _print_speaker_list(use_local_speaker_list=use_local_speaker_list)
                     continue
 
-                if command_lower in ["wait", "wait_until", "wait_for"]:
-                    logging.info("Processing a 'wait' action")
-                    process_wait(command)
-                    continue
+                # if command_lower in ["wait", "wait_until", "wait_for"]:
+                #     logging.info("Processing a 'wait' action")
+                #     process_wait(command)
+                #     continue
 
                 if command_lower in ["version"]:
                     print()
@@ -416,10 +441,12 @@ def interactive_loop(
 
                     action = args.pop(0).lower()
                     logging.info("Action = '{}'; args = {}".format(action, args))
-                    if action in ["track_follow", "tf"]:
-                        _track_follow(speaker.ip_address)
-                    elif action in ["track_follow_compact", "tfc"]:
-                        _track_follow(speaker.ip_address, compact=True)
+                    # Commands often requiring CTRL-C to exit are run in a subprocess
+                    if (
+                        action in ACTIONS_TO_EXEC
+                        or action in ACTIONS_TO_EXEC_NO_SPEAKER
+                    ):
+                        _exec_action(speaker.ip_address, action, args)
                     else:
                         exit_code, output, error_msg = run_command(
                             speaker,
@@ -493,7 +520,7 @@ def _show_actions():
     print("Complete list of SoCo-CLI actions:")
     print("==================================")
     print()
-    list_actions(include_additional=False)
+    list_actions(include_loop_actions=False, include_wait_actions=True)
     print()
 
 
@@ -506,7 +533,7 @@ def _set_actions_and_commands_list(use_local_speaker_list=False):
     ACTIONS_LIST = (
         [
             action + " "
-            for action in get_actions()
+            for action in get_actions(include_wait_actions=True)
             + _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
         ]
         + COMMANDS
@@ -778,25 +805,25 @@ def _exec(command_line):
     set_suspend_sigterm(suspend=False)
 
 
-def _track_follow(speaker_ip, compact=False):
-    # This runs in a subprocess, to allow CTRL-C
+def _exec_action(speaker_ip, action, args):
+    # Commands to run in a subprocess, to allow CTRL-C
     # to exit the subprocess only, and not the shell.
-
-    command_line = [sys.argv[0], speaker_ip]
-    action = "track_follow"
-    if compact:
-        action += "_compact"
-    command_line.append(action)
+    if action not in ACTIONS_TO_EXEC_NO_SPEAKER:
+        command_line = [sys.argv[0], speaker_ip, action, *args]
+    else:  # Omit speaker
+        command_line = [sys.argv[0], action, *args]
 
     for position, arg in enumerate(sys.argv[1:]):
         if arg.startswith("--log="):
-            command_line.append(arg)
+            command_line.insert(1, arg)
             break
         if arg == "--log":
-            command_line.append(arg)
+            command_line.insert(1, arg)
             command_line.append(sys.argv[1:][position + 1])
             break
 
-    print("\n Running '{}' in a subprocess. Terminate using CTRL-C.".format(action))
+    logging.info("Running '{}' in a subprocess. Terminate using CTRL-C.".format(action))
     _exec(command_line)
-    print()
+
+    if action in ["track_follow", "tfc", "track_follow_compact", "tfc"]:
+        print()
