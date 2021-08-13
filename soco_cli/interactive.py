@@ -501,10 +501,6 @@ COMMANDS = [
     "single-keystroke",
     "sk",
     "speakers",
-    "track_follow",
-    "tf",
-    "track_follow_compact",
-    "tfc",
     "version",
 ]
 
@@ -520,7 +516,11 @@ def _show_actions():
     print("Complete list of SoCo-CLI actions:")
     print("==================================")
     print()
-    list_actions(include_loop_actions=False, include_wait_actions=True)
+    list_actions(
+        include_loop_actions=False,
+        include_wait_actions=True,
+        include_track_follow_actions=True,
+    )
     print()
 
 
@@ -533,7 +533,11 @@ def _set_actions_and_commands_list(use_local_speaker_list=False):
     ACTIONS_LIST = (
         [
             action + " "
-            for action in get_actions(include_wait_actions=True)
+            for action in get_actions(
+                include_loop_actions=False,
+                include_wait_actions=True,
+                include_track_follow_actions=True,
+            )
             + _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
         ]
         + COMMANDS

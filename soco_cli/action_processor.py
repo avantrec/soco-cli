@@ -2839,7 +2839,11 @@ class SonosFunction:
         return self._switch_to_coordinator
 
 
-def get_actions(include_loop_actions=True, include_wait_actions=True):
+def get_actions(
+    include_loop_actions=True,
+    include_wait_actions=True,
+    include_track_follow_actions=True,
+):
     action_list = list(actions.keys())
     if include_loop_actions:
         loop_actions = [
@@ -2852,13 +2856,20 @@ def get_actions(include_loop_actions=True, include_wait_actions=True):
     if include_wait_actions:
         wait_actions = ["wait", "wait_for", "wait_until"]
         action_list += wait_actions
+    if include_track_follow_actions:
+        action_list += ["track_follow", "tf", "track_follow_compact", "tfc"]
     return sorted(action_list)
 
 
-def list_actions(include_loop_actions=True, include_wait_actions=True):
+def list_actions(
+    include_loop_actions=True,
+    include_wait_actions=True,
+    include_track_follow_actions=True,
+):
     action_list = get_actions(
         include_loop_actions=include_loop_actions,
         include_wait_actions=include_wait_actions,
+        include_track_follow_actions=include_track_follow_actions,
     )
     action_list = sorted(action_list, reverse=True)
 
