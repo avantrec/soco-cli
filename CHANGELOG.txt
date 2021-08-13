@@ -1,5 +1,8 @@
-v0.4.13   - Actions 'wait', 'wait_for', 'wait_until' can now be cancelled
-            in the interactive shell using CTRL-C without exiting the shell
+v0.4.13   - All 'wait' actions can now be cancelled in the interactive shell
+            using CTRL-C, without exiting interactive mode
+          - Interactive shell commands which run in subprocesses now do so in
+            OS shell environments, e.g., commands like 'tf > tracks.txt' now
+            work in interactive mode
 v0.4.12   - Display Plex track data in the output of 'list_queue'
           - Add 'is_indexing' action
 v0.4.11   - Internal improvements
