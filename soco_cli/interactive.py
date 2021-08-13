@@ -807,7 +807,7 @@ def _exec(command_line):
     set_suspend_sigterm(suspend=True)
     try:
         logging.info("Running command: '{}'".format(command_line))
-        subprocess.call(command_line, shell=True)
+        subprocess.run(command_line, shell=True)
     except Exception as e:
         print(e)
     set_suspend_sigterm(suspend=False)
