@@ -2760,7 +2760,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                     event_unsubscribe(sub)
                     return True
 
-        except Empty:
+        except:
             pass
 
 
