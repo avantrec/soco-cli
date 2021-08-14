@@ -445,6 +445,13 @@ def main():
                 else:
                     # Special case of 'track_follow' action
                     if action in ["track_follow", "tf", "track_follow_compact", "tfc"]:
+                        if len(args) > 0:
+                            print(
+                                "Error: Action '{}' takes no parameters".format(action),
+                                file=sys.stderr,
+                                flush=True,
+                            )
+                            continue
                         # Does not return
                         compact = action in ["track_follow_compact", "tfc"]
                         track_follow(
