@@ -2742,7 +2742,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                         "current_track_meta_data"
                     ].radio_show
                 except:
-                    pass
+                    current_radio_show = None
                 logging.info(
                     "Current title = '{}', current duration = '{}', current radio show = '{}'".format(
                         current_title, current_duration, current_radio_show
