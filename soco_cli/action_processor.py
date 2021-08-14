@@ -1967,7 +1967,7 @@ def wait_stop_core(speaker, not_paused=False):
                 remove_sub(sub)
                 set_sigterm(False)
                 return True
-        except Exception as e:
+        except:
             pass
 
 
@@ -2693,28 +2693,17 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
     initial_duration = None
     initial_radio_show = None
 
+    set_sigterm(True)
     while True:
         try:
             event = sub.events.get(timeout=1.0)
             logging.info("Transport event received")
 
-            # The code below didn't work; retain for possible future use
-            # Consider using a countdown?
-            #
-            # info = speaker.get_current_track_info()
-            # position = convert_to_seconds(info["position"])
-            # duration = convert_to_seconds(info["duration"])
-            # logging.info("Position = {}, duration = {}".format(position, duration))
-            #
-            # if duration - position == 0:
-            #     logging.info("Track duration expired")
-            #     event_unsubscribe(sub)
-            #     return True
-
             if event.variables["transport_state"] not in ["PLAYING", "TRANSITIONING"]:
                 logging.info("Speaker is not playing")
                 event_unsubscribe(sub)
                 remove_sub(sub)
+                set_sigterm(False)
                 return True
 
             if initial_title is None:
@@ -2748,7 +2737,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                         current_title, current_duration, current_radio_show
                     )
                 )
-                # Check whether track title or duration have changed
+                # Check whether track title, duration or radio show name have changed
                 if (
                     current_title != initial_title
                     or current_duration != initial_duration
@@ -2758,8 +2747,8 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                     logging.info("Unsubscribing from events")
                     remove_sub(sub)
                     event_unsubscribe(sub)
+                    set_sigterm(False)
                     return True
-
         except:
             pass
 
