@@ -24,7 +24,10 @@ from soco_cli.speakers import Speakers
 
 def event_unsubscribe(sub):
     logging.info("Unsubscribing '{}'".format(sub))
-    sub.unsubscribe()
+    try:
+        sub.unsubscribe()
+    except Exception as e:
+        logging.info("Failed to unsubscribe: {}".format(e))
     logging.info("Unsubscribed")
 
 
@@ -806,14 +809,14 @@ SUBS_LIST = set()
 
 def add_sub(sub):
     global SUBS_LIST
-    logging.info("Adding event subscription: '{}'".format(sub))
+    logging.info("Adding event subscription record: '{}'".format(sub))
     SUBS_LIST.add(sub)
 
 
 def remove_sub(sub):
     global SUBS_LIST
     try:
-        logging.info("Removing event subscription: '{}'".format(sub))
+        logging.info("Removing event subscription record: '{}'".format(sub))
         SUBS_LIST.remove(sub)
     except KeyError:
         pass
@@ -823,7 +826,6 @@ def sub_unsub_all():
     global SUBS_LIST
     for sub in SUBS_LIST:
         try:
-            logging.info("Unsubscribing: '{}'".format(sub))
             event_unsubscribe(sub)
         except:
             break
