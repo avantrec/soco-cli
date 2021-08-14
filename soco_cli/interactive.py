@@ -836,6 +836,3 @@ def _exec_action(speaker_ip, action, args):
 
     logging.info("Running '{}' in a subprocess. Terminate using CTRL-C.".format(action))
     _exec(command_line)
-
-    if action in ["track_follow", "tf", "track_follow_compact", "tfc"]:
-        print()

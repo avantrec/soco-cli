@@ -23,11 +23,7 @@ from soco_cli.speakers import Speakers
 
 
 def event_unsubscribe(sub):
-    # Insert a brief pause before event unsubscription to prevent lockups,
-    # by yielding the thread
-    pause_seconds = 0.2
-    logging.info("Unsubscribing ... yield by pausing for {}s".format(pause_seconds))
-    sleep(pause_seconds)
+    logging.info("Unsubscribing '{}'".format(sub))
     sub.unsubscribe()
     logging.info("Unsubscribed")
 
@@ -244,6 +240,9 @@ use_sigterm = False
 
 
 def set_sigterm(sigterm):
+    # Force to 'False' while testing change to exit under
+    # signal handler
+    sigterm = False
     global use_sigterm
     logging.info("Setting 'use_sigterm' to '{}'".format(sigterm))
     use_sigterm = sigterm
@@ -274,6 +273,11 @@ def set_speaker_playing_local_file(speaker):
 
 def sig_handler(signal_received, frame):
     if not suspend_sigterm:
+        # Restore stdout and stderr ... redirected if using
+        # api.run_command()
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+
         # Exit silently without stack dump
         logging.info("Caught signal, exiting.")
         print(" CTRL-C ... exiting.", flush=True)
@@ -299,7 +303,7 @@ def sig_handler(signal_received, frame):
             os.kill(os.getpid(), SIGTERM)
         else:
             logging.info("Exiting program normally")
-            exit(0)
+            os._exit(0)
 
 
 class RewindableList(Sequence):

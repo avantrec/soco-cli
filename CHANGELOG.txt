@@ -1,4 +1,4 @@
-v0.4.14   -
+v0.4.14   - Tidy up CTRL-C handling
 v0.4.13   - All 'wait' actions can now be cancelled in the interactive shell
             using CTRL-C, without exiting interactive mode
           - Interactive shell commands which run in subprocesses now do so in
@@ -18,7 +18,7 @@ v0.4.6    - Add 'track_follow_compact' action, and 'tf' and 'tfc' synonyms.
 v0.4.5    - Add podcast information to 'track' output
           - Improve 'album_art': now returns a URL in more cases
             (e.g., Spotify).
-          - Minor tidy up to the ouput of 'track'
+          - Minor tidy up to the output of 'track'
 v0.4.4    - Add 'add_sharelink_to_queue/sharelink' action for Spotify/Tidal
           - Add 'end_session' action
           - Add 'get_channel' action
