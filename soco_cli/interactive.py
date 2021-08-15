@@ -56,6 +56,10 @@ ACTIONS_TO_EXEC = [
     "wait_stopped_for_not_pause",
     "wsfnp",
     "wait_end_track",
+    "play_file",
+    "play_local_file",
+    "play_m3u",
+    "play_local_m3u",
 ]
 
 
