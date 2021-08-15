@@ -274,7 +274,6 @@ def sig_handler(signal_received, frame):
 
     # Restore stdout and stderr ... these have been redirected if
     # api.run_command() was used
-    sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
 
     if speaker_playing_local_file:

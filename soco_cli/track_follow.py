@@ -1,8 +1,8 @@
 import logging
 import re
-
 from datetime import datetime, timezone
 from time import sleep
+
 from soco_cli.api import run_command
 
 

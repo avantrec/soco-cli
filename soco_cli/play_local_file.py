@@ -15,10 +15,10 @@ import ifaddr
 from RangeHTTPServer import RangeRequestHandler
 
 from soco_cli.utils import (
-    remember_event_sub,
     error_report,
     event_unsubscribe,
     forget_event_sub,
+    remember_event_sub,
     set_speaker_playing_local_file,
 )
 

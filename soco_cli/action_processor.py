@@ -17,19 +17,18 @@ import soco
 import soco.alarms
 import tabulate
 from soco.exceptions import NotSupportedException, SoCoUPnPException
-from xmltodict import parse
-
 from soco.plugins.sharelink import ShareLinkPlugin
+from xmltodict import parse
 
 from soco_cli.play_local_file import play_local_file
 from soco_cli.play_m3u_file import play_m3u_file
 from soco_cli.speaker_info import print_speaker_table
 from soco_cli.utils import (
-    remember_event_sub,
     convert_to_seconds,
     convert_true_false,
     error_report,
     event_unsubscribe,
+    forget_event_sub,
     get_right_hand_speaker,
     get_speaker,
     one_or_more_parameters,
@@ -40,7 +39,7 @@ from soco_cli.utils import (
     playback_state,
     pretty_print_values,
     read_search,
-    forget_event_sub,
+    remember_event_sub,
     rename_speaker_in_cache,
     save_search,
     seconds_until,
