@@ -14,30 +14,6 @@ from soco_cli.m3u_parser import parse_m3u
 from soco_cli.play_local_file import is_supported_type, play_local_file
 from soco_cli.utils import error_report
 
-# def wait_for_keypress():
-#     # Wait for a key press on the console and return it
-#     result = None
-#
-#     if name == "nt":  # Windows
-#         import msvcrt
-#
-#         result = msvcrt.getch().decode()
-#     else:  # Linux & macOS
-#         import termios
-#
-#         fd = sys.stdin.fileno()
-#         oldterm = termios.tcgetattr(fd)
-#         newattr = termios.tcgetattr(fd)
-#         newattr[3] = newattr[3] & ~termios.ICANON & ~termios.ECHO
-#         termios.tcsetattr(fd, termios.TCSANOW, newattr)
-#         try:
-#             result = sys.stdin.read(1)
-#         except IOError:
-#             pass
-#         finally:
-#             termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
-#     return result
-
 
 def interaction_manager(speaker_ip):
     sys.stdin = open(0)
@@ -87,7 +63,8 @@ def interaction_manager(speaker_ip):
 
 
 def play_m3u_file(speaker, m3u_file, options=""):
-    """Play a M3U or M3U8 file"""
+    """Play a M3U or M3U8 file, or any file containing a list of
+    files to play."""
     options = options.lower()
 
     # Check for invalid options
@@ -100,18 +77,16 @@ def play_m3u_file(speaker, m3u_file, options=""):
         error_report("File '{}' not found".format(m3u_file))
         return False
 
-    # if not (m3u_file.lower().endswith(".m3u") or m3u_file.lower().endswith(".m3u8")):
-    #     error_and_exit(
-    #         "Filename '{}' does not end in '.m3u' or '.m3u8'".format(m3u_file)
-    #     )
-    #     return False
-
     logging.info("Parsing file contents'{}'".format(m3u_file))
     tracks = parse_m3u(m3u_file)
     if not tracks:
         error_report("No tracks found in '{}'".format(m3u_file))
 
     logging.info("Found {} tracks".format(len(tracks)))
+
+    if options != "":
+        # Grab back stdout from api.run_command()
+        sys.stdout = sys.__stdout__
 
     if "r" in options:
         # Choose a single random track
@@ -166,8 +141,5 @@ def play_m3u_file(speaker, m3u_file, options=""):
 
     if keypress_process:
         keypress_process.terminate()
-
-    if "p" in options:
-        print("End of playlist")
 
     return True
