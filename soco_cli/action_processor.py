@@ -11,7 +11,6 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 from distutils.version import StrictVersion
 from os import get_terminal_size
-from queue import Empty
 from random import randint
 
 import soco
@@ -26,7 +25,7 @@ from soco_cli.play_local_file import play_local_file
 from soco_cli.play_m3u_file import play_m3u_file
 from soco_cli.speaker_info import print_speaker_table
 from soco_cli.utils import (
-    add_sub,
+    remember_event_sub,
     convert_to_seconds,
     convert_true_false,
     error_report,
@@ -41,11 +40,10 @@ from soco_cli.utils import (
     playback_state,
     pretty_print_values,
     read_search,
-    remove_sub,
+    forget_event_sub,
     rename_speaker_in_cache,
     save_search,
     seconds_until,
-    set_sigterm,
     two_parameters,
     zero_one_or_two_parameters,
     zero_or_one_parameter,
@@ -412,12 +410,12 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
             logging.info("Attempting to find 'Radio Show' using events")
             sub = speaker.avTransport.subscribe()
             event = sub.events.get(timeout=0.5)
-            add_sub(sub)
+            remember_event_sub(sub)
             elements["Radio Show"] = event.variables[
                 "current_track_meta_data"
             ].radio_show.rpartition(",")[0]
             sub.unsubscribe()
-            remove_sub(sub)
+            forget_event_sub(sub)
         except:
             logging.info("Unable to find 'Radio Show'")
 
@@ -1948,12 +1946,11 @@ def wait_stop_core(speaker, not_paused=False):
 
     try:
         sub = speaker.avTransport.subscribe(auto_renew=True)
-        add_sub(sub)
+        remember_event_sub(sub)
     except Exception as e:
         error_report("Exception {}".format(e))
         return False
 
-    set_sigterm(True)
     while True:
         try:
             event = sub.events.get(timeout=1.0)
@@ -1964,8 +1961,7 @@ def wait_stop_core(speaker, not_paused=False):
                     )
                 )
                 event_unsubscribe(sub)
-                remove_sub(sub)
-                set_sigterm(False)
+                forget_event_sub(sub)
                 return True
         except:
             pass
@@ -2048,11 +2044,10 @@ def wait_stopped_for_not_pause(
 def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
     try:
         sub = speaker.avTransport.subscribe(auto_renew=True)
-        add_sub(sub)
+        remember_event_sub(sub)
     except Exception as e:
         error_report("Exception {}".format(e))
         return False
-    set_sigterm(True)
     while True:
         try:
             event = sub.events.get(timeout=1.0)
@@ -2063,8 +2058,7 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
                     )
                 )
                 event_unsubscribe(sub)
-                remove_sub(sub)
-                set_sigterm(False)
+                forget_event_sub(sub)
                 return True
         except:
             pass
@@ -2684,7 +2678,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
         logging.info(
             "Subscribing to transport events from {}".format(speaker.player_name)
         )
-        add_sub(sub)
+        remember_event_sub(sub)
     except Exception as e:
         error_report("Exception {}".format(e))
         return False
@@ -2693,7 +2687,6 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
     initial_duration = None
     initial_radio_show = None
 
-    set_sigterm(True)
     while True:
         try:
             event = sub.events.get(timeout=1.0)
@@ -2702,8 +2695,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
             if event.variables["transport_state"] not in ["PLAYING", "TRANSITIONING"]:
                 logging.info("Speaker is not playing")
                 event_unsubscribe(sub)
-                remove_sub(sub)
-                set_sigterm(False)
+                forget_event_sub(sub)
                 return True
 
             if initial_title is None:
@@ -2745,9 +2737,8 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                 ):
                     logging.info("Track/show has changed")
                     logging.info("Unsubscribing from events")
-                    remove_sub(sub)
+                    forget_event_sub(sub)
                     event_unsubscribe(sub)
-                    set_sigterm(False)
                     return True
         except:
             pass

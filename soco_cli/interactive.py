@@ -30,7 +30,7 @@ from soco_cli.utils import (
     local_speaker_list,
     save_readline_history,
     set_interactive,
-    set_suspend_sigterm,
+    set_suspend_sighandling,
     speaker_cache,
     version,
 )
@@ -808,13 +808,13 @@ def _exec(command_line):
     # Convert command list to a unified command line
     command_line = " ".join(command_line)
 
-    set_suspend_sigterm(suspend=True)
+    set_suspend_sighandling(suspend=True)
     try:
         logging.info("Running command: '{}'".format(command_line))
         subprocess.run(command_line, shell=True)
     except Exception as e:
         print(e)
-    set_suspend_sigterm(suspend=False)
+    set_suspend_sighandling(suspend=False)
 
 
 def _exec_action(speaker_ip, action, args):

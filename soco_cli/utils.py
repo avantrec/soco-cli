@@ -12,7 +12,6 @@ except ImportError:
 import sys
 from collections.abc import Sequence
 from platform import python_version
-from signal import SIGTERM
 from time import sleep
 
 import soco
@@ -23,8 +22,12 @@ from soco_cli.speakers import Speakers
 
 
 def event_unsubscribe(sub):
+    """Unsubscribe from events, with a try/catch wrapper, and a pause
+    introduced to yield the thread."""
+
     logging.info("Unsubscribing '{}'".format(sub))
     try:
+        sleep(0.2)
         sub.unsubscribe()
     except Exception as e:
         logging.info("Failed to unsubscribe: {}".format(e))
@@ -238,27 +241,14 @@ def logo():
     print("SoCo-CLI Logo: {}".format(url), flush=True)
 
 
-# TODO: Remove with SIGTERM fix
-use_sigterm = False
+# Suspend signal handling processing for 'exec' in interactive shell
+suspend_sighandling = False
 
 
-def set_sigterm(sigterm):
-    # Force to 'False' while testing change to exit under
-    # signal handler
-    sigterm = False
-    global use_sigterm
-    logging.info("Setting 'use_sigterm' to '{}'".format(sigterm))
-    use_sigterm = sigterm
-
-
-# Suspend SIGTERM processing for 'exec' in interactive shell
-suspend_sigterm = False
-
-
-def set_suspend_sigterm(suspend=True):
-    global suspend_sigterm
+def set_suspend_sighandling(suspend=True):
+    global suspend_sighandling
     logging.info("Setting 'suspend_sigterm' to '{}'".format(suspend))
-    suspend_sigterm = suspend
+    suspend_sighandling = suspend
 
 
 # Stop a stream if playing a local file
@@ -275,38 +265,38 @@ def set_speaker_playing_local_file(speaker):
 
 
 def sig_handler(signal_received, frame):
-    if not suspend_sigterm:
-        # Restore stdout and stderr ... redirected if using
-        # api.run_command()
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
 
-        # Exit silently without stack dump
-        logging.info("Caught signal, exiting.")
-        print(" CTRL-C ... exiting.", flush=True)
+    logging.info("Caught signal: {}".format(signal_received))
 
-        if speaker_playing_local_file:
-            logging.info(
-                "Speaker '{}': 'play_file' active ... stopping".format(
-                    speaker_playing_local_file.player_name
-                )
+    if suspend_sighandling:
+        logging.info("Signal handling suspended ... ignoring")
+        return
+
+    # Restore stdout and stderr ... these have been redirected if
+    # api.run_command() was used
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
+
+    if speaker_playing_local_file:
+        logging.info(
+            "Speaker '{}': 'play_file' active ... stopping".format(
+                speaker_playing_local_file.player_name
             )
-            speaker_playing_local_file.stop()
+        )
+        speaker_playing_local_file.stop()
 
-        if INTERACTIVE:
-            logging.info("Saving readline history")
-            save_readline_history()
+    logging.info("Cleaning up subscriptions")
+    unsub_all_remembered_event_subs()
 
-        logging.info("Cleaning up subscriptions")
-        sub_unsub_all()
+    if INTERACTIVE:
+        logging.info("Saving readline history")
+        save_readline_history()
+        print("... Exiting SoCo-CLI shell ...", flush=True)
+    else:
+        print("", flush=True)
 
-        # TODO: Temporary for now; hard kill required to get out of wait
-        if use_sigterm:
-            logging.info("Using os.kill() with SIGTERM (hard kill) to exit")
-            os.kill(os.getpid(), SIGTERM)
-        else:
-            logging.info("Exiting program normally")
-            os._exit(0)
+    logging.info("Exiting program using 'os_exit(0)'")
+    os._exit(0)
 
 
 class RewindableList(Sequence):
@@ -807,13 +797,13 @@ def playback_state(state):
 SUBS_LIST = set()
 
 
-def add_sub(sub):
+def remember_event_sub(sub):
     global SUBS_LIST
     logging.info("Adding event subscription record: '{}'".format(sub))
     SUBS_LIST.add(sub)
 
 
-def remove_sub(sub):
+def forget_event_sub(sub):
     global SUBS_LIST
     try:
         logging.info("Removing event subscription record: '{}'".format(sub))
@@ -822,7 +812,7 @@ def remove_sub(sub):
         pass
 
 
-def sub_unsub_all():
+def unsub_all_remembered_event_subs():
     global SUBS_LIST
     for sub in SUBS_LIST:
         try:

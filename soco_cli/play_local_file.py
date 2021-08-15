@@ -15,11 +15,10 @@ import ifaddr
 from RangeHTTPServer import RangeRequestHandler
 
 from soco_cli.utils import (
-    add_sub,
+    remember_event_sub,
     error_report,
     event_unsubscribe,
-    remove_sub,
-    set_sigterm,
+    forget_event_sub,
     set_speaker_playing_local_file,
 )
 
@@ -138,12 +137,11 @@ def wait_until_stopped(speaker, uri):
     playing_states = ["PLAYING", "TRANSITIONING", "PAUSED_PLAYBACK"]
     try:
         sub = speaker.avTransport.subscribe(auto_renew=True)
-        add_sub(sub)
+        remember_event_sub(sub)
     except Exception as e:
         error_report("Exception {}".format(e))
         return
 
-    set_sigterm(True)
     while True:
         try:
             event = sub.events.get(timeout=1.0)
@@ -172,8 +170,7 @@ def wait_until_stopped(speaker, uri):
             pass
 
     event_unsubscribe(sub)
-    remove_sub(sub)
-    set_sigterm(False)
+    forget_event_sub(sub)
     return
 
 
