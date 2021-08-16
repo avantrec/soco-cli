@@ -277,6 +277,10 @@ def sig_handler(signal_received, frame):
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
 
+    if INTERACTIVE:
+        print("Please use 'exit' to terminate the shell > ", end="", flush=True)
+        return
+
     if speaker_playing_local_file:
         logging.info(
             "Speaker '{}': 'play_file' active ... stopping".format(
@@ -287,10 +291,6 @@ def sig_handler(signal_received, frame):
 
     logging.info("Cleaning up event subscriptions")
     unsub_all_remembered_event_subs()
-
-    if INTERACTIVE:
-        logging.info("Saving readline history")
-        save_readline_history()
 
     print("", flush=True)
     logging.info("Exiting program using 'os_exit(0)'")
