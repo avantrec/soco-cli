@@ -1,6 +1,7 @@
+v0.4.16   -
 v0.4.15   - Actions 'play_file' and 'play_m3u' can now be cancelled in the
             interactive shell without exiting the shell
-          - Change behaviour of CTRL-C in the shell: now requires 'exit'.
+          - Change behaviour of CTRL-C in the shell: now requires 'exit'
 v0.4.14   - Improve signal handling (behaviour and outputs for CTRL-C, etc.)
 v0.4.13   - All 'wait' actions can now be cancelled in the interactive shell
             using CTRL-C, without exiting interactive mode
