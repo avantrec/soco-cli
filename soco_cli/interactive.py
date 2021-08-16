@@ -30,6 +30,7 @@ from soco_cli.utils import (
     local_speaker_list,
     save_readline_history,
     set_interactive,
+    set_single_keystroke,
     set_suspend_sighandling,
     speaker_cache,
     version,
@@ -108,6 +109,7 @@ def interactive_loop(
     print("\nEntering SoCo-CLI interactive shell.")
     if single_keystroke:
         print("Single Keystroke Mode ... 'x' to exit.\n")
+        set_single_keystroke(True)
     else:
         print("Type 'help' for available shell commands.\n")
     if not RL:
@@ -143,6 +145,7 @@ def interactive_loop(
                 if command_line in ["x", "\x03"]:
                     logging.info("Exit from single keystroke mode")
                     single_keystroke = False
+                    set_single_keystroke(False)
                     continue
             else:
                 command_line = input(prompt)
@@ -207,6 +210,7 @@ def interactive_loop(
                 if command_lower in ["single-keystroke", "sk"]:
                     print("Single keystroke mode ... 'x' to exit")
                     single_keystroke = True
+                    set_single_keystroke(True)
                     continue
 
                 if command_lower == "speakers":

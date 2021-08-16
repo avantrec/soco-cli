@@ -36,6 +36,7 @@ def event_unsubscribe(sub):
 
 INTERACTIVE = False
 API = False
+SINGLE_KEYSTROKE = False
 
 
 def set_interactive():
@@ -46,6 +47,11 @@ def set_interactive():
 def set_api():
     global API
     API = True
+
+
+def set_single_keystroke(sk):
+    global SINGLE_KEYSTROKE
+    SINGLE_KEYSTROKE = sk
 
 
 # Error handling
@@ -278,6 +284,11 @@ def sig_handler(signal_received, frame):
     # api.run_command() was used
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
+
+    if SINGLE_KEYSTROKE:
+        logging.info("SINGLE_KEYSTROKE set ... preventing exit")
+        print("Please use 'x' to exit single keystroke mode >> ", end="", flush=True)
+        return
 
     if INTERACTIVE:
         logging.info("INTERACTIVE set ... preventing exit")
