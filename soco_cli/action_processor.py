@@ -385,7 +385,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     elements = {"Channel": speaker.get_current_media_info()["channel"]}
 
     # Stream
-    if track_info["duration"] == "0:00:00":
+    if track_info["duration"] in ["0:00:00", "NOT_IMPLEMENTED"]:
         logging.info("Track is a radio stream")
         stream = True
         for item in sorted(track_info):
@@ -421,12 +421,17 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     # Podcast, Audio Book, or normal track
     else:
         logging.info("Track has a non-zero duration")
-        metadata = parse(track_info["metadata"])
-        logging.info("Track metadata: {}".format(metadata))
+        try:
+            metadata = parse(track_info["metadata"])
+            logging.info("Track metadata: {}".format(metadata))
+        except:
+            logging.info("No usable metadata available")
+            metadata = None
 
         # Podcast
         if (
-            metadata["DIDL-Lite"]["item"]["upnp:class"]
+            metadata
+            and metadata["DIDL-Lite"]["item"]["upnp:class"]
             == "object.item.audioItem.podcast"
         ):
             logging.info("Track is a podcast")
@@ -447,7 +452,8 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
 
         # Audio book
         elif (
-            "object.item.audioItem.audioBook"
+            metadata
+            and "object.item.audioItem.audioBook"
             in metadata["DIDL-Lite"]["item"]["upnp:class"]
         ):
             logging.info("Track is an audio book")
@@ -481,7 +487,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     elements = {
         key: value
         for key, value in elements.items()
-        if value != "" and value is not None
+        if value != "" and value is not None and value != "NOT_IMPLEMENTED"
     }
 
     # Deduplicate 'Channel' and 'Title'

@@ -247,7 +247,7 @@ suspend_sighandling = False
 
 def set_suspend_sighandling(suspend=True):
     global suspend_sighandling
-    logging.info("Setting 'suspend_sigterm' to '{}'".format(suspend))
+    logging.info("Setting 'suspend_sighandling' to '{}'".format(suspend))
     suspend_sighandling = suspend
 
 
@@ -258,9 +258,11 @@ speaker_playing_local_file = None
 def set_speaker_playing_local_file(speaker):
     global speaker_playing_local_file
     if speaker:
-        logging.info("Speaker playing local file = '{}'".format(speaker.player_name))
+        logging.info(
+            "Setting speaker playing local file to '{}'".format(speaker.player_name)
+        )
     else:
-        logging.info("Speaker playing local file = 'None'")
+        logging.info("No speaker playing local file")
     speaker_playing_local_file = speaker
 
 
@@ -278,6 +280,7 @@ def sig_handler(signal_received, frame):
     sys.stderr = sys.__stderr__
 
     if INTERACTIVE:
+        logging.info("INTERACTIVE set ... preventing exit")
         print("Please use 'exit' to terminate the shell > ", end="", flush=True)
         return
 

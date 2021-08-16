@@ -474,7 +474,7 @@ def main():
                     cumulative_exit_code += exit_code
 
         except Exception as e:
-            print("Error: ", str(e), flush=True)
+            print("Error:", str(e), flush=True)
             cumulative_exit_code += 1
 
         sequence_pointer += 1
