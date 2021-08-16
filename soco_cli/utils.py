@@ -285,16 +285,14 @@ def sig_handler(signal_received, frame):
         )
         speaker_playing_local_file.stop()
 
-    logging.info("Cleaning up subscriptions")
+    logging.info("Cleaning up event subscriptions")
     unsub_all_remembered_event_subs()
 
     if INTERACTIVE:
         logging.info("Saving readline history")
         save_readline_history()
-        print("... Exiting SoCo-CLI shell ...", flush=True)
-    else:
-        print("", flush=True)
 
+    print("", flush=True)
     logging.info("Exiting program using 'os_exit(0)'")
     os._exit(0)
 
