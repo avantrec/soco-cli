@@ -136,20 +136,27 @@ def interactive_loop(
             else:
                 prompt = root_prompt + " [] > "
 
+            # Single keystroke input handling
             if single_keystroke:
                 prompt = prompt.replace(">", ">>")
                 print(prompt, flush=True, end="")
                 command_line = get_keystroke()
+                # Handle Windows CTRL-C; disable exit
+                if command_line == "\x03":
+                    logging.info("Windows CTRL-C received ... prevent exit")
+                    print("Please use 'x' to exit >> ")
+                    continue
                 print(command_line)
-                # Catch exit, including Windows CTRL-C
-                if command_line in ["x", "\x03"]:
+                # Normal exit
+                if command_line in ["x", "X"]:
                     logging.info("Exit from single keystroke mode")
                     single_keystroke = False
                     set_single_keystroke(False)
                     continue
+
+            # Normal input handling
             else:
                 command_line = input(prompt)
-
             if command_line == "":
                 continue
 

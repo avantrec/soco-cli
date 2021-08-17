@@ -60,6 +60,7 @@ def error_report(msg):
     print("Error:", msg, file=sys.stderr, flush=True)
     # Use os._exit() to avoid the catch-all 'except'
     if not (INTERACTIVE or API):
+        logging.info("Exiting program using os._exit(1)")
         os._exit(1)
 
 
@@ -287,7 +288,7 @@ def sig_handler(signal_received, frame):
 
     if SINGLE_KEYSTROKE:
         logging.info("SINGLE_KEYSTROKE set ... preventing exit")
-        print("Please use 'x' to exit single keystroke mode >> ", end="", flush=True)
+        print("Please use 'x' to exit >> ", end="", flush=True)
         return
 
     if INTERACTIVE:
@@ -303,11 +304,11 @@ def sig_handler(signal_received, frame):
         )
         speaker_playing_local_file.stop()
 
-    logging.info("Cleaning up event subscriptions")
+    logging.info("Unsubscribing from event notifications")
     unsub_all_remembered_event_subs()
 
     print("", flush=True)
-    logging.info("Exiting program using 'os_exit(0)'")
+    logging.info("Exiting program using 'os._exit(0)'")
     os._exit(0)
 
 
