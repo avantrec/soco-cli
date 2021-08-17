@@ -1,4 +1,5 @@
-v0.4.16   -
+v0.4.16   - Improve behaviour of CTRL-C in single keystroke, interactive mode
+          - Find 'album_art' URIs in broader range of cases
 v0.4.15   - Actions 'play_file' and 'play_m3u' can now be cancelled in the
             interactive shell without exiting the shell
           - Change behaviour of CTRL-C in the shell: now requires 'exit'

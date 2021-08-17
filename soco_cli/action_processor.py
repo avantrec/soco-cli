@@ -2440,6 +2440,7 @@ def rename(speaker, action, args, soco_function, use_local_speaker_list):
 def album_art(speaker, action, args, soco_function, use_local_speaker_list):
     """Get a URL for the current album art"""
 
+    # Normal approach using track_info
     try:
         info = speaker.get_current_track_info()
         album_art_uri = info["album_art"]
@@ -2447,17 +2448,35 @@ def album_art(speaker, action, args, soco_function, use_local_speaker_list):
             metadata = info["metadata"]
             data = parse(metadata)
             album_art_uri = data["DIDL-Lite"]["item"]["upnp:albumArtURI"]
-        logging.info("Album art URI = ".format(album_art_uri))
+        logging.info("Found album art directly: '{}'".format(album_art_uri))
     except:
-        logging.info("No album art URI available")
-        print("Album art not available")
-        return True
+        logging.info("Unable to find album art directly")
+        album_art_uri = None
 
-    if not album_art_uri.lower().startswith("http"):
-        print("Album art not accessible")
-    else:
-        print(album_art_uri)
+    # Try using transport events
+    if not album_art_uri:
+        try:
+            sub = speaker.avTransport.subscribe()
+            event = sub.events.get(timeout=0.5)
+            remember_event_sub(sub)
+            album_art_uri = event.variables["current_track_meta_data"].album_art_uri
+            sub.unsubscribe()
+            forget_event_sub(sub)
+            logging.info("Found album art using events: '{}'".format(album_art_uri))
+        except:
+            logging.info("Unable to find album art using events")
+            album_art_uri = None
 
+    if not album_art_uri:
+        logging.info("Album art not available: '{}'".format(album_art_uri))
+        error_report("Album art not available")
+        return False
+
+    if not album_art_uri.startswith("http"):
+        album_art_uri = "http://" + speaker.ip_address + ":1400" + album_art_uri
+        logging.info("Prefixed HTTP: '{}'".format(album_art_uri))
+
+    print(album_art_uri)
     return True
 
 
