@@ -408,12 +408,12 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
         try:
             logging.info("Attempting to find 'Radio Show' using events")
             sub = speaker.avTransport.subscribe()
-            event = sub.events.get(timeout=0.5)
             remember_event_sub(sub)
+            event = sub.events.get(timeout=0.5)
             elements["Radio Show"] = event.variables[
                 "current_track_meta_data"
             ].radio_show.rpartition(",")[0]
-            sub.unsubscribe()
+            event_unsubscribe(sub)
             forget_event_sub(sub)
         except:
             logging.info("Unable to find 'Radio Show'")
@@ -2457,10 +2457,10 @@ def album_art(speaker, action, args, soco_function, use_local_speaker_list):
     if not album_art_uri:
         try:
             sub = speaker.avTransport.subscribe()
-            event = sub.events.get(timeout=0.5)
             remember_event_sub(sub)
+            event = sub.events.get(timeout=0.5)
             album_art_uri = event.variables["current_track_meta_data"].album_art_uri
-            sub.unsubscribe()
+            event_unsubscribe(sub)
             forget_event_sub(sub)
             logging.info("Found album art using events: '{}'".format(album_art_uri))
         except:
@@ -2761,8 +2761,8 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                 ):
                     logging.info("Track/show has changed")
                     logging.info("Unsubscribing from events")
-                    forget_event_sub(sub)
                     event_unsubscribe(sub)
+                    forget_event_sub(sub)
                     return True
         except:
             pass
