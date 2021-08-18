@@ -44,6 +44,7 @@ from soco_cli.utils import (
     save_search,
     seconds_until,
     two_parameters,
+    unsub_all_remembered_event_subs,
     zero_one_or_two_parameters,
     zero_or_one_parameter,
     zero_parameters,
@@ -415,8 +416,10 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
             ].radio_show.rpartition(",")[0]
             event_unsubscribe(sub)
             forget_event_sub(sub)
-        except:
-            logging.info("Unable to find 'Radio Show'")
+        except Exception as e:
+            logging.info("Unable to find 'Radio Show': {}".format(e))
+        finally:
+            unsub_all_remembered_event_subs()
 
     # Podcast, Audio Book, or normal track
     else:
@@ -2463,9 +2466,11 @@ def album_art(speaker, action, args, soco_function, use_local_speaker_list):
             event_unsubscribe(sub)
             forget_event_sub(sub)
             logging.info("Found album art using events: '{}'".format(album_art_uri))
-        except:
-            logging.info("Unable to find album art using events")
+        except Exception as e:
+            logging.info("Unable to find album art using events: {}".format(e))
             album_art_uri = None
+        finally:
+            unsub_all_remembered_event_subs()
 
     if not album_art_uri:
         logging.info("Album art not available: '{}'".format(album_art_uri))
