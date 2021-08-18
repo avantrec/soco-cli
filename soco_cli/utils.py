@@ -288,7 +288,7 @@ def sig_handler(signal_received, frame):
 
     if SINGLE_KEYSTROKE:
         logging.info("SINGLE_KEYSTROKE set ... preventing exit")
-        print("Please use 'x' to exit >> ", end="", flush=True)
+        print("\nPlease use 'x' to exit >> ", end="", flush=True)
         return
 
     if INTERACTIVE:
