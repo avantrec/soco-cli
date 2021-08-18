@@ -294,6 +294,8 @@ def sig_handler(signal_received, frame):
     if INTERACTIVE:
         logging.info("INTERACTIVE set ... preventing exit")
         print("\nPlease use 'exit' to terminate the shell > ", end="", flush=True)
+        if os.name == "nt":
+            print(flush=True)
         return
 
     if speaker_playing_local_file:

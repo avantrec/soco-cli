@@ -495,8 +495,8 @@ def interactive_loop(
                     print("Error: Invalid command")
 
         # Catch all exceptions in the interactive loop
-        except Exception as e:
-            print("Error: {}".format(e))
+        except:
+            pass
 
 
 COMMANDS = [
