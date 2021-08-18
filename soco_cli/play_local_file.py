@@ -29,7 +29,7 @@ PORT_END = 54099
 SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WMA", "WAV"]
 
 # Need to know whether this is Python >= 3.7
-PY37PLUS = bool((pyversion.major == 3 and pyversion.minor >= 7) or pyversion.major > 3)
+PY37PLUS = (pyversion.major == 3 and pyversion.minor >= 7) or pyversion.major > 3
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -84,7 +84,7 @@ class MyHTTPHandler(RangeRequestHandler):
         try:
             super().do_GET()
         except Exception as e:
-            # It's normal to hit some exceptions with Sonos.
+            # It's normal to hit some exceptions with Sonos
             logging.info("Exception ignored: {}".format(e))
 
     def log_message(self, format, *args):

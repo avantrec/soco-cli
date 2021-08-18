@@ -3,12 +3,10 @@
 import argparse
 import logging
 import pprint
+import signal
 import sys
 import time
 from os import environ as env
-from signal import SIGINT, signal
-
-import soco
 
 from soco_cli.action_processor import list_actions
 from soco_cli.aliases import AliasManager
@@ -50,8 +48,6 @@ ENV_LOCAL = "USE_LOCAL_SPKR_CACHE"
 
 
 def main():
-    # Handle SIGINT
-    signal(SIGINT, sig_handler)
 
     # Create the argument parser
     parser = argparse.ArgumentParser(
@@ -131,6 +127,13 @@ def main():
     args = parser.parse_args()
 
     configure_logging(args.log)
+
+    # Handle all catchable signals
+    for sig in signal.Signals:
+        try:
+            signal.signal(sig, sig_handler)
+        except:
+            pass
 
     if args.version:
         version()
