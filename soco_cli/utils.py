@@ -4,6 +4,7 @@ import datetime
 import logging
 import os
 import pickle
+import signal
 
 try:
     import readline
@@ -286,17 +287,18 @@ def sig_handler(signal_received, frame):
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
 
-    if SINGLE_KEYSTROKE:
-        logging.info("SINGLE_KEYSTROKE set ... preventing exit")
-        print("\nPlease use 'x' to exit >> ", end="", flush=True)
-        return
+    if not signal_received == signal.SIGTERM:
+        if SINGLE_KEYSTROKE:
+            logging.info("SINGLE_KEYSTROKE set ... preventing exit")
+            print("\nPlease use 'x' to exit >> ", end="", flush=True)
+            return
 
-    if INTERACTIVE:
-        logging.info("INTERACTIVE set ... preventing exit")
-        print("\nPlease use 'exit' to terminate the shell > ", end="", flush=True)
-        if os.name == "nt":
-            print(flush=True)
-        return
+        if INTERACTIVE:
+            logging.info("INTERACTIVE set ... preventing exit")
+            print("\nPlease use 'exit' to terminate the shell > ", end="", flush=True)
+            if os.name == "nt":
+                print(flush=True)
+            return
 
     if speaker_playing_local_file:
         logging.info(
