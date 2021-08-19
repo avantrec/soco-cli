@@ -496,7 +496,7 @@ def interactive_loop(
 
         # Catch all exceptions in the interactive loop
         except:
-            pass
+            continue
 
 
 COMMANDS = [
