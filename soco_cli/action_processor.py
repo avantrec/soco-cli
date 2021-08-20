@@ -2519,8 +2519,11 @@ def add_uri_to_queue(speaker, action, args, soco_function, use_local_speaker_lis
 
 @one_or_more_parameters
 def play_file(speaker, action, args, soco_function, use_local_speaker_list):
+    end_on_pause = True if "_end_on_pause_" in args else False
     for audio_file in args:
-        result = play_local_file(speaker, audio_file)
+        if audio_file == "_end_on_pause_":
+            continue
+        result = play_local_file(speaker, audio_file, end_on_pause=end_on_pause)
         if not result:
             return False
     return True

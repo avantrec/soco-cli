@@ -1,4 +1,4 @@
-v0.4.17   -
+v0.4.17   - Add '_end_on_pause_' option for 'play_file' action
 v0.4.16   - Improve behaviour of CTRL-C in single keystroke, interactive mode
           - Find 'album_art' URIs in broader range of cases
 v0.4.15   - Actions 'play_file' and 'play_m3u' can now be cancelled in the

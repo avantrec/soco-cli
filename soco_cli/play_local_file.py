@@ -133,8 +133,13 @@ def get_server_ip(speaker):
     return None
 
 
-def wait_until_stopped(speaker, uri):
-    playing_states = ["PLAYING", "TRANSITIONING", "PAUSED_PLAYBACK"]
+def wait_until_stopped(speaker, uri, end_on_pause):
+
+    playing_states = ["PLAYING", "TRANSITIONING"]
+    if not end_on_pause:
+        playing_states.append("PAUSED_PLAYBACK")
+    logging.info("Playing states = {}".format(playing_states))
+
     try:
         sub = speaker.avTransport.subscribe(auto_renew=True)
         remember_event_sub(sub)
@@ -183,7 +188,7 @@ def is_supported_type(filename):
     return False
 
 
-def play_local_file(speaker, pathname):
+def play_local_file(speaker, pathname, end_on_pause=False):
     # speaker is a SoCo instance
     # pathname is the local file to be played
 
@@ -233,10 +238,10 @@ def play_local_file(speaker, pathname):
     logging.info("Setting flag to stop playback on CTRL-C")
     set_speaker_playing_local_file(speaker)
 
-    logging.info("Waiting 3s for playback to start")
-    time.sleep(3.0)
+    logging.info("Waiting 1s for playback to start")
+    time.sleep(1.0)
     logging.info("Waiting for playback to stop")
-    wait_until_stopped(speaker, uri)
+    wait_until_stopped(speaker, uri, end_on_pause)
     logging.info("Playback stopped ... terminating web server")
     httpd.shutdown()
     logging.info("Web server terminated")
