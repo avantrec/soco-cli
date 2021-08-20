@@ -1832,9 +1832,14 @@ def disable_alarms(speaker, action, args, soco_function, use_local_speaker_list)
 def set_alarms(speaker, alarm_ids, enabled=True):
     alarms = soco.alarms.get_alarms(speaker)
     alarm_ids = set(alarm_ids.lower().split(","))
-    all_alarms = bool("all" in alarm_ids)
-    if all_alarms:
+
+    all_alarms = False
+    if "all" in alarm_ids:
+        all_alarms = True
         alarm_ids.discard("all")
+    elif "_all_" in alarm_ids:
+        all_alarms = True
+        alarm_ids.discard("_all_")
 
     for alarm in alarms:
         if all_alarms is True or alarm.alarm_id in alarm_ids:
