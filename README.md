@@ -260,7 +260,9 @@ It's possible to play local audio files in **MP3, M4A, MP4, FLAC, OGG, WMA, and 
 
 **Example**: `sonos Lounge play_file mozart.mp3`
 
-SoCo-CLI establishes a temporary internal HTTP server from which the specified audio file can be streamed, and then instructs the speaker to play it. The `play_file` action will terminate only once playback ends. Note that playback can be paused using a Sonos app (or SoCo-CLI), and the HTTP server will remain active so that playback can be resumed. (Unfortunately, one can't actually fully stop playback using the Sonos apps. Instead, do this by playing something else on Sonos, by issuing a 'CTRL-C' to the active SoCo-CLI `play_file` action, or by issuing `sonos <SPEAKER> stop` from another command line.)
+SoCo-CLI establishes a temporary internal HTTP server from which the specified audio file can be streamed, and then instructs the speaker to play it. The `play_file` action will terminate once playback stops. Note that playback can be paused using a Sonos app (or SoCo-CLI), and the HTTP server will remain active so that playback can be resumed.
+
+Unfortunately, one can pause but not fully stop playback when using the Sonos apps. Hence, stop playback by playing something else on Sonos, by issuing a 'CTRL-C' to the active `play_file` action, or by issuing `sonos <SPEAKER> stop` from another command line. Alternatively, use the '_end_on_pause_' option to terminate the `play_file` action if playback is paused.
 
 The host running SoCo-CLI must remain on and connected to the network during playback, in order to serve the file to the speaker. The internal HTTP server is active only for the duration of the `play_file` action. For security reasons, it will only serve the specified audio file, and only to the IP addresses of the Sonos speakers in the system.
 
@@ -346,7 +348,7 @@ sonos Kitchen play_from_queue 5
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
 - **`pauseplay`** (or **`playpause`**): Inverts a playing/paused state: if a speaker is currently playing, it will be paused or stopped; if a speaker is paused or stopped, playback will be started.
 - **`play`** (or **`start`**): Start playback.
-- **`play_file <filename> ...`** (or **`play_local_file`**): Play MP3, M4A, MP4, FLAC, OGG, WMA, or WAV audio files from your computer. Multiple filenames can be provided and will be played in sequence. To configure termination of the command if playback is paused (as well as stopped), add `_end_on_pause_` to the command, i.e.,: `play_file filename _end_on_pause_`.
+- **`play_file <filename> ...`** (or **`play_local_file`**): Play MP3, M4A, MP4, FLAC, OGG, WMA, or WAV audio files from your computer. Multiple filenames can be provided and will be played in sequence. To configure termination of the command if playback is paused (as well as stopped), add `_end_on_pause_` to the command, i.e.: `play_file filename _end_on_pause_`.
 - **`play_from_queue <track>`** (or **`play_queue`, `pfq`, `pq`**): Play track number `<track>` from the queue. Tracks begin at 1. If `<track>` is omitted, the first item in the queue is played.
 - **`play_m3u <m3u_file> <options>`** (or **`play_local_m3u`**): Plays a local M3U/M3U8 playlist consisting of local audio files (in supported audio formats). Can be followed by options `p` to print each filename before it plays, and/or `s` to shuffle the playlist, or `r` to play a single, random track from the playlist. (If using multiple options, concatenate them: e.g., `ps`.) Example: `sonos Study play_m3u my_playlist.m3u ps`. Add the `i` option to invoke **interactive** mode, which allows use of the keyboard to go to the (N)ext track, to (P)ause, or to (R)esume playback.
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE`, `SHUFFLE_REPEAT_ONE`, or `SHUFFLE_NOREPEAT`.
