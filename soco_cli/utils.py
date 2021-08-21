@@ -287,7 +287,9 @@ def sig_handler(signal_received, frame):
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
 
-    if not signal_received == signal.SIGTERM:
+    # Prevent SIGINT (CTRL-C) exit: untidy exit from readline can leave
+    # some terminals in a broken state
+    if signal_received == signal.SIGINT:
         if SINGLE_KEYSTROKE:
             logging.info("SINGLE_KEYSTROKE set ... preventing exit")
             print("\nPlease use 'x' to exit >> ", end="", flush=True)
@@ -299,6 +301,14 @@ def sig_handler(signal_received, frame):
             if os.name == "nt":
                 print(flush=True)
             return
+
+    # Allow SIGTERM termination, but issue warning
+    if signal_received == signal.SIGTERM:
+        print("\nSoCo-CLI process terminating ...", flush=True)
+        print(
+            "This can leave some terminals in a misconfigured state.",
+            flush=True,
+        )
 
     if speaker_playing_local_file:
         logging.info(

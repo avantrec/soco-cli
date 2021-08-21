@@ -3,10 +3,10 @@
 import argparse
 import logging
 import pprint
-import signal
 import sys
 import time
 from os import environ as env
+from signal import SIGINT, SIGTERM, signal
 
 from soco_cli.action_processor import list_actions
 from soco_cli.aliases import AliasManager
@@ -128,12 +128,10 @@ def main():
 
     configure_logging(args.log)
 
-    # Handle all catchable signals
-    for sig in signal.Signals:
-        try:
-            signal.signal(sig, sig_handler)
-        except:
-            pass
+    signals = [SIGINT, SIGTERM]
+    logging.info("Setting up handlers for: {}".format(signals))
+    for sig in signals:
+        signal(sig, sig_handler)
 
     if args.version:
         version()
