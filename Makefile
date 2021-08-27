@@ -23,7 +23,7 @@ black: $(SRC)
 	black $(SRC) $(TESTS)
 
 isort: $(SRC)
-	isort $(SRC) $(TESTS)
+	isort --profile black $(SRC) $(TESTS)
 
 format: isort black
 
