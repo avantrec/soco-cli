@@ -302,8 +302,8 @@ def sig_handler(signal_received, frame):
                 print(flush=True)
             return
 
-    # Allow SIGTERM termination, but issue warning
-    if signal_received == signal.SIGTERM:
+    # Allow SIGTERM termination, but issue warning if interactive
+    if signal_received == signal.SIGTERM and INTERACTIVE:
         print("\nSoCo-CLI process terminating ...", flush=True)
         print(
             "This can leave some terminals in a misconfigured state.",
@@ -321,7 +321,9 @@ def sig_handler(signal_received, frame):
     logging.info("Unsubscribing from event notifications")
     unsub_all_remembered_event_subs()
 
-    print("", flush=True)
+    if INTERACTIVE:
+        print("", flush=True)
+
     logging.info("Exiting program using 'os._exit(0)'")
     os._exit(0)
 
