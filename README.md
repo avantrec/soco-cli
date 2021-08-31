@@ -69,10 +69,11 @@
          * [Convenience Functions](#convenience-functions)
       * [Known Issues](#known-issues)
       * [Uninstalling](#uninstalling)
+      * [A Note on Code Quality](#a-note-on-code-quality)
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Sat Jul 17 15:47:51 BST 2021 -->
+<!-- Added by: pwt, at: Tue Aug 31 09:32:14 BST 2021 -->
 
 <!--te-->
 
@@ -1014,6 +1015,12 @@ Please report any problems you find using GitHub Issues [3].
 1. Use the normal Pip approach to uninstall the SoCo-CLI package: `pip uninstall soco-cli`. 
 2. As usual, Pip will not remove dependencies. If you'd like to perform an exhaustive removal, inspect the `requirements.txt` files for `soco-cli`, and for `SoCo`. Take care not to remove packages that may also be required by other installed packages.
 3. You may also need to remove the directory `.soco-cli` and its contents from your home directory.
+
+## A Note on Code Quality
+
+While SoCo-CLI is robust and works well, its current internal code quality leaves much to be desired. This is partly because SoCo-CLI was an early Python learning experience for me, and partly because it started as a minimal utility that grew organically to be much more powerful than originally envisioned. If I started the project again today, there's plenty that I'd do differently. As time permits, I'll start a process of refactoring and adding tests, but I'm not expecting to make rapid progress on this.
+
+In the meantime, I really do welcome enhancement requests and defect reports, to which I aim to respond quickly.
 
 ## Acknowledgments
 
