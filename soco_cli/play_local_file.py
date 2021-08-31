@@ -114,6 +114,9 @@ def http_server(server_ip, directory, filename, speaker_ips):
             return httpd
         except OSError:
             # Assume this means that the port is in use
+            logging.info(
+                "Port {}:{} already in use ... trying next".format(server_ip, port)
+            )
             continue
     return None
 
