@@ -785,7 +785,7 @@ m = mute on
 
 Single keystroke mode allows the shell to be controlled by single character presses on the keyboard, without requiring the return key to be pressed. This is useful for some headless automation use cases, as well as sometimes being convenient for interactive use. All single character actions are available, including aliases. 
 
-Enable by using the action `sk` or `single-keystroke` at the shell prompt. Type 'x' to exit back to the normal shell.
+Enable by using the action `sk` or `single-keystroke` at the shell prompt. Type `x` to exit back to the normal shell.
 
 To start SoCo-CLI in single keystroke mode, use the command line option `--sk`, along with the interactive (`-i` or `--interactive`) option.
 
