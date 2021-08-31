@@ -36,8 +36,6 @@ from soco_cli.utils import (
     version,
 )
 
-from .wait_actions import process_wait
-
 # Alias Manager
 am = AliasManager()
 
