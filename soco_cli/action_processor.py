@@ -506,7 +506,8 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
 
     # Rename 'Playlist_position' and 'Position'
     try:
-        elements["Playlist Position"] = elements["Playlist_position"]
+        if int(elements["Playlist_position"]) != 0:
+            elements["Playlist Position"] = elements["Playlist_position"]
         elements.pop("Playlist_position", None)
     except KeyError:
         pass
