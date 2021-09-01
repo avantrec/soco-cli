@@ -444,6 +444,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`is_indexing`**: Reports on whether the system is currently in the process of reindexing its local libraries: possible responses are `yes` or `no`.
 - **`libraries`** (or **`shares`**): List the local music library shares.
 - **`reindex`**: Start a reindex of the local music libraries. Will not proceed if a reindex is already underway.
+- **`reboot_count`**: Returns the number of times a speaker has been rebooted.
 - **`rename <new_name>`**: Rename the speaker.
 - **`state`** (or **`status`, `playback`**): Returns the current playback state for the speaker, one of: `PAUSED_PLAYBACK`, `PLAYING`, `STOPPED`, or `TRANSITIONING`.
 - **`status_light` (or `light`)**: Returns the state of the speaker's status light, 'on' or 'off'.

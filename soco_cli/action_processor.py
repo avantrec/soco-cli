@@ -2817,6 +2817,14 @@ def add_sharelink_to_queue(
     return True
 
 
+@zero_parameters
+def reboot_count(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
+    print(speaker.boot_seqnum)
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False):
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -3189,4 +3197,5 @@ actions = {
     "add_sharelink_to_queue": SonosFunction(add_sharelink_to_queue, "", True),
     "sharelink": SonosFunction(add_sharelink_to_queue, "", True),
     "is_indexing": SonosFunction(is_indexing, "", False),
+    "reboot_count": SonosFunction(reboot_count, "", False),
 }
