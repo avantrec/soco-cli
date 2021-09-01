@@ -7,19 +7,19 @@
 
 SoCo-CLI is a powerful command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. SoCo-CLI is written entirely in Python and is portable across platforms.
 
-A simple `sonos` command is provided which allows easy control of a huge range of speaker functions, including playback, volume, groups, EQ settings, sleep timers, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speaker states, and to create repeated action sequences using loops. Audio files from the local filesystem can be played directly on Sonos.
+A simple `sonos` command is provided which allows easy control of a huge range of speaker functions, including playback, volume, groups, EQ settings, sleep timers, alarms, speaker settings, the playback queue, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speaker states, and to create repeated action sequences using loops. Audio files from the local filesystem can be played directly on Sonos.
 
-SoCo-CLI aims for an orderly command structure and consistent return values, making it suitable for use in scripted automation scenarios, cron jobs, etc.
+SoCo-CLI has an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
-SoCo-CLI also has a powerful **shell mode** for more efficient interactive use at the command line.
+For interactive command line use, SoCo-CLI provides a powerful **Interactive Shell Mode** that improves speed of operation and reduces typing.
 
-SoCo-CLI exposes a simple **API** to allow its use as a high-level library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library.
+SoCo-CLI can be imported as a streamlined, high-level **API** library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library, simplifying the use of SoCo.
 
-SoCo-CLI can also run as a simple **HTTP API server**, providing access to a huge range of actions via simple HTTP (GET) requests (requires Python 3.6 or above).
+SoCo-CLI can also run as a simple **HTTP API server**, providing access to a huge range of actions via simple HTTP requests. (Note that using this functionality requires Python 3.6 or above.)
 
 ## Supported Environments
 
-- Requires Python 3.5 or greater. Python 3.6 or above required for the HTTP API Server.
+- Requires Python 3.5+. (The HTTP API Server functionality requires Python 3.6 or above.)
 - Runs on all platforms supported by Python. Tested on various versions of Linux, macOS and Windows.
 - Works with Sonos 'S1' and 'S2' systems, as well as split S1/S2 systems.
 
