@@ -22,7 +22,7 @@
          * [Albums and Playlists](#albums-and-playlists)
          * [Audio Files on the Local Filesystem](#audio-files-on-the-local-filesystem)
          * [Local Playlists (M3U Files)](#local-playlists-m3u-files)
-         * [Spotify and Tidal Share Links](#spotify-and-tidal-share-links)
+         * [Spotify, Tidal and Deezer Share Links](#spotify-tidal-and-deezer-share-links)
       * [Complete List of Available Actions](#complete-list-of-available-actions)
          * [Volume and EQ Control](#volume-and-eq-control)
          * [Playback Control](#playback-control)
@@ -73,7 +73,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Tue Aug 31 09:32:14 BST 2021 -->
+<!-- Added by: pwt, at: Wed Sep  1 11:00:57 BST 2021 -->
 
 <!--te-->
 
@@ -281,17 +281,18 @@ There are options to print the track filenames as they are played, to shuffle th
 
 This feature works by invoking the `play_file` action for each file in the playlist in sequence, so the same rules apply as for `play_file`. Note that `play_m3u` does not create a Sonos queue on the speaker -- the 'queue' is managed locally by SoCo-CLI -- so it's not possible to skip forward or back using a Sonos app.
 
-### Spotify and Tidal Share Links
+### Spotify, Tidal and Deezer Share Links
 
 (This is an experimental feature.)
 
-The `add_sharelink_to_queue` (or `sharelink`) action can be used to add share links from Spotify or Tidal to the queue, provided the Sonos system has a subscription to the required service.
+The `add_sharelink_to_queue` (or `sharelink`) action can be used to add share links from Spotify, Tidal or Deezerto the queue, provided the Sonos system has a subscription to the required service.
 
 Links can refer to tracks, albums, or playlists. The position of the first track added to the queue is returned, which can then be played using `play_from_queue`. Share links can be of the form:
 
 - `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`
 - `spotify:album:6wiUBliPe76YAVpNEdidpY`
 - `https://tidal.com/browse/album/157273956`
+- `https://www.deezer.com/en/playlist/5390258182`
 
 **Example**:
 ```
@@ -375,7 +376,7 @@ sonos Kitchen play_from_queue 5
 
 - **`add_playlist_to_queue <playlist_name> <play_next|next or first|start>`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. The number in the queue of the first track in the playlist will be returned. Optionally, `play_next` or `next` can be added to insert the playlist at the next queue position. To start playback, follow with action `play_from_queue`.
 - **`add_library_playlist_to_queue <playlist_name> <play_next|next or first|start>`** (or **`alpq`**): As above, but targets local library imported playlists instead of Sonos playlists.
-- **`add_sharelink_to_queue <sharelink>`** (or **`sharelink`**): (*Experimental*) Add a **Spotify** or **Tidal** link (for a track, album, playlist, etc.) to the queue. Returns the queue position of the first track. Supported links formats are: `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`, `spotify:album:6wiUBliPe76YAVpNEdidpY`, `https://tidal.com/browse/album/157273956`.
+- **`add_sharelink_to_queue <sharelink>`** (or **`sharelink`**): (*Experimental*) Add a **Spotify**, **Tidal** or **Deezer** link (for a track, album, playlist, etc.) to the queue. Returns the queue position of the first track. Supported links formats are: `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`, `spotify:album:6wiUBliPe76YAVpNEdidpY`, `https://tidal.com/browse/album/157273956`, `https://www.deezer.com/en/playlist/5390258182`.
 - **`add_uri_to_queue <uri> <queue position or next>`** Adds a URI to the queue. The URI is added to the end of the queue if no queue position (an integer, or `next`) is supplied. Returns the queue position of the URI.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
