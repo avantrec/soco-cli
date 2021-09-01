@@ -321,10 +321,8 @@ def sig_handler(signal_received, frame):
     logging.info("Unsubscribing from event notifications")
     unsub_all_remembered_event_subs()
 
-    if INTERACTIVE:
-        print("", flush=True)
-
     logging.info("Exiting program using 'os._exit(0)'")
+    print("", flush=True)
     os._exit(0)
 
 
