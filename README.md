@@ -30,9 +30,9 @@
          * [Favourites and Playlists](#favourites-and-playlists)
          * [TuneIn Radio Station Favourites](#tunein-radio-station-favourites)
          * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
-         * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
          * [Alarms](#alarms)
          * [Music Library Search Functions](#music-library-search-functions)
+         * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
       * [Multiple Sequential Commands](#multiple-sequential-commands)
          * [Chaining Commands Using the : Separator](#chaining-commands-using-the--separator)
          * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
@@ -73,7 +73,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Wed Sep  1 11:00:57 BST 2021 -->
+<!-- Added by: pwt, at: Wed Sep  1 16:57:05 BST 2021 -->
 
 <!--te-->
 
@@ -432,26 +432,6 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`ungroup_all`**: Removes all speakers in the target speaker's household from all groups.
 - **`unpair`**: Separate a stereo pair. Can be applied to either speaker in the pair.
 
-### Speaker and Sonos System Information
-
-- **`available_actions`**: List the currently available speaker actions (play, pause, seek, next, etc.).  
-- **`battery`**: Shows the battery status for Sonos speakers that contain batteries.
-- **`buttons`**: Returns whether the speaker's control buttons are enabled, 'on' or 'off'.
-- **`buttons <on|off>`**: Sets whether the speaker's control buttons are on or off.
-- **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
-- **`groupstatus`**: Indicates whether the speaker is part of a group, and whether it's part of a stereo pair or bonded home theatre configuration. Note that first can override the second: if a paired/bonded coordinator speaker is also part of a group, the group will be reported but not the paired/bonded status.
-- **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
-- **`is_indexing`**: Reports on whether the system is currently in the process of reindexing its local libraries: possible responses are `yes` or `no`.
-- **`libraries`** (or **`shares`**): List the local music library shares.
-- **`reindex`**: Start a reindex of the local music libraries. Will not proceed if a reindex is already underway.
-- **`reboot_count`**: Returns the number of times a speaker has been rebooted.
-- **`rename <new_name>`**: Rename the speaker.
-- **`state`** (or **`status`, `playback`**): Returns the current playback state for the speaker, one of: `PAUSED_PLAYBACK`, `PLAYING`, `STOPPED`, or `TRANSITIONING`.
-- **`status_light` (or `light`)**: Returns the state of the speaker's status light, 'on' or 'off'.
-- **`status_light <on|off>` (or `light`)**: Switch the speaker's status light on or off.
-- **`sysinfo`**: Prints a table of information about all speakers in the system.
-- **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Prints a simple list of comma separated visible zone/room names, each in double quotes. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
-
 ### Alarms
 
 - **`alarms`** (or **`list_alarms`**): List the alarms in the Sonos system. Each alarm has a numeric ID that can be used in other alarm actions.
@@ -491,6 +471,26 @@ The actions below search the Sonos Music library.
 - **`search_library <name>`** (or **`sl`**): Searches the titles in your music library for a fuzzy match with `<name>` against artists, albums and tracks. Prints out the lists of matches. This action is a superset of `search_artists`, `search_albums`, and `search_tracks`, i.e., it searches across all categories.
 - **`search_tracks <track_name>`** (or **`search_track`**, **`st`**): Searches the tracks in your music library for a fuzzy match with `<track_name>`. Prints out the list of matching tracks.
 - **`tracks_in_album <album_name>`** (or **`tia`**, **`lta`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of tracks in each matching album.
+
+### Speaker and Sonos System Information
+
+- **`available_actions`**: List the currently available speaker actions (play, pause, seek, next, etc.).  
+- **`battery`**: Shows the battery status for Sonos speakers that contain batteries.
+- **`buttons`**: Returns whether the speaker's control buttons are enabled, 'on' or 'off'.
+- **`buttons <on|off>`**: Sets whether the speaker's control buttons are on or off.
+- **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
+- **`groupstatus`**: Indicates whether the speaker is part of a group, and whether it's part of a stereo pair or bonded home theatre configuration. Note that first can override the second: if a paired/bonded coordinator speaker is also part of a group, the group will be reported but not the paired/bonded status.
+- **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
+- **`is_indexing`**: Reports on whether the system is currently in the process of reindexing its local libraries: possible responses are `yes` or `no`.
+- **`libraries`** (or **`shares`**): List the local music library shares.
+- **`reindex`**: Start a reindex of the local music libraries. Will not proceed if a reindex is already underway.
+- **`reboot_count`**: Returns the number of times a speaker has been rebooted.
+- **`rename <new_name>`**: Rename the speaker.
+- **`state`** (or **`status`, `playback`**): Returns the current playback state for the speaker, one of: `PAUSED_PLAYBACK`, `PLAYING`, `STOPPED`, or `TRANSITIONING`.
+- **`status_light` (or `light`)**: Returns the state of the speaker's status light, 'on' or 'off'.
+- **`status_light <on|off>` (or `light`)**: Switch the speaker's status light on or off.
+- **`sysinfo`**: Prints a table of information about all speakers in the system.
+- **`zones` (or `visible_zones`, `rooms`, `visible_rooms`)**: Prints a simple list of comma separated visible zone/room names, each in double quotes. Use **`all_zones` (or `all_rooms`)** to return all devices including ones not visible in the Sonos controller apps.
 
 ## Multiple Sequential Commands
 
