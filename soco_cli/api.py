@@ -8,8 +8,9 @@ import logging
 import sys
 from io import StringIO
 from signal import SIGINT, signal
+from typing import Tuple
 
-from soco import SoCo
+from soco import SoCo  # type: ignore
 
 from soco_cli.action_processor import process_action
 from soco_cli.speakers import Speakers
@@ -24,12 +25,17 @@ from soco_cli.utils import (
 )
 
 
-def run_command(speaker_name, action, *args, use_local_speaker_list=False):
+def run_command(
+    speaker_name: str,
+    action: str,
+    *args: list[str],
+    use_local_speaker_list: bool = False
+) -> Tuple[int, str, str]:
     """Use SoCo-CLI to run a sonos command.
 
     The exit code, output string and error message string are returned as a
     three-tuple. If the exit code is non-zero, the error message will be
-    populated and the output string will always be empty.
+    populated and the output string will always be an empty string.
 
     All exceptions are caught when this function is run. Exception details
     will be returned in the error message string.
@@ -41,7 +47,7 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
         *args (list[str]): The set of arguments that accompany the action
 
     Returns:
-        int, str, str: a three-tuple of exit_code, output_string and
+        (int, str, str): a three-tuple of exit_code, output_string and
         error_msg.
     """
 
@@ -70,7 +76,7 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
             logging.info("Exception: {}".format(e))
             exception_error = e
 
-    return_value = False
+    return_value = None
 
     if speaker:
         try:
@@ -97,7 +103,7 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
             else:
                 error_out = "Error: " + str(exception_error)
 
-        if not return_value:
+        if return_value is None:
             if error_out == "":
                 hint = " ... missing spaces around ':'?" if ":" in action else ""
                 error_out = "Error: Action '{}' not found{}".format(action, hint)
@@ -120,7 +126,7 @@ def run_command(speaker_name, action, *args, use_local_speaker_list=False):
     return return_value
 
 
-def set_log_level(log_level="None"):
+def set_log_level(log_level="None") -> None:
     """Convenience function to set up logging.
 
     Args:
@@ -129,36 +135,36 @@ def set_log_level(log_level="None"):
     configure_logging(log_level)
 
 
-def handle_sigint():
+def handle_sigint() -> None:
     """Convenience function to set up a more graceful CTRL-C (sigint) handler."""
     signal(SIGINT, sig_handler)
 
 
-def rescan_speakers(timeout=None):
+def rescan_speakers(timeout=None) -> None:
     """Run full network scan to find speakers."""
     _check_for_speaker_cache()
     speaker_cache().scan(reset=True, scan_timeout_override=timeout)
 
 
-def rediscover_speakers():
+def rediscover_speakers() -> None:
     """Run normal SoCo discovery to discover speakers."""
     _check_for_speaker_cache()
     speaker_cache().discover(reset=True)
 
 
-def get_all_speakers(use_scan=False):
+def get_all_speakers(use_scan=False) -> list:
     """Return all SoCo instances."""
     _check_for_speaker_cache()
     return [s[0] for s in speaker_cache().get_all_speakers(use_scan=use_scan)]
 
 
-def get_all_speaker_names(use_scan=False):
+def get_all_speaker_names(use_scan=False) -> list:
     """Return all speaker names."""
     _check_for_speaker_cache()
     return speaker_cache().get_all_speaker_names(use_scan=use_scan)
 
 
-def get_soco_object(speaker_name, use_local_speaker_list=False):
+def get_soco_object(speaker_name, use_local_speaker_list=False) -> Tuple[SoCo, str]:
     """Uses the full set of soco_cli strategies to find a speaker.
 
     Args:
@@ -185,7 +191,7 @@ def get_soco_object(speaker_name, use_local_speaker_list=False):
     return speaker, error_msg
 
 
-def _get_soco_object(speaker_name, use_local_speaker_list=False):
+def _get_soco_object(speaker_name, use_local_speaker_list=False) -> SoCo:
     """Internal helper version that doesn't redirect stderr."""
 
     if use_local_speaker_list:
@@ -196,7 +202,7 @@ def _get_soco_object(speaker_name, use_local_speaker_list=False):
     return get_speaker(speaker_name, use_local_speaker_list)
 
 
-def _check_for_speaker_cache():
+def _check_for_speaker_cache() -> None:
     if not speaker_cache():
         create_speaker_cache(max_threads=256, scan_timeout=1.0, min_netmask=24)
 
@@ -205,7 +211,7 @@ def _check_for_speaker_cache():
 speaker_list_set = False
 
 
-def _setup_local_speaker_list():
+def _setup_local_speaker_list() -> None:
     global speaker_list_set
     if not speaker_list_set:
         speaker_list = Speakers()

@@ -2818,9 +2818,7 @@ def add_sharelink_to_queue(
 
 
 @zero_parameters
-def reboot_count(
-    speaker, action, args, soco_function, use_local_speaker_list
-):
+def reboot_count(speaker, action, args, soco_function, use_local_speaker_list):
     print(speaker.boot_seqnum)
     return True
 

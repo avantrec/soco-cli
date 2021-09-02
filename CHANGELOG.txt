@@ -1,4 +1,5 @@
 v0.4.19   - Add 'reboot_count' action
+          - Add type annotations to the API calls
 v0.4.18   - Add support for Deezer sharelinks (requires SoCo v0.24)
 v0.4.17   - Add '_end_on_pause_' option for 'play_file' action
 v0.4.16   - Improve behaviour of CTRL-C in single keystroke, interactive mode
