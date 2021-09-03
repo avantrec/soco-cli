@@ -8,7 +8,6 @@ import logging
 import sys
 from io import StringIO
 from signal import SIGINT, signal
-from typing import Tuple
 
 from soco import SoCo  # type: ignore
 
@@ -30,7 +29,7 @@ def run_command(
     action: str,
     *args: list[str],
     use_local_speaker_list: bool = False
-) -> Tuple[int, str, str]:
+) -> tuple[int, str, str]:
     """Use SoCo-CLI to run a sonos command.
 
     The exit code, output string and error message string are returned as a
@@ -43,8 +42,10 @@ def run_command(
     Args:
         speaker_name (str): The name of the speaker, or its IP address.
             Alternatively, a 'SoCo' object can be supplied.
-        action (str): The The name of the SoCo-CLI action to perform
-        *args (list[str]): The set of arguments that accompany the action
+        action (str): The The name of the SoCo-CLI action to perform.
+        *args (list[str]): The set of arguments that accompany the action.
+        use_local_speaker_list (bool, optional): Whether to use the local
+            speaker cache.
 
     Returns:
         (int, str, str): a three-tuple of exit_code, output_string and
@@ -136,7 +137,7 @@ def set_log_level(log_level="None") -> None:
 
 
 def handle_sigint() -> None:
-    """Convenience function to set up a more graceful CTRL-C (sigint) handler."""
+    """Convenience function to set up a graceful CTRL-C (sigint) handler."""
     signal(SIGINT, sig_handler)
 
 
@@ -164,12 +165,13 @@ def get_all_speaker_names(use_scan=False) -> list:
     return speaker_cache().get_all_speaker_names(use_scan=use_scan)
 
 
-def get_soco_object(speaker_name, use_local_speaker_list=False) -> Tuple[SoCo, str]:
+def get_soco_object(speaker_name, use_local_speaker_list=False) -> tuple[SoCo, str]:
     """Uses the full set of soco_cli strategies to find a speaker.
 
     Args:
         speaker_name (str): The name of the speaker to find.
-        use_local_speaker_list (bool): Whether to use the local speaker cache.
+        use_local_speaker_list (bool, optional): Whether to use the local
+            speaker cache.
 
     Returns:
         (SoCo, str): Tuple of SoCo object, or None if no speaker is found,
