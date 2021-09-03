@@ -13,12 +13,12 @@ from distutils.version import StrictVersion
 from os import get_terminal_size
 from random import randint
 
-import soco
-import soco.alarms
-import tabulate
-from soco.exceptions import NotSupportedException, SoCoUPnPException
-from soco.plugins.sharelink import ShareLinkPlugin
-from xmltodict import parse
+import soco  # type: ignore
+import soco.alarms  # type: ignore
+import tabulate  # type: ignore
+from soco.exceptions import NotSupportedException, SoCoUPnPException  # type: ignore
+from soco.plugins.sharelink import ShareLinkPlugin  # type: ignore
+from xmltodict import parse  # type: ignore
 
 from soco_cli.play_local_file import play_local_file
 from soco_cli.play_m3u_file import play_m3u_file
@@ -1882,9 +1882,7 @@ def snooze_alarm(speaker, action, args, soco_function, use_local_speaker_list):
             logging.info("Invalid snooze duration: '{}'".format(args[0]))
             parameter_type_error(
                 action,
-                "A valid HH:MM:SS duration, or an integer number of minutes".format(
-                    args[0]
-                ),
+                "A valid HH:MM:SS duration, or an integer number of minutes",
             )
             return False
 

@@ -2,7 +2,7 @@
 
 import datetime
 
-import tabulate
+import tabulate  # type: ignore
 
 # Collect speaker information from each speaker in turn
 headers = [

@@ -15,9 +15,9 @@ from collections.abc import Sequence
 from platform import python_version
 from time import sleep
 
-import soco
+import soco  # type: ignore
 
-from soco_cli.__init__ import __version__
+from soco_cli.__init__ import __version__  # type: ignore
 from soco_cli.match_speaker_names import speaker_name_matches
 from soco_cli.speakers import Speakers
 

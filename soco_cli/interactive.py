@@ -695,7 +695,7 @@ class AliasProcessor:
                 if used_alias[1] == self._seq_number and used_alias[2] == alias_name:
                     # Alias name reused at different recursion levels but within
                     # the unpacking of the same sequence signifies a loop.
-                    print("Error: Alias loop detected ... stopping".format(alias_name))
+                    print("Error: Alias loop detected ... stopping")
                     self._remove_added_commands()
                     return False
         self._used_aliases.append((self._recurse_level, self._seq_number, alias_name))

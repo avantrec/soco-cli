@@ -8,6 +8,7 @@ import logging
 import sys
 from io import StringIO
 from signal import SIGINT, signal
+from typing import List, Tuple, Union
 
 from soco import SoCo  # type: ignore
 
@@ -25,11 +26,11 @@ from soco_cli.utils import (
 
 
 def run_command(
-    speaker_name: str,
+    speaker_name: Union[str, SoCo],
     action: str,
-    *args: list[str],
+    *args: str,  # Means that all args are strings
     use_local_speaker_list: bool = False
-) -> tuple[int, str, str]:
+) -> Tuple[int, str, str]:
     """Use SoCo-CLI to run a sonos command.
 
     The exit code, output string and error message string are returned as a
@@ -40,7 +41,7 @@ def run_command(
     will be returned in the error message string.
 
     Args:
-        speaker_name (str): The name of the speaker, or its IP address.
+        speaker_name (str or SoCo): The name of the speaker, or its IP address.
             Alternatively, a 'SoCo' object can be supplied.
         action (str): The The name of the SoCo-CLI action to perform.
         *args (list[str]): The set of arguments that accompany the action.
@@ -165,7 +166,7 @@ def get_all_speaker_names(use_scan=False) -> list:
     return speaker_cache().get_all_speaker_names(use_scan=use_scan)
 
 
-def get_soco_object(speaker_name, use_local_speaker_list=False) -> tuple[SoCo, str]:
+def get_soco_object(speaker_name, use_local_speaker_list=False) -> Tuple[SoCo, str]:
     """Uses the full set of soco_cli strategies to find a speaker.
 
     Args:

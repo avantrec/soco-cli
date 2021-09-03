@@ -8,7 +8,7 @@ from os import chdir, name, path
 from pathlib import Path
 from random import choice, sample
 
-from soco import SoCo
+from soco import SoCo  # type: ignore
 
 from soco_cli.m3u_parser import parse_m3u
 from soco_cli.play_local_file import is_supported_type, play_local_file

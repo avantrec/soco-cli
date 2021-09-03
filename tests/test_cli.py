@@ -1,6 +1,6 @@
 import unittest
 
-import soco
+import soco  # type: ignore
 
 from soco_cli import action_processor as ap
 from soco_cli.api import run_command

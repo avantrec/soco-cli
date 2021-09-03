@@ -2,17 +2,17 @@
 
 import functools
 import logging
+import sys
 import time
 import urllib.parse
 from http.server import HTTPServer
 from ipaddress import IPv4Address, IPv4Network
 from os import chdir, path
 from socketserver import ThreadingMixIn
-from sys import version_info as pyversion
 from threading import Thread
 
-import ifaddr
-from RangeHTTPServer import RangeRequestHandler
+import ifaddr  # type: ignore
+from RangeHTTPServer import RangeRequestHandler  # type: ignore
 
 from soco_cli.utils import (
     error_report,
@@ -28,9 +28,6 @@ PORT_END = 54099
 
 SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WMA", "WAV"]
 
-# Need to know whether this is Python >= 3.7
-PY37PLUS = (pyversion.major == 3 and pyversion.minor >= 7) or pyversion.major > 3
-
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in separate threads.
@@ -42,7 +39,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 class MyHTTPHandler(RangeRequestHandler):
     # Handle the change to the SimpleHTTPRequestHandler __init__() in Python 3.7+
-    if PY37PLUS:
+    if sys.version_info >= (3, 7):
 
         def __init__(self, *args, filename=None, speaker_ips=None, **kwargs):
             self.filename = filename

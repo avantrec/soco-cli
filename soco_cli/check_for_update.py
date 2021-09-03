@@ -3,7 +3,7 @@
 import logging
 from urllib.request import urlopen
 
-from soco_cli.__init__ import __version__
+from soco_cli.__init__ import __version__  # type: ignore
 from soco_cli.utils import error_report
 
 init_file_url = (

@@ -8,10 +8,10 @@ if version_info.major == 3 and version_info.minor < 6:
 
 import argparse
 
-import uvicorn
+import uvicorn  # type: ignore
 from fastapi import FastAPI
 
-from soco_cli.__init__ import __version__ as version
+from soco_cli.__init__ import __version__ as version  # type: ignore
 from soco_cli.api import get_all_speaker_names
 from soco_cli.api import get_soco_object as get_speaker
 from soco_cli.api import rescan_speakers

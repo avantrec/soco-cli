@@ -6,8 +6,8 @@ import os
 import pickle
 from collections import namedtuple
 
-import soco
-import tabulate
+import soco  # type: ignore
+import tabulate  # type: ignore
 
 from soco_cli.match_speaker_names import speaker_name_matches
 
