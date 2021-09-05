@@ -285,7 +285,7 @@ This feature works by invoking the `play_file` action for each file in the playl
 
 (This is an experimental feature.)
 
-The `add_sharelink_to_queue` (or `sharelink`) action can be used to add share links from Spotify, Tidal or Deezerto the queue, provided the Sonos system has a subscription to the required service.
+The `add_sharelink_to_queue` (or `sharelink`) action can be used to add share links from Spotify, Tidal or Deezer to the queue, provided the Sonos system has a subscription to the required service.
 
 Links can refer to tracks, albums, or playlists. The position of the first track added to the queue is returned, which can then be played using `play_from_queue`. Share links can be of the form:
 
