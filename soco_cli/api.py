@@ -78,11 +78,10 @@ def run_command(
             logging.info("Exception: {}".format(e))
             exception_error = e
 
-    return_value = None
-
     if speaker:
+        action_return = False
         try:
-            return_value = process_action(
+            action_return = process_action(
                 speaker, action, args, use_local_speaker_list=use_local_speaker_list
             )
         except Exception as e:
@@ -92,7 +91,7 @@ def run_command(
         output_msg = output.getvalue().rstrip()
         error_out = error.getvalue().rstrip()
 
-        if not output_msg == "":
+        if output_msg != "":
             lines = output_msg.splitlines()
             if len(lines) > 1 and lines[0] != "":
                 output_msg = "\n" + output_msg
@@ -105,15 +104,15 @@ def run_command(
             else:
                 error_out = "Error: " + str(exception_error)
 
-        if return_value is None:
+        if action_return is False:
             if error_out == "":
                 hint = " ... missing spaces around ':'?" if ":" in action else ""
-                error_out = "Error: Action '{}' not found{}".format(action, hint)
-            return_value = (1, output_msg, error_out)
+                error_out = "Error: Action '{}' not recognised{}".format(action, hint)
+            return_tuple = (1, output_msg, error_out)
         else:
-            return_value = (0, output_msg, error_out)
+            return_tuple = (0, output_msg, error_out)
     else:
-        return_value = (
+        return_tuple = (
             1,
             "",
             "Speaker '{}' not found: {}".format(speaker_name, exception_error),
@@ -123,9 +122,9 @@ def run_command(
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
 
-    logging.info("Return value: {}".format(return_value))
+    logging.info("Return value: {}".format(return_tuple))
 
-    return return_value
+    return return_tuple
 
 
 def set_log_level(log_level="None") -> None:

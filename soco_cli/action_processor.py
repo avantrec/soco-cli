@@ -2821,7 +2821,7 @@ def reboot_count(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-def process_action(speaker, action, args, use_local_speaker_list=False):
+def process_action(speaker, action, args, use_local_speaker_list=False) -> bool:
     sonos_function = actions.get(action, None)
     if sonos_function:
         if sonos_function.switch_to_coordinator:
