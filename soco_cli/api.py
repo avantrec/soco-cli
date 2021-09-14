@@ -167,7 +167,7 @@ def get_all_speaker_names(use_scan: bool = False) -> list:
 
 def get_soco_object(
     speaker_name: str, use_local_speaker_list: bool = False
-) -> Tuple[SoCo, str]:
+) -> Tuple[Union[SoCo, None], str]:
     """Uses the full set of soco_cli strategies to find a speaker.
 
     Args:
