@@ -8,7 +8,7 @@ import logging
 import sys
 from io import StringIO
 from signal import SIGINT, signal
-from typing import List, Tuple, Union
+from typing import Tuple, Union
 
 from soco import SoCo  # type: ignore
 

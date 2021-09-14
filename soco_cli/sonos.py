@@ -28,7 +28,6 @@ from soco_cli.utils import (
     get_speaker,
     logo,
     seconds_until,
-    set_interactive,
     set_speaker_list,
     sig_handler,
     version,
