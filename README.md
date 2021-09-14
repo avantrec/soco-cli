@@ -991,6 +991,8 @@ Each `run_command()` invocation returns a three tuple consisting of `exit_code (
 
 The `output_string` return value contains exactly what would have been printed to the console if the command had been run from the command line.
 
+The public API function definitions include type annotations, to enable type checking with the utility of your choice (e.g., mypy).
+
 **Examples of use:**
 
 ```
