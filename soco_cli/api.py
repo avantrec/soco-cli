@@ -141,7 +141,7 @@ def handle_sigint() -> None:
     signal(SIGINT, sig_handler)
 
 
-def rescan_speakers(timeout=None) -> None:
+def rescan_speakers(timeout: float = None) -> None:
     """Run full network scan to find speakers."""
     _check_for_speaker_cache()
     speaker_cache().scan(reset=True, scan_timeout_override=timeout)
@@ -153,19 +153,21 @@ def rediscover_speakers() -> None:
     speaker_cache().discover(reset=True)
 
 
-def get_all_speakers(use_scan=False) -> list:
+def get_all_speakers(use_scan: bool = False) -> list:
     """Return all SoCo instances."""
     _check_for_speaker_cache()
     return [s[0] for s in speaker_cache().get_all_speakers(use_scan=use_scan)]
 
 
-def get_all_speaker_names(use_scan=False) -> list:
+def get_all_speaker_names(use_scan: bool = False) -> list:
     """Return all speaker names."""
     _check_for_speaker_cache()
     return speaker_cache().get_all_speaker_names(use_scan=use_scan)
 
 
-def get_soco_object(speaker_name, use_local_speaker_list=False) -> Tuple[SoCo, str]:
+def get_soco_object(
+    speaker_name: str, use_local_speaker_list: bool = False
+) -> Tuple[SoCo, str]:
     """Uses the full set of soco_cli strategies to find a speaker.
 
     Args:
