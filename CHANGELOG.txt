@@ -1,3 +1,4 @@
+v0.4.20   -
 v0.4.19   - Add 'reboot_count' action
           - Add type annotations to the API calls
 v0.4.18   - Add support for Deezer share links (require SoCo v0.24)
