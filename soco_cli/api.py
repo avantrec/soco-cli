@@ -195,7 +195,7 @@ def get_soco_object(
     return speaker, error_msg
 
 
-def _get_soco_object(speaker_name, use_local_speaker_list=False) -> SoCo:
+def _get_soco_object(speaker_name: str, use_local_speaker_list: bool = False) -> SoCo:
     """Internal helper version that doesn't redirect stderr."""
 
     if use_local_speaker_list:

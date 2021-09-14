@@ -833,6 +833,13 @@ def _exec(command_line):
 def _exec_action(speaker_ip, action, args):
     # Commands to run in a subprocess, to allow CTRL-C
     # to exit the subprocess only, and not the shell.
+
+    # Wrap args containing spaces in double quotes
+    # e.g., pathname to a file to be played
+    for index, arg in enumerate(args):
+        if " " in arg:
+            args[index] = '"' + arg + '"'
+
     if action not in ACTIONS_TO_EXEC_NO_SPEAKER:
         command_line = [sys.argv[0], speaker_ip, action, *args]
     else:  # Omit speaker
