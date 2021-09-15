@@ -852,5 +852,5 @@ def _exec_action(speaker_ip: str, action: str, args: List[str]) -> None:
             command_line.append(sys.argv[1:][position + 1])
             break
 
-    logging.info("Running '{}' in a subprocess. Terminate using CTRL-C.".format(action))
+    print("(Use CTRL-C to return to the Sonos shell prompt.)")
     _exec(command_line)
