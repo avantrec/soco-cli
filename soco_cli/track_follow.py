@@ -35,7 +35,7 @@ def track_follow(
             return datetime.now(tz=local_tz).strftime("%H:%M")
 
     counter = 1
-    print(flush=True)
+    print()
     while True:
         # If stopped, wait for the speaker to start playback
         _, state, _ = run_command(
@@ -50,7 +50,6 @@ def track_follow(
                     " [{}] Playback is stopped or paused at {}\n".format(
                         speaker.player_name, timestamp()
                     ),
-                    flush=True,
                 )
             else:
                 print(
@@ -134,13 +133,12 @@ def track_follow(
                             else:
                                 first = False
                             output = output + key + " " + value + " "
-
-            print(output, flush=True)
+            print(output)
         else:
             error_out = "{:5d}: [{}] {}".format(
                 counter, timestamp(short=True), error_msg
             )
-            print(error_out, flush=True)
+            print(error_out)
 
         logging.info("Waiting for end of track")
         run_command(
