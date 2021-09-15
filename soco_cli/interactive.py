@@ -15,6 +15,7 @@ except ImportError:
 
 from os import chdir
 from shlex import split as shlex_split
+from typing import List
 
 from soco_cli.action_processor import get_actions, list_actions
 from soco_cli.aliases import AliasManager
@@ -807,19 +808,21 @@ def _rescan(use_local_speaker_list=False, max_scan=False):
         print("Rescan failed: please check your network connection [{}]".format(e))
 
 
-def _exec(command_line):
+def _exec(command_args: List[str]) -> None:
     """Runs a command as a subprocess, in its own shell.
 
     Args:
-        command_line (list): The command to execute.
+        command_args (list): The command to execute.
     """
 
-    # Check for spaces in the script pathname
-    if " " in command_line[0]:
-        command_line[0] = '"' + command_line[0] + '"'
+    # Check for spaces within any of the command line args,
+    # and quote if required
+    for index, cl_arg in enumerate(command_args):
+        if " " in cl_arg:
+            command_args[index] = '"' + command_args[index] + '"'
 
     # Convert command list to a unified command line
-    command_line = " ".join(command_line)
+    command_line = " ".join(command_args)
 
     set_suspend_sighandling(suspend=True)
     try:
@@ -830,21 +833,16 @@ def _exec(command_line):
     set_suspend_sighandling(suspend=False)
 
 
-def _exec_action(speaker_ip, action, args):
+def _exec_action(speaker_ip: str, action: str, args: List[str]) -> None:
     # Commands to run in a subprocess, to allow CTRL-C
     # to exit the subprocess only, and not the shell.
-
-    # Wrap args containing spaces in double quotes
-    # e.g., pathname to a file to be played
-    for index, arg in enumerate(args):
-        if " " in arg:
-            args[index] = '"' + arg + '"'
 
     if action not in ACTIONS_TO_EXEC_NO_SPEAKER:
         command_line = [sys.argv[0], speaker_ip, action, *args]
     else:  # Omit speaker
         command_line = [sys.argv[0], action, *args]
 
+    # Pass through logging option
     for position, arg in enumerate(sys.argv[1:]):
         if arg.startswith("--log="):
             command_line.insert(1, arg)
