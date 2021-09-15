@@ -97,8 +97,7 @@ class AliasManager:
 
     def _aliases_to_text(self, raw=False):
         output = ""
-        if not raw:
-            max_alias = len(max(self._aliases.keys(), key=len))
+        max_alias = len(max(self._aliases.keys(), key=len))
         for alias_name in sorted(self._aliases.keys()):
             if raw:
                 output = output + alias_name + " = " + self._aliases[alias_name] + "\n"
