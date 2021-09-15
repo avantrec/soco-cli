@@ -837,10 +837,10 @@ def _exec_action(speaker_ip: str, action: str, args: List[str]) -> None:
     # Commands to run in a subprocess, to allow CTRL-C
     # to exit the subprocess only, and not the shell.
 
-    if action not in ACTIONS_TO_EXEC_NO_SPEAKER:
-        command_line = [sys.argv[0], speaker_ip, action, *args]
-    else:  # Omit speaker
+    if action in ACTIONS_TO_EXEC_NO_SPEAKER:
         command_line = [sys.argv[0], action, *args]
+    else:
+        command_line = [sys.argv[0], speaker_ip, action, *args]
 
     # Pass through logging option
     for position, arg in enumerate(sys.argv[1:]):
