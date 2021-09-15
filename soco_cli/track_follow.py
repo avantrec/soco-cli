@@ -1,13 +1,17 @@
 import logging
 import re
 from datetime import datetime, timezone
-from time import sleep
+
+from soco import SoCo  # type: ignore
 
 from soco_cli.api import run_command
 
 
 def track_follow(
-    speaker, use_local_speaker_list=False, break_on_pause=True, compact=False
+    speaker: SoCo,
+    use_local_speaker_list: bool = False,
+    break_on_pause: bool = True,
+    compact: bool = False,
 ):
     """Print out the 'track' details each time the track changes.
 
@@ -16,6 +20,7 @@ def track_follow(
         use_local_speaker_list (bool, optional): Use cached discovery.
         break_on_pause (bool, optional): Whether to return control if the
             speaker enters the paused or stopped playback states.
+        compact (bool, optional): Whether to use 'compact' output mode.
 
     This function operates as if 'outside' the main program logic, because
     it needs to output intermediate results as it executes. Hence, the
