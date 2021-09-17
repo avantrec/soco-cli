@@ -498,7 +498,7 @@ def interactive_loop(
             continue
 
 
-COMMANDS = [
+SHELL_COMMANDS = [
     "actions",
     "alias ",
     "cd",
@@ -554,7 +554,7 @@ def _set_actions_and_commands_list(use_local_speaker_list=False):
             )
             + _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
         ]
-        + COMMANDS
+        + SHELL_COMMANDS
         + am.alias_names()
     )
 
