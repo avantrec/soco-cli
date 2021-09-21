@@ -13,6 +13,7 @@ from threading import Thread
 
 import ifaddr  # type: ignore
 from RangeHTTPServer import RangeRequestHandler  # type: ignore
+from soco import SoCo  # type: ignore
 
 from soco_cli.utils import (
     error_report,
@@ -188,9 +189,7 @@ def is_supported_type(filename):
     return False
 
 
-def play_local_file(speaker, pathname, end_on_pause=False):
-    # speaker is a SoCo instance
-    # pathname is the local file to be played
+def play_local_file(speaker: SoCo, pathname: str, end_on_pause: bool = False) -> bool:
 
     if not path.exists(pathname):
         error_report("File '{}' not found".format(pathname))

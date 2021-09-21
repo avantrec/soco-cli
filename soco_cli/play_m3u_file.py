@@ -4,9 +4,10 @@ import logging
 import os
 import sys
 from multiprocessing import Process
-from os import chdir, name, path
+from os import chdir, name, path, scandir
 from pathlib import Path
 from random import choice, sample
+from typing import List
 
 from soco import SoCo  # type: ignore
 
@@ -62,9 +63,8 @@ def interaction_manager(speaker_ip):
             os._exit(0)
 
 
-def play_m3u_file(speaker, m3u_file, options=""):
-    """Play a M3U or M3U8 file, or any file containing a list of
-    files to play."""
+def play_file_list(speaker: SoCo, tracks: List[str], options: str = ""):
+    """Play a list of files (tracks) with absolute pathnames."""
     options = options.lower()
 
     # Check for invalid options
@@ -72,17 +72,6 @@ def play_m3u_file(speaker, m3u_file, options=""):
     if invalid:
         error_report("Invalid option(s) '{}' supplied".format(invalid))
         return False
-
-    if not path.exists(m3u_file):
-        error_report("File '{}' not found".format(m3u_file))
-        return False
-
-    logging.info("Parsing file contents'{}'".format(m3u_file))
-    tracks = parse_m3u(m3u_file)
-    if not tracks:
-        error_report("No tracks found in '{}'".format(m3u_file))
-
-    logging.info("Found {} tracks".format(len(tracks)))
 
     if options != "":
         # Grab back stdout from api.run_command()
@@ -92,16 +81,12 @@ def play_m3u_file(speaker, m3u_file, options=""):
         # Choose a single random track
         track = choice(tracks)
         tracks = [track]
-        logging.info("Choosing random track: {}".format(track.path))
+        logging.info("Choosing random track: {}".format(track))
 
     elif "s" in options:
         logging.info("Shuffling playlist")
         # For some reason, 'shuffle(tracks)' does not work
         tracks = sample(tracks, len(tracks))
-
-    directory, _ = path.split(m3u_file)
-    if directory != "":
-        chdir(directory)
 
     # Interactive mode
     keypress_process = None
@@ -120,26 +105,62 @@ def play_m3u_file(speaker, m3u_file, options=""):
 
     zero_pad = len(str(len(tracks)))
     for index, track in enumerate(tracks):
-        abs_filename = str(Path(track.path).absolute())
-        logging.info("Convert '{}' to '{}'".format(track.path, abs_filename))
 
-        if not path.exists(abs_filename):
-            print("Error: file not found:", abs_filename)
+        if not path.exists(track):
+            print("Error: file not found:", track)
             continue
 
-        if not is_supported_type(abs_filename):
-            print("Error: unsupported file type:", abs_filename)
+        if not is_supported_type(track):
+            print("Error: unsupported file type:", track)
             continue
 
         if "p" in options:
             print(
                 "Playing {} of {}:".format(str(index + 1).zfill(zero_pad), len(tracks)),
-                abs_filename,
+                track,
             )
 
-        play_local_file(speaker, abs_filename)
+        play_local_file(speaker, track)
 
     if keypress_process:
         keypress_process.terminate()
 
+    return True
+
+
+def play_m3u_file(speaker: SoCo, m3u_file: str, options: str = "") -> bool:
+    if not path.exists(m3u_file):
+        error_report("File '{}' not found".format(m3u_file))
+        return False
+
+    logging.info("Parsing file contents'{}'".format(m3u_file))
+    tracks = parse_m3u(m3u_file)
+    if not tracks:
+        error_report("No tracks found in '{}'".format(m3u_file))
+        return False
+
+    directory, _ = path.split(m3u_file)
+    if directory != "":
+        chdir(directory)
+    tracks = [str(Path(track.path).absolute()) for track in tracks]
+    logging.info("Files to to play: {}".format(tracks))
+
+    play_file_list(speaker, tracks, options)
+    return True
+
+
+def play_directory_files(speaker: SoCo, directory: str, options: str = "") -> bool:
+    """Play all the audio files in a directory."""
+    tracks = []
+    try:
+        with scandir(directory) as files:
+            for file in files:
+                if is_supported_type(file.name):
+                    tracks.append(path.abspath(path.join(directory, file.name)))
+    except FileNotFoundError:
+        error_report("Directory '{}' not found".format(directory))
+        return False
+
+    logging.info("Files to to play: {}".format(tracks))
+    play_file_list(speaker, tracks, options)
     return True

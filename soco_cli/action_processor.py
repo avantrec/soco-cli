@@ -21,7 +21,7 @@ from soco.plugins.sharelink import ShareLinkPlugin  # type: ignore
 from xmltodict import parse  # type: ignore
 
 from soco_cli.play_local_file import play_local_file
-from soco_cli.play_m3u_file import play_m3u_file
+from soco_cli.play_m3u_file import play_directory_files, play_m3u_file
 from soco_cli.speaker_info import print_speaker_table
 from soco_cli.utils import (
     convert_to_seconds,
@@ -2543,6 +2543,16 @@ def play_m3u(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@one_or_two_parameters
+def play_directory(speaker, action, args, soco_function, use_local_speaker_list):
+    directory = args[0]
+    options = "" if len(args) == 1 else args[1]
+    options = options.lower()
+
+    play_directory_files(speaker, directory, options=options)
+    return True
+
+
 @zero_or_one_parameter
 def buttons(speaker, action, args, soco_function, use_local_speaker_list):
     """Enable or disable a speaker's buttons"""
@@ -3194,4 +3204,6 @@ actions = {
     "sharelink": SonosFunction(add_sharelink_to_queue, "", True),
     "is_indexing": SonosFunction(is_indexing, "", False),
     "reboot_count": SonosFunction(reboot_count, "", False),
+    "play_directory": SonosFunction(play_directory, "", True),
+    "play_dir": SonosFunction(play_directory, "", True),
 }

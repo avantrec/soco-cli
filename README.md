@@ -21,6 +21,7 @@
          * [Single Tracks](#single-tracks)
          * [Albums and Playlists](#albums-and-playlists)
          * [Audio Files on the Local Filesystem](#audio-files-on-the-local-filesystem)
+         * [Directories of Audio Files](#directories-of-audio-files)
          * [Local Playlists (M3U Files)](#local-playlists-m3u-files)
          * [Spotify, Tidal and Deezer Share Links](#spotify-tidal-and-deezer-share-links)
       * [Complete List of Available Actions](#complete-list-of-available-actions)
@@ -72,7 +73,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Sun Sep 19 09:52:49 BST 2021 -->
+<!-- Added by: pwt, at: Tue Sep 21 15:37:40 BST 2021 -->
 
 <!--te-->
 
@@ -270,6 +271,12 @@ Multiple files can be played in sequence by providing multiple audio file names 
 
 **Example**: `sonos Lounge play_file one.mp3 two.mp3 three.mp3`
 
+### Directories of Audio Files
+
+To play every audio file in a local directory, use the `play_directory` (or `play_dir`) action. This invokes `play_file` for each valid audio file in the directory. Note that it does not traverse into subdirectories.
+
+**Example**: `sonos Lounge play_directory "Music/Mozart/The Magic Flute/CD 1`
+
 ### Local Playlists (M3U Files)
 
 The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U (or M3U8) format. Files in the playlist should be available on the local filesystem; any that are not will be skipped. Simple lists of audio files in non-M3U format can also be supplied. Comments can be inserted in the file by prefixing each comment line with `#`.
@@ -349,6 +356,7 @@ sonos Kitchen play_from_queue 5
 - **`pause_all`**: Pause playback on all speakers in the system. (Note: only pauses speakers that are in the same Sonos Household.)
 - **`pauseplay`** (or **`playpause`**): Inverts a playing/paused state: if a speaker is currently playing, it will be paused or stopped; if a speaker is paused or stopped, playback will be started.
 - **`play`** (or **`start`**): Start playback.
+- **`play_directory <directory_name> <options>`** (or **`play_dir`**): Play all of the audio files in the specified local directory. Takes the same `<options>` as the `play_m3u` action.
 - **`play_file <filename> ...`** (or **`play_local_file`**): Play MP3, M4A, MP4, FLAC, OGG, WMA, WAV, or AIFF audio files from your computer. Multiple filenames can be provided and will be played in sequence. To configure termination of the command if playback is paused (as well as stopped), add `_end_on_pause_` to the command, i.e.: `play_file filename _end_on_pause_`.
 - **`play_from_queue <track>`** (or **`play_queue`, `pfq`, `pq`**): Play track number `<track>` from the queue. Tracks begin at 1. If `<track>` is omitted, the first item in the queue is played.
 - **`play_m3u <m3u_file> <options>`** (or **`play_local_m3u`**): Plays a local M3U/M3U8 playlist consisting of local audio files (in supported audio formats). Can be followed by options `p` to print each filename before it plays, and/or `s` to shuffle the playlist, or `r` to play a single, random track from the playlist. (If using multiple options, concatenate them: e.g., `ps`.) Example: `sonos Study play_m3u my_playlist.m3u ps`. Add the `i` option to invoke **interactive** mode, which allows use of the keyboard to go to the (N)ext track, to (P)ause, or to (R)esume playback.
