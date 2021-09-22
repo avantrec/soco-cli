@@ -852,5 +852,12 @@ def _exec_action(speaker_ip: str, action: str, args: List[str]) -> None:
             command_line.append(sys.argv[1:][position + 1])
             break
 
-    print("(Use CTRL-C to return to the Sonos shell prompt.)")
+    global CTRL_C_MSG_ISSUED
+    if CTRL_C_MSG_ISSUED is False:
+        print("(Use CTRL-C to return to the Sonos shell prompt.)")
+        CTRL_C_MSG_ISSUED = True
+
     _exec(command_line)
+
+
+CTRL_C_MSG_ISSUED = False
