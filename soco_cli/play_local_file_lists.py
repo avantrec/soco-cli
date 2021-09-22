@@ -150,7 +150,7 @@ def play_m3u_file(speaker: SoCo, m3u_file: str, options: str = "") -> bool:
 
 
 def play_directory_files(speaker: SoCo, directory: str, options: str = "") -> bool:
-    """Play all the audio files in a directory."""
+    """Play all the valid audio files in a directory. Ignores subdirectories"""
     tracks = []
     try:
         with scandir(directory) as files:
@@ -161,6 +161,7 @@ def play_directory_files(speaker: SoCo, directory: str, options: str = "") -> bo
         error_report("Directory '{}' not found".format(directory))
         return False
 
+    tracks.sort()
     logging.info("Files to to play: {}".format(tracks))
     play_file_list(speaker, tracks, options)
     return True

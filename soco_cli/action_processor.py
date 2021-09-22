@@ -21,7 +21,7 @@ from soco.plugins.sharelink import ShareLinkPlugin  # type: ignore
 from xmltodict import parse  # type: ignore
 
 from soco_cli.play_local_file import play_local_file
-from soco_cli.play_m3u_file import play_directory_files, play_m3u_file
+from soco_cli.play_local_file_lists import play_directory_files, play_m3u_file
 from soco_cli.speaker_info import print_speaker_table
 from soco_cli.utils import (
     convert_to_seconds,
