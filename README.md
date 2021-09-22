@@ -21,8 +21,8 @@
          * [Single Tracks](#single-tracks)
          * [Albums and Playlists](#albums-and-playlists)
          * [Audio Files on the Local Filesystem](#audio-files-on-the-local-filesystem)
-         * [Directories of Audio Files](#directories-of-audio-files)
          * [Local Playlists (M3U Files)](#local-playlists-m3u-files)
+         * [Directories of Audio Files](#directories-of-audio-files)
          * [Spotify, Tidal and Deezer Share Links](#spotify-tidal-and-deezer-share-links)
       * [Complete List of Available Actions](#complete-list-of-available-actions)
          * [Volume and EQ Control](#volume-and-eq-control)
@@ -73,7 +73,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Tue Sep 21 15:37:40 BST 2021 -->
+<!-- Added by: pwt, at: Wed Sep 22 11:25:25 BST 2021 -->
 
 <!--te-->
 
@@ -271,20 +271,6 @@ Multiple files can be played in sequence by providing multiple audio file names 
 
 **Example**: `sonos Lounge play_file one.mp3 two.mp3 three.mp3`
 
-### Directories of Audio Files
-
-To play every audio file in a local directory, use the `play_directory` (or `play_dir`) action. This invokes `play_file` for each valid audio file in the directory. Note that it does not traverse into subdirectories. 
-
-**Example**: `sonos Lounge play_directory "Music/Mozart/The Magic Flute/CD 1"`
-
-On macOS (but not on Windows or Linux), if you have an attached CD drive, this action can be used to play a CD directly to your Sonos speakers, e.g.: 
-
-`sonos Lounge play_dir "/Volumes/Audio CD"`.
-
-The `play_file` action can be used to play individual tracks on the CD, e.g.:
-
-`sonos Lounge play_dir "/Volumes/Audio CD/1 Audio Track.aiff"`.
-
 ### Local Playlists (M3U Files)
 
 The `play_m3u` (or `play_local_m3u`) action will play a local filesystem playlist in M3U (or M3U8) format. Files in the playlist should be available on the local filesystem; any that are not will be skipped. Simple lists of audio files in non-M3U format can also be supplied. Comments can be inserted in the file by prefixing each comment line with `#`.
@@ -294,6 +280,20 @@ There are options to print the track filenames as they are played, to shuffle th
 **Example**: `sonos Lounge play_m3u my_playlist.m3u`, or, to print filenames and invoke interactive mode: `sonos Lounge play_m3u my_playlist.m3u pi`.
 
 This feature works by invoking the `play_file` action for each file in the playlist in sequence, so the same rules apply as for `play_file`. Note that `play_m3u` does not create a Sonos queue on the speaker -- the 'queue' is managed locally by SoCo-CLI -- so it's not possible to skip forward or back using a Sonos app.
+
+### Directories of Audio Files
+
+To play every audio file in a local directory, use the `play_directory` (or `play_dir`) action. As with the `play_m3u` action this invokes `play_file` for each valid audio file in the directory. It does not traverse into subdirectories. 
+
+**Example**: `sonos Lounge play_directory "Music/Mozart/The Magic Flute/CD 1"`
+
+On macOS (but not on Windows or Linux), if you have an attached CD drive, this action can be used to play a CD directly to your Sonos speakers, e.g.: 
+
+`sonos Lounge play_dir "/Volumes/Audio CD"`.
+
+The `play_file` action can be used to play individual tracks on the CD, e.g.:
+
+`sonos Lounge play_file "/Volumes/Audio CD/1 Audio Track.aiff"`.
 
 ### Spotify, Tidal and Deezer Share Links
 
