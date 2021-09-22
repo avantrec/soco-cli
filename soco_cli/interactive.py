@@ -62,6 +62,7 @@ ACTIONS_TO_EXEC = [
     "play_local_m3u",
     "play_dir",
     "play_directory",
+    "play_cd",
 ]
 
 
