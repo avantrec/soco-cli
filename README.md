@@ -275,7 +275,7 @@ Multiple files can be played in sequence by providing multiple audio file names 
 
 To play every audio file in a local directory, use the `play_directory` (or `play_dir`) action. This invokes `play_file` for each valid audio file in the directory. Note that it does not traverse into subdirectories.
 
-**Example**: `sonos Lounge play_directory "Music/Mozart/The Magic Flute/CD 1`
+**Example**: `sonos Lounge play_directory "Music/Mozart/The Magic Flute/CD 1"`
 
 ### Local Playlists (M3U Files)
 

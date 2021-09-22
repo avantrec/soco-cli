@@ -3206,4 +3206,5 @@ actions = {
     "reboot_count": SonosFunction(reboot_count, "", False),
     "play_directory": SonosFunction(play_directory, "", True),
     "play_dir": SonosFunction(play_directory, "", True),
+    "play_cd": SonosFunction(play_directory, "", True),  # Undocumented
 }
