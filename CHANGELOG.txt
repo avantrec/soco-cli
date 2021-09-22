@@ -1,5 +1,6 @@
-v0.4.21   - Add 'play_directory' action
+v0.4.21   - Add 'play_directory' action & notes about CD playback on macOS
 v0.4.20   - Add 'AIFF' to supported local file types, for direct CD playback
+            on macOS
 v0.4.19   - Add 'reboot_count' action
           - Add type annotations to the API calls
 v0.4.18   - Add support for Deezer share links (require SoCo v0.24)

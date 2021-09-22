@@ -273,9 +273,17 @@ Multiple files can be played in sequence by providing multiple audio file names 
 
 ### Directories of Audio Files
 
-To play every audio file in a local directory, use the `play_directory` (or `play_dir`) action. This invokes `play_file` for each valid audio file in the directory. Note that it does not traverse into subdirectories.
+To play every audio file in a local directory, use the `play_directory` (or `play_dir`) action. This invokes `play_file` for each valid audio file in the directory. Note that it does not traverse into subdirectories. 
 
 **Example**: `sonos Lounge play_directory "Music/Mozart/The Magic Flute/CD 1"`
+
+On macOS (but not on Windows or Linux), if you have an attached CD drive, this action can be used to play a CD directly to your Sonos speakers, e.g.: 
+
+`sonos Lounge play_dir "/Volumes/Audio CD"`.
+
+The `play_file` action can be used to play individual tracks on the CD, e.g.:
+
+`sonos Lounge play_dir "/Volumes/Audio CD/1 Audio Track.aiff"`.
 
 ### Local Playlists (M3U Files)
 
