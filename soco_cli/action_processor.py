@@ -857,10 +857,17 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
     np = len(args)
     if np == 0:
         st = speaker.get_sleep_timer()
-        if st:
-            print(st)
+        if st is not None:
+            time_now = datetime.now()
+            remaining_seconds = timedelta(0, st)
+            expiry_time = time_now + remaining_seconds
+            print(
+                "{} (Sleep timer expires in {} at {})".format(
+                    st, remaining_seconds, expiry_time.strftime("%H:%M")
+                )
+            )
         else:
-            print(0)
+            print("0 (No sleep timer set)")
     elif np == 1:
         if args[0].lower() in ["off", "cancel"]:
             logging.info("Cancelling sleep timer")
