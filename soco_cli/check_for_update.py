@@ -1,6 +1,7 @@
 """Checks GitHub for a later version of SoCo-CLI"""
 
 import logging
+from typing import Union
 from urllib.request import urlopen
 
 from soco_cli.__init__ import __version__  # type: ignore
@@ -11,14 +12,14 @@ init_file_url = (
 )
 
 
-def get_latest_version():
+def get_latest_version() -> Union[str, None]:
     try:
         file = urlopen(init_file_url, timeout=3.0)
     except Exception as e:
         error_report(
             "Unable to get latest version information from GitHub: {}".format(e)
         )
-        return False
+        return None
 
     for line in file:
         decoded_line = line.decode("utf-8")
@@ -37,7 +38,7 @@ def get_latest_version():
     return latest_version
 
 
-def print_update_status():
+def print_update_status() -> bool:
     latest_version = get_latest_version()
     if latest_version is not None:
         if __version__ == latest_version:
@@ -45,12 +46,10 @@ def print_update_status():
         else:
             print("An update is available: v" + latest_version)
         return True
-
     return False
 
 
-def update_available():
+def update_available() -> bool:
     if __version__ == get_latest_version():
         return False
-
     return True
