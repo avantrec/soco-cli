@@ -4,9 +4,10 @@ import logging
 import time
 
 from soco_cli.utils import convert_to_seconds, error_report, seconds_until
+from typing import List
 
 
-def process_wait(sequence):
+def process_wait(sequence: List):
     if sequence[0] in ["wait", "wait_for"]:
         duration = 0
         if len(sequence) != 2:
