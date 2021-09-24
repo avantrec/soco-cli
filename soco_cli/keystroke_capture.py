@@ -14,12 +14,12 @@ else:
         pass
 
 
-def get_keystroke():
+def get_keystroke() -> str:
     """Wait for a keypress, then return it."""
 
     # Windows
     if os_name == "nt":
-        result = msvcrt.getch().decode()
+        result = msvcrt.getch().decode()  # type: ignore
 
     # Unix
     else:

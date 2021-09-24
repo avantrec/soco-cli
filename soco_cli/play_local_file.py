@@ -10,6 +10,7 @@ from ipaddress import IPv4Address, IPv4Network
 from os import chdir, path
 from socketserver import ThreadingMixIn
 from threading import Thread
+from typing import List, Union
 
 import ifaddr  # type: ignore
 from RangeHTTPServer import RangeRequestHandler  # type: ignore
@@ -60,7 +61,7 @@ class MyHTTPHandler(RangeRequestHandler):
                 pass
             super().__init__(*args, **kwargs)
 
-    def do_GET(self):
+    def do_GET(self) -> None:
         logging.info("Get request received by HTTP server")
 
         # Only serve the specific file requested on the command line,
@@ -85,12 +86,14 @@ class MyHTTPHandler(RangeRequestHandler):
             # It's normal to hit some exceptions with Sonos
             logging.info("Exception ignored: {}".format(e))
 
-    def log_message(self, format, *args):
+    def log_message(self, format, *args) -> None:
         # Suppress HTTP logging
         return
 
 
-def http_server(server_ip, directory, filename, speaker_ips):
+def http_server(
+    server_ip: str, directory: str, filename: str, speaker_ips: List[str]
+) -> Union[ThreadedHTTPServer, None]:
     # Set the directory from which to serve files, in the handler
     # Set the specific filename and client IP that are authorised
     handler = functools.partial(
@@ -119,7 +122,7 @@ def http_server(server_ip, directory, filename, speaker_ips):
     return None
 
 
-def get_server_ip(speaker):
+def get_server_ip(speaker: SoCo) -> Union[str, None]:
     # Get a suitable IP address to use as a server address for Sonos
     # on this host
     adapters = ifaddr.get_adapters()
@@ -134,7 +137,7 @@ def get_server_ip(speaker):
     return None
 
 
-def wait_until_stopped(speaker, uri, end_on_pause):
+def wait_until_stopped(speaker: SoCo, uri: str, end_on_pause: bool):
 
     playing_states = ["PLAYING", "TRANSITIONING"]
     if not end_on_pause:
@@ -180,7 +183,7 @@ def wait_until_stopped(speaker, uri, end_on_pause):
     return
 
 
-def is_supported_type(filename):
+def is_supported_type(filename: str) -> bool:
     file_upper = filename.upper()
     for file_type in SUPPORTED_TYPES:
         if file_upper.endswith("." + file_type):

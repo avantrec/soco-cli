@@ -16,7 +16,7 @@ from soco_cli.play_local_file import is_supported_type, play_local_file
 from soco_cli.utils import error_report
 
 
-def interaction_manager(speaker_ip):
+def interaction_manager(speaker_ip: str) -> None:
     sys.stdin = open(0)
     speaker = SoCo(speaker_ip)
     while True:
@@ -24,7 +24,7 @@ def interaction_manager(speaker_ip):
             # keypress = wait_for_keypress()
             keypress = input("")[0]
         except:
-            keypress = None
+            keypress = ""
         if keypress in ["N", "n"]:
             action = "NEXT"
             print("Next track ...")
@@ -134,15 +134,15 @@ def play_m3u_file(speaker: SoCo, m3u_file: str, options: str = "") -> bool:
         return False
 
     logging.info("Parsing file contents'{}'".format(m3u_file))
-    tracks = parse_m3u(m3u_file)
-    if not tracks:
+    track_list = parse_m3u(m3u_file)
+    if len(track_list) == 0:
         error_report("No tracks found in '{}'".format(m3u_file))
         return False
 
     directory, _ = path.split(m3u_file)
     if directory != "":
         chdir(directory)
-    tracks = [str(Path(track.path).absolute()) for track in tracks]
+    tracks = [str(Path(track.path).absolute()) for track in track_list]  # type:ignore
     logging.info("Files to to play: {}".format(tracks))
 
     play_file_list(speaker, tracks, options)
