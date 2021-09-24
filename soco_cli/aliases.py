@@ -3,6 +3,7 @@
 import logging
 import pickle
 from os import mkdir, path
+from typing import List, Tuple, Union
 
 CONFIG_DIR = path.join(path.expanduser("~"), ".soco-cli")
 ALIAS_FILE = path.join(CONFIG_DIR, "aliases.pickle")
@@ -12,7 +13,9 @@ class AliasManager:
     def __init__(self):
         self._aliases = {}
 
-    def create_alias(self, alias_name, alias_actions):
+    def create_alias(
+        self, alias_name: str, alias_actions: Union[str, None]
+    ) -> Union[Tuple[bool, bool], bool]:
         alias_name = alias_name.strip()
         if alias_actions:
             alias_actions = alias_actions.strip()
@@ -26,10 +29,10 @@ class AliasManager:
         self._aliases[alias_name] = alias_actions
         return True, new
 
-    def action(self, alias_name):
+    def action(self, alias_name: str) -> Union[str, None]:
         return self._aliases.get(alias_name, None)
 
-    def remove_alias(self, alias_name):
+    def remove_alias(self, alias_name: str) -> bool:
         alias_name = alias_name.strip()
         try:
             del self._aliases[alias_name]
@@ -39,10 +42,10 @@ class AliasManager:
             logging.info("Alias '{}' not found".format(alias_name))
             return False
 
-    def alias_names(self):
+    def alias_names(self) -> List[str]:
         return list(self._aliases.keys())
 
-    def save_aliases(self):
+    def save_aliases(self) -> None:
         if not path.exists(CONFIG_DIR):
             try:
                 logging.info("Creating directory '{}'".format(CONFIG_DIR))
@@ -53,7 +56,7 @@ class AliasManager:
             logging.info("Saving aliases")
             pickle.dump(self._aliases, f)
 
-    def load_aliases(self):
+    def load_aliases(self) -> None:
         logging.info("Reading aliases")
         try:
             with open(ALIAS_FILE, "rb") as f:
@@ -61,14 +64,14 @@ class AliasManager:
         except:
             logging.info("Failed to read aliases from file")
 
-    def print_aliases(self):
+    def print_aliases(self) -> None:
         if len(self._aliases) == 0:
             print("No current aliases")
             return
         print()
         print(self._aliases_to_text())
 
-    def save_aliases_to_file(self, filename):
+    def save_aliases_to_file(self, filename: str) -> bool:
         try:
             with open(filename, "w") as f:
                 f.write("# Soco-CLI Aliases File\n")
@@ -77,7 +80,7 @@ class AliasManager:
         except:
             return False
 
-    def load_aliases_from_file(self, filename):
+    def load_aliases_from_file(self, filename: str) -> bool:
         try:
             with open(filename, "r") as f:
                 line = f.readline()
@@ -95,7 +98,7 @@ class AliasManager:
         except:
             return False
 
-    def _aliases_to_text(self, raw=False):
+    def _aliases_to_text(self, raw: bool = False) -> str:
         output = ""
         max_alias = len(max(self._aliases.keys(), key=len))
         for alias_name in sorted(self._aliases.keys()):

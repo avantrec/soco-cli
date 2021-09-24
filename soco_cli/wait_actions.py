@@ -2,9 +2,9 @@
 
 import logging
 import time
+from typing import List
 
 from soco_cli.utils import convert_to_seconds, error_report, seconds_until
-from typing import List
 
 
 def process_wait(sequence: List):
