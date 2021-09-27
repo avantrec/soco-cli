@@ -127,7 +127,7 @@ def run_command(
     return return_tuple
 
 
-def set_log_level(log_level="None") -> None:
+def set_log_level(log_level: str = "None") -> None:
     """Convenience function to set up logging.
 
     Args:
