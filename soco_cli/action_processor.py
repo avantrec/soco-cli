@@ -862,8 +862,8 @@ def sleep_timer(speaker, action, args, soco_function, use_local_speaker_list):
             remaining_seconds = timedelta(0, st)
             expiry_time = time_now + remaining_seconds
             print(
-                "{} (Sleep timer expires in {} at {})".format(
-                    st, remaining_seconds, expiry_time.strftime("%H:%M")
+                "Sleep timer expires in {} at {}".format(
+                    remaining_seconds, expiry_time.strftime("%H:%M")
                 )
             )
         else:

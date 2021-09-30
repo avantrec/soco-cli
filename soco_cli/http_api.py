@@ -7,6 +7,7 @@ if version_info.major == 3 and version_info.minor < 6:
     exit(1)
 
 import argparse
+from typing import Dict
 
 import uvicorn  # type: ignore
 from fastapi import FastAPI
@@ -27,7 +28,9 @@ INFO = "SoCo-CLI HTTP API Server v" + version
 PREFIX = "SoCo-CLI: "
 
 
-def command_core(speaker, action, *args, use_local=False):
+def command_core(
+    speaker: str, action: str, *args: str, use_local: bool = False
+) -> Dict:
     device, error_msg = get_speaker(speaker, use_local_speaker_list=use_local)
     if device:
         speaker = device.player_name
@@ -78,12 +81,12 @@ def command_core(speaker, action, *args, use_local=False):
 
 
 @sc_app.get("/")
-async def root():
+async def root() -> Dict:
     return {"info": INFO}
 
 
 @sc_app.get("/rediscover")
-async def rediscover():
+async def rediscover() -> Dict:
     rescan_speakers(timeout=2.0)
     speakers = get_all_speaker_names()
     print(PREFIX + "Speakers (re)discovered: {}".format(speakers))
@@ -91,26 +94,28 @@ async def rediscover():
 
 
 @sc_app.get("/{speaker}/{action}")
-async def action_0(speaker: str, action: str):
+async def action_0(speaker: str, action: str) -> Dict:
     return command_core(speaker, action, use_local=USE_LOCAL)
 
 
 @sc_app.get("/{speaker}/{action}/{arg_1}")
-async def action_1(speaker: str, action: str, arg_1: str):
+async def action_1(speaker: str, action: str, arg_1: str) -> Dict:
     return command_core(speaker, action, arg_1, use_local=USE_LOCAL)
 
 
 @sc_app.get("/{speaker}/{action}/{arg_1}/{arg_2}")
-async def action_2(speaker: str, action: str, arg_1: str, arg_2: str):
+async def action_2(speaker: str, action: str, arg_1: str, arg_2: str) -> Dict:
     return command_core(speaker, action, arg_1, arg_2, use_local=USE_LOCAL)
 
 
 @sc_app.get("/{speaker}/{action}/{arg_1}/{arg_2}/{arg_3}")
-async def action_3(speaker: str, action: str, arg_1: str, arg_2: str, arg_3: str):
+async def action_3(
+    speaker: str, action: str, arg_1: str, arg_2: str, arg_3: str
+) -> Dict:
     return command_core(speaker, action, arg_1, arg_2, arg_3, use_local=USE_LOCAL)
 
 
-def args_processor():
+def args_processor() -> None:
     parser = argparse.ArgumentParser(
         prog="sonos-http-api-server",
         usage="%(prog)s",
@@ -141,7 +146,7 @@ def args_processor():
         PORT = args.port
 
 
-def main():
+def main() -> None:
     args_processor()
     print(PREFIX + "Starting " + INFO)
 

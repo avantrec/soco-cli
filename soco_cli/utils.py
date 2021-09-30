@@ -381,7 +381,7 @@ class RewindableList(Sequence):
 
 
 # Set up logging
-def configure_logging(log_level):
+def configure_logging(log_level: str) -> None:
     log_level = log_level.lower()
     if log_level == "none":
         # Disables all logging (i.e., CRITICAL and below)

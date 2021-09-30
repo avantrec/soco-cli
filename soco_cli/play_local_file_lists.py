@@ -63,7 +63,7 @@ def interaction_manager(speaker_ip: str) -> None:
             os._exit(0)
 
 
-def play_file_list(speaker: SoCo, tracks: List[str], options: str = ""):
+def play_file_list(speaker: SoCo, tracks: List[str], options: str = "") -> bool:
     """Play a list of files (tracks) with absolute pathnames."""
     options = options.lower()
 
