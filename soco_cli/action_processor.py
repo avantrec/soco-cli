@@ -974,6 +974,9 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
 def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_list):
     # Generate a list that represents which tracks to remove, denoted by '0'
     # Initially mark each track as '1' (retain)
+    if speaker.queue_size == 0:
+        error_report("Queue is empty")
+        return False
     queue = []
     for _ in range(speaker.queue_size):
         queue.append(1)
@@ -1042,7 +1045,7 @@ def remove_current_track_from_queue(
     speaker, action, args, soco_function, use_local_speaker_list
 ):
     if speaker.queue_size == 0:
-        error_report("No tracks in queue")
+        error_report("Queue is empty")
         return False
     current_track = int(speaker.get_current_track_info()["playlist_position"])
     logging.info("Removing track {}".format(current_track))
@@ -1057,7 +1060,7 @@ def remove_last_track_from_queue(
     queue_size = speaker.queue_size
     logging.info("Queue size is {}".format(queue_size))
     if queue_size == 0:
-        error_report("No tracks in queue")
+        error_report("Queue is empty")
         return False
     if len(args) == 1:
         try:
@@ -1080,6 +1083,9 @@ def remove_last_track_from_queue(
 
 @one_parameter
 def save_queue(speaker, action, args, soco_function, use_local_speaker_list):
+    if speaker.queue_size == 0:
+        error_report("Queue is empty")
+        return False
     speaker.create_sonos_playlist_from_queue(args[0])
     return True
 
