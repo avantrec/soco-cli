@@ -198,15 +198,19 @@ class Speakers:
         """Get information from a Sonos device"""
         try:
             speaker = soco.SoCo(str(ip_addr))
-            info = speaker.get_speaker_info(refresh=True)
-            return SonosDevice(
-                speaker.household_id,
-                str(ip_addr),
-                info["zone_name"],
-                speaker.is_visible,
-                info["model_name"],
-                info["display_version"],
-            )
+            logging.info("Querying device at {}".format(str(ip_addr)))
+            info = speaker.get_speaker_info(refresh=True, timeout=3.0)
+            if info is not None:
+                return SonosDevice(
+                    speaker.household_id,
+                    str(ip_addr),
+                    info["zone_name"],
+                    speaker.is_visible,
+                    info["model_name"],
+                    info["display_version"],
+                )
+            else:
+                raise Exception
         except:
             logging.info("Not a Sonos device: '{}'".format(ip_addr))
             return None
@@ -230,7 +234,9 @@ class Speakers:
         else:
             # Populate the device information for each speaker
             for device in devices:
-                self._speakers.append(self.get_sonos_device_data(device.ip_address))
+                speaker_data = self.get_sonos_device_data(device.ip_address)
+                if speaker_data is not None:
+                    self._speakers.append(speaker_data)
 
     def find(self, speaker_name, require_visible=True):
         """Find a speaker by name and return its SoCo object."""
