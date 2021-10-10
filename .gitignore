@@ -11,3 +11,5 @@ __pycache__/
 /exploration
 /audio_files
 /examples
+/.mypy_cache
+/.pytest_cache
