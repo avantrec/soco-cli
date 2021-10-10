@@ -1,4 +1,4 @@
-v0.4.23   -
+v0.4.23   - Add '/speakers' path to the HTTP API server
 v0.4.22   - Improve output of 'sleep_timer' action
 v0.4.21   - Add 'play_directory' action & notes about CD playback on macOS
 v0.4.20   - Add 'AIFF' to supported local file types, for direct CD playback

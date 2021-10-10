@@ -93,6 +93,13 @@ async def rediscover() -> Dict:
     return {"speakers_discovered": speakers}
 
 
+@sc_app.get("/speakers")
+async def speakers() -> Dict:
+    speakers = get_all_speaker_names()
+    print(PREFIX + "Speakers: {}".format(speakers))
+    return {"speakers": speakers}
+
+
 @sc_app.get("/{speaker}/{action}")
 async def action_0(speaker: str, action: str) -> Dict:
     return command_core(speaker, action, use_local=USE_LOCAL)

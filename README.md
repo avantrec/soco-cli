@@ -62,6 +62,7 @@
          * [Server Usage](#server-usage)
          * [HTTP Request Structure](#http-request-structure)
          * [Return Values](#return-values)
+         * [Listing Speakers](#listing-speakers)
          * [Rediscovering Speakers](#rediscovering-speakers)
          * [Inspecting the HTTP API](#inspecting-the-http-api)
       * [Using SoCo-CLI as a Python Library](#using-soco-cli-as-a-python-library)
@@ -73,7 +74,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Wed Sep 22 11:25:25 BST 2021 -->
+<!-- Added by: pwt, at: Sun Oct 10 09:06:50 BST 2021 -->
 
 <!--te-->
 
@@ -962,6 +963,10 @@ The **`exit_code`** field is an integer. This will be zero if the command comple
 If the command is successful, the **`result`** field contains the result string, which is exactly the string that would have been printed if the action had been performed on the command line.
 
 If the command is unsuccessful, the **`error_msg`** field contains an error message describing the error.
+
+### Listing Speakers
+
+To list the available speakers, use the `/speakers` URL path, e.g.: `http://192.168.0.100:8000/speakers`. The returned JSON string will list the speakers.
 
 ### Rediscovering Speakers
 
