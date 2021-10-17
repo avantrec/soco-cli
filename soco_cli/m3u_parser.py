@@ -35,7 +35,7 @@ def parse_m3u(m3u_file: str) -> List[Track]:
                 error_report("File '{}' lacks '#EXTM3U' as first line".format(m3u_file))
                 return []
 
-        playlist: List[Track] = []
+        playlist = []
         song = Track(None, None, None)
         for line in infile:
             line = line.strip()
