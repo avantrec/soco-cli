@@ -1,4 +1,4 @@
-soco >= 0.24.0
+soco >= 0.24.1
 tabulate
 rangehttpserver
 fastapi; python_version >= '3.6'
