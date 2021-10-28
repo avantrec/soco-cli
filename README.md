@@ -176,7 +176,6 @@ alias sm="sonos Move"
 alias sb="sonos Bedroom"
 alias sb2="sonos 'Bedroom 2'"
 alias ss="sonos Study"
-alias st="sonos Test"
 alias sd="sonos-discover"
 ```
 
@@ -224,7 +223,7 @@ Note that `_all_` can be used with every `sonos` operation: no checking is perfo
 
 ## Guidelines on Playing Content
 
-SoCo-CLI enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections, from **local libraries**, and from the **TuneIn 'My Radio Stations'** list. It also allows playback of audio files from the local filesystem.
+SoCo-CLI enables playback of content from the **Sonos Favourites** and **Sonos Playlists** collections, from **local libraries**, and from the **TuneIn 'My Radio Stations'** list. It also allows playback of **audio files from the local filesystem**, and can add **sharelinks** from the Spotify, Tidal and Deezer music services to the Sonos queue. On macOS, the contents of physical CDs can be played direct to Sonos.
 
 ### Radio Stations
 
