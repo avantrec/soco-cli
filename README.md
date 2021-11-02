@@ -461,7 +461,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
   4. Whether the alarm is enabled: `ON` or `OFF` (or `YES`, `NO`)
   5. What to play: `CHIME` or a URI (the URI should be enclosed in double quotes)
   6. Play mode: One of `NORMAL`, `SHUFFLE_NOREPEAT`, `SHUFFLE`, `REPEAT_ALL`, `REPEAT_ONE`, `SHUFFLE_REPEAT_ONE`
-  7. The volume to play at: 0-100
+  7. The volume to play at: `0`-`100`
   8. Whether to include grouped speakers: `ON` or `OFF` (or `YES`, `NO`)
  
   **Examples**:
