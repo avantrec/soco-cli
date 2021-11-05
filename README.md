@@ -559,7 +559,7 @@ Note that if a speaker is already playing, `wait_start` will proceed immediately
 
 The **`wait_end_track`** action will pause execution of `sonos` commands until the current track has ended, or until playback has otherwise paused or stopped. This is useful, for example, when one want to stop playback after the current track has ended:
 
-`sonos <speaker> wait_end_track : stop`
+`sonos <speaker> wait_end_track : <speaker> stop`
 
 ### The `wait_stopped_for <duration>` Action
 
