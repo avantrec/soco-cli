@@ -47,7 +47,6 @@ ENV_LOCAL = "USE_LOCAL_SPKR_CACHE"
 
 
 def main():
-
     # Create the argument parser
     parser = argparse.ArgumentParser(
         prog="sonos",
@@ -266,6 +265,11 @@ def main():
     loop_pointer = -1
 
     loop_start_time = None
+
+    # Keep track of SPKR environment label insertions, to avoid repeats
+    # when looping
+    env_spkr_inserted = [False for i in range(len(rewindable_sequences))]
+
     for sequence in rewindable_sequences:
         try:
             speaker_name = sequence[0]
@@ -340,7 +344,7 @@ def main():
                         continue
                 logging.info("Rewinding to command number {}".format(loop_pointer + 2))
                 rewindable_sequences.rewind_to(loop_pointer + 1)
-                sequence_pointer = loop_pointer
+                sequence_pointer = loop_pointer + 1
                 continue
 
             # Special case: the 'loop_until' action
@@ -374,7 +378,7 @@ def main():
                         continue
                 logging.info("Rewinding to command number {}".format(loop_pointer + 2))
                 rewindable_sequences.rewind_to(loop_pointer + 1)
-                sequence_pointer = loop_pointer
+                sequence_pointer = loop_pointer + 1
                 continue
 
             # Special case: the 'wait' actions
@@ -384,13 +388,15 @@ def main():
 
             # Use the speaker name from the environment?
             if env_speaker:
-                logging.info(
-                    "Getting speaker name '{}' from the $SPKR environment variable".format(
-                        env_speaker
+                if env_spkr_inserted[sequence_pointer] is False:
+                    logging.info(
+                        "Getting speaker name '{}' from the $SPKR environment variable".format(
+                            env_speaker
+                        )
                     )
-                )
-                sequence.insert(0, env_speaker)
-                speaker_name = env_speaker
+                    sequence.insert(0, env_speaker)
+                    speaker_name = env_speaker
+                    env_spkr_inserted[sequence_pointer] = True
 
             # General action processing
             if len(sequence) < 2:
@@ -461,6 +467,11 @@ def main():
                             compact=compact,
                         )
                     # Standard action processing
+                    logging.info(
+                        "Invoking 'run_command' with '{} {} ...'".format(
+                            speaker, action
+                        )
+                    )
                     exit_code, output_msg, error_msg = run_command(
                         speaker,
                         action,
