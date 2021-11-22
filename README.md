@@ -636,7 +636,7 @@ sonos -i
 
 Interactive shell mode creates a SoCo-CLI command line session for entering `sonos` commands. Compared to using individual `sonos` invocations, using the shell is faster to perform operations, and requires less typing.
 
-Most `sonos` actions are accepted, except for the `loop` actions. Multiple actions can be submitted on a single command line using the ` : ` separator. 
+Most `sonos` actions are accepted. Multiple actions can be submitted on a single command line using the ` : ` separator. Command **aliases** can be created for commonly used actions and sequences of actions. A **single-keystroke** mode allows action invocations using one touch of the keyboard. 
 
 ### Usage
 

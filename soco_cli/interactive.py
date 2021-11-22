@@ -9,9 +9,13 @@ try:
     import readline
 
     RL = True
+    UNIX = True
+    WINDOWS = False
 except ImportError:
 
     RL = False
+    WINDOWS = True
+    UNIX = False
 
 from os import chdir
 from shlex import split as shlex_split
@@ -160,6 +164,33 @@ def interactive_loop(
             else:
                 command_line = input(prompt)
             if command_line == "":
+                continue
+
+            # Check for loop statements; run in a subprocess
+            if "loop" in command_line:
+                if speaker is not None:
+                    # This is a way of using the required speaker for each
+                    # invocation in the list of commands
+                    if UNIX:
+                        command_line = (
+                            "export SPKR="
+                            + speaker.ip_address
+                            + " && sonos "
+                            + command_line
+                        )
+                    elif WINDOWS:
+                        command_line = (
+                            'set "SPKR='
+                            + speaker.ip_address
+                            + '" && sonos '
+                            + command_line
+                        )
+                else:
+                    command_line = "sonos " + command_line
+                logging.info(
+                    "'loop' statement found, command line = '{}'".format(command_line)
+                )
+                _exec_command_line(command_line)
                 continue
 
             # Parse multiple action sequences
@@ -861,6 +892,22 @@ def _exec_action(speaker_ip: str, action: str, args: List[str]) -> None:
         CTRL_C_MSG_ISSUED = True
 
     _exec(command_line)
+
+
+def _exec_command_line(command_line: str) -> None:
+    """Runs a sonos command line as a subprocess, in its own shell.
+
+    Args:
+        command_line (str): The command line to execute.
+    """
+
+    set_suspend_sighandling(suspend=True)
+    try:
+        logging.info("Running command: '{}'".format(command_line))
+        subprocess.run(command_line, shell=True)
+    except Exception as e:
+        print(e)
+    set_suspend_sighandling(suspend=False)
 
 
 CTRL_C_MSG_ISSUED = False
