@@ -265,6 +265,7 @@ def main():
     loop_pointer = -1
 
     loop_start_time = None
+    loop_duration = None
 
     # Keep track of SPKR environment label insertions, to avoid repeats
     # when looping
@@ -319,7 +320,6 @@ def main():
                     error_report(
                         "Action 'loop_for' requires one parameter (check spaces around the ':' separator)"
                     )
-                loop_duration = 0
                 if loop_start_time is None:
                     loop_start_time = time.time()
                     try:
@@ -349,7 +349,6 @@ def main():
 
             # Special case: the 'loop_until' action
             if speaker_name.lower() == "loop_until":
-                loop_duration = 0
                 if len(sequence) != 2:
                     error_report(
                         "Action 'loop_until' requires one parameter (check spaces around the ':' separator)"
