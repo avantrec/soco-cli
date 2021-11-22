@@ -166,33 +166,6 @@ def interactive_loop(
             if command_line == "":
                 continue
 
-            # Check for loop statements; run in a subprocess
-            if "loop" in command_line:
-                if speaker is not None:
-                    # This is a way of using the required speaker for each
-                    # invocation in the list of commands
-                    if UNIX:
-                        command_line = (
-                            "export SPKR="
-                            + speaker.ip_address
-                            + " && sonos "
-                            + command_line
-                        )
-                    elif WINDOWS:
-                        command_line = (
-                            'set "SPKR='
-                            + speaker.ip_address
-                            + '" && sonos '
-                            + command_line
-                        )
-                else:
-                    command_line = "sonos " + command_line
-                logging.info(
-                    "'loop' statement found, command line = '{}'".format(command_line)
-                )
-                _exec_command_line(command_line)
-                continue
-
             # Parse multiple action sequences
             cli_parser = CLIParser()
             try:
@@ -383,12 +356,15 @@ def interactive_loop(
                     alias_name = command.pop(0)
                     if alias_name == "alias":
                         print("Not permitted: cannot create alias for 'alias'")
-                        continue
+                        break
                     if len(command) == 0:
                         if am.create_alias(alias_name, None):
                             print("Alias '{}' removed".format(alias_name))
                         else:
                             print("Alias '{}' not found".format(alias_name))
+                    if "loop" in command_line:
+                        print("Not permitted: cannot create alias containing loops")
+                        break
                     else:
                         # Have to collect the remaining sequences: they're all
                         # part of the alias. Reconstruction required.
@@ -415,6 +391,35 @@ def interactive_loop(
                     _set_actions_and_commands_list(
                         use_local_speaker_list=use_local_speaker_list
                     )
+                    continue
+
+                # Check for loop statements; run in a subprocess
+                if "loop" in command_line:
+                    if speaker is not None:
+                        # This is a way of using the required speaker for each
+                        # invocation in the list of commands
+                        if UNIX:
+                            command_line = (
+                                "export SPKR="
+                                + speaker.ip_address
+                                + " && sonos "
+                                + command_line
+                            )
+                        elif WINDOWS:
+                            command_line = (
+                                'set "SPKR='
+                                + speaker.ip_address
+                                + '" && sonos '
+                                + command_line
+                            )
+                    else:
+                        command_line = "sonos " + command_line
+                    logging.info(
+                        "'loop' statement found, command line = '{}'".format(
+                            command_line
+                        )
+                    )
+                    _exec_command_line(command_line)
                     continue
 
                 # Command processing
