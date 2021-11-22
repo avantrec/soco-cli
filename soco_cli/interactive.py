@@ -420,7 +420,7 @@ def interactive_loop(
                         )
                     )
                     _exec_command_line(command_line)
-                    continue
+                    break
 
                 # Command processing
                 try:
