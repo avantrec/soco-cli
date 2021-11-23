@@ -396,7 +396,9 @@ def interactive_loop(
                     continue
 
                 # Check for loop statements; run in a subprocess
-                if _exec_loop_in_subprocess(speaker, command_line):
+                if _exec_loop_in_subprocess(
+                    speaker, command_line, use_local_speaker_list
+                ):
                     break
 
                 # Command processing
@@ -895,13 +897,16 @@ def _exec_command_line(command_line: str) -> None:
     set_suspend_sighandling(suspend=False)
 
 
-def _exec_loop_in_subprocess(speaker: Union[SoCo, None], command_line: str) -> bool:
+def _exec_loop_in_subprocess(
+    speaker: Union[SoCo, None], command_line: str, use_local: bool
+) -> bool:
     """If there's a loop statement, run the command in a subprocess.
 
     Args:
         speaker (SoCo, None): The speaker to which the command is targeted, or
             None if the speaker is in the command line.
         command_line (str): The complete command line.
+        use_local (bool): use the local speaker list.
 
     Returns:
         bool: True if there's a loop statement, False otherwise.
@@ -909,19 +914,30 @@ def _exec_loop_in_subprocess(speaker: Union[SoCo, None], command_line: str) -> b
     if any(
         word in command_line.split() for word in ["loop", "loop_until ", "loop_for"]
     ):
+        sonos_command = "sonos "
         if speaker is not None:
             # This is a way of using the required speaker for each
             # invocation in the list of commands, using the SPKR env. variable.
             if UNIX:
                 command_line = (
-                    "export SPKR=" + speaker.ip_address + " && sonos " + command_line
+                    "export SPKR="
+                    + speaker.ip_address
+                    + " && "
+                    + sonos_command
+                    + command_line
                 )
             elif WINDOWS:
                 command_line = (
-                    'set "SPKR=' + speaker.ip_address + '" && sonos ' + command_line
+                    'set "SPKR='
+                    + speaker.ip_address
+                    + '" && '
+                    + sonos_command
+                    + command_line
                 )
         else:
-            command_line = "sonos " + command_line
+            if use_local:
+                sonos_command = sonos_command + "-l "
+            command_line = sonos_command + command_line
         logging.info("'loop' statement found, command line = '{}'".format(command_line))
         _exec_command_line(command_line)
         return True
