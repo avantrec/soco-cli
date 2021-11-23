@@ -364,8 +364,10 @@ def interactive_loop(
                             print("Alias '{}' removed".format(alias_name))
                         else:
                             print("Alias '{}' not found".format(alias_name))
-                    if "loop" in command_line:
-                        print("Not permitted: cannot create alias containing loops")
+                    if _loop_action_in_command_line(command_line):
+                        print(
+                            "Not permitted: cannot create alias containing 'loop' actions"
+                        )
                         break
                     else:
                         # Have to collect the remaining sequences: they're all
@@ -911,9 +913,7 @@ def _exec_loop_in_subprocess(
     Returns:
         bool: True if there's a loop statement, False otherwise.
     """
-    if any(
-        word in command_line.split() for word in ["loop", "loop_until ", "loop_for"]
-    ):
+    if _loop_action_in_command_line(command_line):
         sonos_command = "sonos "
         if speaker is not None:
             # This is a way of using the required speaker for each
@@ -943,3 +943,17 @@ def _exec_loop_in_subprocess(
         return True
 
     return False
+
+
+def _loop_action_in_command_line(command_line: str) -> bool:
+    """Does the command line contain a loop statement
+
+    Args:
+        command_line (str): The command line to test.
+
+    Returns:
+        bool: True if there's a loop in this command line.
+    """
+    return any(
+        word in command_line.split() for word in ["loop", "loop_until", "loop_for"]
+    )
