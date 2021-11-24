@@ -108,7 +108,9 @@ Please see the CHANGELOG.txt file for a list of the user-facing changes in each 
 
 ### The `sonos` Command
 
-The installer adds the `sonos` command to the PATH. All commands have the form:
+The installer adds the `sonos` command to the PATH. If the `sonos` command is not found, make sure your `PATH` is set up correctly for the Python installation you want to use.
+
+All commands have the form:
 
 ```
 sonos SPEAKER ACTION <parameters>
