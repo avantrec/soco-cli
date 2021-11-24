@@ -79,8 +79,15 @@ ACTIONS_TO_EXEC_NO_SPEAKER = [
 ]
 
 
+LOG_SETTING = ""
+
+
 def interactive_loop(
-    speaker_name, use_local_speaker_list=False, no_env=False, single_keystroke=False
+    speaker_name,
+    log_setting,
+    use_local_speaker_list=False,
+    no_env=False,
+    single_keystroke=False,
 ):
     """
     The main interactive loop for gathering and processing interactive commands.
@@ -88,10 +95,14 @@ def interactive_loop(
     Args:
         speaker_name (str): The name of the speaker supplied if supplied on the command
             line.
+        log_setting (str): The logging option.
         use_local_speaker_list (bool): Whether to use cached discovery.
         no_env (bool): Whether to ignore environment variables.
         single_keystroke (bool): Whether to start in single keystroke mode.
     """
+
+    global LOG_SETTING
+    LOG_SETTING = "--log=" + log_setting
 
     speaker = None
     saved_speaker = None
@@ -866,14 +877,7 @@ def _exec_action(speaker_ip: str, action: str, args: List[str]) -> None:
         command_line = [sys.argv[0], speaker_ip, action, *args]
 
     # Pass through logging option
-    for position, arg in enumerate(sys.argv[1:]):
-        if arg.startswith("--log="):
-            command_line.insert(1, arg)
-            break
-        if arg == "--log":
-            command_line.insert(1, arg)
-            command_line.append(sys.argv[1:][position + 1])
-            break
+    command_line.insert(1, LOG_SETTING)
 
     global CTRL_C_MSG_ISSUED
     if CTRL_C_MSG_ISSUED is False:
@@ -914,7 +918,8 @@ def _exec_loop_in_subprocess(
         bool: True if there's a loop statement, False otherwise.
     """
     if _loop_action_in_command_line(command_line):
-        sonos_command = "sonos "
+        global LOG_SETTING
+        sonos_command = "sonos " + LOG_SETTING + " "
         if speaker is not None:
             # This is a way of using the required speaker for each
             # invocation in the list of commands, using the SPKR env. variable.

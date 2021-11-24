@@ -243,6 +243,7 @@ def main():
             speaker_name = args.parameters[0]
         interactive_loop(
             speaker_name,
+            args.log,
             use_local_speaker_list=use_local_speaker_list,
             no_env=args.no_env,
             single_keystroke=sk,
