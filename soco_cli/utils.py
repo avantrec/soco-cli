@@ -331,11 +331,12 @@ class RewindableList(Sequence):
     that can be rewound during iteration.
     """
 
-    def __init__(self, items):
+    def __init__(self, items=[]):
         self._items = items
         self._index = 0
 
     def __iter__(self):
+        self.rewind()
         return self
 
     def __getitem__(self, item):
