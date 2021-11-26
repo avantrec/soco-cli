@@ -17,6 +17,7 @@ except ImportError:
     WINDOWS = True
     UNIX = False
 
+from copy import deepcopy
 from os import chdir
 from shlex import split as shlex_split
 from typing import List, Union
@@ -211,6 +212,11 @@ def interactive_loop(
                     command_sequences.rewind_to(index)
                     continue
 
+                # Aliases are now fully unpacked
+                if not command[0] == "alias":
+                    if _exec_loop(speaker, command, command_sequences, use_local_speaker_list):
+                        break
+
                 if command[0] == "0":
                     # Unset the active speaker
                     logging.info("Unset active speaker")
@@ -375,11 +381,6 @@ def interactive_loop(
                             print("Alias '{}' removed".format(alias_name))
                         else:
                             print("Alias '{}' not found".format(alias_name))
-                    if _loop_action_in_command_line(command_line):
-                        print(
-                            "Not permitted: cannot create alias containing 'loop' actions"
-                        )
-                        break
                     else:
                         # Have to collect the remaining sequences: they're all
                         # part of the alias. Reconstruction required.
@@ -947,3 +948,81 @@ def _loop_action_in_command_line(command_line: str) -> bool:
     return any(
         word in command_line.split() for word in ["loop", "loop_until", "loop_for"]
     )
+
+
+def _loop_in_command_sequences(command_sequences: RewindableList) -> bool:
+    """Is there a loop statement in any of the command sequences?"""
+    for sequence in command_sequences:
+        if any(
+            loop_action in sequence
+            for loop_action in ["loop", "loop_until", "loop_for"]
+        ):
+            logging.info("'loop' action found in command sequences")
+            return True
+    return False
+
+
+def _exec_loop(
+    speaker: Union[SoCo, None], current_command: list, remaining_sequences: RewindableList, use_local: bool
+) -> bool:
+    """If there's a loop statement, run the actions in a subprocess.
+
+    Args:
+        speaker (SoCo, None): The speaker to which the command is targeted, or
+            None if the speaker is in the command line.
+        current_command (list): The current command sequence
+        remaining_sequences (RewindableList): The remaining list of command sequences
+        use_local (bool): use the local speaker list.
+
+    Returns:
+        bool: True if there's a loop statement, False otherwise.
+    """
+
+    # Reassemble the complete command sequence list
+    command_sequences = deepcopy(remaining_sequences)
+    command_sequences.insert(0, current_command)
+
+    if _loop_in_command_sequences(command_sequences):
+        command_line = ""
+        first = True
+        while True:
+            try:
+                sequence = command_sequences.pop_next()
+                if not first:
+                    command_line += " : "
+                command_line += " ".join(sequence)
+                if first:
+                    first = False
+            except IndexError:
+                break
+
+        global LOG_SETTING
+        sonos_command = "sonos " + LOG_SETTING + " "
+        if speaker is not None:
+            # This is a way of using the required speaker for each
+            # invocation in the list of commands, using the SPKR env. variable.
+            if UNIX:
+                command_line = (
+                    "export SPKR="
+                    + speaker.ip_address
+                    + " && "
+                    + sonos_command
+                    + command_line
+                )
+            elif WINDOWS:
+                command_line = (
+                    'set "SPKR='
+                    + speaker.ip_address
+                    + '" && '
+                    + sonos_command
+                    + command_line
+                )
+        else:
+            if use_local:
+                sonos_command = sonos_command + "-l "
+            command_line = sonos_command + command_line
+        logging.info("'loop' statement found, command line = '{}'".format(command_line))
+        _exec_command_line(command_line)
+        return True
+
+    return False

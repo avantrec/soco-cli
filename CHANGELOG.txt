@@ -1,4 +1,4 @@
-v0.4.30   -
+v0.4.30   - Allow the use of 'loop' actions in interactive shell aliases
 v0.4.29   - Maintenance release
 v0.4.28   - Add 'audio_format' action for soundbars
 v0.4.27   - Maintenance release
