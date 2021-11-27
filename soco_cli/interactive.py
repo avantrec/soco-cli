@@ -700,7 +700,6 @@ class AliasProcessor:
 
     def __init__(self):
         self._used_aliases = []
-        self._seq_number = 0
         self._recurse_level = 0
         self._command_count = 0
         self._index = 0
@@ -709,28 +708,27 @@ class AliasProcessor:
     def process(self, command, am, command_list):
 
         self._recurse_level += 1
+        alias_name = command[0]
+        alias_parms = command[1:]
+        self._command_list = command_list
+        seq_number = len(command_list)
 
         logging.info(
             "Alias unpacking: recursion level {}, sequence number {}".format(
-                self._recurse_level, self._seq_number
+                self._recurse_level, seq_number
             )
         )
-
-        alias_name = command[0]
-        alias_parms = command[1:]
-
-        self._command_list = command_list
 
         # Detect loops
         for used_alias in self._used_aliases:
             if used_alias[0] != self._recurse_level:
-                if used_alias[1] == self._seq_number and used_alias[2] == alias_name:
+                if used_alias[1] == seq_number and used_alias[2] == alias_name:
                     # Alias name reused at different recursion levels but within
                     # the unpacking of the same sequence signifies a loop.
                     print("Error: Alias loop detected ... stopping")
                     self._remove_added_commands()
                     return False
-        self._used_aliases.append((self._recurse_level, self._seq_number, alias_name))
+        self._used_aliases.append((self._recurse_level, seq_number, alias_name))
 
         alias_actions = am.action(alias_name)
         try:
@@ -746,11 +744,8 @@ class AliasProcessor:
         logging.info("Unpacking the alias '{}' -> '{}'".format(alias_name, sequences))
 
         index = command_list.index()
-        for idx, sequence in enumerate(sequences, start=1):
-            self._seq_number = idx
-
+        for sequence in sequences:
             alias_parms_local = alias_parms.copy()
-
             # Deprecated
             if "_" in sequence:
                 logging.info("Deprecated: Suppressing any additional parameters")
@@ -807,7 +802,7 @@ class AliasProcessor:
                     index += 1
                     self._command_count += 1
                     self._index = index
-
+                    logging.info("Current command list = {}".format(command_list))
             except IndexError:
                 logging.info("Empty sequence ... returning")
                 return False
