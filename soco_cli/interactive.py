@@ -746,39 +746,31 @@ class AliasProcessor:
         index = command_list.index()
         for sequence in sequences:
             alias_parms_local = alias_parms.copy()
-            # Deprecated
-            if "_" in sequence:
-                logging.info("Deprecated: Suppressing any additional parameters")
-                print("*** Warning: The use of '_' is now deprecated in favour of")
-                print("*** positional arguments (%1, %2, etc.).")
-                position = sequence.index("_")
-                sequence = sequence[:position]
-            else:
-                # Positional argument substitution: %1, %2, etc.
-                alias_parms_used = []
-                for i, item in enumerate(sequence):
-                    if item in self._arg_names:
-                        parm_index = int(item[1]) - 1
-                        try:
-                            sequence[i] = alias_parms_local[parm_index]
-                            logging.info(
-                                "Substituting '{}' for arg. {}".format(
-                                    alias_parms_local[parm_index], item
-                                )
+            # Positional argument substitution: %1, %2, etc.
+            alias_parms_used = []
+            for i, item in enumerate(sequence):
+                if item in self._arg_names:
+                    parm_index = int(item[1]) - 1
+                    try:
+                        sequence[i] = alias_parms_local[parm_index]
+                        logging.info(
+                            "Substituting '{}' for arg. {}".format(
+                                alias_parms_local[parm_index], item
                             )
-                            # This allows reuse of the same parameter
-                            alias_parms_used.append(parm_index)
-                        except IndexError:
-                            logging.info("No value found for arg. {}".format(item))
-                            sequence[i] = None
+                        )
+                        # This allows reuse of the same parameter
+                        alias_parms_used.append(parm_index)
+                    except IndexError:
+                        logging.info("No value found for arg. {}".format(item))
+                        sequence[i] = None
 
-                # Remove unsatisfied arguments and substituted parameters
-                sequence = [x for x in sequence if x is not None]
-                alias_parms_local = [
-                    y
-                    for x, y in enumerate(alias_parms_local)
-                    if not x in alias_parms_used
-                ]
+            # Remove unsatisfied arguments and substituted parameters
+            sequence = [x for x in sequence if x is not None]
+            alias_parms_local = [
+                y
+                for x, y in enumerate(alias_parms_local)
+                if not x in alias_parms_used
+            ]
 
             # Recurse if the sequence is itself an alias
             try:
