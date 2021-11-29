@@ -1,4 +1,4 @@
-v0.4.25   -
+v0.4.25   - Add 'switch_to_tv' action
 v0.4.24   - Allow use of the 'loop' actions in interactive mode
 v0.4.23   - Add '/speakers' path to the HTTP API server
 v0.4.22   - Improve output of 'sleep_timer' action

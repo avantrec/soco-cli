@@ -385,6 +385,7 @@ sonos Kitchen play_from_queue 5
 - **`sleep_timer <duration|off|cancel>` (or `sleep`)**: Set the sleep timer to `<duration>`, which can be **one** of seconds, minutes or hours. Floating point values for the duration are acceptable. Examples: **`10s`, `30m`, `1.5h`**. If the s/m/h is omitted, `s` (seconds) is assumed. The time duration formats HH:MM and HH:MM:SS can also be used. To **cancel** a sleep timer, use `off` or `cancel` instead of a duration.
 - **`sleep_at <HH:MM:SS>`**: Sets the sleep timer to sleep at a time up to 24 hours in the future. For example, to set the speaker to sleep at 4pm, use `sleep_at 16:00`.
 - **`stop`**: Stop playback.
+- **`switch_to_tv`**: Switches to the TV input. Only applicable to soundbars and the Sonos Amp.
 - **`track`**: Return information about the currently playing track.
 - **`track_follow`** (or **`tf`**): Returns information about the currently playing track, and each subsequent track when the track changes. This action keeps running until cancelled using CTRL-C.
 - **`track_follow_compact`** (or **`tfc`**): As `track_follow`, but with a more compact single line representation for each track.
