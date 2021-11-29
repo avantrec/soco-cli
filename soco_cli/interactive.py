@@ -767,9 +767,7 @@ class AliasProcessor:
             # Remove unsatisfied arguments and substituted parameters
             sequence = [x for x in sequence if x is not None]
             alias_parms_local = [
-                y
-                for x, y in enumerate(alias_parms_local)
-                if not x in alias_parms_used
+                y for x, y in enumerate(alias_parms_local) if not x in alias_parms_used
             ]
 
             # Recurse if the sequence is itself an alias

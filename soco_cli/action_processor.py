@@ -2841,7 +2841,7 @@ def add_sharelink_to_queue(
 @zero_parameters
 def reboot_count(speaker, action, args, soco_function, use_local_speaker_list):
     print(speaker.boot_seqnum)
-    return True@zero_parameters
+    return True
 
 
 @zero_parameters
@@ -2852,7 +2852,6 @@ def switch_to_tv(speaker, action, args, soco_function, use_local_speaker_list):
 
     error_report("Speaker '{}' is not a soundbar".format(speaker.player_name))
     return False
-
 
 
 def process_action(speaker, action, args, use_local_speaker_list=False) -> bool:
