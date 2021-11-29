@@ -1,3 +1,4 @@
+v0.4.26   -
 v0.4.25   - Add 'switch_to_tv' action
 v0.4.24   - Allow use of the 'loop' actions in interactive mode
 v0.4.23   - Add '/speakers' path to the HTTP API server
