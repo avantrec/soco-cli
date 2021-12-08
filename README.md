@@ -74,7 +74,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Sun Oct 10 09:06:50 BST 2021 -->
+<!-- Added by: pwt, at: Wed Dec  8 14:26:18 GMT 2021 -->
 
 <!--te-->
 
@@ -344,6 +344,10 @@ sonos Kitchen play_from_queue 5
 - **`relative_bass <adjustment>` (or `rb`)** Increase or reduce the bass setting by `<adjustment>`, a value between -10 and 10.
 - **`relative_treble <adjustment>` (or `rt`)** Increase or reduce the treble setting by `<adjustment>`, a value between -10 and 10.
 - **`relative_volume <adjustment>` (or `rel_vol`, `rv`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
+- **`sub_enabled`**: Returns `on` if the zone's subwoofer is enabled, otherwise `off`.
+- **`sub_enabled <on|off>`**: Enables or disables a zone's subwoofer.
+- **`surround_enabled`**: Returns `on` if the zone's surround speakers are enabled, otherwise `off`.
+- **`surround_enabled <on|off>`**: Enables or disables a zone's surround speakers.
 - **`treble`**: Returns the treble setting of the speaker, from -10 to 10.
 - **`treble <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.
 - **`trueplay`**: Returns whether a speaker's Trueplay profile is enabled, 'on' or 'off'.
@@ -498,8 +502,12 @@ The actions below search the Sonos Music library.
 - **`buttons <on|off>`**: Sets whether the speaker's control buttons are on or off.
 - **`groups`**: Lists all groups in the Sonos system. Also includes single speakers as groups of one, and paired/bonded sets as groups.
 - **`groupstatus`**: Indicates whether the speaker is part of a group, and whether it's part of a stereo pair or bonded home theatre configuration. Note that first can override the second: if a paired/bonded coordinator speaker is also part of a group, the group will be reported but not the paired/bonded status.
+- **`has_satellites`**: Returns `yes` if the zone/room has satellite (surround) speakers bonded, otherwise `no`.
+- **`has_subwoofer`**: Returns `yes` if the zone/room has a subwoofer bonded, otherwise `no`.
 - **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
 - **`is_indexing`**: Reports on whether the system is currently in the process of reindexing its local libraries: possible responses are `yes` or `no`.
+- **`is_satellite`**: Returns `yes` if the target device is a satellite (surround) speaker, otherwise `no`.
+- **`is_subwoofer`**: Returns `yes` if the target device is a subwoofer, otherwise `no`.
 - **`libraries`** (or **`shares`**): List the local music library shares.
 - **`reindex`**: Start a reindex of the local music libraries. Will not proceed if a reindex is already underway.
 - **`reboot_count`**: Returns the number of times a speaker has been rebooted.

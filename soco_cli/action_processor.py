@@ -234,6 +234,14 @@ def on_off_action(speaker, action, args, soco_function, use_local_speaker_list):
 
 
 @zero_parameters
+def true_false_action(speaker, action, args, soco_function, use_local_speaker_list):
+    """Method to deal with status actions that have 'true|false semantics"""
+    state = "yes" if getattr(speaker, soco_function) else "no"
+    print(state)
+    return True
+
+
+@zero_parameters
 def no_args_no_output(speaker, action, args, soco_function, use_local_speaker_list):
     if soco_function == "separate_stereo_pair" and StrictVersion(
         soco.__version__
@@ -3231,4 +3239,10 @@ actions = {
     "play_dir": SonosFunction(play_directory, "", True),
     "play_cd": SonosFunction(play_directory, "", True),  # Undocumented
     "switch_to_tv": SonosFunction(switch_to_tv, "", False),
+    "has_subwoofer": SonosFunction(true_false_action, "has_subwoofer", False),
+    "is_subwoofer": SonosFunction(true_false_action, "is_subwoofer", False),
+    "has_satellites": SonosFunction(true_false_action, "has_satellites", False),
+    "is_satellite": SonosFunction(true_false_action, "is_satellite", False),
+    "sub_enabled": SonosFunction(on_off_action, "sub_enabled", False),
+    "surround_enabled": (on_off_action, "surround_enabled", False),
 }
