@@ -1,3 +1,4 @@
+v0.4.27   -
 v0.4.26   - Add subwoofer/surround speaker status and control actions
 v0.4.25   - Add 'switch_to_tv' action
 v0.4.24   - Allow use of the 'loop' actions in interactive mode
