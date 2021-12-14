@@ -3244,5 +3244,5 @@ actions = {
     "has_satellites": SonosFunction(true_false_action, "has_satellites", False),
     "is_satellite": SonosFunction(true_false_action, "is_satellite", False),
     "sub_enabled": SonosFunction(on_off_action, "sub_enabled", False),
-    "surround_enabled": (on_off_action, "surround_enabled", False),
+    "surround_enabled": SonosFunction(on_off_action, "surround_enabled", False),
 }
