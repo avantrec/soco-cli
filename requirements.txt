@@ -1,5 +1,6 @@
 soco >= 0.25.2
 tabulate
 rangehttpserver
+xmltodict
 fastapi; python_version >= '3.6'
 uvicorn; python_version >= '3.6'

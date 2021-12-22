@@ -2795,4 +2795,5 @@ actions = {
     "sub_enabled": SonosFunction(on_off_action, "sub_enabled", False),
     "surround_enabled": SonosFunction(on_off_action, "surround_enabled", False),
     "audio_format": SonosFunction(audio_format, "", True),
+    "copy_modify_alarm": SonosFunction(alarms.copy_modify_alarm, "", False),
 }

@@ -481,3 +481,13 @@ def snooze_alarm(speaker, action, args, soco_function, use_local_speaker_list):
         return False
 
     return True
+
+
+@two_parameters
+def copy_modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
+    alarm_id = args[0]
+    alarm_parms = args[1]
+    alarms = soco.alarms.get_alarms(speaker)
+    alarm
+    print(alarms)
+    return True
