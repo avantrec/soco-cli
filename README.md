@@ -496,6 +496,7 @@ The actions below search the Sonos Music library.
 
 ### Speaker and Sonos System Information
 
+- **`audio_format`**: Soundbars only: report the audio format currently being played.
 - **`available_actions`**: List the currently available speaker actions (play, pause, seek, next, etc.).  
 - **`battery`**: Shows the battery status for Sonos speakers that contain batteries.
 - **`buttons`**: Returns whether the speaker's control buttons are enabled, 'on' or 'off'.

@@ -1,4 +1,4 @@
-v0.4.28   -
+v0.4.28   - Add 'audio_format' action for soundbars
 v0.4.27   - Maintenance release
 v0.4.26   - Add subwoofer/surround speaker status and control actions
 v0.4.25   - Add 'switch_to_tv' action

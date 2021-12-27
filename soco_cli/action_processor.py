@@ -2862,6 +2862,16 @@ def switch_to_tv(speaker, action, args, soco_function, use_local_speaker_list):
     return False
 
 
+@zero_parameters
+def audio_format(speaker, action, args, soco_function, use_local_speaker_list):
+    if speaker.is_soundbar:
+        print(speaker.audio_input_format)
+        return True
+
+    error_report("Speaker '{}' is not a soundbar".format(speaker.player_name))
+    return False
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False) -> bool:
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -3245,4 +3255,5 @@ actions = {
     "is_satellite": SonosFunction(true_false_action, "is_satellite", False),
     "sub_enabled": SonosFunction(on_off_action, "sub_enabled", False),
     "surround_enabled": SonosFunction(on_off_action, "surround_enabled", False),
+    "audio_format": SonosFunction(audio_format, "", True),
 }
