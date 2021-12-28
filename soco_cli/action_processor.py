@@ -2865,7 +2865,11 @@ def switch_to_tv(speaker, action, args, soco_function, use_local_speaker_list):
 @zero_parameters
 def audio_format(speaker, action, args, soco_function, use_local_speaker_list):
     if speaker.is_soundbar:
-        print(speaker.audio_input_format)
+        audio_format = speaker.soundbar_audio_input_format
+        if audio_format is None:
+            print("No audio format information is available")
+        else:
+            print(audio_format)
         return True
 
     error_report("Speaker '{}' is not a soundbar".format(speaker.player_name))
