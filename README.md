@@ -137,6 +137,7 @@ SoCo-CLI will try a number of approaches to find a speaker's IP address by speak
 - **`sonos 192.168.0.10 mute`** Returns the mute state ('on' or 'off') of the speaker at the given IP address.
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`** Plays 'Jazz24' for 30 minutes, then stops playback.
+- **`sonos Study play_file "Zoo Station.mp3"`** Plays a local audio file.
 
 ### The `SPKR` Environment Variable
 
