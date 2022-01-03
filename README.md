@@ -459,6 +459,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 
 - **`alarms`** (or **`list_alarms`**): List the alarms in the Sonos system. Each alarm has a numeric ID that can be used in other alarm actions.
 - **`copy_alarm <alarm_ID>`**: Copies the alarm with ID `alarm_ID` to the target speaker. Note that alarms cannot be copied back to the same speaker.
+- **`copy_modify_alarm <alarm_ID> <alarm_spec>`**: Copies an existing alarm and modifies it according to an alarm specification. See `create_alarm` and `modify_alarm` for details of the alarm specification. Note that the copied alarm **must** have its start time modified.
 - **`create_alarm <alarm_spec>`** (or **`add_alarm`**): Creates a new alarm for the target speaker. The `alarm_spec` is a comma-separated list of exactly **eight** parameters (without spaces around the commas). The specification of the parameters is as follows:
   1. Alarm start time: HH:MM
   2. Alarm duration: HH:MM
