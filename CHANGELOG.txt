@@ -1,3 +1,4 @@
+v0.4.32   -
 v0.4.31   - Add 'copy_modify_alarm' action
 v0.4.30   - Allow the use of 'loop' actions in interactive shell aliases
 v0.4.29   - Maintenance release
