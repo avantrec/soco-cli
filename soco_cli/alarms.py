@@ -3,7 +3,7 @@
 import logging
 import time
 from copy import copy
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import soco  # type: ignore
 import soco.alarms  # type: ignore
@@ -311,6 +311,7 @@ def copy_modify_alarm(speaker, action, args, soco_function, use_local_speaker_li
     # Create a new alarm from the existing one
     new_alarm = copy(alarm)
     new_alarm._alarm_id = None
+    new_alarm.zone = speaker
 
     # Apply modifications
     if not _modify_alarm_object(new_alarm, alarm_parms):
