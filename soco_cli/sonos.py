@@ -401,7 +401,7 @@ def main():
             # General action processing
             if len(sequence) < 2:
                 error_report(
-                    "At least 2 parameters required in action sequence '{}'".format(
+                    "At least 2 parameters required in action sequence '{}'; did you supply a speaker name?".format(
                         sequence
                     )
                 )
