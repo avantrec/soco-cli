@@ -74,7 +74,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Wed Dec  8 14:26:18 GMT 2021 -->
+<!-- Added by: pwt, at: Tue Jan  4 21:44:22 GMT 2022 -->
 
 <!--te-->
 
@@ -457,10 +457,8 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 
 ### Alarms
 
-- **`alarms`** (or **`list_alarms`**): List the alarms in the Sonos system. Each alarm has a numeric ID that can be used in other alarm actions.
-- **`copy_alarm <alarm_id>`**: Copies the alarm with ID `alarm_id` to the target speaker. Note that alarms cannot be copied back to the same speaker.
-- **`copy_modify_alarm <alarm_id> <alarm_spec>`**: Copies an existing alarm to the target speaker and modifies it according to an alarm specification. See `create_alarm` and `modify_alarm` for details of the alarm specification. Can be used to copy an alarm back to the same speaker, but in that case note that the copied alarm **must** have its start time modified.
-- **`create_alarm <alarm_spec>`** (or **`add_alarm`**): Creates a new alarm for the target speaker. The `alarm_spec` is a comma-separated list of exactly **eight** parameters (without spaces around the commas). The specification of the parameters is as follows:
+Some of the SoCo-CLI alarm actions below require an **alarm specification** (`alarm_spec`), a comma-separated list of exactly **eight** parameters (without spaces next to the commas), which defines all the properties of an alarm. The parameters are as follows:
+
   1. Alarm start time: HH:MM
   2. Alarm duration: HH:MM
   3. Recurrence: A valid recurrence string is  `DAILY`, `ONCE`, `WEEKDAYS`,
@@ -468,20 +466,29 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
      representing a day of the week (Sunday is 0), e.g. `ON_034` meaning
      Sunday, Wednesday and Thursday
   4. Whether the alarm is enabled: `ON` or `OFF` (or `YES`, `NO`)
-  5. What to play: `CHIME` or a URI (the URI should be enclosed in double quotes)
-  6. Play mode: One of `NORMAL`, `SHUFFLE_NOREPEAT`, `SHUFFLE`, `REPEAT_ALL`, `REPEAT_ONE`, `SHUFFLE_REPEAT_ONE`
+  5. What to play: `CHIME` or a URI (the URI must be enclosed in double quotes)
+  6. Play mode: one of `NORMAL`, `SHUFFLE_NOREPEAT`, `SHUFFLE`, `REPEAT_ALL`, `REPEAT_ONE`, `SHUFFLE_REPEAT_ONE`
   7. The volume to play at: `0`-`100`
   8. Whether to include grouped speakers: `ON` or `OFF` (or `YES`, `NO`)
  
-  **Examples**:
+  Examples alarm specifications:
   - `07:00,01:30,WEEKDAYS,ON,"http://stream.live.vc.bbcmedia.co.uk/bbc_radio_fourfm",NORMAL,50,OFF`
   - `06:30,00:01,WEEKDAYS,ON,CHIME,NORMAL,50,OFF`
-- **`disable_alarm <alarm_id,[alarm_id]|all>`** (or **`disable_alarms`**): Disables an existing alarm or alarms. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To disable all alarms, use `all` as the `alarm_id`.
-- **`enable_alarm <alarm_id,[alarm_id]|all>`** (or **`enable_alarms`**): Enables an existing alarm or alarms. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To enable all alarms, use `all` as the `alarm_id`.
-- **`modify_alarm <alarm_id,[alarm_id]|all> <alarm_spec>`** (or **`modify_alarms`**): Modifies an existing alarm or alarms, using the `alarm_spec` format described above. Alarm properties that are to be left unchanged should be denoted by an underscore. E.g., to change only the duration and volume of an alarm, use an alarm spec such as: `_,01:00,_,_,_,_,60,_`. To modify all alarms, use `all` as the `alarm_id`.
-- **`move_alarm <alarm_id>`**: Move the alarm with ID `alarm_ID` to the target speaker.
-- **`remove_alarm <alarm_id[,alarm_id]|all>`** (or **`remove_alarms`**): Removes one or more alarms by their alarm IDs. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To remove all alarms, use `all` as the `alarm_id`.
-- **`snooze_alarm <snooze_duration>`**: Snooze an alarm that's already playing on the target speaker. Snooze duration can be `Nm` to snooze for `N` minutes (or just `N`). Alternatively, the duration can be expressed as `HH:MM:SS`. E.g., `sonos bedroom snooze_alarm 10m`, `sonos bedroom snooze_alarm 90`, or `sonos bedroom snooze_alarm 01:20:00`.
+
+In actions which **modify** (or copy and modify) an existing alarm, values that are to be left unchanged are denoted by an underscore in the `alarm_spec`. E.g., to change only the duration and volume of an alarm, use an alarm spec such as: `_,01:00,_,_,_,_,60,_`.
+
+The **alarm actions** are as follows:
+
+  - **`alarms`** (or **`list_alarms`**): List the alarms in the Sonos system. Each alarm has a unique integer `alarm_id` that can be used in the other alarm actions.
+  - **`copy_alarm <alarm_id>`**: Copies the alarm with ID `alarm_id` to the target speaker. Note that alarms cannot be copied back to the same speaker (instead, use `copy_modify_alarm` to do this).
+  - **`copy_modify_alarm <alarm_id> <alarm_spec>`**: Copies an existing alarm to the target speaker and modifies it according to an alarm specification. Can be used to copy an alarm on the same speaker, but in that case note that the copied alarm **must** have its start time modified.
+  - **`create_alarm <alarm_spec>`** (or **`add_alarm`**): Creates a new alarm for the target speaker, according to the `alarm_spec`. 
+  - **`disable_alarm <alarm_id,[alarm_id]|all>`** (or **`disable_alarms`**): Disables an existing alarm or alarms. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To disable all alarms, use `all` as the `alarm_id`.
+  - **`enable_alarm <alarm_id,[alarm_id]|all>`** (or **`enable_alarms`**): Enables an existing alarm or alarms. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To enable all alarms, use `all` as the `alarm_id`.
+  - **`modify_alarm <alarm_id,[alarm_id]|all> <alarm_spec>`** (or **`modify_alarms`**): Modifies an existing alarm or alarms, according to the `alarm_spec` format described above (with underscores for values to be left unchanged). To modify all alarms, use `all` as the `alarm_id`.
+  - **`move_alarm <alarm_id>`**: Move the alarm with ID `alarm_id` to the target speaker.
+  - **`remove_alarm <alarm_id[,alarm_id]|all>`** (or **`remove_alarms`**): Removes one or more alarms by their alarm IDs. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To remove all alarms, use `all` as the `alarm_id`.
+  - **`snooze_alarm <snooze_duration>`**: Snooze an alarm that's already playing on the target speaker. Snooze duration can be `Nm` to snooze for `N` minutes (or just `N`). Alternatively, the duration can be expressed as `HH:MM:SS`. E.g., `sonos bedroom snooze_alarm 10m`, `sonos bedroom snooze_alarm 90`, or `sonos bedroom snooze_alarm 01:20:00`.
 
 ### Music Library Search Functions
 
