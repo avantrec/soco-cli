@@ -10,4 +10,4 @@ server, to control Sonos via HTTP requests.
 For more information, please see: https://github.com/avantrec/soco-cli
 """
 
-__version__ = "0.4.32"
+__version__ = "0.4.33"
