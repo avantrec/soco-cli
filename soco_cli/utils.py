@@ -224,9 +224,10 @@ def convert_true_false(true_or_false, conversion="YesOrNo"):
 
 
 def version():
-    print("soco-cli version: {}".format(__version__), flush=True)
-    print("soco version:     {}".format(soco.__version__), flush=True)
-    print("python version:   {}".format(python_version()), flush=True)
+    print("soco-cli version:   {}".format(__version__), flush=True)
+    print("command path:       {}".format(sys.argv[0]), flush=True)
+    print("soco version:       {}".format(soco.__version__), flush=True)
+    print("python version:     {}".format(python_version()), flush=True)
 
 
 def docs():
