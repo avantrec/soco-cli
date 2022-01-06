@@ -57,6 +57,12 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
                 convert_true_false(alarm.include_linked_zones),
             ]
         )
+
+    # Sort alarms by start time, room. Apply sorts in reverse order.
+    details.sort(key=lambda field: field[1])  # Room
+    details.sort(key=lambda field: field[2].split(":")[1])  # Minute
+    details.sort(key=lambda field: field[2].split(":")[0])  # Hour
+
     headers = [
         "Alarm ID",
         "Speaker",
@@ -71,7 +77,7 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
     ]
     print()
     print(
-        tabulate.tabulate(sorted(details), headers, tablefmt="github", numalign="left")
+        tabulate.tabulate(details, headers, tablefmt="github", numalign="left")
     )
     print()
     return True
