@@ -19,6 +19,9 @@ from soco_cli.utils import (
     zero_parameters,
 )
 
+# Stabilisation delay (in seconds) when saving multiple alarms
+ALARM_SAVE_DELAY = 1.0
+
 
 @zero_parameters
 def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
@@ -139,12 +142,20 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
             else:
                 print("Alarm ID '{}' not found".format(alarm_id))
 
-    for alarm in alarms:
+    for index, alarm in enumerate(alarms):
         if not _modify_alarm_object(alarm, args[1]):
             continue
-
         try:
+            logging.info("Saving alarm '{}'".format(alarm.alarm_id))
             alarm.save()
+            if index < len(alarms) - 1:
+                # Allow alarm update to stabilise
+                logging.info(
+                    "Waiting {}s after saving alarm '{}'".format(
+                        ALARM_SAVE_DELAY, alarm.alarm_id
+                    )
+                )
+                time.sleep(ALARM_SAVE_DELAY)
         except soco.exceptions.SoCoUPnPException:
             error_report("Failed to modify alarm {}".format(alarm.alarm_id))
             continue
@@ -221,11 +232,16 @@ def set_alarms(speaker, alarm_ids, enabled=True):
             )
             if alarm.enabled != enabled:
                 alarm.enabled = enabled
+                logging.info("Saving alarm '{}'".format(alarm.alarm_id))
                 alarm.save()
                 if len(alarm_ids) != 0 or all_alarms:
-                    # Allow alarm update time to quiesce if there are subsequent
-                    # updates
-                    time.sleep(1.0)
+                    # Stabilisation delay
+                    logging.info(
+                        "Waiting {}s after saving alarm '{}'".format(
+                            ALARM_SAVE_DELAY, alarm.alarm_id
+                        )
+                    )
+                    time.sleep(ALARM_SAVE_DELAY)
             alarm_ids.discard(alarm.alarm_id)
 
     if len(alarm_ids) != 0:
