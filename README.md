@@ -459,17 +459,17 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 
 ### Alarms
 
-Some of the SoCo-CLI alarm actions below require an **alarm specification** (`alarm_spec`), a comma-separated list of exactly **eight** parameters (without spaces next to the commas), which defines all the properties of an alarm. The parameters are as follows:
+Some SoCo-CLI alarm actions below require an **alarm specification** (`alarm_spec`), a comma-separated list of exactly **eight** parameters (without spaces next to the commas), which defines all the properties of an alarm. The parameters are as follows:
 
-  1. Alarm start time: HH:MM
-  2. Alarm duration: HH:MM
+  1. Alarm start time, in hours and minutes using the 24hr clock: HH:MM
+  2. Alarm duration in hours and minutes: HH:MM
   3. Recurrence: A valid recurrence string is  `DAILY`, `ONCE`, `WEEKDAYS`,
      `WEEKENDS` or of the form `ON_DDDDDD` where `D` is a number from 0-6
-     representing a day of the week (Sunday is 0), e.g. `ON_034` meaning
+     representing a day of the week (Sunday is 0, Monday is 1, etc.), e.g. `ON_034` means
      Sunday, Wednesday and Thursday
   4. Whether the alarm is enabled: `ON` or `OFF` (or `YES`, `NO`)
-  5. What to play: `CHIME` or a URI (the URI must be enclosed in double quotes)
-  6. Play mode: one of `NORMAL`, `SHUFFLE_NOREPEAT`, `SHUFFLE`, `REPEAT_ALL`, `REPEAT_ONE`, `SHUFFLE_REPEAT_ONE`
+  5. What to play: `CHIME`, or a URI for a stream (which must be enclosed in double quotes)
+  6. Play mode: one of `NORMAL`, `SHUFFLE_NOREPEAT`, `SHUFFLE`, `REPEAT_ALL`, `REPEAT_ONE`, `SHUFFLE_REPEAT_ONE` (note that `SHUFFLE` means SHUFFLE *and* REPEAT)
   7. The volume to play at: `0`-`100`
   8. Whether to include grouped speakers: `ON` or `OFF` (or `YES`, `NO`)
  

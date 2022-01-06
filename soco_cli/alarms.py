@@ -60,14 +60,14 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
     headers = [
         "Alarm ID",
         "Speaker",
-        "Start Time",
-        "Duration",
-        "Recurrence",
-        "Enabled",
-        "Title",
-        "Play Mode",
-        "Vol.",
-        "Incl. Grouped",
+        "1: Start Time",
+        "2: Duration",
+        "3: Recurrence",
+        "4: Enabled",
+        "5: Title",
+        "6: Play Mode",
+        "7: Vol.",
+        "8: Incl. Grouped",
     ]
     print()
     print(
@@ -401,7 +401,7 @@ def _modify_alarm_object(alarm: soco.alarms.Alarm, parms_string: str) -> bool:
         play_mode_options = [
             "NORMAL",
             "SHUFFLE_NOREPEAT",
-            "SHUFFLE",
+            "SHUFFLE",  # Note: this means SHUFFLE and REPEAT
             "REPEAT_ALL",
             "REPEAT_ONE",
             "SHUFFLE_REPEAT_ONE",
