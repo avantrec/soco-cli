@@ -394,7 +394,7 @@ sonos Kitchen play_from_queue 5
 - **`track`**: Return information about the currently playing track.
 - **`track_follow`** (or **`tf`**): Returns information about the currently playing track, and each subsequent track when the track changes. This action keeps running until cancelled using CTRL-C.
 - **`track_follow_compact`** (or **`tfc`**): As `track_follow`, but with a more compact single line representation for each track.
-- **`tv_audio_delay`**: Returns the current setting for the audio delay for TV sources, an integer from 0 to 5. Only applicable to devices with TV inputs.
+- **`tv_audio_delay`**: Returns the current setting for the audio delay for TV sources, an integer from 0 to 5. (Sonos does not specify the units used for adjustment.) Only applicable to devices with TV inputs.
 - **`tv_audio_delay <delay>`**: Sets the audio delay for TV sources; `delay` must be an integer from 0 to 5.
 
 ### Queue Actions
