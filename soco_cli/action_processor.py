@@ -2411,6 +2411,23 @@ def audio_format(speaker, action, args, soco_function, use_local_speaker_list):
     return False
 
 
+@zero_or_one_parameter
+def tv_audio_delay(speaker, action, args, soco_function, use_local_speaker_list):
+    if not speaker.is_soundbar:
+        error_report("Speaker '{}' has no TV input".format(speaker.player_name))
+        return False
+
+    if len(args) == 0:
+        print(speaker.audio_delay)
+    else:
+        try:
+            speaker.audio_delay = int(args[0])
+            return True
+        except ValueError:
+            error_report("TV audio delay must be an integer from 0 to 5")
+            return False
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False) -> bool:
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2796,4 +2813,5 @@ actions = {
     "surround_enabled": SonosFunction(on_off_action, "surround_enabled", False),
     "audio_format": SonosFunction(audio_format, "", True),
     "copy_modify_alarm": SonosFunction(alarms.copy_modify_alarm, "", False),
+    "tv_audio_delay": SonosFunction(tv_audio_delay, "", True),
 }
