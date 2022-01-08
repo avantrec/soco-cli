@@ -2814,4 +2814,5 @@ actions = {
     "audio_format": SonosFunction(audio_format, "", True),
     "copy_modify_alarm": SonosFunction(alarms.copy_modify_alarm, "", False),
     "tv_audio_delay": SonosFunction(tv_audio_delay, "", True),
+    "alarms_zone": SonosFunction(alarms.list_alarms, "", False),
 }

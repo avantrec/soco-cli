@@ -481,7 +481,8 @@ In actions which **modify** (or copy and modify) an existing alarm, values that 
 
 The **alarm actions** are as follows:
 
-  - **`alarms`** (or **`list_alarms`**): List the alarms in the Sonos system. Each alarm has a unique integer `alarm_id` that can be used in the other alarm actions.
+  - **`alarms`** (or **`list_alarms`**): List all of the alarms in the Sonos system. Each alarm has a unique integer `alarm_id` that can be used in the other alarm actions.
+  - **`alarms_zone`**: List the alarms for the target zone (speaker) only.
   - **`copy_alarm <alarm_id>`**: Copies the alarm with ID `alarm_id` to the target speaker. Note that alarms cannot be copied back to the same speaker (instead, use `copy_modify_alarm` to do this).
   - **`copy_modify_alarm <alarm_id> <alarm_spec>`**: Copies an existing alarm to the target speaker and modifies it according to an alarm specification. Can be used to copy an alarm on the same speaker, but in that case note that the copied alarm **must** have its start time modified.
   - **`create_alarm <alarm_spec>`** (or **`add_alarm`**): Creates a new alarm for the target speaker, according to the `alarm_spec`. 

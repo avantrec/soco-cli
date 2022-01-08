@@ -30,6 +30,10 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
         return True
     details = []
     for alarm in alarms:
+        # Skip this alarm if it's not for the target room
+        if action == "alarms_zone":
+            if alarm.zone != speaker:
+                continue
         didl = alarm.program_metadata
         title_start = didl.find("<dc:title>")
         if title_start >= 0:
