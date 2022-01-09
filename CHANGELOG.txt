@@ -1,3 +1,4 @@
+v0.4.34   -
 v0.4.33   - Add 'tv_audio_delay' action
           - Add 'alarms_zone' action to list alarms for target speaker only
 v0.4.32   - Allow 'copy_modify_alarm' to copy a modified alarm to a
