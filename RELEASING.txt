@@ -1,8 +1,8 @@
 0. Start on branch 'next_version'; when changes are ready to be released:
-   Update the CHANGELOG
-   make format
-   make toc
-   git commit -a -m "Ready for release"
+   Update the CHANGELOG (if required)
+   make format  (if required)
+   make toc  (if required)
+   git commit -a -m "Ready for release"  (if required)
    git checkout master
    git merge next_version
 
@@ -17,4 +17,6 @@
    git merge master
    git push
    Increment __version__ in __init__.py
+   Set up CHANGELOG.txt for next version
+   git commit -a -m "Set up for vX.Y.Z development"
    start next set of changes
