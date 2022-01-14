@@ -62,6 +62,10 @@
          * [Server Usage](#server-usage)
          * [HTTP Request Structure](#http-request-structure)
          * [Return Values](#return-values)
+         * [Macros: Defining Custom HTTP API Server Actions](#macros-defining-custom-http-api-server-actions)
+            * [Macro Definition and Usage](#macro-definition-and-usage)
+            * [Specifying the Macro Definition File](#specifying-the-macro-definition-file)
+            * [Return Values](#return-values-1)
          * [Listing Speakers](#listing-speakers)
          * [Rediscovering Speakers](#rediscovering-speakers)
          * [Inspecting the HTTP API](#inspecting-the-http-api)
@@ -74,7 +78,7 @@
       * [Acknowledgments](#acknowledgments)
       * [Resources](#resources)
 
-<!-- Added by: pwt, at: Tue Jan  4 21:44:22 GMT 2022 -->
+<!-- Added by: pwt, at: Fri Jan 14 13:13:02 GMT 2022 -->
 
 <!--te-->
 
@@ -986,6 +990,56 @@ The **`exit_code`** field is an integer. This will be zero if the command comple
 If the command is successful, the **`result`** field contains the result string, which is exactly the string that would have been printed if the action had been performed on the command line.
 
 If the command is unsuccessful, the **`error_msg`** field contains an error message describing the error.
+
+### Macros: Defining Custom HTTP API Server Actions
+
+The **macros** feature allows the creation of custom actions or sequences of actions to be executed by the HTTP API server, and available at the `/macro/<macro_name>` endpoint. Macros are defined in a text file that is loaded when the server starts.
+
+#### Macro Definition and Usage
+
+Macro definitions take the form of macro names followed by an equals sign (`=`), then the action(s) to be performed. For example, the contents of a macro definition file might be:
+
+```
+# SoCo-CLI HTTP API Server Macros file
+# Format is:
+#   macro_name = speaker <action> <parameters> [: speaker <action> <parameters> ...]
+
+# Play the doorbell sound on all speakers
+doorbell = Hallway party_mode : Hallway play_file doorbell.mp3 : Hallway ungroup_all
+
+# Group speakers in the morning, and start a favourite radio station
+morning = Bathroom group Bedroom : Kitchen group Bedroom : Bedroom play_favourite "Radio 4"
+
+# Set the volume and start playback of a favourite
+front_R3 = "Front Reception" volume 50 : "Front Reception" play_favourite "Radio 3"
+```
+
+The macros above would be invoked using URLs of the form:
+```
+http://192.168.0.100:8000/macro/doorbell
+http://192.168.0.100:8000/macro/morning
+http://192.168.0.100:8000/macro/front_R3
+```
+
+**Macro names** are case-sensitive, and should not contain spaces or special characters except for underscores (`_`) and dashes (`-`).
+
+**Speaker names** should ideally use the **exact** speaker name, including capitalisation, and using enclosing quotes where necessary. Shortened names will work, but will be less efficient.
+
+#### Specifying the Macro Definition File
+
+By default, the HTTP API server will look for a file named `macros.txt` in the directory from which it's invoked (the presence of the file is optional).  If instead you wish to use a specific macros file, use the `--macros` or `-m` option when starting the server, followed by the name of the macros file, e.g.:
+
+```
+sonos-http-api-server --macros my_macros.txt
+```
+
+#### Return Values
+
+Successful invocation of a macro will return the output of the actions that were executed, in JSON format, e.g.:
+
+```
+{"result":"Command line output: 16\n"}
+```
 
 ### Listing Speakers
 
