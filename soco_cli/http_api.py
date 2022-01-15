@@ -27,7 +27,7 @@ USE_LOCAL = False
 PORT = 8000
 INFO = "SoCo-CLI HTTP API Server v" + version
 PREFIX = "SoCo-CLI: "
-MACROS = {}
+MACROS: Dict[str, str] = {}
 MACRO_FILE = ""
 
 
