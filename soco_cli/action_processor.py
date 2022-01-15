@@ -377,7 +377,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
         return True
 
     def title_not_useful(title):
-        indicators = ["m3u", "stream", "sonos", "http", "="]
+        indicators = ["m3u", "stream", "sonos", "http", "=", "ZPSTR_"]
         for indicator in indicators:
             if indicator in title:
                 return True
