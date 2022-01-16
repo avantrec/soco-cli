@@ -768,7 +768,7 @@ This command sequence targets the 'Front Reception' speaker, but first saves the
 
 #### Alias Subroutines
 
-Aliases can include other aliases in their sequences of actions. e.g.:
+Aliases can include other aliases in their sequences of actions, e.g.:
 
 ```
 > alias alias_1 vol 30 : play
@@ -997,7 +997,7 @@ The **macros** feature allows the creation of custom actions or sequences of act
 
 #### Macro Definition and Usage
 
-Macro definitions take the form of macro names followed by an equals sign (`=`), then the action(s) to be performed. Comments can be included by using `#` as the first character of a line. For example, the contents of a macro definition file might be:
+Macro definitions take the form of macro names followed by an equals sign (`=`), then the action(s) to be performed. Comments can be included by using `#` as the first character of a line, and blank lines are ignored. For example, the contents of a macro definition file might be:
 
 ```
 # SoCo-CLI HTTP API Server Macros file
