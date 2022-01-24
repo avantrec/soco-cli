@@ -23,7 +23,7 @@
       * [Audio Files on the Local Filesystem](#audio-files-on-the-local-filesystem)
       * [Local Playlists (M3U Files)](#local-playlists-m3u-files)
       * [Directories of Audio Files](#directories-of-audio-files)
-      * [Spotify, Tidal and Deezer Share Links](#spotify-tidal-and-deezer-share-links)
+      * [Spotify, Tidal, Deezer, and Apple Music Share Links](#spotify-tidal-deezer-and-apple-music-share-links)
    * [Complete List of Available Actions](#complete-list-of-available-actions)
       * [Volume and EQ Control](#volume-and-eq-control)
       * [Playback Control](#playback-control)
@@ -78,7 +78,7 @@
    * [Acknowledgments](#acknowledgments)
    * [Resources](#resources)
 
-<!-- Added by: pwt, at: Mon Jan 24 14:17:18 GMT 2022 -->
+<!-- Added by: pwt, at: Mon Jan 24 14:47:31 GMT 2022 -->
 
 <!--te-->
 
@@ -302,11 +302,9 @@ The `play_file` action can be used to play individual tracks on the CD, e.g.:
 
 `sonos Lounge play_file "/Volumes/Audio CD/1 Audio Track.aiff"`.
 
-### Spotify, Tidal and Deezer Share Links
+### Spotify, Tidal, Deezer, and Apple Music Share Links
 
-(This is an experimental feature.)
-
-The `add_sharelink_to_queue` (or `sharelink`) action can be used to add share links from Spotify, Tidal or Deezer to the queue, provided the Sonos system has a subscription to the required service.
+The `add_sharelink_to_queue` (or `sharelink`) action can be used to add share links from Spotify, Tidal, Deezer, or Apple Music to the queue, provided the Sonos system has a subscription to the required service.
 
 Links can refer to tracks, albums, or playlists. The position of the first track added to the queue is returned, which can then be played using `play_from_queue`. Share links can be of the form:
 
@@ -314,6 +312,7 @@ Links can refer to tracks, albums, or playlists. The position of the first track
 - `spotify:album:6wiUBliPe76YAVpNEdidpY`
 - `https://tidal.com/browse/album/157273956`
 - `https://www.deezer.com/en/playlist/5390258182`
+- `https://music.apple.com/dk/album/black-velvet/217502930?i=217503142`
 
 **Example**:
 ```
@@ -405,7 +404,7 @@ sonos Kitchen play_from_queue 5
 
 - **`add_playlist_to_queue <playlist_name> <play_next|next or first|start>`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case insensitive, and will work on partial matches. The number in the queue of the first track in the playlist will be returned. Optionally, `play_next` or `next` can be added to insert the playlist at the next queue position. To start playback, follow with action `play_from_queue`.
 - **`add_library_playlist_to_queue <playlist_name> <play_next|next or first|start>`** (or **`alpq`**): As above, but targets local library imported playlists instead of Sonos playlists.
-- **`add_sharelink_to_queue <sharelink>`** (or **`sharelink`**): (*Experimental*) Add a **Spotify**, **Tidal** or **Deezer** link (for a track, album, playlist, etc.) to the queue. Returns the queue position of the first track. Supported links formats are: `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`, `spotify:album:6wiUBliPe76YAVpNEdidpY`, `https://tidal.com/browse/album/157273956`, `https://www.deezer.com/en/playlist/5390258182`.
+- **`add_sharelink_to_queue <sharelink>`** (or **`sharelink`**): Add a **Spotify**, **Tidal**, **Deezer**, or **Apple Music** link (for a track, album, playlist, etc.) to the queue. Returns the queue position of the first track. Supported links formats are: `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`, `spotify:album:6wiUBliPe76YAVpNEdidpY`, `https://tidal.com/browse/album/157273956`, `https://www.deezer.com/en/playlist/5390258182`, `https://music.apple.com/dk/album/black-velvet/217502930?i=217503142`.
 - **`add_uri_to_queue <uri> <queue position or next>`** Adds a URI to the queue. The URI is added to the end of the queue if no queue position (an integer, or `next`) is supplied. Returns the queue position of the URI.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
