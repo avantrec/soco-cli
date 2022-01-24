@@ -2411,6 +2411,20 @@ def audio_format(speaker, action, args, soco_function, use_local_speaker_list):
     return False
 
 
+@zero_parameters
+def mic_enabled(speaker: soco.SoCo, action, args, soco_function, use_local_speaker_list):
+    if speaker.mic_enabled is None:
+        error_report(
+            "Speaker '{}' has no microphone, or voice services are not enabled".format(
+                speaker.player_name
+            )
+        )
+        return False
+
+    print("{}".format(speaker.mic_enabled))
+    return True
+
+
 @zero_or_one_parameter
 def tv_audio_delay(speaker, action, args, soco_function, use_local_speaker_list):
     if not speaker.is_soundbar:
@@ -2815,4 +2829,5 @@ actions = {
     "copy_modify_alarm": SonosFunction(alarms.copy_modify_alarm, "", False),
     "tv_audio_delay": SonosFunction(tv_audio_delay, "", True),
     "alarms_zone": SonosFunction(alarms.list_alarms, "", False),
+    "mic_enabled": SonosFunction(mic_enabled, "", False),
 }
