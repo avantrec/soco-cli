@@ -87,12 +87,12 @@ def command_core(
 
 
 @sc_app.get("/")
-async def root() -> Dict:
+def root() -> Dict:
     return {"info": INFO}
 
 
 @sc_app.get("/rediscover")
-async def rediscover() -> Dict:
+def rediscover() -> Dict:
     rescan_speakers(timeout=2.0)
     speakers = get_all_speaker_names()
     print(PREFIX + "Speakers (re)discovered: {}".format(speakers))
@@ -100,40 +100,40 @@ async def rediscover() -> Dict:
 
 
 @sc_app.get("/speakers")
-async def speakers() -> Dict:
+def speakers() -> Dict:
     speakers = get_all_speaker_names()
     print(PREFIX + "Speakers: {}".format(speakers))
     return {"speakers": speakers}
 
 
 @sc_app.get("/macros")
-async def macros() -> Dict:
+def macros() -> Dict:
     return MACROS
 
 
 @sc_app.get("/macro/{macro_name}")
-async def run_commands(macro_name: str) -> Dict:
+def run_commands(macro_name: str) -> Dict:
     result = _process_macro(macro_name)
     return {"result": result}
 
 
 @sc_app.get("/{speaker}/{action}")
-async def action_0(speaker: str, action: str) -> Dict:
+def action_0(speaker: str, action: str) -> Dict:
     return command_core(speaker, action, use_local=USE_LOCAL)
 
 
 @sc_app.get("/{speaker}/{action}/{arg_1}")
-async def action_1(speaker: str, action: str, arg_1: str) -> Dict:
+def action_1(speaker: str, action: str, arg_1: str) -> Dict:
     return command_core(speaker, action, arg_1, use_local=USE_LOCAL)
 
 
 @sc_app.get("/{speaker}/{action}/{arg_1}/{arg_2}")
-async def action_2(speaker: str, action: str, arg_1: str, arg_2: str) -> Dict:
+def action_2(speaker: str, action: str, arg_1: str, arg_2: str) -> Dict:
     return command_core(speaker, action, arg_1, arg_2, use_local=USE_LOCAL)
 
 
 @sc_app.get("/{speaker}/{action}/{arg_1}/{arg_2}/{arg_3}")
-async def action_3(
+def action_3(
     speaker: str, action: str, arg_1: str, arg_2: str, arg_3: str
 ) -> Dict:
     return command_core(speaker, action, arg_1, arg_2, arg_3, use_local=USE_LOCAL)
