@@ -106,6 +106,11 @@ async def speakers() -> Dict:
     return {"speakers": speakers}
 
 
+@sc_app.get("/macros")
+async def macros() -> Dict:
+    return MACROS
+
+
 @sc_app.get("/macro/{macro_name}")
 async def run_commands(macro_name: str) -> Dict:
     result = _process_macro(macro_name)

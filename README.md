@@ -66,6 +66,7 @@
          * [Macro Definition and Usage](#macro-definition-and-usage)
          * [Specifying the Macro Definition File](#specifying-the-macro-definition-file)
          * [Return Values](#return-values-1)
+         * [Listing Macros](#listing-macros)
       * [Listing Speakers](#listing-speakers)
       * [Rediscovering Speakers](#rediscovering-speakers)
       * [Inspecting the HTTP API](#inspecting-the-http-api)
@@ -78,7 +79,7 @@
    * [Acknowledgments](#acknowledgments)
    * [Resources](#resources)
 
-<!-- Added by: pwt, at: Mon Jan 24 14:47:31 GMT 2022 -->
+<!-- Added by: pwt, at: Sun Jan 30 09:53:31 GMT 2022 -->
 
 <!--te-->
 
@@ -1040,6 +1041,10 @@ Successful invocation of a macro will return the output of the actions that were
 ```
 {"result":"Command line output: 16\n"}
 ```
+
+#### Listing Macros
+
+The `/macros` URL path will return a JSON list of the macros installed in the server.
 
 ### Listing Speakers
 

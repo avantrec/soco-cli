@@ -2412,7 +2412,9 @@ def audio_format(speaker, action, args, soco_function, use_local_speaker_list):
 
 
 @zero_parameters
-def mic_enabled(speaker: soco.SoCo, action, args, soco_function, use_local_speaker_list):
+def mic_enabled(
+    speaker: soco.SoCo, action, args, soco_function, use_local_speaker_list
+):
     if speaker.mic_enabled is None:
         error_report(
             "Speaker '{}' has no microphone, or voice services are not enabled".format(

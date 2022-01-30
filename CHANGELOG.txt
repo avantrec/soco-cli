@@ -1,4 +1,5 @@
 v0.4.36   - Document support for Apple Music share links
+          - Add 'macros' URL path to the HTTP API server
 v0.4.35   - Add 'mic_enabled' action
 v0.4.34   - Add macros capability to the HTTP API server
 v0.4.33   - Add 'tv_audio_delay' action
