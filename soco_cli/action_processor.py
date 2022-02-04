@@ -312,50 +312,46 @@ def list_numbered_things(speaker, action, args, soco_function, use_local_speaker
 
 @zero_or_one_parameter
 def volume_actions(speaker, action, args, soco_function, use_local_speaker_list):
-    np = len(args)
-    # Special case for ramp_to_volume
-    if soco_function == "ramp_to_volume":
-        if np == 1:
-            vol = int(args[0])
-            if 0 <= vol <= 100:
-                print(speaker.ramp_to_volume(vol))
-                return True
-            parameter_type_error(action, "0 to 100")
-            return False
-        parameter_number_error(action, "1")
-        return False
+
     if soco_function == "group_volume":
+        logging.info("Using speaker group instead of speaker")
         speaker = speaker.group
+
+    np = len(args)
     if np == 0:
         print(speaker.volume)
-    elif np == 1:
+        return True
+    if np == 1:
         try:
             vol = int(args[0])
-        except:
-            parameter_type_error(action, "integer from 0 to 100")
+            if not (0 <= vol <= 100):
+                raise ValueError
+        except ValueError:
+            parameter_type_error(action, "integer 0 to 100")
             return False
-        if 0 <= vol <= 100:
-            speaker.volume = vol
+        if soco_function == "ramp_to_volume":
+            logging.info("Ramping to volume {}".format(vol))
+            print(speaker.ramp_to_volume(vol))
         else:
-            parameter_type_error(action, "0 to 100")
-            return False
-    return True
+            logging.info("Setting volume to {}".format(vol))
+            speaker.volume = vol
+        return True
 
 
 @one_parameter
 def relative_volume(speaker, action, args, soco_function, use_local_speaker_list):
     if soco_function == "group_relative_volume":
+        logging.info("Using speaker group instead of speaker")
         speaker = speaker.group
     try:
         vol = int(args[0])
-    except:
+        if not -100 <= vol <= 100:
+            raise ValueError
+    except ValueError:
         parameter_type_error(action, "integer from -100 to 100")
-        return False
-    if -100 <= vol <= 100:
-        speaker.set_relative_volume(vol)
-    else:
-        parameter_type_error(action, "integer from -100 to 100")
-        return False
+
+    logging.info("Adjusting relative volume by {}".format(vol))
+    speaker.set_relative_volume(vol)
     return True
 
 
@@ -2451,16 +2447,14 @@ def group_volume_equalise(speaker, action, args, soco_function, use_local_speake
         if not (0 <= vol <= 100):
             raise ValueError
     except ValueError:
-        parameter_type_error(action, "Integer 0 to 100")
+        parameter_type_error(action, "integer 0 to 100")
         return False
 
     for member in speaker.group.members:
         if member.is_visible:
             member.volume = vol
             logging.info(
-                "Setting volume of speaker '{}' to {}".format(
-                    member.player_name, vol
-                )
+                "Setting volume of speaker '{}' to {}".format(member.player_name, vol)
             )
     return True
 
