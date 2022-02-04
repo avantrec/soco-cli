@@ -112,8 +112,42 @@ def macros() -> Dict:
 
 
 @sc_app.get("/macro/{macro_name}")
-def run_commands(macro_name: str) -> Dict:
+def run_macro(macro_name: str) -> Dict:
     result = _process_macro(macro_name)
+    return {"result": result}
+
+
+@sc_app.get("/macro/{macro_name}/{arg_1}")
+def run_macro_1(macro_name: str, arg_1: str) -> Dict:
+    result = _process_macro(macro_name, arg_1)
+    return {"result": result}
+
+
+@sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}")
+def run_macro_2(macro_name: str, arg_1: str, arg_2: str) -> Dict:
+    result = _process_macro(macro_name, arg_1, arg_2)
+    return {"result": result}
+
+
+@sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}")
+def run_macro_3(macro_name: str, arg_1: str, arg_2: str, arg_3: str) -> Dict:
+    result = _process_macro(macro_name, arg_1, arg_2, arg_3)
+    return {"result": result}
+
+
+@sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}")
+def run_macro_4(
+    macro_name: str, arg_1: str, arg_2: str, arg_3: str, arg_4: str
+) -> Dict:
+    result = _process_macro(macro_name, arg_1, arg_2, arg_3, arg_4)
+    return {"result": result}
+
+
+@sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}")
+def run_macro_5(
+    macro_name: str, arg_1: str, arg_2: str, arg_3: str, arg_4: str, arg_5: str
+) -> Dict:
+    result = _process_macro(macro_name, arg_1, arg_2, arg_3, arg_4, arg_5)
     return {"result": result}
 
 
@@ -208,7 +242,7 @@ def main() -> None:
         exit(1)
 
 
-def _process_macro(macro_name: str) -> str:
+def _process_macro(macro_name: str, *args) -> str:
     # Look up the macro
     try:
         macro = _lookup_macro(macro_name)
@@ -216,11 +250,24 @@ def _process_macro(macro_name: str) -> str:
         print(PREFIX + "macro '{}' not found".format(macro_name))
         return "Error: macro '{}' not found".format(macro_name)
 
+    # Substitute variable arguments
+    elements = shlex.split(macro)
+    sonos_command_line = ""
+    for element in elements:
+        if element in ["%1", "%2", "%3", "%4", "%5"]:
+            try:
+                arg_sub = _quote_if_contains_space(args[int(element[1:]) - 1])
+                sonos_command_line = sonos_command_line + " " + arg_sub
+            except IndexError:
+                return "Argument substitution failed for argument '{}'".format(element)
+        else:
+            sonos_command_line = sonos_command_line + " " + element
+
     # Substitute speaker names for IP addresses, for efficiency
-    sonos_command_line = "sonos " + _substitute_speaker_ips(macro)
-    print(PREFIX + "Executing: " + sonos_command_line)
+    sonos_command_line = "sonos " + _substitute_speaker_ips(sonos_command_line)
 
     # Execute the command
+    print(PREFIX + "Executing: " + sonos_command_line)
     try:
         output = check_output(sonos_command_line, shell=True)
         return "Command line output: " + output.decode("utf-8")
@@ -245,8 +292,8 @@ def _substitute_speaker_ips(macro: str, use_local: bool = False) -> str:
         if device is not None and device.player_name == term:
             new_macro_list.append(device.ip_address)
         else:
-            new_macro_list.append(term)
-    new_macro = (" ").join(new_macro_list)
+            new_macro_list.append(_quote_if_contains_space(term))
+    new_macro = " ".join(new_macro_list)
     return new_macro
 
 
@@ -269,6 +316,13 @@ def _load_macros(macros: dict, filename: str) -> bool:
     except:
         print(PREFIX + "Macro file not found")
         return False
+
+
+def _quote_if_contains_space(text: str) -> str:
+    if " " in text:
+        return '"' + text + '"'
+    else:
+        return text
 
 
 if __name__ == "__main__":

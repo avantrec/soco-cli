@@ -64,6 +64,7 @@
       * [Return Values](#return-values)
       * [Macros: Defining Custom HTTP API Server Actions](#macros-defining-custom-http-api-server-actions)
          * [Macro Definition and Usage](#macro-definition-and-usage)
+         * [Macro Arguments](#macro-arguments)
          * [Specifying the Macro Definition File](#specifying-the-macro-definition-file)
          * [Return Values](#return-values-1)
          * [Listing Macros](#listing-macros)
@@ -79,7 +80,7 @@
    * [Acknowledgments](#acknowledgments)
    * [Resources](#resources)
 
-<!-- Added by: pwt, at: Fri Feb  4 15:50:41 GMT 2022 -->
+<!-- Added by: pwt, at: Fri Feb  4 17:35:43 GMT 2022 -->
 
 <!--te-->
 
@@ -1026,6 +1027,26 @@ http://192.168.0.100:8000/macro/front_R3
 **Macro names** are case-sensitive, and should not contain spaces or special characters except for underscores (`_`) and dashes (`-`).
 
 **Speaker names** should ideally use the **exact** speaker name, including capitalisation, and using enclosing quotes where necessary. Shortened names will work, but will be less efficient.
+
+#### Macro Arguments
+
+Macros can be parameterised using up to **five** positional arguments, specified in the macro definition by the terms `%1` to `%5`. The general form for supplying the arguments when the macro is invoked is:
+
+`http://192.168.0.100:8000/macro/<macro_name>/<arg_1>/<arg_2>/<arg_3>/<arg_4>/<arg_5>`
+
+For example, a macro definition to set all the speakers on one floor to a specified volume could be defined as:
+
+`lower_floor_volume = Kitchen volume %1 : Hallway volume %1 : "Living Room" volume %1`
+
+The macro is then invoked using:
+
+`http://192.168.0.100:8000/macro/lower_floor_volume/30`
+
+Or to use different volumes for each speaker:
+
+Macro definition: `lower_floor_volume = Kitchen volume %1 : Hallway volume %2 : "Living Room" volume %3`
+
+Macro invocation: `http://192.168.0.100:8000/macro/lower_floor_volume/30/40/25`
 
 #### Specifying the Macro Definition File
 
