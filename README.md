@@ -79,7 +79,7 @@
    * [Acknowledgments](#acknowledgments)
    * [Resources](#resources)
 
-<!-- Added by: pwt, at: Sun Jan 30 09:53:31 GMT 2022 -->
+<!-- Added by: pwt, at: Fri Feb  4 15:50:41 GMT 2022 -->
 
 <!--te-->
 
@@ -195,7 +195,7 @@ This allows the use of shorthand like `sk stop`, to stop playback on the Kitchen
 - **`--check_for_update`**: Check for a more recent version of SoCo-CLI.
 - **`--actions`**: Print the list of available actions.
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
-- **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
+- **`--log <level>`**: Turn on logging. Available levels are `NONE` (default), `CRITICAL`, `ERROR`, `WARN`, `INFO`, `DEBUG`, in order of increasing verbosity. `INFO` level logging tends to be the most useful when troubleshooting SoCo-CLI issues.
 
 The following options are for use with the cached discovery mechanism:
 

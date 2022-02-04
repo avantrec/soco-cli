@@ -207,7 +207,9 @@ def main():
     if env_local is not None:
         if env.get(ENV_LOCAL).lower() == "true" and not args.no_env:
             logging.info(
-                "Env. var. '{}' set to 'TRUE ... using local speaker list".format(ENV_LOCAL)
+                "Env. var. '{}' set to 'TRUE ... using local speaker list".format(
+                    ENV_LOCAL
+                )
             )
             use_local_speaker_list = True
     if use_local_speaker_list:
