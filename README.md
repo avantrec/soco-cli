@@ -1044,7 +1044,7 @@ Successful invocation of a macro will return the output of the actions that were
 
 #### Listing Macros
 
-The `/macros` URL path will return a JSON list of the macros installed in the server.
+The `/macros` URL path (e.g.: `http://192.168.0.100:8000/macros`) will return a JSON list of the macros installed in the server.
 
 ### Listing Speakers
 
