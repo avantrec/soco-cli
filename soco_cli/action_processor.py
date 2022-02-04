@@ -2444,6 +2444,27 @@ def tv_audio_delay(speaker, action, args, soco_function, use_local_speaker_list)
             return False
 
 
+@one_parameter
+def group_volume_equalise(speaker, action, args, soco_function, use_local_speaker_list):
+    try:
+        vol = int(args[0])
+        if not (0 <= vol <= 100):
+            raise ValueError
+    except ValueError:
+        parameter_type_error(action, "Integer 0 to 100")
+        return False
+
+    for member in speaker.group.members:
+        if member.is_visible:
+            member.volume = vol
+            logging.info(
+                "Setting volume of speaker '{}' to {}".format(
+                    member.player_name, vol
+                )
+            )
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False) -> bool:
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2832,4 +2853,7 @@ actions = {
     "tv_audio_delay": SonosFunction(tv_audio_delay, "", True),
     "alarms_zone": SonosFunction(alarms.list_alarms, "", False),
     "mic_enabled": SonosFunction(mic_enabled, "", False),
+    "group_volume_equalise": SonosFunction(group_volume_equalise, "", True),
+    "group_volume_equalize": SonosFunction(group_volume_equalise, "", True),
+    "gve": SonosFunction(group_volume_equalise, "", True),
 }

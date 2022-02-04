@@ -338,7 +338,8 @@ sonos Kitchen play_from_queue 5
 - **`group_mute <on|off>`**: Sets the group mute state of a group of speakers to 'on' or 'off'.
 - **`group_relative_volume <adjustment>` (or `group_rel_vol`, `grv`)**: Raises or lowers the group volume by `<adjustment>` which must be a number from -100 to 100.
 - **`group_volume` (or `group_vol`)**: Returns the current group volume setting of the speaker's group (0 to 100)
-- **`group_volume <volume>` (or `group_vol`)**: Sets the volume of the speaker's group to `<volume>` (0 to 100).
+- **`group_volume <volume>` (or `group_vol`)**: Sets the volume of the speaker's group to `<volume>` (0 to 100). This action operates in the same way as the group volume slider in the Sonos apps. The volume applied to each speaker in the group is scaled by the speaker's current volume.
+- **`group_volume_equalize <volume>` (or `group_volume_equalise`, `gve`)**: Sets the volume of all speakers in a group to the same absolute volume `<volume>` (0-100).
 - **`loudness`**: Returns the loudness setting of the speaker, 'on' or 'off'.
 - **`loudness <on|off>`**: Sets the loudness setting of the speaker to 'on' or 'off'.
 - **`mute`**: Returns the mute setting of the speaker, 'on' or 'off'.

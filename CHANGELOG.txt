@@ -1,4 +1,4 @@
-v0.4.37   -
+v0.4.37   - Add `group_volume_equalise` action
 v0.4.36   - Document support for Apple Music share links
           - Add 'macros' URL path to the HTTP API server
 v0.4.35   - Add 'mic_enabled' action

@@ -133,9 +133,7 @@ def action_2(speaker: str, action: str, arg_1: str, arg_2: str) -> Dict:
 
 
 @sc_app.get("/{speaker}/{action}/{arg_1}/{arg_2}/{arg_3}")
-def action_3(
-    speaker: str, action: str, arg_1: str, arg_2: str, arg_3: str
-) -> Dict:
+def action_3(speaker: str, action: str, arg_1: str, arg_2: str, arg_3: str) -> Dict:
     return command_core(speaker, action, arg_1, arg_2, arg_3, use_local=USE_LOCAL)
 
 
