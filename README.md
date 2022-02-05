@@ -471,7 +471,7 @@ Some SoCo-CLI alarm actions below require an **alarm specification** (`alarm_spe
   2. Alarm duration in hours and minutes: HH:MM
   3. Recurrence: A valid recurrence string is  `DAILY`, `ONCE`, `WEEKDAYS`,
      `WEEKENDS` or of the form `ON_DDDDDD` where `D` is a number from 0-6
-     representing a day of the week (Sunday is 0, Monday is 1, etc.), e.g. `ON_034` means
+     representing a day of the week (Sunday is 0, Monday is 1, etc.), e.g., `ON_034` means
      Sunday, Wednesday and Thursday
   4. Whether the alarm is enabled: `ON` or `OFF` (or `YES`, `NO`)
   5. What to play: `CHIME`, or a URI for a stream (which must be enclosed in double quotes)
@@ -934,7 +934,7 @@ By default, the server listens for incoming requests on **port 8000**. This can 
 
 If accessing the HTTP server from another machine on the network, make sure that your firewall allows incoming TCP requests on your chosen port.
 
-For each request, the server will output the equivalent `sonos` command line (if applicable) and exit code/error, followed by the URL requested and the HTTP response code, e.g.:
+For each request, the server will report the equivalent `sonos` command line (if applicable), execute the sonos command, and report the exit code/error, followed by the URL requested and the HTTP response code, e.g.:
 
 ```
 SoCo-CLI: Command = 'sonos Study volume', exit code = 0
@@ -959,7 +959,7 @@ http://<server>:<port>/<speaker_name>/<action>[/parameter_1/parameter_2/paramete
 - **`<action>`** is the SoCo-CLI action to perform. Almost all of the main SoCo-CLI actions are available for use.
 - **`<parameter_1>`** (etc.) are the parameter(s) required by the action, if any.
 
-Strings with characters that are invalid within URLs should be substituted by their URL-friendly replacements  (e.g., space should be replaced by `%20`, comma by `%2C`, and colon by `%3A`).
+Strings with characters that are invalid within URLs should be substituted by their URL-friendly replacements  (e.g., space should be replaced by `%20`, comma by `%2C`, apostrophe by `%27`, and colon by `%3A`).
 
 Usage examples:
 
@@ -1000,7 +1000,7 @@ The **macros** feature allows the creation of custom actions or sequences of act
 
 #### Macro Definition and Usage
 
-Macro definitions take the form of macro names followed by an equals sign (`=`), then the action(s) to be performed. Comments can be included by using `#` as the first character of a line, and blank lines are ignored. For example, the contents of a macro definition file might be:
+Macro definitions take the form of the macro name followed by an equals sign (`=`), then the action(s) to be performed. Comments can be included by using `#` as the first character of a line, and blank lines are ignored. For example, the contents of a macro definition file might be:
 
 ```
 # SoCo-CLI HTTP API Server Macros file
@@ -1060,10 +1060,10 @@ sonos-http-api-server --macros my_macros.txt
 
 #### Return Values
 
-Successful invocation of a macro will return the output of the actions that were executed, in JSON format, e.g.:
+Successful invocation of a macro will return the sonos command that was executed, and the output of the actions that were performed (or the error output(s) in the case of a failure), in JSON format, e.g.:
 
 ```
-{"result":"Command line output: 16\n"}
+{"command":"sonos Kitchen volume", result":"Command line output: 16\n"}
 ```
 
 #### Listing Macros

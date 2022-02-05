@@ -9,7 +9,7 @@ if version_info.major == 3 and version_info.minor < 6:
 import argparse
 import shlex
 from os.path import abspath
-from subprocess import check_output
+from subprocess import STDOUT, CalledProcessError, check_output
 from typing import Dict
 
 import uvicorn  # type: ignore
@@ -113,42 +113,42 @@ def macros() -> Dict:
 
 @sc_app.get("/macro/{macro_name}")
 def run_macro(macro_name: str) -> Dict:
-    result = _process_macro(macro_name)
-    return {"result": result}
+    command, result = _process_macro(macro_name)
+    return {"command": command, "result": result}
 
 
 @sc_app.get("/macro/{macro_name}/{arg_1}")
 def run_macro_1(macro_name: str, arg_1: str) -> Dict:
-    result = _process_macro(macro_name, arg_1)
-    return {"result": result}
+    command, result = _process_macro(macro_name, arg_1)
+    return {"command": command, "result": result}
 
 
 @sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}")
 def run_macro_2(macro_name: str, arg_1: str, arg_2: str) -> Dict:
-    result = _process_macro(macro_name, arg_1, arg_2)
-    return {"result": result}
+    command, result = _process_macro(macro_name, arg_1, arg_2)
+    return {"command": command, "result": result}
 
 
 @sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}")
 def run_macro_3(macro_name: str, arg_1: str, arg_2: str, arg_3: str) -> Dict:
-    result = _process_macro(macro_name, arg_1, arg_2, arg_3)
-    return {"result": result}
+    command, result = _process_macro(macro_name, arg_1, arg_2, arg_3)
+    return {"command": command, "result": result}
 
 
 @sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}")
 def run_macro_4(
     macro_name: str, arg_1: str, arg_2: str, arg_3: str, arg_4: str
 ) -> Dict:
-    result = _process_macro(macro_name, arg_1, arg_2, arg_3, arg_4)
-    return {"result": result}
+    command, result = _process_macro(macro_name, arg_1, arg_2, arg_3, arg_4)
+    return {"command": command, "result": result}
 
 
 @sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}")
 def run_macro_5(
     macro_name: str, arg_1: str, arg_2: str, arg_3: str, arg_4: str, arg_5: str
 ) -> Dict:
-    result = _process_macro(macro_name, arg_1, arg_2, arg_3, arg_4, arg_5)
-    return {"result": result}
+    command, result = _process_macro(macro_name, arg_1, arg_2, arg_3, arg_4, arg_5)
+    return {"command": command, "result": result}
 
 
 @sc_app.get("/{speaker}/{action}")
@@ -242,13 +242,13 @@ def main() -> None:
         exit(1)
 
 
-def _process_macro(macro_name: str, *args) -> str:
+def _process_macro(macro_name: str, *args) -> tuple[str, str]:
     # Look up the macro
     try:
         macro = _lookup_macro(macro_name)
     except KeyError:
         print(PREFIX + "macro '{}' not found".format(macro_name))
-        return "Error: macro '{}' not found".format(macro_name)
+        return "", "Error: macro '{}' not found".format(macro_name)
 
     # Substitute variable arguments
     sonos_command_line = _substitute_variables(macro, args)
@@ -262,10 +262,10 @@ def _process_macro(macro_name: str, *args) -> str:
     # Execute the command
     print(PREFIX + "Executing: " + sonos_command_line)
     try:
-        output = check_output(sonos_command_line, shell=True)
-        return "Command line output: " + output.decode("utf-8")
-    except:
-        return "Error running command line: " + sonos_command_line
+        output = check_output(sonos_command_line, stderr=STDOUT, shell=True)
+        return sonos_command_line, "Command line output: " + output.decode("utf-8")
+    except CalledProcessError as exc:
+        return sonos_command_line, exc.output.decode("utf-8")
 
 
 def _lookup_macro(macro_name: str) -> str:
@@ -276,23 +276,18 @@ def _lookup_macro(macro_name: str) -> str:
 def _substitute_variables(macro: str, args: tuple) -> str:
     """Substitute positional parameters with supplied variables."""
     elements = shlex.split(macro)
-    sonos_command_line = ""
+    sonos_command_line_terms = []
     for element in elements:
         if element in ["%1", "%2", "%3", "%4", "%5"]:
             try:
                 arg_sub = _quote_if_contains_space(args[int(element[1:]) - 1])
-                sonos_command_line = sonos_command_line + " " + arg_sub
+                sonos_command_line_terms.append(arg_sub)
             except IndexError:
-                print(
-                    PREFIX
-                    + "Argument substitution failed for argument '{}'".format(element)
-                )
-                # Proceed with unsubstituted element; will probably cause command
-                # failure
-                sonos_command_line = sonos_command_line + " " + element
+                # Omit unsatisfied arguments
+                print(PREFIX + "No variable supplied for argument '{}'".format(element))
         else:
-            sonos_command_line = sonos_command_line + " " + element
-    return sonos_command_line
+            sonos_command_line_terms.append(_quote_if_contains_space(element))
+    return " ".join(sonos_command_line_terms)
 
 
 def _substitute_speaker_ips(macro: str, use_local: bool = False) -> str:
@@ -300,16 +295,15 @@ def _substitute_speaker_ips(macro: str, use_local: bool = False) -> str:
     Substitute speaker names for IP addresses, for efficiency.
     Speaker names must be exact.
     """
-    terms = shlex.split(macro)
+    elements = shlex.split(macro)
     new_macro_list = []
-    for term in terms:
-        device, error_msg = get_speaker(term, use_local_speaker_list=use_local)
-        if device is not None and device.player_name == term:
+    for element in elements:
+        device, error_msg = get_speaker(element, use_local_speaker_list=use_local)
+        if device is not None and device.player_name == element:
             new_macro_list.append(device.ip_address)
         else:
-            new_macro_list.append(_quote_if_contains_space(term))
-    new_macro = " ".join(new_macro_list)
-    return new_macro
+            new_macro_list.append(_quote_if_contains_space(element))
+    return " ".join(new_macro_list)
 
 
 def _load_macros(macros: dict, filename: str) -> bool:
