@@ -80,7 +80,7 @@
    * [Acknowledgments](#acknowledgments)
    * [Resources](#resources)
 
-<!-- Added by: pwt, at: Fri Feb  4 17:35:43 GMT 2022 -->
+<!-- Added by: pwt, at: Sat Feb  5 11:57:36 GMT 2022 -->
 
 <!--te-->
 
@@ -338,9 +338,9 @@ sonos Kitchen play_from_queue 5
 - **`group_mute`**: Returns the group mute state of a group of speakers, 'on' or 'off'.
 - **`group_mute <on|off>`**: Sets the group mute state of a group of speakers to 'on' or 'off'.
 - **`group_relative_volume <adjustment>` (or `group_rel_vol`, `grv`)**: Raises or lowers the group volume by `<adjustment>` which must be a number from -100 to 100.
-- **`group_volume` (or `group_vol`)**: Returns the current group volume setting of the speaker's group (0 to 100)
-- **`group_volume <volume>` (or `group_vol`)**: Sets the volume of the speaker's group to `<volume>` (0 to 100). This action operates in the same way as the group volume slider in the Sonos apps. The volume applied to each speaker in the group is scaled by the speaker's current volume.
-- **`group_volume_equalize <volume>` (or `group_volume_equalise`, `gve`)**: Sets the volume of all speakers in a group to the same absolute volume `<volume>` (0-100).
+- **`group_volume` (or `group_vol`)**: Returns the current group volume setting of the speaker's group (0 to 100).
+- **`group_volume <volume>` (or `group_vol`)**: Sets the group volume of the speaker's group to `<volume>` (0 to 100). This action operates in the same way as the group volume slider in the Sonos apps. The volume applied to each speaker in the group is scaled by the speaker's current volume.
+- **`group_volume_equalize <volume>` (or `group_volume_equalise`, `gve`)**: Sets the volume of all speakers in a group to the same absolute `<volume>` (0-100).
 - **`loudness`**: Returns the loudness setting of the speaker, 'on' or 'off'.
 - **`loudness <on|off>`**: Sets the loudness setting of the speaker to 'on' or 'off'.
 - **`mute`**: Returns the mute setting of the speaker, 'on' or 'off'.
@@ -1030,7 +1030,7 @@ http://192.168.0.100:8000/macro/front_R3
 
 #### Macro Arguments
 
-Macros can be parameterised using up to **five** positional arguments, specified in the macro definition by the terms `%1` to `%5`. The general form for supplying the arguments when the macro is invoked is:
+Macros can be parameterised using up to **five** positional arguments, specified in the macro definition by the terms **`%1`** to **`%5`**. The general form for supplying the arguments when the macro is invoked is:
 
 `http://192.168.0.100:8000/macro/<macro_name>/<arg_1>/<arg_2>/<arg_3>/<arg_4>/<arg_5>`
 
@@ -1042,11 +1042,13 @@ The macro is then invoked using:
 
 `http://192.168.0.100:8000/macro/lower_floor_volume/30`
 
-Or to use different volumes for each speaker:
+Or to use different volumes for each speaker, the macro definition might be:
 
-Macro definition: `lower_floor_volume = Kitchen volume %1 : Hallway volume %2 : "Living Room" volume %3`
+`lower_floor_volume = Kitchen volume %1 : Hallway volume %2 : "Living Room" volume %3`
 
-Macro invocation: `http://192.168.0.100:8000/macro/lower_floor_volume/30/40/25`
+and the macro invocation would take the form:
+
+`http://192.168.0.100:8000/macro/lower_floor_volume/30/40/25`
 
 #### Specifying the Macro Definition File
 

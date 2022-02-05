@@ -1,4 +1,4 @@
-v0.4.38   - Add parameterisation capability to HTTP API server macros
+v0.4.38   - Allow parameterisation of HTTP API server macros
 v0.4.37   - Add `group_volume_equalise` action
 v0.4.36   - Document support for Apple Music share links
           - Add 'macros' URL path to the HTTP API server

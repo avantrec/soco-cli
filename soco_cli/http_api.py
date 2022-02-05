@@ -47,7 +47,7 @@ def command_core(
         exit_code = 1
         result = ""
 
-    # Quote speaker names & arguments containing spaces, for neatness
+    # Quote speaker names & arguments containing spaces
     if " " in speaker:
         quoted_speaker = '"' + speaker + '"'
     else:
@@ -251,20 +251,13 @@ def _process_macro(macro_name: str, *args) -> str:
         return "Error: macro '{}' not found".format(macro_name)
 
     # Substitute variable arguments
-    elements = shlex.split(macro)
-    sonos_command_line = ""
-    for element in elements:
-        if element in ["%1", "%2", "%3", "%4", "%5"]:
-            try:
-                arg_sub = _quote_if_contains_space(args[int(element[1:]) - 1])
-                sonos_command_line = sonos_command_line + " " + arg_sub
-            except IndexError:
-                return "Argument substitution failed for argument '{}'".format(element)
-        else:
-            sonos_command_line = sonos_command_line + " " + element
+    sonos_command_line = _substitute_variables(macro, args)
 
     # Substitute speaker names for IP addresses, for efficiency
-    sonos_command_line = "sonos " + _substitute_speaker_ips(sonos_command_line)
+    sonos_command_line = _substitute_speaker_ips(sonos_command_line)
+
+    # Finalise the command line
+    sonos_command_line = "sonos " + sonos_command_line
 
     # Execute the command
     print(PREFIX + "Executing: " + sonos_command_line)
@@ -278,6 +271,28 @@ def _process_macro(macro_name: str, *args) -> str:
 def _lookup_macro(macro_name: str) -> str:
     global MACROS
     return MACROS[macro_name]
+
+
+def _substitute_variables(macro: str, args: tuple) -> str:
+    """Substitute positional parameters with supplied variables."""
+    elements = shlex.split(macro)
+    sonos_command_line = ""
+    for element in elements:
+        if element in ["%1", "%2", "%3", "%4", "%5"]:
+            try:
+                arg_sub = _quote_if_contains_space(args[int(element[1:]) - 1])
+                sonos_command_line = sonos_command_line + " " + arg_sub
+            except IndexError:
+                print(
+                    PREFIX
+                    + "Argument substitution failed for argument '{}'".format(element)
+                )
+                # Proceed with unsubstituted element; will probably cause command
+                # failure
+                sonos_command_line = sonos_command_line + " " + element
+        else:
+            sonos_command_line = sonos_command_line + " " + element
+    return sonos_command_line
 
 
 def _substitute_speaker_ips(macro: str, use_local: bool = False) -> str:
