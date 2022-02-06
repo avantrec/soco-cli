@@ -278,18 +278,59 @@ def _lookup_macro(macro_name: str) -> str:
 
 def _substitute_variables(macro: str, args: tuple) -> str:
     """Substitute positional parameters with supplied variables."""
+    parameters_list = ["%1", "%2", "%3", "%4", "%5"]
+    supplied_parameters = set(parameters_list[: len(args)])
+    parameters = set(parameters_list)
+    used_parameters = []
+    unsatisfied_parameters = set()
+    variables_used = []
+
     elements = shlex.split(macro)
     sonos_command_line_terms = []
     for element in elements:
-        if element in ["%1", "%2", "%3", "%4", "%5"]:
+        if element in parameters:
             try:
                 arg_sub = _quote_if_contains_space(args[int(element[1:]) - 1])
                 sonos_command_line_terms.append(arg_sub)
+                used_parameters.append(element)
+                variables_used.append(arg_sub)
             except IndexError:
-                # Omit unsatisfied arguments
-                print(PREFIX + "No variable supplied for argument '{}'".format(element))
+                # Omit unsatisfied arguments and continue
+                unsatisfied_parameters.add(element)
         else:
             sonos_command_line_terms.append(_quote_if_contains_space(element))
+
+    used_parameters_set = set(used_parameters)
+
+    # Print out parameter usage
+    if len(used_parameters) > 0:
+        print(
+            PREFIX
+            + "Parameter variables used: {} -> {}".format(
+                used_parameters, variables_used
+            )
+        )
+    if len(unsatisfied_parameters) > 0:
+        print(
+            PREFIX
+            + "Parameter variables not supplied for: {}".format(
+                sorted(list(unsatisfied_parameters))
+            )
+        )
+    if len(supplied_parameters - used_parameters_set) > 0:
+        unused_list = sorted(list(supplied_parameters - used_parameters_set))
+        unused_variables = []
+        for unused in unused_list:
+            unused_variables.append(_quote_if_contains_space(args[int(unused[1:]) - 1]))
+        print(
+            PREFIX
+            + "Parameter variables supplied but not used: {} -> {}".format(
+                sorted(list(supplied_parameters - used_parameters_set)),
+                unused_variables,
+            )
+        )
+
+    # Return the substituted command line
     return " ".join(sonos_command_line_terms)
 
 
