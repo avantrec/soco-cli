@@ -1060,10 +1060,10 @@ sonos-http-api-server --macros my_macros.txt
 
 #### Return Values
 
-Successful invocation of a macro will return the sonos command that was executed, and the output of the actions that were performed (or the error output(s) in the case of a failure), in JSON format, e.g.:
+Successful invocation of a macro will return the sonos command that was executed, and the result(s) of the actions that were performed (or the error output(s) in the case of a failure), in JSON format, e.g.:
 
 ```
-{"command": "sonos Kitchen volume", result": "16"}
+{"command": "sonos Kitchen volume", result": "30"}
 ```
 
 #### Listing Macros

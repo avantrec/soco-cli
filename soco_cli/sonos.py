@@ -306,6 +306,7 @@ def main():
                             error_report(
                                 "Action 'loop' takes no parameters, or a number of iterations (> 0)"
                             )
+                            cumulative_exit_code += 1
                             continue
                     loop_iterator -= 1
                     logging.info("Loop iterator countdown = {}".format(loop_iterator))
@@ -334,6 +335,7 @@ def main():
                         error_report(
                             "Action 'loop_for' requires one parameter (duration >= 0)"
                         )
+                        cumulative_exit_code += 1
                     logging.info(
                         "Starting action 'loop_for' for duration {}s".format(
                             loop_duration
@@ -367,6 +369,7 @@ def main():
                         error_report(
                             "Action 'loop_until' requires one parameter (stop time)"
                         )
+                        cumulative_exit_code += 1
                     logging.info(
                         "Starting action 'loop_until' for duration {}s".format(
                             loop_duration

@@ -267,7 +267,7 @@ def _process_macro(macro_name: str, *args) -> tuple[str, str]:
         return sonos_command_line, output.decode("utf-8").rstrip()
     except CalledProcessError as exc:
         error = exc.output.decode("utf-8").rstrip().replace("\n", "; ")
-        print("exit code = 1 [{}]".format(error))
+        print("exit code = {} [{}]".format(exc.returncode, error))
         return sonos_command_line, error
 
 
