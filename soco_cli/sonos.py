@@ -306,6 +306,7 @@ def main():
                             error_report(
                                 "Action 'loop' takes no parameters, or a number of iterations (> 0)"
                             )
+                            continue
                     loop_iterator -= 1
                     logging.info("Loop iterator countdown = {}".format(loop_iterator))
                     if loop_iterator <= 0:
