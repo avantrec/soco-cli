@@ -260,14 +260,14 @@ def _process_macro(macro_name: str, *args) -> tuple[str, str]:
     sonos_command_line = "sonos " + sonos_command_line
 
     # Execute the command
-    print(PREFIX + "Executing: " + sonos_command_line, end=", ")
+    print(PREFIX + "Executing: " + sonos_command_line)
     try:
         output = check_output(sonos_command_line, stderr=STDOUT, shell=True)
-        print("exit code = 0")
+        print(PREFIX + "Exit code = 0")
         return sonos_command_line, output.decode("utf-8").rstrip()
     except CalledProcessError as exc:
         error = exc.output.decode("utf-8").rstrip().replace("\n", "; ")
-        print("exit code = {} [{}]".format(exc.returncode, error))
+        print(PREFIX + "Exit code = {} [{}]".format(exc.returncode, error))
         return sonos_command_line, error
 
 
