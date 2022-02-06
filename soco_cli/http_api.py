@@ -27,6 +27,7 @@ USE_LOCAL = False
 PORT = 8000
 INFO = "SoCo-CLI HTTP API Server v" + version
 PREFIX = "SoCo-CLI: "
+PREFIX_MACRO = PREFIX + "Macro: "
 MACROS: Dict[str, str] = {}
 MACRO_FILE = ""
 
@@ -246,8 +247,9 @@ def _process_macro(macro_name: str, *args) -> tuple[str, str]:
     # Look up the macro
     try:
         macro = _lookup_macro(macro_name)
+        print(PREFIX_MACRO + "Processing macro '{}' = '{}'".format(macro_name, macro))
     except KeyError:
-        print(PREFIX + "macro '{}' not found".format(macro_name))
+        print(PREFIX_MACRO + "macro '{}' not found".format(macro_name))
         return "", "Error: macro '{}' not found".format(macro_name)
 
     # Substitute variable arguments
@@ -260,14 +262,14 @@ def _process_macro(macro_name: str, *args) -> tuple[str, str]:
     sonos_command_line = "sonos " + sonos_command_line
 
     # Execute the command
-    print(PREFIX + "Executing: " + sonos_command_line)
+    print(PREFIX_MACRO + "Executing: '" + sonos_command_line + "'")
     try:
         output = check_output(sonos_command_line, stderr=STDOUT, shell=True)
-        print(PREFIX + "Exit code = 0")
+        print(PREFIX_MACRO + "Exit code = 0")
         return sonos_command_line, output.decode("utf-8").rstrip()
     except CalledProcessError as exc:
         error = exc.output.decode("utf-8").rstrip().replace("\n", "; ")
-        print(PREFIX + "Exit code = {} [{}]".format(exc.returncode, error))
+        print(PREFIX_MACRO + "Exit code = {} [{}]".format(exc.returncode, error))
         return sonos_command_line, error
 
 
@@ -305,14 +307,14 @@ def _substitute_variables(macro: str, args: tuple) -> str:
     # Print out parameter usage
     if len(used_parameters) > 0:
         print(
-            PREFIX
+            PREFIX_MACRO
             + "Parameter variables used: {} -> {}".format(
                 used_parameters, variables_used
             )
         )
     if len(unsatisfied_parameters) > 0:
         print(
-            PREFIX
+            PREFIX_MACRO
             + "Parameter variables not supplied for: {}".format(
                 sorted(list(unsatisfied_parameters))
             )
@@ -323,7 +325,7 @@ def _substitute_variables(macro: str, args: tuple) -> str:
         for unused in unused_list:
             unused_variables.append(_quote_if_contains_space(args[int(unused[1:]) - 1]))
         print(
-            PREFIX
+            PREFIX_MACRO
             + "Parameter variables supplied but not used: {} -> {}".format(
                 sorted(list(supplied_parameters - used_parameters_set)),
                 unused_variables,
@@ -345,29 +347,38 @@ def _substitute_speaker_ips(macro: str, use_local: bool = False) -> str:
         device, error_msg = get_speaker(element, use_local_speaker_list=use_local)
         if device is not None and device.player_name == element:
             new_macro_list.append(device.ip_address)
+            print(
+                PREFIX_MACRO
+                + "Substituting speaker name '{}' by IP address '{}'".format(
+                    device.player_name, device.ip_address
+                )
+            )
         else:
             new_macro_list.append(_quote_if_contains_space(element))
     return " ".join(new_macro_list)
 
 
 def _load_macros(macros: dict, filename: str) -> bool:
-    print(PREFIX + "Attempting to load macros from '{}'".format(filename))
+    print(PREFIX_MACRO + "Attempting to load macros from '{}'".format(filename))
     try:
         with open(filename, "r") as f:
             line = f.readline()
             while line != "":
                 if not line.startswith("#") and line != "\n":
                     if line.count("=") != 1:
-                        print(PREFIX + "Malformed macro '{}'... ignored".format(line))
+                        print(
+                            PREFIX_MACRO
+                            + "Malformed macro '{}'... ignored".format(line)
+                        )
                         print(line, end="")
                     else:
                         macro = line.split("=")
                         macros[macro[0].strip()] = macro[1].strip()
                 line = f.readline()
-        print(PREFIX + "Loaded macros: {}".format(macros))
+        print(PREFIX_MACRO + "Loaded macros: {}".format(macros))
         return True
     except:
-        print(PREFIX + "Macro file not found")
+        print(PREFIX_MACRO + "Macro file not found")
         return False
 
 

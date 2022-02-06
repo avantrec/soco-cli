@@ -195,7 +195,10 @@ def main():
         exit(0)
 
     if len(args.parameters) == 0 and not args.interactive:
-        print("No parameters supplied. Use 'sonos --help' for usage information.", flush=True)
+        print(
+            "No parameters supplied. Use 'sonos --help' for usage information.",
+            flush=True,
+        )
         exit(1)
 
     message = check_args(args)
