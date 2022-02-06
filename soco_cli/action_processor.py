@@ -33,7 +33,6 @@ from soco_cli.utils import (
     one_or_more_parameters,
     one_or_two_parameters,
     one_parameter,
-    parameter_number_error,
     parameter_type_error,
     playback_state,
     pretty_print_values,
@@ -1292,8 +1291,12 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
         elif source.lower() in ["on", "left_input"]:
             # Switch to the speaker's own line_in
             logging.info("Switching to the speaker's own Line-In")
-            speaker.switch_to_line_in()
-            speaker.play()
+            try:
+                speaker.switch_to_line_in()
+                speaker.play()
+            except SoCoUPnPException:
+                error_report("Line In operation failed ... not supported?")
+                return False
         else:
             line_in_source = None
             if source.lower() == "right_input":
@@ -1325,8 +1328,12 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
                 error_report("Speaker or input '{}' not found".format(source))
                 return False
             logging.info("Switching to Line-In and starting playback")
-            speaker.switch_to_line_in(line_in_source)
-            speaker.play()
+            try:
+                speaker.switch_to_line_in(line_in_source)
+                speaker.play()
+            except SoCoUPnPException:
+                error_report("Line In operation failed ... not supported?")
+                return False
     return True
 
 
