@@ -2878,4 +2878,5 @@ actions = {
     "group_volume_equalize": SonosFunction(group_volume_equalise, "", True),
     "gve": SonosFunction(group_volume_equalise, "", True),
     "ungroup_all_in_group": SonosFunction(ungroup_all_in_group, "", True),
+    "ugaig": SonosFunction(ungroup_all_in_group, "", True),
 }
