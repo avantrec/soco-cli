@@ -1,4 +1,4 @@
-v0.4.40   -
+v0.4.40   - Add '/macros/reload' operation to HTTP API server
 v0.4.39   - Maintenance release
 v0.4.38   - Allow parameterisation of HTTP API server macros
 v0.4.37   - Add `group_volume_equalise` action

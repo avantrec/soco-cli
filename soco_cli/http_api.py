@@ -7,6 +7,7 @@ if version_info.major == 3 and version_info.minor < 6:
     exit(1)
 
 import argparse
+import pprint
 import shlex
 from os.path import abspath
 from subprocess import STDOUT, CalledProcessError, check_output
@@ -30,7 +31,7 @@ PREFIX = "SoCo-CLI: "
 PREFIX_MACRO = PREFIX + "Macro: "
 MACROS: Dict[str, str] = {}
 MACRO_FILE = ""
-
+PP = pprint.PrettyPrinter(indent=len(PREFIX_MACRO))
 
 sc_app = FastAPI()
 
@@ -109,6 +110,18 @@ def speakers() -> Dict:
 
 @sc_app.get("/macros")
 def macros() -> Dict:
+    return MACROS
+
+
+@sc_app.get("/macros/list")
+def macros_list() -> Dict:
+    return MACROS
+
+
+@sc_app.get("/macros/reload")
+def macros_reload() -> Dict:
+    global MACROS
+    _load_macros(MACROS, filename=MACRO_FILE)
     return MACROS
 
 
@@ -262,7 +275,7 @@ def _process_macro(macro_name: str, *args) -> tuple[str, str]:
     sonos_command_line = "sonos " + sonos_command_line
 
     # Execute the command
-    print(PREFIX_MACRO + "Executing: '" + sonos_command_line + "'")
+    print(PREFIX_MACRO + "Executing: '" + sonos_command_line + "' in a subprocess")
     try:
         output = check_output(sonos_command_line, stderr=STDOUT, shell=True)
         print(PREFIX_MACRO + "Exit code = 0")
@@ -359,7 +372,7 @@ def _substitute_speaker_ips(macro: str, use_local: bool = False) -> str:
 
 
 def _load_macros(macros: dict, filename: str) -> bool:
-    print(PREFIX_MACRO + "Attempting to load macros from '{}'".format(filename))
+    print(PREFIX_MACRO + "Attempting to (re)load macros from '{}'".format(filename))
     try:
         with open(filename, "r") as f:
             line = f.readline()
@@ -375,7 +388,8 @@ def _load_macros(macros: dict, filename: str) -> bool:
                         macro = line.split("=")
                         macros[macro[0].strip()] = macro[1].strip()
                 line = f.readline()
-        print(PREFIX_MACRO + "Loaded macros: {}".format(macros))
+        print(PREFIX_MACRO + "Loaded macros:")
+        PP.pprint(macros)
         return True
     except:
         print(PREFIX_MACRO + "Macro file not found")

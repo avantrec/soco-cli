@@ -66,6 +66,7 @@
          * [Macro Definition and Usage](#macro-definition-and-usage)
          * [Macro Arguments](#macro-arguments)
          * [Specifying the Macro Definition File](#specifying-the-macro-definition-file)
+         * [Reloading the Macro Definition File](#reloading-the-macro-definition-file)
          * [Return Values](#return-values-1)
          * [Listing Macros](#listing-macros)
       * [Listing Speakers](#listing-speakers)
@@ -80,7 +81,7 @@
    * [Acknowledgments](#acknowledgments)
    * [Resources](#resources)
 
-<!-- Added by: pwt, at: Sat Feb  5 11:57:36 GMT 2022 -->
+<!-- Added by: pwt, at: Mon Feb  7 11:23:01 GMT 2022 -->
 
 <!--te-->
 
@@ -996,7 +997,7 @@ If the command is unsuccessful, the **`error_msg`** field contains an error mess
 
 ### Macros: Defining Custom HTTP API Server Actions
 
-The **macros** feature allows the creation of custom actions or sequences of actions to be executed by the HTTP API server, and available at the `/macro/<macro_name>` endpoint. Macros are defined in a text file that is loaded when the server starts.
+The **macros** feature allows the creation of custom actions or sequences of actions to be executed by the HTTP API server, and available at the `/macro/<macro_name>` endpoint. Macros are defined in a text file that is loaded when the server starts, and which can subsequently be reloaded using the `/macros/reload` endpoint.
 
 #### Macro Definition and Usage
 
@@ -1058,6 +1059,10 @@ By default, the HTTP API server will look for a file named `macros.txt` in the d
 sonos-http-api-server --macros my_macros.txt
 ```
 
+#### Reloading the Macro Definition File
+
+The macro file can be reloaded using the `/macros/reload` URL path (e.g.: `http://192.168.0.100:8000/macros/reload`). This will reload the macros from the original macros file, and overwrite any that are already installed. The new list of macros will be returned in JSON format.
+
 #### Return Values
 
 Successful invocation of a macro will return the sonos command that was executed, and the result(s) of the actions that were performed (or the error output(s) in the case of a failure), in JSON format, e.g.:
@@ -1068,7 +1073,7 @@ Successful invocation of a macro will return the sonos command that was executed
 
 #### Listing Macros
 
-The `/macros` URL path (e.g.: `http://192.168.0.100:8000/macros`) will return a JSON list of the macros installed in the server.
+The `/macros` or `macros/list` URL paths (e.g.: `http://192.168.0.100:8000/macros`) will return a JSON list of the macros installed in the server.
 
 ### Listing Speakers
 
@@ -1080,9 +1085,7 @@ If the configuration of your speakers changes in some way (e.g., if speakers are
 
 ### Inspecting the HTTP API
 
-The HTTP API can be inspected and tested using its Swagger live documentation, at the `/docs` URL path, e.g.:
-
-`http://192.168.0.100:8000/docs`
+The HTTP API can be inspected and tested using its OpenAPI live documentation, at the `/docs` URL path, e.g.:`http://192.168.0.100:8000/docs`
 
 ## Using SoCo-CLI as a Python Library
 
