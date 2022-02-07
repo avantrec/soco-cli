@@ -924,8 +924,11 @@ The server is started using the `sonos-http-api-server` or `soco-http-api-server
 
 ```
 % sonos-http-api-server
-SoCo-CLI: Starting SoCo-CLI HTTP API Server v0.4.3
-SoCo-CLI: Finding speakers ... ['Bedroom', 'Front Reception', 'Kitchen', 'Move', 'Rear Reception', 'Study']
+SoCo-CLI: Starting SoCo-CLI HTTP API Server v0.4.41
+SoCo-CLI: Finding speakers ... ['Bedroom', 'Front Reception', 'Kitchen', 'Study']
+SoCo-CLI: Macro: Attempting to (re)load macros from '/Users/pwt/macros.txt'
+SoCo-CLI: Macro: Loaded macros:
+          ...
 INFO:     Started server process [52137]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.

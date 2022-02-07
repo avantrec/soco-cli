@@ -701,7 +701,7 @@ class AliasProcessor:
 
         logging.info(
             "Alias unpacking: recursion level {}, sequence number {}".format(
-                self._recurse_level, seq_number
+                self._recurse_level, seq_number + 1
             )
         )
 

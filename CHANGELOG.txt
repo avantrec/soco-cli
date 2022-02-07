@@ -1,4 +1,5 @@
-v0.4.41   -
+v0.4.41   - Add 'ugaig' synonym for 'ungroup_all_in_group'
+          - Fix typing issue with Python < 3.8 in HTTP API server
 v0.4.40   - Add '/macros/reload' operation to HTTP API server
           - Add 'ungroup_all_in_group' action
 v0.4.39   - Maintenance release

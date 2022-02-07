@@ -11,7 +11,7 @@ import pprint
 import shlex
 from os.path import abspath
 from subprocess import STDOUT, CalledProcessError, check_output
-from typing import Dict
+from typing import Dict, Tuple
 
 import uvicorn  # type: ignore
 from fastapi import FastAPI
@@ -256,7 +256,7 @@ def main() -> None:
         exit(1)
 
 
-def _process_macro(macro_name: str, *args) -> tuple[str, str]:
+def _process_macro(macro_name: str, *args) -> Tuple[str, str]:
     # Look up the macro
     try:
         macro = _lookup_macro(macro_name)
@@ -291,7 +291,7 @@ def _lookup_macro(macro_name: str) -> str:
     return MACROS[macro_name]
 
 
-def _substitute_variables(macro: str, args: tuple) -> str:
+def _substitute_variables(macro: str, args: Tuple) -> str:
     """Substitute positional parameters with supplied variables."""
     parameters_list = ["%1", "%2", "%3", "%4", "%5"]
     supplied_parameters = set(parameters_list[: len(args)])
