@@ -1,4 +1,5 @@
-v0.4.42   -
+v0.4.42   - Allow use of '_' to supply arguments to be ignored during
+            HTTP API server macro processing
 v0.4.41   - Add 'ugaig' synonym for 'ungroup_all_in_group'
           - Fix typing issue with Python < 3.8 in HTTP API server
 v0.4.40   - Add '/macros/reload' operation to HTTP API server

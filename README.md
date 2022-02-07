@@ -65,6 +65,7 @@
       * [Macros: Defining Custom HTTP API Server Actions](#macros-defining-custom-http-api-server-actions)
          * [Macro Definition and Usage](#macro-definition-and-usage)
          * [Macro Arguments](#macro-arguments)
+         * [Troubleshooting](#troubleshooting)
          * [Specifying the Macro Definition File](#specifying-the-macro-definition-file)
          * [Reloading the Macro Definition File](#reloading-the-macro-definition-file)
          * [Return Values](#return-values-1)
@@ -81,7 +82,7 @@
    * [Acknowledgments](#acknowledgments)
    * [Resources](#resources)
 
-<!-- Added by: pwt, at: Mon Feb  7 11:23:01 GMT 2022 -->
+<!-- Added by: pwt, at: Mon Feb  7 16:11:36 GMT 2022 -->
 
 <!--te-->
 
@@ -1054,6 +1055,31 @@ Or to use different volumes for each speaker, the macro definition might be:
 and the macro invocation would take the form:
 
 `http://192.168.0.100:8000/macro/lower_floor_volume/30/40/25`
+
+If a variable argument needs to be included, but should be ignored, then use an underscore `_` as the argument to be ignored. E.g. to ignore `%2` when processing a macro, use something like:
+
+`http://192.168.0.100:8000/macro/lower_floor_volume/30/_/25`
+
+#### Troubleshooting
+
+There is comprehensive server-side logging that reports the macro being invoked, the arguments supplied, the substitutions performed, and the `sonos` command line that is assembled and executed. This is helpful for troubleshooting. E.g., processing the following URL:
+
+`http://192.168.0.100:8000/macro/test_1/Study/volume/_/Peter%27s%20Room/volume`
+
+might generate the following server-side output:
+
+```
+SoCo-CLI: Macro: Processing macro 'test_1' = '%1 %2 %3 : %4 %5'
+SoCo-CLI: Macro: Parameter variables supplied: ['Study', 'volume', '_', "Peter's Room", 'volume']
+SoCo-CLI: Macro: Parameter variables used: ['%1', '%2', '%4', '%5'] -> ['Study', 'volume', '"Peter\'s Room"', 'volume']
+SoCo-CLI: Macro: Parameter variables ignored or not supplied for: ['%3']
+SoCo-CLI: Macro: Parameter variables supplied but ignored or not used: ['%3'] -> ['_']
+SoCo-CLI: Macro: Substituting speaker name 'Study' by IP address '192.168.0.39'
+SoCo-CLI: Macro: Substituting speaker name 'Peter's Room' by IP address '192.168.0.42'
+SoCo-CLI: Macro: Executing: 'sonos 192.168.0.39 volume : 192.168.0.42 volume' in a subprocess
+SoCo-CLI: Macro: Exit code = 0
+INFO:     192.168.0.100:61548 - "GET /macro/test_1/Study/volume/_/Peter%27s%20Room/volume HTTP/1.1" 200 OK
+```
 
 #### Specifying the Macro Definition File
 

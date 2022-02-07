@@ -237,14 +237,14 @@ def main() -> None:
 
     try:
         # Pre-load speaker cache
-        print(PREFIX + "Finding speakers ... ", end="", flush=True)
+        print(PREFIX + "Discovering speakers ... ", end="", flush=True)
         try:
             # This forces speaker discovery
             # For some reason, using 'get_all_speakers()' generates Uvicorn errors
             get_speaker("")
             print(get_all_speaker_names())
         except:
-            print("discovery failed, will retry on first request")
+            print(PREFIX + "Discovery failed: try '/rediscover'")
 
         # Start the server
         uvicorn.run(sc_app, host="0.0.0.0", use_colors=False, port=PORT)
@@ -306,6 +306,9 @@ def _substitute_variables(macro: str, args: Tuple) -> str:
         if element in parameters:
             try:
                 arg_sub = _quote_if_contains_space(args[int(element[1:]) - 1])
+                if arg_sub == "_":
+                    # If the supplied argument is an underscore, ignore it
+                    raise IndexError
                 sonos_command_line_terms.append(arg_sub)
                 used_parameters.append(element)
                 variables_used.append(arg_sub)
@@ -318,6 +321,8 @@ def _substitute_variables(macro: str, args: Tuple) -> str:
     used_parameters_set = set(used_parameters)
 
     # Print out parameter usage
+    if len(args) > 0:
+        print(PREFIX_MACRO + "Parameter variables supplied: {}".format(list(args)))
     if len(used_parameters) > 0:
         print(
             PREFIX_MACRO
@@ -328,7 +333,7 @@ def _substitute_variables(macro: str, args: Tuple) -> str:
     if len(unsatisfied_parameters) > 0:
         print(
             PREFIX_MACRO
-            + "Parameter variables not supplied for: {}".format(
+            + "Parameter variables ignored or not supplied for: {}".format(
                 sorted(list(unsatisfied_parameters))
             )
         )
@@ -339,7 +344,7 @@ def _substitute_variables(macro: str, args: Tuple) -> str:
             unused_variables.append(_quote_if_contains_space(args[int(unused[1:]) - 1]))
         print(
             PREFIX_MACRO
-            + "Parameter variables supplied but not used: {} -> {}".format(
+            + "Parameter variables supplied but ignored or not used: {} -> {}".format(
                 sorted(list(supplied_parameters - used_parameters_set)),
                 unused_variables,
             )
