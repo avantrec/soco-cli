@@ -462,6 +462,7 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`transfer_playback <target_speaker>` (or `transfer_to`, `transfer`)**: Transfers playback to <target_speaker>. This is achieved by grouping and ungrouping the speakers, and swapping the group coordinator. It's a convenience shortcut for `speaker1 group speaker2 : speaker1 ungroup`.
 - **`ungroup` (or `ug`, `u`)**: Removes the speaker from a group.
 - **`ungroup_all`**: Removes all speakers in the target speaker's household from all groups.
+- **`ungroup_all_in_group`**: Ungroups all speakers in a group.
 - **`unpair`**: Separate a stereo pair. Can be applied to either speaker in the pair.
 
 ### Alarms

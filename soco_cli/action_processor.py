@@ -917,6 +917,11 @@ def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
     if speaker == speaker2:
         error_report("Speakers are the same")
         return False
+    logging.info(
+        "Executing '{}' on speakers '{}', '{}'".format(
+            soco_function, speaker.player_name, speaker2.player_name
+        )
+    )
     getattr(speaker, soco_function)(speaker2)
     return True
 
@@ -927,8 +932,14 @@ def operate_on_all(speaker, action, args, soco_function, use_local_speaker_list)
     for zone in zones:
         if zone.is_visible:
             try:
+                logging.info(
+                    "Executing '{}' on speaker '{}'".format(
+                        soco_function, zone.player_name
+                    )
+                )
                 getattr(zone, soco_function)()
             except:
+                logging.info("Operation failed ... continuing")
                 # Ignore errors here; don't want to halt on
                 # a failed pause (e.g., if speaker isn't playing)
                 continue
@@ -2466,6 +2477,15 @@ def group_volume_equalise(speaker, action, args, soco_function, use_local_speake
     return True
 
 
+@zero_parameters
+def ungroup_all_in_group(speaker, action, args, soco_function, use_local_speaker_list):
+    for member in speaker.group.members:
+        if member.is_visible:
+            member.unjoin()
+            logging.info("Ungrouping speaker '{}'".format(member.player_name))
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False) -> bool:
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2857,4 +2877,5 @@ actions = {
     "group_volume_equalise": SonosFunction(group_volume_equalise, "", True),
     "group_volume_equalize": SonosFunction(group_volume_equalise, "", True),
     "gve": SonosFunction(group_volume_equalise, "", True),
+    "ungroup_all_in_group": SonosFunction(ungroup_all_in_group, "", True),
 }
