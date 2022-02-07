@@ -1,1 +1,2 @@
 include requirements.txt
+include soco_cli/favicon.ico
