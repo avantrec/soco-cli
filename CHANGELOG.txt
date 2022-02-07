@@ -1,3 +1,4 @@
+v0.4.41   -
 v0.4.40   - Add '/macros/reload' operation to HTTP API server
           - Add 'ungroup_all_in_group' action
 v0.4.39   - Maintenance release
