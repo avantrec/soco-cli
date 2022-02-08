@@ -1900,12 +1900,7 @@ def last_search(speaker, action, args, soco_function, use_local_speaker_list):
     if items:
         if len(items) > 0:
             print()
-            print_list_header(
-                "Sonos Music Library: Saved {} Search".format(
-                    items.search_type.capitalize()
-                ),
-                "",
-            )
+            print_list_header("Sonos Music Library: Saved Search", "")
             if items.search_type == "albums":
                 print_albums(items)
             # 'artists' search_type is used for tracks when 'tracks_in_album' has
