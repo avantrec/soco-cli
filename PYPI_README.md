@@ -5,9 +5,9 @@
 
 ## Overview
 
-SoCo-CLI is a powerful command line wrapper for the popular Python SoCo library [1] for controlling Sonos systems. SoCo-CLI is written entirely in Python and is portable across platforms.
+SoCo-CLI is a powerful command line wrapper for the popular Python SoCo library [1], for controlling Sonos systems. SoCo-CLI is written entirely in Python and is portable across platforms.
 
-A simple `sonos` command is provided which allows easy control of a huge range of speaker functions, including playback, volume, groups, EQ settings, sleep timers, alarms, speaker settings, the playback queue, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speaker states, and to create repeated action sequences using loops. Audio files from the local filesystem can be played directly on Sonos.
+A simple `sonos` command provides easy control over a huge range of speaker functions, including playback, volume, groups, EQ settings, sleep timers, alarms, speaker settings, the playback queue, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speakers to stop or start playing, and to create repeated action sequences using loops. Audio files from the local filesystem can be played directly on Sonos.
 
 SoCo-CLI has an orderly command structure and consistent return values, making it suitable for use in automated scripts, `cron` jobs, etc.
 
@@ -15,7 +15,7 @@ For interactive command line use, SoCo-CLI provides a powerful **Interactive She
 
 SoCo-CLI can be imported as a streamlined, high-level **API** library by other Python programs, and acts as an intermediate abstraction layer between the client program and the underlying SoCo library, simplifying the use of SoCo.
 
-SoCo-CLI can also run as a simple **HTTP API server**, providing access to a huge range of actions via simple HTTP requests. (Note that using this functionality requires Python 3.6 or above.)
+SoCo-CLI can also run as a simple **HTTP API server**, providing access to a huge range of actions via simple HTTP requests. (Requires Python 3.6 or above.)
 
 ## Supported Environments
 
