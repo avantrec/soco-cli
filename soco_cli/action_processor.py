@@ -2476,8 +2476,13 @@ def group_volume_equalise(speaker, action, args, soco_function, use_local_speake
 def ungroup_all_in_group(speaker, action, args, soco_function, use_local_speaker_list):
     for member in speaker.group.members:
         if member.is_visible:
-            member.unjoin()
-            logging.info("Ungrouping speaker '{}'".format(member.player_name))
+            if member.is_coordinator:
+                logging.info(
+                    "Not ungrouping coordinator speaker '{}'".format(member.player_name)
+                )
+            else:
+                member.unjoin()
+                logging.info("Ungrouped speaker '{}'".format(member.player_name))
     return True
 
 
