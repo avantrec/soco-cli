@@ -183,7 +183,7 @@ def run_macro_5(
     return {"command": command, "result": result}
 
 
-@sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}")
+@sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}/{arg_6}")
 def run_macro_6(
     macro_name: str,
     arg_1: str,
@@ -199,7 +199,7 @@ def run_macro_6(
     return {"command": command, "result": result}
 
 
-@sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}/{arg_7}")
+@sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}/{arg_6}/{arg_7}")
 def run_macro_7(
     macro_name: str,
     arg_1: str,
@@ -217,7 +217,7 @@ def run_macro_7(
 
 
 @sc_app.get(
-    "/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}/{arg_7}/{arg_8}"
+    "/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}/{arg_6}/{arg_7}/{arg_8}"
 )
 def run_macro_8(
     macro_name: str,
@@ -237,7 +237,7 @@ def run_macro_8(
 
 
 @sc_app.get(
-    "/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}/{arg_7}/{arg_8}/{arg_9}"
+    "/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}/{arg_6}/{arg_7}/{arg_8}/{arg_9}"
 )
 def run_macro_9(
     macro_name: str,
