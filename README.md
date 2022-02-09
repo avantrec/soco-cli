@@ -1036,9 +1036,9 @@ http://192.168.0.100:8000/macro/front_R3
 
 #### Macro Arguments
 
-Macros can be parameterised using up to **five** positional arguments, specified in the macro definition by the terms **`%1`** to **`%5`**. The general form for supplying the arguments when the macro is invoked is:
+Macros can be parameterised using up to **nine** positional arguments, specified in the macro definition by the terms **`%1`** to **`%9`**. The general form for supplying the arguments when the macro is invoked is:
 
-`http://192.168.0.100:8000/macro/<macro_name>/<arg_1>/<arg_2>/<arg_3>/<arg_4>/<arg_5>`
+`http://192.168.0.100:8000/macro/<macro_name>/<arg_1>/<arg_2>/<arg_3>/<arg_4>/...` etc.
 
 For example, a macro definition to set all the speakers on one floor to a specified volume could be defined as:
 
