@@ -33,7 +33,16 @@ MACROS: Dict[str, str] = {}
 MACRO_FILE = ""
 PP = pprint.PrettyPrinter(indent=len(PREFIX_MACRO))
 
-sc_app = FastAPI()
+sc_app = FastAPI(
+    title="SoCo-CLI HTTP API Server",
+    description="**Use this interface to review and test SoCo-CLI's HTTP API**",
+    version=version,
+    contact={"name": "Avantrec Ltd", "url": "https://github.com/avantrec/soco-cli"},
+    license_info={
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+    },
+)
 
 
 def command_core(
