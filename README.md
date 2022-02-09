@@ -1091,7 +1091,7 @@ sonos-http-api-server --macros my_macros.txt
 
 #### Reloading the Macro Definition File
 
-The macro file can be reloaded using the `/macros/reload` URL path (e.g.: `http://192.168.0.100:8000/macros/reload`). This will reload the macros from the original macros file, and overwrite any that are already installed. The new list of macros will be returned in JSON format.
+The macro file can be reloaded using the `/macros/reload` endpoint (e.g.: `http://192.168.0.100:8000/macros/reload`). This will reload the macros from the original macros file, and overwrite any that are already installed. The new list of macros will be returned in JSON format.
 
 #### Return Values
 
@@ -1103,19 +1103,19 @@ Successful invocation of a macro will return the sonos command that was executed
 
 #### Listing Macros
 
-The `/macros` or `macros/list` URL paths (e.g.: `http://192.168.0.100:8000/macros`) will return a JSON list of the macros installed in the server.
+The `/macros` or `macros/list` endpoints (e.g.: `http://192.168.0.100:8000/macros`) will return a JSON list of the macros installed in the server.
 
 ### Listing Speakers
 
-To list the available speakers, use the `/speakers` URL path, e.g.: `http://192.168.0.100:8000/speakers`. The returned JSON string will list the speakers.
+To list the available speakers, use the `/speakers` endpoint, e.g.: `http://192.168.0.100:8000/speakers`. The returned JSON string will list the speakers.
 
 ### Rediscovering Speakers
 
-If the configuration of your speakers changes in some way (e.g., if speakers are renamed or if there are IP address changes), the server can be instructed to reload its speaker data using the `/rediscover` URL path, e.g.: `http://192.168.0.100:8000/rediscover`. The returned JSON string will list the speakers discovered. (Note that this action does not overwrite any existing speaker data saved in the local speaker cache file.)
+If the configuration of your speakers changes in some way (e.g., if speakers are renamed or if there are IP address changes), the server can be instructed to reload its speaker data using the `/rediscover` endpoint, e.g.: `http://192.168.0.100:8000/rediscover`. The returned JSON string will list the speakers discovered. (Note that this action does not overwrite any existing speaker data saved in the local speaker cache file.)
 
 ### Inspecting the HTTP API
 
-The HTTP API can be inspected and tested using its OpenAPI live documentation, at the `/docs` URL path, e.g.:`http://192.168.0.100:8000/docs`
+The HTTP API can be inspected and tested using its OpenAPI live documentation, at the `/docs` endpoint, e.g.:`http://192.168.0.100:8000/docs`
 
 ## Using SoCo-CLI as a Python Library
 
