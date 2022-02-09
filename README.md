@@ -482,7 +482,7 @@ Some SoCo-CLI alarm actions below require an **alarm specification** (`alarm_spe
   7. The volume to play at: `0`-`100`
   8. Whether to include grouped speakers: `ON` or `OFF` (or `YES`, `NO`)
  
-  Examples alarm specifications:
+  Examples of alarm specifications:
   - `07:00,01:30,WEEKDAYS,ON,"http://stream.live.vc.bbcmedia.co.uk/bbc_radio_fourfm",NORMAL,50,OFF`
   - `06:30,00:01,WEEKDAYS,ON,CHIME,NORMAL,50,OFF`
 
@@ -1036,7 +1036,7 @@ http://192.168.0.100:8000/macro/front_R3
 
 #### Macro Arguments
 
-Macros can be parameterised using up to **nine** positional arguments, specified in the macro definition by the terms **`%1`** to **`%9`**. The general form for supplying the arguments when the macro is invoked is:
+Macros can be parameterised using up to **nine** positional arguments, specified in macro definitions by the terms **`%1`** to **`%9`**. The general form for supplying the arguments when the macro is invoked is:
 
 `http://192.168.0.100:8000/macro/<macro_name>/<arg_1>/<arg_2>/<arg_3>/<arg_4>/...` etc.
 
@@ -1056,7 +1056,7 @@ and the macro invocation would take the form:
 
 `http://192.168.0.100:8000/macro/lower_floor_volume/30/40/25`
 
-If a variable argument needs to be included, but should be ignored, then use an underscore `_` as the argument to be ignored. E.g. to ignore `%2` when processing a macro, use something like:
+If a macro argument needs to be supplied, but should be ignored during macro processing, then use an underscore `_` as the argument to be ignored. E.g. to ignore `%2` when processing a macro, use a URL of the form:
 
 `http://192.168.0.100:8000/macro/lower_floor_volume/30/_/25`
 
@@ -1127,7 +1127,7 @@ Note that the native SoCo library can be used alongside the SoCo-CLI API, as nee
 
 ### Importing the API
 
-Import into your Python code as follows:
+Import SoCo-CLI in your Python code as follows:
 
 ```
 from soco_cli import api
