@@ -1103,7 +1103,7 @@ Successful invocation of a macro will return the sonos command that was executed
 
 #### Listing Macros
 
-The `/macros` or `macros/list` endpoints (e.g.: `http://192.168.0.100:8000/macros`) will return a JSON list of the macros installed in the server.
+The `macros/list` endpoint (e.g.: `http://192.168.0.100:8000/macros/list`) will return a JSON list of the macros installed in the server.
 
 ### Listing Speakers
 

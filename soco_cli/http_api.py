@@ -125,6 +125,7 @@ def speakers() -> Dict:
     return {"speakers": speakers}
 
 
+# Deprecated
 @sc_app.get("/macros", include_in_schema=False)
 def macros() -> Dict:
     return MACROS
