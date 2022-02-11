@@ -199,7 +199,9 @@ def run_macro_6(
     return {"command": command, "result": result}
 
 
-@sc_app.get("/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}/{arg_6}/{arg_7}")
+@sc_app.get(
+    "/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}/{arg_5}/{arg_6}/{arg_7}"
+)
 def run_macro_7(
     macro_name: str,
     arg_1: str,
