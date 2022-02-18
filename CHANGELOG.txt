@@ -1,4 +1,6 @@
-v0.4.43   -
+v0.4.44   - Maintenance update
+v0.4.43   - HTTP API server: Expand number of macro arguments to nine
+          - HTTP API server: populate OpenAPI doc metadata
 v0.4.42   - Allow use of '_' to supply arguments to be ignored during
             HTTP API server macro processing
 v0.4.41   - Add 'ugaig' synonym for 'ungroup_all_in_group'
