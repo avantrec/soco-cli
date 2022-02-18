@@ -41,5 +41,4 @@ setuptools.setup(
             "soco-http-api-server=soco_cli.http_api:main",
         ]
     },
-    data_files=[("favicons", ["favicon.ico"])],
 )

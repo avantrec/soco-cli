@@ -15,7 +15,6 @@ from typing import Dict, Tuple
 
 import uvicorn  # type: ignore
 from fastapi import FastAPI
-from starlette.responses import FileResponse
 
 from soco_cli.__init__ import __version__ as version  # type: ignore
 from soco_cli.api import get_all_speaker_names
@@ -33,8 +32,6 @@ PREFIX_MACRO = PREFIX + "Macro: "
 MACROS: Dict[str, str] = {}
 MACRO_FILE = ""
 PP = pprint.PrettyPrinter(indent=len(PREFIX_MACRO))
-FAVICON_PATH = "favicon.ico"
-
 
 sc_app = FastAPI(
     title="SoCo-CLI HTTP API Server",
@@ -103,11 +100,6 @@ def command_core(
 @sc_app.get("/")
 def root() -> Dict:
     return {"info": INFO}
-
-
-@sc_app.get("/favicon.ico", include_in_schema=False)
-def favicon() -> FileResponse:
-    return FileResponse(abspath(FAVICON_PATH))
 
 
 @sc_app.get("/rediscover")
