@@ -1,4 +1,4 @@
-soco >= 0.26.2
+soco >= 0.26.3
 tabulate
 rangehttpserver
 xmltodict
