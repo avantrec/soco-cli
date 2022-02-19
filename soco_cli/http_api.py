@@ -126,7 +126,7 @@ def rediscover() -> Dict:
 @sc_app.get("/speakers")
 def speakers() -> Dict:
     if USE_LOCAL:
-        SPEAKER_LIST.get_all_speaker_names()
+        speakers = SPEAKER_LIST.get_all_speaker_names()
     else:
         speakers = get_all_speaker_names()
     print(PREFIX + "Speakers: {}".format(speakers))
