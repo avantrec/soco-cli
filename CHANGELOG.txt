@@ -1,3 +1,4 @@
+v0.4.46   -
 v0.4.45   - Allow use of local speaker cache with HTTP API server
 v0.4.44   - Maintenance update
 v0.4.43   - HTTP API server: Expand number of macro arguments to nine
