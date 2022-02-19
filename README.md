@@ -958,7 +958,7 @@ To use the local speaker cache file instead of speaker discovery, start the HTTP
 
 When using this option, it's also possible to supply a `--subnets` command line specification, which will be used in the event of a `/rediscover` operation. The use of this option is described in the usage guide for `sonos-discover`.
 
-The `--subnets` option **only** has an effect when using the local speaker cache, and the results of any subsequent `/rediscover` operations will overwrite the existing local speaker cache file.
+The `--subnets` option **only** has an effect when using the local speaker cache, and the results of any `/rediscover` operations will overwrite the existing local speaker cache file.
 
 Example of use with both options:
 
@@ -1047,7 +1047,7 @@ http://192.168.0.100:8000/macro/front_R3
 
 **Macro names** are case-sensitive, and should not contain spaces or special characters except for underscores (`_`) and dashes (`-`).
 
-**Speaker names** should ideally use the **exact** speaker name, including capitalisation, and using enclosing quotes where necessary. Shortened names will work, but will be less efficient.
+**Speaker names** should ideally use the **exact** speaker name, including capitalisation, and using enclosing quotes where necessary. Shortened names will work, but will be less efficient. (Note: this does not apply when using the local speaker cache option.)
 
 #### Macro Arguments
 
