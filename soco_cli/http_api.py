@@ -390,13 +390,12 @@ def _process_macro(macro_name: str, *args) -> Tuple[str, str]:
     # Substitute variable arguments
     sonos_command_line = _substitute_variables(macro, args)
 
-    # Substitute speaker names for IP addresses, for efficiency
-    sonos_command_line = _substitute_speaker_ips(sonos_command_line)
-
     # Finalise the command line
     if USE_LOCAL:
         sonos_command_line = "sonos -l " + sonos_command_line
     else:
+        # Substitute speaker names for IP addresses, for efficiency
+        sonos_command_line = _substitute_speaker_ips(sonos_command_line)
         sonos_command_line = "sonos " + sonos_command_line
 
     # Execute the command
