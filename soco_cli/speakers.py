@@ -218,6 +218,7 @@ class Speakers:
     def discover(self):
         """Discover the Sonos speakers on the network(s) to which
         this host is attached."""
+        self.clear()
         devices = None
         if not (self._subnets_arg and len(self.subnets) == 0):
             devices = soco.discovery.scan_network(

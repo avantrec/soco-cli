@@ -60,6 +60,7 @@
       * [Options for the sonos-discover Command](#options-for-the-sonos-discover-command)
    * [The SoCo-CLI HTTP API Server](#the-soco-cli-http-api-server)
       * [Server Usage](#server-usage)
+      * [Using the Local Speaker Cache](#using-the-local-speaker-cache)
       * [HTTP Request Structure](#http-request-structure)
       * [Return Values](#return-values)
       * [Macros: Defining Custom HTTP API Server Actions](#macros-defining-custom-http-api-server-actions)
@@ -82,7 +83,7 @@
    * [Acknowledgments](#acknowledgments)
    * [Resources](#resources)
 
-<!-- Added by: pwt, at: Fri Feb 11 16:21:24 GMT 2022 -->
+<!-- Added by: pwt, at: Sat Feb 19 16:39:31 GMT 2022 -->
 
 <!--te-->
 
@@ -950,6 +951,20 @@ INFO:     127.0.0.1:64948 - "GET /Study/volume/30 HTTP/1.1" 200 OK
 ```
 
 The server will continue running until stopped using CTRL-C (etc.).
+
+### Using the Local Speaker Cache
+
+To use the local speaker cache file instead of speaker discovery, start the HTTP API server with the `--use-local-speaker-list` or `-l` command line option.
+
+When using this option, it's also possible to supply a `--subnets` command line specification, which will be used in the event of a `/rediscover` operation. The use of this option is described in the usage guide for `sonos-discover`.
+
+The `--subnets` option **only** has an effect when using the local speaker cache, and the results of any subsequent `/rediscover` operations will overwrite the existing local speaker cache file.
+
+Example of use with both options:
+
+```
+sonos-http-api-server -l --subnets=192.168.0.1/24
+```
 
 ### HTTP Request Structure
 

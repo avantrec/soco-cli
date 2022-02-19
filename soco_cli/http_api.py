@@ -21,6 +21,7 @@ from soco_cli.api import get_all_speaker_names
 from soco_cli.api import get_soco_object as get_speaker
 from soco_cli.api import rescan_speakers
 from soco_cli.api import run_command as sc_run
+from soco_cli.speakers import Speakers
 from soco_cli.utils import version as print_version
 
 # Globals
@@ -32,6 +33,11 @@ PREFIX_MACRO = PREFIX + "Macro: "
 MACROS: Dict[str, str] = {}
 MACRO_FILE = ""
 PP = pprint.PrettyPrinter(indent=len(PREFIX_MACRO))
+
+# Gets used with the local speaker list only
+SPEAKER_LIST = Speakers(network_timeout=1.0)
+SUBNET_LIST = None
+
 
 sc_app = FastAPI(
     title="SoCo-CLI HTTP API Server",
@@ -104,15 +110,25 @@ def root() -> Dict:
 
 @sc_app.get("/rediscover")
 def rediscover() -> Dict:
-    rescan_speakers(timeout=2.0)
-    speakers = get_all_speaker_names()
+    if USE_LOCAL:
+        SPEAKER_LIST.subnets = SUBNET_LIST
+        SPEAKER_LIST.discover()
+        SPEAKER_LIST.save()
+        print(PREFIX + "Saved new local speaker list")
+        speakers = SPEAKER_LIST.get_all_speaker_names()
+    else:
+        rescan_speakers(timeout=2.0)
+        speakers = get_all_speaker_names()
     print(PREFIX + "Speakers (re)discovered: {}".format(speakers))
     return {"speakers_discovered": speakers}
 
 
 @sc_app.get("/speakers")
 def speakers() -> Dict:
-    speakers = get_all_speaker_names()
+    if USE_LOCAL:
+        SPEAKER_LIST.get_all_speaker_names()
+    else:
+        speakers = get_all_speaker_names()
     print(PREFIX + "Speakers: {}".format(speakers))
     return {"speakers": speakers}
 
@@ -290,13 +306,24 @@ def args_processor() -> None:
         default=False,
         help="Print the SoCo-CLI and SoCo versions, and exit",
     )
-
     parser.add_argument(
         "--macros",
         "-m",
         type=str,
         default="macros.txt",
         help="The file containing the local macros",
+    )
+    parser.add_argument(
+        "--use-local-speaker-list",
+        "-l",
+        action="store_true",
+        default=False,
+        help="Use the local speaker list instead of SoCo discovery",
+    )
+    parser.add_argument(
+        "--subnets",
+        type=str,
+        help="Only with '-l': specify the networks or IP addresses to search",
     )
 
     args = parser.parse_args()
@@ -308,6 +335,12 @@ def args_processor() -> None:
     global PORT
     if args.port is not None:
         PORT = args.port
+
+    global USE_LOCAL
+    global SUBNET_LIST
+    USE_LOCAL = args.use_local_speaker_list
+    if USE_LOCAL and args.subnets is not None:
+        SUBNET_LIST = args.subnets.split(",")
 
     global MACRO_FILE
     MACRO_FILE = abspath(args.macros)
@@ -322,15 +355,18 @@ def main() -> None:
     _load_macros(MACROS, filename=MACRO_FILE)
 
     try:
-        # Pre-load speaker cache
-        print(PREFIX + "Discovering speakers ... ", end="", flush=True)
-        try:
-            # This forces speaker discovery
-            # For some reason, using 'get_all_speakers()' generates Uvicorn errors
-            get_speaker("")
-            print(get_all_speaker_names())
-        except:
-            print(PREFIX + "Discovery failed: try '/rediscover'")
+        print(PREFIX + "Loading speakers ... ", end="", flush=True)
+        if USE_LOCAL:
+            SPEAKER_LIST.load()
+            print(SPEAKER_LIST.get_all_speaker_names())
+        else:
+            try:
+                # This forces speaker discovery
+                # For some reason, using 'get_all_speakers()' generates Uvicorn errors
+                get_speaker("", USE_LOCAL)
+                print(get_all_speaker_names())
+            except:
+                print(PREFIX + "Discovery failed: try '/rediscover'")
 
         # Start the server
         uvicorn.run(sc_app, host="0.0.0.0", use_colors=False, port=PORT)
@@ -358,7 +394,10 @@ def _process_macro(macro_name: str, *args) -> Tuple[str, str]:
     sonos_command_line = _substitute_speaker_ips(sonos_command_line)
 
     # Finalise the command line
-    sonos_command_line = "sonos " + sonos_command_line
+    if USE_LOCAL:
+        sonos_command_line = "sonos -l " + sonos_command_line
+    else:
+        sonos_command_line = "sonos " + sonos_command_line
 
     # Execute the command
     print(PREFIX_MACRO + "Executing: '" + sonos_command_line + "' in a subprocess")
