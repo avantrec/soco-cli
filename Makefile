@@ -42,5 +42,8 @@ pypi_check: build
 toc:
 	./gh-md-toc --insert README.md
 
+update:
+	pip install -U -r requirements.txt -r requirements-dev.txt
+
 no_op:
 	# Available targets are: build, clean, install, uninstall, black, pypi_upload, pypi_check
