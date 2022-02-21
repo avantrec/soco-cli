@@ -123,7 +123,7 @@ class Speakers:
         return self._subnets
 
     @subnets.setter
-    def subnets(self, subnets):
+    def subnets(self, subnets, check_valid=True):
         # Check for valid networks
         if subnets is not None:
             self._subnets_arg = True  # True if subnets has been set
@@ -134,6 +134,13 @@ class Speakers:
                     logging.info("Invalid network/subnet: {}".format(subnet))
                     subnets.remove(subnet)
             logging.info("Setting search subnets to: {}".format(subnets))
+        else:
+            self._subnets_arg = False
+        self._subnets = subnets
+
+    def set_subnets_no_check(self, subnets):
+        if subnets is not None:
+            self._subnets_arg = True
         else:
             self._subnets_arg = False
         self._subnets = subnets

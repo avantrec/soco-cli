@@ -36,7 +36,6 @@ PP = pprint.PrettyPrinter(indent=len(PREFIX_MACRO))
 
 # Gets used with the local speaker list only
 SPEAKER_LIST = Speakers(network_timeout=1.0)
-SUBNET_LIST = None
 
 
 sc_app = FastAPI(
@@ -121,7 +120,6 @@ def speakers() -> Dict:
 @sc_app.get("/rediscover")
 def rediscover() -> Dict:
     if USE_LOCAL:
-        SPEAKER_LIST.subnets = SUBNET_LIST
         SPEAKER_LIST.discover()
         SPEAKER_LIST.save()
         print(PREFIX + "Saved new local speaker list")
@@ -337,10 +335,13 @@ def args_processor() -> None:
         PORT = args.port
 
     global USE_LOCAL
-    global SUBNET_LIST
     USE_LOCAL = args.use_local_speaker_list
     if USE_LOCAL and args.subnets is not None:
-        SUBNET_LIST = args.subnets.split(",")
+        subnets = args.subnets.split(",")
+        SPEAKER_LIST.set_subnets_no_check(subnets)
+        print(PREFIX + "/rediscover will use subnets = {}".format(subnets))
+    if not USE_LOCAL and args.subnets is not None:
+        print(PREFIX + "Option '--subnets' ignored; only valid with local cache")
 
     global MACRO_FILE
     MACRO_FILE = abspath(args.macros)
