@@ -1291,6 +1291,15 @@ def remove_from_playlist(speaker, action, args, soco_function, use_local_speaker
 
 @zero_one_or_two_parameters
 def line_in(speaker, action, args, soco_function, use_local_speaker_list):
+    return line_in_core(speaker, action, args, True, use_local_speaker_list)
+
+
+@one_or_two_parameters
+def cue_line_in(speaker, action, args, soco_function, use_local_speaker_list):
+    return line_in_core(speaker, action, args, False, use_local_speaker_list)
+
+
+def line_in_core(speaker, action, args, start_playback, use_local_speaker_list):
     np = len(args)
     if np == 0:
         state = "on" if speaker.is_playing_line_in else "off"
@@ -1304,7 +1313,10 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
             logging.info("Switching to the speaker's own Line-In")
             try:
                 speaker.switch_to_line_in()
-                speaker.play()
+                if start_playback:
+                    speaker.play()
+                else:
+                    speaker.stop()
             except SoCoUPnPException:
                 error_report("Line In operation failed ... not supported?")
                 return False
@@ -1338,10 +1350,13 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
             if not line_in_source:
                 error_report("Speaker or input '{}' not found".format(source))
                 return False
-            logging.info("Switching to Line-In and starting playback")
+            logging.info("Switching to Line-In")
             try:
                 speaker.switch_to_line_in(line_in_source)
-                speaker.play()
+                if start_playback:
+                    speaker.play()
+                else:
+                    speaker.stop()
             except SoCoUPnPException:
                 error_report("Line In operation failed ... not supported?")
                 return False
@@ -2692,6 +2707,7 @@ actions = {
     "seek_back": SonosFunction(seek_back, "seek_back", True),
     "sb": SonosFunction(seek_back, "seek_back", True),
     "line_in": SonosFunction(line_in, ""),
+    "cue_line_in": SonosFunction(cue_line_in, ""),
     "bass": SonosFunction(eq, "bass"),
     "treble": SonosFunction(eq, "treble"),
     "balance": SonosFunction(balance, "balance"),

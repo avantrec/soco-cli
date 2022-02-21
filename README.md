@@ -370,6 +370,7 @@ sonos Kitchen play_from_queue 5
 - **`album_art`**: Return a URL to the album art for the current stream, if there's one available.
 - **`cross_fade`** (or **`crossfade`, `fade`**): Returns the cross fade setting of the speaker, 'on' or 'off'.
 - **`cross_fade <on|off>`** (or **`crossfade`, `fade`**): Sets the cross fade setting of the speaker to 'on' or 'off'.
+- **`cue_line_in <on | line_in_speaker | left_input, right_input | line_in_speaker right_input>`**: This functions in the same way as the `line_in` action below, but does not automatically start playback (and will stop playback if the speaker is currently playing from the selected Line In input.)
 - **`end_session`**: Ends a third-party controlled session, e.g. Spotify Connect.
 - **`get_channel`** (or **`channel`**): Get the channel name of the current radio stream, if available.
 - **`get_uri`**: Get the URI of the current track or stream. (Note: the output format is subject to change.)  
