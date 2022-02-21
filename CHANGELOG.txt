@@ -1,3 +1,4 @@
+v0.4.47   -
 v0.4.46   - Add 'cue_line_in' action
           - Enable use of 'wait' and 'wait_until' with speaker names
             and 'if_stopped/if_playing' tests
