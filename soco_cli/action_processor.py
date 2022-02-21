@@ -47,6 +47,7 @@ from soco_cli.utils import (
     zero_or_one_parameter,
     zero_parameters,
 )
+from soco_cli.wait_actions import process_wait
 
 pp = pprint.PrettyPrinter(width=120)
 SONOS_MAX_ITEMS = 66000
@@ -2501,6 +2502,14 @@ def ungroup_all_in_group(speaker, action, args, soco_function, use_local_speaker
     return True
 
 
+@one_parameter
+def wait_processing(speaker, action, args, soco_function, use_local_speaker_list):
+    sequence = [action, args[0]]
+    logging.info("Processing wait".format(sequence))
+    process_wait(sequence)
+    return True
+
+
 def process_action(speaker, action, args, use_local_speaker_list=False) -> bool:
     sonos_function = actions.get(action, None)
     if sonos_function:
@@ -2543,7 +2552,7 @@ class SonosFunction:
 
 def get_actions(
     include_loop_actions=True,
-    include_wait_actions=True,
+    include_wait_actions=False,
     include_track_follow_actions=True,
 ):
     action_list = list(actions.keys())
@@ -2565,7 +2574,7 @@ def get_actions(
 
 def list_actions(
     include_loop_actions=True,
-    include_wait_actions=True,
+    include_wait_actions=False,
     include_track_follow_actions=True,
 ):
     action_list = get_actions(
@@ -2760,6 +2769,9 @@ actions = {
     "wsf": SonosFunction(wait_stopped_for, "", True),
     "if_stopped": SonosFunction(if_stopped_or_playing, "", True),
     "if_playing": SonosFunction(if_stopped_or_playing, "", True),
+    "wait": SonosFunction(wait_processing, ""),
+    "wait_for": SonosFunction(wait_processing, ""),
+    "wait_until": SonosFunction(wait_processing, ""),
     "search_library": SonosFunction(search_library, ""),
     "sl": SonosFunction(search_library, ""),
     "search_artists": SonosFunction(search_artists, ""),

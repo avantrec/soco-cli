@@ -1,4 +1,6 @@
 v0.4.46   - Add 'cue_line_in' action
+          - Enable use of 'wait' and 'wait_until' with speaker names
+            and 'if_stopped/if_playing' tests
 v0.4.45   - Allow use of local speaker cache with HTTP API server
 v0.4.44   - Maintenance update
 v0.4.43   - HTTP API server: Expand number of macro arguments to nine
