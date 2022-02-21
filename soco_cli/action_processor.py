@@ -2503,7 +2503,7 @@ def ungroup_all_in_group(speaker, action, args, soco_function, use_local_speaker
 
 
 @one_parameter
-def wait_processing(speaker, action, args, soco_function, use_local_speaker_list):
+def process_wait_action(speaker, action, args, soco_function, use_local_speaker_list):
     sequence = [action, args[0]]
     logging.info("Processing wait: {}".format(sequence))
     process_wait(sequence)
@@ -2769,9 +2769,9 @@ actions = {
     "wsf": SonosFunction(wait_stopped_for, "", True),
     "if_stopped": SonosFunction(if_stopped_or_playing, "", True),
     "if_playing": SonosFunction(if_stopped_or_playing, "", True),
-    "wait": SonosFunction(wait_processing, ""),
-    "wait_for": SonosFunction(wait_processing, ""),
-    "wait_until": SonosFunction(wait_processing, ""),
+    "wait": SonosFunction(process_wait_action, ""),
+    "wait_for": SonosFunction(process_wait_action, ""),
+    "wait_until": SonosFunction(process_wait_action, ""),
     "search_library": SonosFunction(search_library, ""),
     "sl": SonosFunction(search_library, ""),
     "search_artists": SonosFunction(search_artists, ""),
