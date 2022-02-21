@@ -2505,7 +2505,7 @@ def ungroup_all_in_group(speaker, action, args, soco_function, use_local_speaker
 @one_parameter
 def wait_processing(speaker, action, args, soco_function, use_local_speaker_list):
     sequence = [action, args[0]]
-    logging.info("Processing wait".format(sequence))
+    logging.info("Processing wait: {}".format(sequence))
     process_wait(sequence)
     return True
 
