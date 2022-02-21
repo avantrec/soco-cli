@@ -70,6 +70,8 @@ ACTIONS_TO_EXEC = [
     "play_dir",
     "play_directory",
     "play_cd",
+    "if_stopped",
+    "if_playing",
 ]
 
 
@@ -440,14 +442,22 @@ def interactive_loop(
                             )
                         )
                         name = args.pop(0)
-                        speaker = get_speaker(name, use_local_speaker_list)
-                        if not speaker:
+                        if name in ACTIONS_TO_EXEC_NO_SPEAKER:
                             print(
-                                "Error: Speaker '{}' not found; should an active speaker be set?".format(
+                                "Please set an active speaker to use the '{}' action".format(
                                     name
                                 )
                             )
                             continue
+                        else:
+                            speaker = get_speaker(name, use_local_speaker_list)
+                            if not speaker:
+                                print(
+                                    "Error: Speaker '{}' not found; should an active speaker be set?".format(
+                                        name
+                                    )
+                                )
+                                continue
                         if len(args) == 0:
                             print(
                                 "Error: no action or arguments supplied for speaker '{}'".format(
