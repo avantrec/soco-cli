@@ -108,6 +108,16 @@ def root() -> Dict:
     return {"info": INFO}
 
 
+@sc_app.get("/speakers")
+def speakers() -> Dict:
+    if USE_LOCAL:
+        speakers = SPEAKER_LIST.get_all_speaker_names()
+    else:
+        speakers = get_all_speaker_names()
+    print(PREFIX + "Speakers: {}".format(speakers))
+    return {"speakers": speakers}
+
+
 @sc_app.get("/rediscover")
 def rediscover() -> Dict:
     if USE_LOCAL:
@@ -121,16 +131,6 @@ def rediscover() -> Dict:
         speakers = get_all_speaker_names()
     print(PREFIX + "Speakers (re)discovered: {}".format(speakers))
     return {"speakers_discovered": speakers}
-
-
-@sc_app.get("/speakers")
-def speakers() -> Dict:
-    if USE_LOCAL:
-        speakers = SPEAKER_LIST.get_all_speaker_names()
-    else:
-        speakers = get_all_speaker_names()
-    print(PREFIX + "Speakers: {}".format(speakers))
-    return {"speakers": speakers}
 
 
 # Deprecated
