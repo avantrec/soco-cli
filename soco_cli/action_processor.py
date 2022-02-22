@@ -1304,6 +1304,9 @@ def line_in_core(speaker, action, args, start_playback, use_local_speaker_list):
     np = len(args)
     if np == 0:
         state = "on" if speaker.is_playing_line_in else "off"
+        state = state + " ({})".format(
+            speaker.get_current_transport_info()["current_transport_state"]
+        )
         print(state)
     else:
         source = args[0]
@@ -1325,7 +1328,6 @@ def line_in_core(speaker, action, args, start_playback, use_local_speaker_list):
                 error_report("Line In operation failed ... not supported?")
                 return False
         else:
-            line_in_source = None
             if source.lower() == "right_input":
                 # We want the right-hand speaker of the stereo pair
                 logging.info("Looking for right-hand speaker")
