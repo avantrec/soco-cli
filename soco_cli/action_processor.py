@@ -1308,6 +1308,7 @@ def line_in_core(speaker, action, args, start_playback, use_local_speaker_list):
     else:
         source = args[0]
         if source.lower() == "off":
+            logging.info("Stopping playback")
             speaker.stop()
         elif source.lower() in ["on", "left_input"]:
             # Switch to the speaker's own line_in
@@ -1315,8 +1316,10 @@ def line_in_core(speaker, action, args, start_playback, use_local_speaker_list):
             try:
                 speaker.switch_to_line_in()
                 if start_playback:
+                    logging.info("Starting playback")
                     speaker.play()
                 else:
+                    logging.info("Stopping playback")
                     speaker.stop()
             except SoCoUPnPException:
                 error_report("Line In operation failed ... not supported?")
@@ -1355,8 +1358,10 @@ def line_in_core(speaker, action, args, start_playback, use_local_speaker_list):
             try:
                 speaker.switch_to_line_in(line_in_source)
                 if start_playback:
+                    logging.info("Starting playback")
                     speaker.play()
                 else:
+                    logging.info("Stopping playback")
                     speaker.stop()
             except SoCoUPnPException:
                 error_report("Line In operation failed ... not supported?")
