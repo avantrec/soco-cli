@@ -1127,7 +1127,9 @@ To list the available speakers, use the `/speakers` endpoint, e.g.: `http://192.
 
 ### Rediscovering Speakers
 
-If the configuration of your speakers changes in some way (e.g., if speakers are renamed or if there are IP address changes), the server can be instructed to reload its speaker data using the `/rediscover` endpoint, e.g.: `http://192.168.0.100:8000/rediscover`. The returned JSON string will list the speakers discovered. (Note that this action does not overwrite any existing speaker data saved in the local speaker cache file.)
+If the configuration of your speakers changes in some way (e.g., if speakers are renamed or if there are IP address changes), the server can be instructed to reload its speaker data using the `/rediscover` endpoint, e.g.: `http://192.168.0.100:8000/rediscover`. The returned JSON string will list the speakers discovered.
+
+If using the local speaker cache option, the speaker cache file will be overwritten with the new discovery results.
 
 ### Inspecting the HTTP API
 
