@@ -1295,9 +1295,14 @@ def line_in(speaker, action, args, soco_function, use_local_speaker_list):
     return line_in_core(speaker, action, args, True, use_local_speaker_list)
 
 
-@one_or_two_parameters
+@zero_one_or_two_parameters
 def cue_line_in(speaker, action, args, soco_function, use_local_speaker_list):
-    return line_in_core(speaker, action, args, False, use_local_speaker_list)
+    if len(args) == 0:
+        logging.info("'cue_line_in' invoked without parameters; insert 'on'")
+        new_args = ("on",)
+    else:
+        new_args = args
+    return line_in_core(speaker, action, new_args, False, use_local_speaker_list)
 
 
 def line_in_core(speaker, action, args, start_playback, use_local_speaker_list):
