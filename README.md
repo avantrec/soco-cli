@@ -360,6 +360,12 @@ sonos Kitchen play_from_queue 5
 - **`sub_gain <gain>`**: Sets the value of a Sub's gain, from `-15` to `+15`.
 - **`surround_enabled`**: Returns `on` if the zone's surround speakers are enabled, otherwise `off`.
 - **`surround_enabled <on|off>`**: Enables or disables a zone's surround speakers.
+- **`surround_full_volume_enabled`**: Reports whether surround speakers are in full volume mode (on) or ambient mode (off).
+- **`surround_full_volume_enabled <on|off>`**: Sets surround speakers to full volume mode (on) or ambient mode (off).
+- **`surround_volume_music`**: Reports the value of the volume level for surround speakers, when playing music sources, from `-15` to `+15`.
+- **`surround_volume_music <level>`**: Sets the value of the volume level for surround speakers, when playing music sources, from `-15` to `+15`.
+- **`surround_volume_tv`**: Reports the value of the volume level for surround speakers, when playing TV sources, from `-15` to `+15`.
+- **`surround_volume_tv <level>`**: Sets the value of the volume level for surround speakers, when playing TV sources, from `-15` to `+15`.
 - **`treble`**: Returns the treble setting of the speaker, from -10 to 10.
 - **`treble <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.
 - **`trueplay`**: Returns whether a speaker's Trueplay profile is enabled, 'on' or 'off'.

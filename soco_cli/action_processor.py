@@ -2533,6 +2533,27 @@ def sub_gain(speaker, action, args, soco_function, use_local_speaker_list):
         return False
 
 
+@zero_or_one_parameter
+def surround_volume(speaker, action, args, soco_function, use_local_speaker_list):
+    if getattr(speaker, soco_function) is None:
+        error_report(
+            "Speaker '{}' doesn't include surround speakers".format(speaker.player_name)
+        )
+        return False
+    if len(args) == 0:
+        print(getattr(speaker, soco_function))
+        return True
+    try:
+        gain = int(args[0])
+        if not -15 <= gain <= 15:
+            raise ValueError
+        setattr(speaker, soco_function, gain)
+        return True
+    except ValueError:
+        error_report("Argument must be an integer between -15 and 15")
+        return False
+
+
 @one_parameter
 def process_wait_action(speaker, action, args, soco_function, use_local_speaker_list):
     sequence = [action, args[0]]
@@ -2947,4 +2968,11 @@ actions = {
     "ungroup_all_in_group": SonosFunction(ungroup_all_in_group, "", True),
     "ugaig": SonosFunction(ungroup_all_in_group, "", True),
     "sub_gain": SonosFunction(sub_gain, "", False),
+    "surround_volume_tv": SonosFunction(surround_volume, "surround_volume_tv", False),
+    "surround_volume_music": SonosFunction(
+        surround_volume, "surround_volume_music", False
+    ),
+    "surround_full_volume_enabled": SonosFunction(
+        on_off_action, "surround_full_volume_enabled", "False"
+    ),
 }
