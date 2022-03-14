@@ -2514,6 +2514,25 @@ def ungroup_all_in_group(speaker, action, args, soco_function, use_local_speaker
     return True
 
 
+@zero_or_one_parameter
+def sub_gain(speaker, action, args, soco_function, use_local_speaker_list):
+    if speaker.sub_gain is None:
+        error_report("Speaker '{}' doesn't include a Sub".format(speaker.player_name))
+        return False
+    if len(args) == 0:
+        print(speaker.sub_gain)
+        return True
+    try:
+        gain = int(args[0])
+        if not -15 <= gain <= 15:
+            raise ValueError
+        speaker.sub_gain = gain
+        return True
+    except ValueError:
+        error_report("Sub gain must be an integer between -15 and 15")
+        return False
+
+
 @one_parameter
 def process_wait_action(speaker, action, args, soco_function, use_local_speaker_list):
     sequence = [action, args[0]]
@@ -2927,4 +2946,5 @@ actions = {
     "gve": SonosFunction(group_volume_equalise, "", True),
     "ungroup_all_in_group": SonosFunction(ungroup_all_in_group, "", True),
     "ugaig": SonosFunction(ungroup_all_in_group, "", True),
+    "sub_gain": SonosFunction(sub_gain, "", False),
 }

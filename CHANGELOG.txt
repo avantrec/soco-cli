@@ -1,4 +1,4 @@
-v0.4.48   -
+v0.4.48   - Add 'sub_gain' action
 v0.4.47   - Improvements to 'cue_line_in' + maintenance updates
           - Update to SoCo v0.26.4 fixes regression in obtaining track titles
             when playing from local libraries

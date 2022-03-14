@@ -356,6 +356,8 @@ sonos Kitchen play_from_queue 5
 - **`relative_volume <adjustment>` (or `rel_vol`, `rv`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
 - **`sub_enabled`**: Returns `on` if the zone's subwoofer is enabled, otherwise `off`.
 - **`sub_enabled <on|off>`**: Enables or disables a zone's subwoofer.
+- **`sub_gain`**: Reports the value of a Sub's gain (for speaker groups with a bonded Sub), from `-15` to `+15`.
+- **`sub_gain <gain>`**: Sets the value of a Sub's gain, from `-15` to `+15`.
 - **`surround_enabled`**: Returns `on` if the zone's surround speakers are enabled, otherwise `off`.
 - **`surround_enabled <on|off>`**: Enables or disables a zone's surround speakers.
 - **`treble`**: Returns the treble setting of the speaker, from -10 to 10.
