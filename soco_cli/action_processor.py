@@ -2594,11 +2594,19 @@ def list_actions(
         include_wait_actions=include_wait_actions,
         include_track_follow_actions=include_track_follow_actions,
     )
-    action_list = sorted(action_list, reverse=True)
 
     longest_command = len(max(action_list, key=len))
     item_spacing = longest_command + 2
-    items_per_line = get_terminal_size().columns // item_spacing
+    try:
+        items_per_line = get_terminal_size().columns // item_spacing
+    except OSError:
+        logging.info("Can't determine terminal width; printing simple list")
+        action_list = sorted(action_list)
+        for action in action_list:
+            print(action)
+        return
+
+    action_list = sorted(action_list, reverse=True)
 
     current_line_position = 1
     while True:
