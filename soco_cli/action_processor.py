@@ -488,6 +488,16 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
             for item in sorted(track_info):
                 if item not in ["metadata", "uri", "album_art"]:
                     elements[item.capitalize()] = track_info[item]
+            # If there's no title, look in the metadata
+            try:
+                if elements["Title"] == "" or title_not_useful(elements["Title"]):
+                    metadata = parse(track_info["metadata"])
+                    elements["Title"] = metadata["DIDL-Lite"]["item"]["dc:title"]
+                    logging.info(
+                        "Found title in metadata: {}".format(elements["Title"])
+                    )
+            except KeyError:
+                pass
 
     # Remove blank and 'None' items
     elements = {
