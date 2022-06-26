@@ -103,7 +103,9 @@ SoCo-CLI can also run as a simple [HTTP API server](#the-soco-cli-http-api-serve
 
 ## Supported Environments
 
-- Requires Python 3.5+. The HTTP API Server functionality requires Python 3.7 or above.
+- Requires Python 3.5+
+  - For Python 3.5, the latest compatible version of the underlying SoCo library is v0.27.1. Python 3.6 and above supports the latest version of the SoCo library.
+  - The HTTP API Server functionality requires Python 3.7 or above.
 - Should run on all platforms supported by Python. Tested on various versions of Linux, macOS and Windows.
 - Works with Sonos 'S1' and 'S2' systems, as well as split S1/S2 systems.
 

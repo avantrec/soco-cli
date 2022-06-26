@@ -1,6 +1,7 @@
-soco >= 0.27.1
+soco == 0.27.1; python_version < "3.6"
+soco == 0.28.0; python_version >= "3.6"
 tabulate
 rangehttpserver
 xmltodict
-fastapi; python_version >= '3.6'
-uvicorn; python_version >= '3.6'
+fastapi; python_version >= '3.7'
+uvicorn; python_version >= '3.7'
