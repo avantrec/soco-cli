@@ -2,8 +2,8 @@
 
 from sys import version_info
 
-if version_info.major == 3 and version_info.minor < 6:
-    print("HTTP API Server requires Python 3.6 or above")
+if version_info.major == 3 and version_info.minor < 7:
+    print("HTTP API Server requires Python 3.7 or above")
     exit(1)
 
 import argparse
