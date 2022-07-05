@@ -113,6 +113,8 @@ SoCo-CLI can also run as a simple [HTTP API server](#the-soco-cli-http-api-serve
 
 Install the latest version from PyPI [2] using **`pip install -U soco-cli`**.
 
+Soco-CLI can also be easily installed as a self-contained application with [**pipx**](https://pypa.github.io/pipx/) using **`pipx install soco-cli`**.
+
 Please see the CHANGELOG.txt file for a list of the user-facing changes in each release.
 
 ## User Guide
