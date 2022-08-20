@@ -976,15 +976,18 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
     if np == 0:
         speaker.play_from_queue(0)
     elif np == 1:
-        try:
-            # Play from current queue position?
-            if args[0] in ["cp", "current", "current_position"]:
-                index, _ = get_current_queue_position(speaker)
-            else:
+        if args[0] in ["cp", "current", "current_position"]:
+            index, _ = get_current_queue_position(speaker)
+        elif args[0] == "last":
+            index = len(speaker.get_queue(max_items=SONOS_MAX_ITEMS))
+        else:
+            try:
                 index = int(args[0])
-        except:
-            parameter_type_error(action, "integer or 'cp' for current position")
-            return False
+            except ValueError:
+                parameter_type_error(
+                    action, "integer, or 'cp/current/current_position', or 'last'"
+                )
+                return False
 
         if 1 <= index <= speaker.queue_size:
             speaker.play_from_queue(index - 1)
