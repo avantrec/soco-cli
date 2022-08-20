@@ -276,7 +276,7 @@ def action_1(speaker: str, action: str, arg_1: str) -> Dict:
 
 
 @sc_app.get("/{speaker}/{action}/{arg_1:path}")
-def action_1(speaker: str, action: str, arg_1: str) -> Dict:
+def action_1_path(speaker: str, action: str, arg_1: str) -> Dict:
     """
     Handle the case where 'arg_1' is a path.
     """
