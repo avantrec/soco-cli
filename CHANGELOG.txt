@@ -1,4 +1,5 @@
 v0.4.51   - Constrain ifaddr package to 0.1.7 for Python < 3.7
+          - Allow URL/Path parameters in HTTP API Server (fixes #38)
 v0.4.50   - Update to SoCo v0.28.0; pin SoCo to v0.27.1 for Python < 3.6
 v0.4.49   - Maintenance update
 v0.4.48   - Add 'sub_gain' action

@@ -275,6 +275,14 @@ def action_1(speaker: str, action: str, arg_1: str) -> Dict:
     return command_core(speaker, action, arg_1, use_local=USE_LOCAL)
 
 
+@sc_app.get("/{speaker}/{action}/{arg_1:path}")
+def action_1(speaker: str, action: str, arg_1: str) -> Dict:
+    """
+    Handle the case where 'arg_1' is a path.
+    """
+    return command_core(speaker, action, arg_1, use_local=USE_LOCAL)
+
+
 @sc_app.get("/{speaker}/{action}/{arg_1}/{arg_2}")
 def action_2(speaker: str, action: str, arg_1: str, arg_2: str) -> Dict:
     return command_core(speaker, action, arg_1, arg_2, use_local=USE_LOCAL)
