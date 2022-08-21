@@ -2988,6 +2988,6 @@ actions = {
         surround_volume, "surround_volume_music", False
     ),
     "surround_full_volume_enabled": SonosFunction(
-        on_off_action, "surround_full_volume_enabled", "False"
+        on_off_action, "surround_full_volume_enabled", False
     ),
 }
