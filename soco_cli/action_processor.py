@@ -28,6 +28,7 @@ from soco_cli.utils import (
     error_report,
     event_unsubscribe,
     forget_event_sub,
+    get_queue_insertion_position,
     get_right_hand_speaker,
     get_speaker,
     one_or_more_parameters,
@@ -39,6 +40,7 @@ from soco_cli.utils import (
     read_search,
     remember_event_sub,
     rename_speaker_in_cache,
+    save_queue_insertion_position,
     save_search,
     seconds_until,
     two_parameters,
@@ -767,7 +769,9 @@ def add_favourite_to_queue(
                     return False
         try:
             # Print the queue position and return
-            print(speaker.add_to_queue(the_fav, position=position))
+            queue_position = speaker.add_to_queue(the_fav, position=position)
+            print(queue_position)
+            save_queue_insertion_position(queue_position)
             return True
         except Exception as e:
             error_report("{}".format(str(e)))
@@ -982,6 +986,12 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
         index = len(speaker.get_queue(max_items=SONOS_MAX_ITEMS))
     elif args[0] in ["random", "rand", "r"]:
         index = randint(1, len(speaker.get_queue(max_items=SONOS_MAX_ITEMS)))
+    elif args[0] in ["last_added", "la"]:
+        try:
+            index = get_queue_insertion_position()
+        except Exception as e:
+            error_report("No saved queue position: {}".format(e))
+            return False
     else:
         try:
             index = int(args[0])
@@ -1835,7 +1845,9 @@ def queue_item_core(speaker, action, args, info_type):
                     return False
         # Select a random entry from the list, in case there's more than one
         item = items[randint(0, len(items) - 1)]
-        print(speaker.add_to_queue(item, position=position))
+        queue_position = speaker.add_to_queue(item, position=position)
+        save_queue_insertion_position(queue_position)
+        print(queue_position)
         return True
 
     error_report("'{}' not found".format(name))
@@ -2005,7 +2017,9 @@ def queue_search_result_number(
     # Select the item number from the saved search
     if 1 <= saved_search_number <= len(items):
         item = items[saved_search_number - 1]
-        print(speaker.add_to_queue(item, position=position))
+        queue_position = speaker.add_to_queue(item, position=position)
+        save_queue_insertion_position(queue_position)
+        print(queue_position)
         return True
 
     error_report("Item search index must be between 1 and {}".format(len(items)))
@@ -2125,7 +2139,9 @@ def add_uri_to_queue(speaker, action, args, soco_function, use_local_speaker_lis
                 )
                 return False
 
-    print(speaker.add_uri_to_queue(uri, position=position))
+    queue_position = speaker.add_uri_to_queue(uri, position=position)
+    save_queue_insertion_position(queue_position)
+    print(queue_position)
     return True
 
 
@@ -2425,7 +2441,9 @@ def add_sharelink_to_queue(
 
     try:
         # Return the queue position of the first added item
-        print(share_link.add_share_link_to_queue(uri))
+        queue_position = share_link.add_share_link_to_queue(uri)
+        save_queue_insertion_position(queue_position)
+        print(queue_position)
     except SoCoUPnPException as e:
         error_report("Unable to add sharelink to queue: {}".format(e))
         return False

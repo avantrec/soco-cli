@@ -264,7 +264,7 @@ Or, to add to the current queue, then play the first playlist track:
 ```
 sonos <speaker_name> add_playlist_to_queue <playlist>
 24 <-- Returns queue position of the first playlist track
-sonos <speaker_name> play_from_queue 24
+sonos <speaker_name> play_from_queue last_added
 ```
 
 To add imported playlists from local libraries to the queue, use the `add_library_playlist_to_queue` action.
@@ -428,7 +428,7 @@ sonos Kitchen play_from_queue 5
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
 - **`list_queue <track_number>`** (or **`lq`, `q`**): List the track in the queue at position `<track_number>`
-- **`play_from_queue <track_number, or 'current', or 'last', or 'random'>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue. If `current` is provided, play starts at the current queue position. If `last` is provided, the last track in the queue is played. If `random` is provided, playback will start at a random queue position.
+- **`play_from_queue <track_number, or 'current', or 'last_added', or 'last', or 'random'>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue. If `current` is provided, play starts at the current queue position. If `last_added` is provided, play starts from the queue position of the last added track or set of tracks. If `last` is provided, the last track in the queue is played. If `random` is provided, playback will start at a random queue position.
 - **`queue_album <album_name> <play_next|next or first|start>`** (or **`qa`**): Add `<album_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the album name, a random match will be chosen. Optionally, `next` or `play_next` can be added to insert the album at the next_play position in the queue. The queue position of the first track in the album will be returned.
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
 - **`queue_position`** (or **`qp`**): Return the current queue position.

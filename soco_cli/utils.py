@@ -738,6 +738,33 @@ def read_search():
     return None
 
 
+filename = "queue_insertion_position.pickle"
+queue_pathname = path + filename
+
+
+def save_queue_insertion_position(queue_position: int):
+    if not os.path.exists(path):
+        os.mkdir(path)
+    with open(queue_pathname, "wb") as f:
+        pickle.dump(queue_position, f)
+    logging.info("Saved queue position at {}".format(queue_pathname))
+    return True
+
+
+def get_queue_insertion_position() -> int:
+    if os.path.exists(queue_pathname):
+        logging.info("Loading queue_position from {}".format(queue_pathname))
+        try:
+            with open(queue_pathname, "rb") as f:
+                return pickle.load(f)
+        except Exception as e:
+            logging.info("Failed to load queue_position: %s", e)
+            raise e
+    else:
+        logging.info("No saved queue_position")
+        raise FileNotFoundError
+
+
 # Interactive shell history file
 SOCO_CLI_DIR = os.path.join(os.path.expanduser("~"), ".soco-cli")
 HIST_FILE = os.path.join(SOCO_CLI_DIR, "shell-history.txt")
@@ -745,14 +772,8 @@ HIST_LEN = 50
 
 
 def save_readline_history():
-    if not os.path.exists(SOCO_CLI_DIR):
-        logging.info("Creating directory '{}'".format(SOCO_CLI_DIR))
-        try:
-            os.mkdir(SOCO_CLI_DIR)
-        except:
-            error_report("Failed to create directory '{}'".format(SOCO_CLI_DIR))
-            return
-
+    if not _confirm_soco_cli_dir():
+        return
     logging.info("Saving shell history file: {}".format(HIST_FILE))
     try:
         readline.write_history_file(HIST_FILE)
@@ -824,6 +845,17 @@ def playback_state(state):
 
 # Ensure that event subscriptions are cleared on CTRL-C
 SUBS_LIST = set()
+
+
+def _confirm_soco_cli_dir() -> bool:
+    if not os.path.exists(SOCO_CLI_DIR):
+        logging.info("Creating directory '{}'".format(SOCO_CLI_DIR))
+        try:
+            os.mkdir(SOCO_CLI_DIR)
+            return True
+        except:
+            error_report("Failed to create directory '{}'".format(SOCO_CLI_DIR))
+            return False
 
 
 def remember_event_sub(sub):
