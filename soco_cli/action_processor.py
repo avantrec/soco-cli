@@ -975,25 +975,27 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
     np = len(args)
     if np == 0:
         speaker.play_from_queue(0)
-    elif np == 1:
-        if args[0] in ["cp", "current", "current_position"]:
-            index, _ = get_current_queue_position(speaker)
-        elif args[0] == "last":
-            index = len(speaker.get_queue(max_items=SONOS_MAX_ITEMS))
-        else:
-            try:
-                index = int(args[0])
-            except ValueError:
-                parameter_type_error(
-                    action, "integer, or 'cp/current/current_position', or 'last'"
-                )
-                return False
-
-        if 1 <= index <= speaker.queue_size:
-            speaker.play_from_queue(index - 1)
-        else:
-            error_report("Queue index '{}' is out of range".format(index))
+        return True
+    if args[0] in ["current", "cp", "current_position"]:
+        index, _ = get_current_queue_position(speaker)
+    elif args[0] in ["last", "lp", "last_position"]:
+        index = len(speaker.get_queue(max_items=SONOS_MAX_ITEMS))
+    elif args[0] in ["random", "rand", "r"]:
+        index = randint(1, len(speaker.get_queue(max_items=SONOS_MAX_ITEMS)))
+    else:
+        try:
+            index = int(args[0])
+        except ValueError:
+            parameter_type_error(
+                action,
+                "integer, 'current', 'last', or 'random'",
+            )
             return False
+    if 1 <= index <= speaker.queue_size:
+        speaker.play_from_queue(index - 1)
+    else:
+        error_report("Queue index '{}' is out of range".format(index))
+        return False
     return True
 
 
