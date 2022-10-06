@@ -1,3 +1,4 @@
+v0.4.53   -
 v0.4.52   - Add 'last' option to 'play_from_queue' action
           - Add 'random' option to 'play_from_queue' action
           - Add 'last_added' option to 'play_from_queue' action
