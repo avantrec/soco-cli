@@ -219,13 +219,13 @@ If you set the environment variable **`USE_LOCAL_CACHE=TRUE`**, the `--use_local
 
 ### Firewall Rules
 
-If you're running on a host with its firewall enabled, note that some SoCo-CLI actions require the following incoming ports to be open: **TCP 1400-1499**, **TCP 54000-54099**, and **UDP 1900**.
+If you're running on a host with its firewall enabled, note that some SoCo-CLI actions require the following incoming ports to be open: **TCP 1400-1499**, **TCP 54000-54099**.
 
-The TCP/1400 range is used to receive notification events from Sonos players (used in the `wait_stop` action, etc.), the TCP/54000 range is used for the built in Python HTTP server when playing files from the local filesystem (used in the `play_file` action).
+The TCP/1400 range is used to receive notification events from Sonos players (used in the `wait_stop` action, etc.), the TCP/54000 range is used for the built-in Python HTTP server when playing files from the local filesystem (used in the `play_file` action).
 
 When opening ports, SoCo-CLI will try port numbers starting at the beginning of the range and incrementing by one until a free port is found, up to the limit of the range. This allows multiple invocations of SoCo-CLI to run in parallel on the same host.
 
-UDP port 1900 is used when discovering speakers by name using standard multicast discovery.
+The standard speaker discovery mechanism uses SSDP multicast (multicast address 239.255.255.250 on UDP port 1900). The outgoing port chosen for the multicast request is variable and OS-dependent, e.g., for most Linux distributions it's in the ephemeral port range 32768–60999. Multicast responses are returned to the outgoing port, so if the firewall blocks incoming UDP traffic on the relevant port range, then standard discovery will fail. SoCo-CLI will automatically fall back to using network scan discovery if standard discovery fails, but this is slower, so either adjust your firewall to open the relevant ports or consider using SoCo-CLI [Cached Discovery](#cached-discovery).
 
 If using the HTTP API Server functionality, its listen port must be open to incoming TCP requests. The default port is 8000.
 
