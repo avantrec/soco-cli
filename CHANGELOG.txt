@@ -1,3 +1,4 @@
+v0.4.54   -
 v0.4.53   - Update for SoCo v0.29.0
 v0.4.52   - Add 'last' option to 'play_from_queue' action
           - Add 'random' option to 'play_from_queue' action
