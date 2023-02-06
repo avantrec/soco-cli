@@ -40,6 +40,8 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
             title_start += len("<dc:title>")
             title_end = didl.find("</dc:title>")
             title = didl[title_start:title_end]
+        elif alarm.program_uri != "":
+            title = alarm.program_uri
         else:
             title = "Unknown"
         time = alarm.start_time.strftime("%H:%M")
@@ -74,7 +76,7 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
         "2: Duration",
         "3: Recurrence",
         "4: Enabled",
-        "5: Title",
+        "5: Title or URI",
         "6: Play Mode",
         "7: Vol.",
         "8: Incl. Grouped",
