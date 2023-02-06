@@ -40,6 +40,8 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
             title_start += len("<dc:title>")
             title_end = didl.find("</dc:title>")
             title = didl[title_start:title_end]
+        elif alarm.program_uri is None:
+            title = "Sonos Chime"
         elif alarm.program_uri != "":
             title = alarm.program_uri
         else:
