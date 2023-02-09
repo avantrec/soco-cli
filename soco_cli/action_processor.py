@@ -3008,4 +3008,6 @@ actions = {
     "surround_full_volume_enabled": SonosFunction(
         on_off_action, "surround_full_volume_enabled", False
     ),
+    "playing_tv": SonosFunction(true_false_action, "is_playing_tv", True),
+    "is_playing_tv": SonosFunction(true_false_action, "is_playing_tv", True),
 }

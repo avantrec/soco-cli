@@ -1,4 +1,5 @@
-v0.4.55   - Display "Sonos Chime" for default alarms
+v0.4.55   - Display "Sonos Chime" for default alarm
+          - Add 'playing_tv' action
 v0.4.54   - Display URIs for alarms that don't have Title metadata
 v0.4.53   - Update for SoCo v0.29.0
 v0.4.52   - Add 'last' option to 'play_from_queue' action

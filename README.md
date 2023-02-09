@@ -352,6 +352,7 @@ sonos Kitchen play_from_queue 5
 - **`mute <on|off>`**: Sets the mute setting of the speaker to 'on' or 'off'.
 - **`night_mode`** (or **`night`**): Returns the night mode setting of the speaker, 'on' or 'off' (if applicable).
 - **`night_mode <on|off>`** (or **`night`**): Sets the night mode setting of the speaker to 'on' or 'off' (if applicable).
+- **`playing_tv`** (or **`is_playing_tv`**): Returns whether the speaker is currently playing from its TV input source, 'yes' or 'no'.
 - **`ramp_to_volume <volume>` (or `ramp`)**: Gently raise or reduce the volume to `<volume>`, which is between 0 and 100. Returns the number of seconds to complete the ramp.
 - **`relative_bass <adjustment>` (or `rb`)** Increase or reduce the bass setting by `<adjustment>`, a value between -10 and 10.
 - **`relative_treble <adjustment>` (or `rt`)** Increase or reduce the treble setting by `<adjustment>`, a value between -10 and 10.
