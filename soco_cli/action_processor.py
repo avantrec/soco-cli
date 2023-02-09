@@ -2428,12 +2428,37 @@ def get_channel(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-@one_parameter
+@one_or_two_parameters
 def add_sharelink_to_queue(
     speaker, action, args, soco_function, use_local_speaker_list
 ):
     share_link = ShareLinkPlugin(speaker)
     uri = args[0]
+
+    position = 0
+    if len(args) == 2:
+        if args[1].lower() in ["first", "start"]:
+            position = 1
+        elif args[1].lower() in ["play_next", "next"]:
+            current_position = speaker.get_current_track_info()["playlist_position"]
+            if current_position == "NOT_IMPLEMENTED":
+                position = 1
+            else:
+                position = int(current_position) + 1
+        else:
+            try:
+                position = int(args[1])
+                position = position if position > 0 else 1
+                position = position if position <= speaker.queue_size else 0
+            except ValueError:
+                # Note that 'first/start' option is now redundant, but included
+                # here for backward compatibility
+                error_report(
+                    "Second parameter for '{}' must be integer or 'next/play_next'".format(
+                        action
+                    )
+                )
+                return False
 
     if not share_link.is_share_link(uri):
         error_report("Invalid sharelink: '{}'".format(uri))
@@ -2441,7 +2466,7 @@ def add_sharelink_to_queue(
 
     try:
         # Return the queue position of the first added item
-        queue_position = share_link.add_share_link_to_queue(uri)
+        queue_position = share_link.add_share_link_to_queue(uri, position)
         save_queue_insertion_position(queue_position)
         print(queue_position)
     except SoCoUPnPException as e:
