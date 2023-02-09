@@ -1,3 +1,4 @@
+v0.4.56   -
 v0.4.55   - Display "Sonos Chime" for default alarm
           - Add 'playing_tv' action
 v0.4.54   - Display URIs for alarms that don't have Title metadata
