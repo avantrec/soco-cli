@@ -91,7 +91,6 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
-
     alarms = soco.alarms.get_alarms(speaker)
 
     if args[0].lower() == "all":
@@ -139,7 +138,6 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 
 @two_parameters
 def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
-
     alarm_ids = args[0].lower().split(",")
     all_alarms = soco.alarms.get_alarms(speaker)
     if alarm_ids[0] == "all":
@@ -319,7 +317,6 @@ def snooze_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 
 @two_parameters
 def copy_modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
-
     alarm_id = args[0]
     alarm_parms = args[1]
 
@@ -356,7 +353,6 @@ def copy_modify_alarm(speaker, action, args, soco_function, use_local_speaker_li
 
 
 def _modify_alarm_object(alarm: soco.alarms.Alarm, parms_string: str) -> bool:
-
     alarm_parameters = parms_string.split(",")
     if len(alarm_parameters) != 8:
         error_report(

@@ -276,7 +276,6 @@ def set_speaker_playing_local_file(speaker):
 
 
 def sig_handler(signal_received, frame):
-
     logging.info("Caught signal: {}".format(signal_received))
 
     if suspend_sighandling:

@@ -12,7 +12,6 @@ try:
     UNIX = True
     WINDOWS = False
 except ImportError:
-
     RL = False
     WINDOWS = True
     UNIX = False
@@ -690,7 +689,6 @@ def _restore_quotes(command):
 
 
 class AliasProcessor:
-
     # The arg substitution names %1, ..., %9
     _arg_names = tuple("%" + str(x) for x in range(1, 10))
 
@@ -702,7 +700,6 @@ class AliasProcessor:
         self._command_list = []
 
     def process(self, command, am, command_list):
-
         self._recurse_level += 1
         alias_name = command[0]
         alias_parms = command[1:]

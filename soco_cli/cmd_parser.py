@@ -8,7 +8,6 @@ class CLIParser:
         self._separator = ":"
 
     def parse(self, args):
-
         self._args = args
 
         sequence = []  # A single command sequence

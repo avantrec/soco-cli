@@ -314,7 +314,6 @@ def list_numbered_things(speaker, action, args, soco_function, use_local_speaker
 
 @zero_or_one_parameter
 def volume_actions(speaker, action, args, soco_function, use_local_speaker_list):
-
     if soco_function == "group_volume":
         logging.info("Using speaker group instead of speaker")
         speaker = speaker.group
@@ -1573,7 +1572,6 @@ def list_all_playlist_tracks(
 
 
 def wait_stop_core(speaker, not_paused=False):
-
     playing_states = ["PLAYING", "TRANSITIONING"]
     if not_paused:
         # Also treat 'paused' as a playing state

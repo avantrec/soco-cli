@@ -138,7 +138,6 @@ def get_server_ip(speaker: SoCo) -> Union[str, None]:
 
 
 def wait_until_stopped(speaker: SoCo, uri: str, end_on_pause: bool):
-
     playing_states = ["PLAYING", "TRANSITIONING"]
     if not end_on_pause:
         playing_states.append("PAUSED_PLAYBACK")
@@ -193,7 +192,6 @@ def is_supported_type(filename: str) -> bool:
 
 
 def play_local_file(speaker: SoCo, pathname: str, end_on_pause: bool = False) -> bool:
-
     if not path.exists(pathname):
         error_report("File '{}' not found".format(pathname))
         return False

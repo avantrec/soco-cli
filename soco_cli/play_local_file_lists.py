@@ -105,7 +105,6 @@ def play_file_list(speaker: SoCo, tracks: List[str], options: str = "") -> bool:
 
     zero_pad = len(str(len(tracks)))
     for index, track in enumerate(tracks):
-
         if not path.exists(track):
             print("Error: file not found:", track)
             continue
