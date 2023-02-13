@@ -8,7 +8,7 @@ PYCACHE = soco_cli/__pycache__ tests/__pycache__ __pycache__
 TOC = README.md.*
 
 build: $(SRC) $(MANIFEST)
-	python setup.py sdist bdist_wheel
+	python -m build
 
 clean:
 	rm -rf $(BUILD_DIST) $(PYCACHE) $(TOC)

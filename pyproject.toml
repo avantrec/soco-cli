@@ -1,0 +1,44 @@
+[build-system]
+    requires = [ "setuptools>=61.2",]
+    build-backend = "setuptools.build_meta"
+
+[project]
+    name = "soco-cli"
+    description = "Sonos command line control utility, based on SoCo"
+    classifiers = [
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
+        "Development Status :: 4 - Beta"
+    ]
+    requires-python = ">=3.5"
+    dynamic = ["version", "dependencies"]
+
+[[project.authors]]
+    name = "Avantrec Ltd"
+    email = "soco_cli@avantrec.com"
+
+[project.readme]
+    file = "PYPI_README.md"
+    content-type = "text/markdown"
+
+[project.urls]
+    Homepage = "https://github.com/avantrec/soco-cli"
+
+[project.scripts]
+    sonos = "soco_cli.sonos:main"
+    soco = "soco_cli.sonos:main"
+    sonos-discover = "soco_cli.sonos_discover:main"
+    soco-discover = "soco_cli.sonos_discover:main"
+    sonos-http-api-server = "soco_cli.http_api:main"
+    soco-http-api-server = "soco_cli.http_api:main"
+
+[tool.setuptools]
+    include-package-data = false
+    packages = ["soco_cli"]
+
+[tool.setuptools.dynamic.version]
+    attr = "soco_cli.__init__.__version__"
+
+[tool.setuptools.dynamic.dependencies]
+    file = ["requirements.txt"]

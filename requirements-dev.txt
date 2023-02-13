@@ -6,3 +6,4 @@ twine
 isort
 pytest
 mypy
+build
