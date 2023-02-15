@@ -1864,11 +1864,21 @@ def queue_track(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_or_more_parameters
 def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speaker_list):
-    """Perform the action only if the speaker is currently in the desired playback state"""
-    state = speaker.get_current_transport_info()["current_transport_state"]
+    """
+    Perform the action only if the speaker is currently in the desired playback state
+    """
+    # If this is not the coordinator speaker, we need to check the state
+    # of the coordinator instead
+    state_speaker = speaker if speaker.is_coordinator else speaker.group.coordinator
+    logging.info(
+        "Checking playback state of coordinator speaker: '{}'".format(
+            state_speaker.player_name
+        )
+    )
+    state = state_speaker.get_current_transport_info()["current_transport_state"]
     logging.info(
         "Condition: '{}': Speaker '{}' is in state '{}'".format(
-            action, speaker.player_name, state
+            action, state_speaker.player_name, state
         )
     )
     if (state != "PLAYING" and action == "if_playing") or (
@@ -2858,8 +2868,8 @@ actions = {
     "wait_start": SonosFunction(wait_start, "", True),
     "wait_stopped_for": SonosFunction(wait_stopped_for, "", True),
     "wsf": SonosFunction(wait_stopped_for, "", True),
-    "if_stopped": SonosFunction(if_stopped_or_playing, "", False),
-    "if_playing": SonosFunction(if_stopped_or_playing, "", False),
+    "if_stopped": SonosFunction(if_stopped_or_playing, ""),
+    "if_playing": SonosFunction(if_stopped_or_playing, ""),
     "wait": SonosFunction(process_wait_action, ""),
     "wait_for": SonosFunction(process_wait_action, ""),
     "wait_until": SonosFunction(process_wait_action, ""),

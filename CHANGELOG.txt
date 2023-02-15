@@ -1,4 +1,4 @@
-v0.4.57   -
+v0.4.57   - Defect fix for 'if_stopped/if_playing'
 v0.4.56   - Suppress switch-to-coordinator for 'if_stopped/if_playing'
 v0.4.55   - Display "Sonos Chime" for default alarm
           - Add 'playing_tv' action
