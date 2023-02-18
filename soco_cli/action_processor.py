@@ -3018,4 +3018,5 @@ actions = {
     ),
     "playing_tv": SonosFunction(true_false_action, "is_playing_tv", True),
     "is_playing_tv": SonosFunction(true_false_action, "is_playing_tv", True),
+    "stop_all": SonosFunction(operate_on_all, "stop", False),
 }
