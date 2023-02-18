@@ -1,3 +1,4 @@
+v0.4.60   -
 v0.4.59   - Add queue position option for 'add_sharelink_to_queue'
 v0.4.58   - Add 'stop_all' action
 v0.4.57   - Defect fix for 'if_stopped/if_playing'
