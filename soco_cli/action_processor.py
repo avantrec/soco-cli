@@ -1817,30 +1817,7 @@ def queue_item_core(speaker, action, args, info_type):
         info_type, search_term=name, complete_result=True
     )
     if len(items) > 0:
-        position = 1
-        if len(args) == 2:
-            if args[1].lower() in ["first", "start"]:
-                position = 1
-            elif args[1].lower() in ["play_next", "next"]:
-                current_position = speaker.get_current_track_info()["playlist_position"]
-                if current_position == "NOT_IMPLEMENTED":
-                    position = 1
-                else:
-                    position = int(current_position) + 1
-            else:
-                try:
-                    position = int(args[1])
-                    position = position if position > 0 else 1
-                    position = position if position <= speaker.queue_size else 0
-                except ValueError:
-                    # Note that 'first/start' option is now redundant, but included
-                    # here for backward compatibility
-                    error_report(
-                        "Second parameter for '{}' must be integer or 'next/play_next'".format(
-                            action
-                        )
-                    )
-                    return False
+        position = get_requested_queue_position(speaker, action, args)
         # Select a random entry from the list, in case there's more than one
         item = items[randint(0, len(items) - 1)]
         queue_position = speaker.add_to_queue(item, position=position)
@@ -1850,6 +1827,37 @@ def queue_item_core(speaker, action, args, info_type):
 
     error_report("'{}' not found".format(name))
     return False
+
+
+def get_requested_queue_position(speaker, action, args):
+    """
+    Helper function to find a requested position in the queue.
+    """
+    position = 0
+    if len(args) == 2:
+        if args[1].lower() in ["first", "start"]:
+            position = 1
+        elif args[1].lower() in ["play_next", "next"]:
+            current_position = speaker.get_current_track_info()["playlist_position"]
+            if current_position == "NOT_IMPLEMENTED":
+                position = 1
+            else:
+                position = int(current_position) + 1
+        else:
+            try:
+                position = int(args[1])
+                position = position if position > 0 else 1
+                position = position if position <= speaker.queue_size else 0
+            except ValueError:
+                # Note that 'first/start' option is now redundant, but included
+                # here for backwards compatibility
+                error_report(
+                    "Second parameter for '{}' must be integer or 'next/play_next'".format(
+                        action
+                    )
+                )
+                return False
+    return position
 
 
 @one_or_two_parameters
@@ -2443,30 +2451,7 @@ def add_sharelink_to_queue(
     share_link = ShareLinkPlugin(speaker)
     uri = args[0]
 
-    position = 0
-    if len(args) == 2:
-        if args[1].lower() in ["first", "start"]:
-            position = 1
-        elif args[1].lower() in ["play_next", "next"]:
-            current_position = speaker.get_current_track_info()["playlist_position"]
-            if current_position == "NOT_IMPLEMENTED":
-                position = 1
-            else:
-                position = int(current_position) + 1
-        else:
-            try:
-                position = int(args[1])
-                position = position if position > 0 else 1
-                position = position if position <= speaker.queue_size else 0
-            except ValueError:
-                # Note that 'first/start' option is now redundant, but included
-                # here for backward compatibility
-                error_report(
-                    "Second parameter for '{}' must be integer or 'next/play_next'".format(
-                        action
-                    )
-                )
-                return False
+    position = get_requested_queue_position(speaker, action, args)
 
     if not share_link.is_share_link(uri):
         error_report("Invalid sharelink: '{}'".format(uri))
