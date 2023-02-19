@@ -1064,7 +1064,7 @@ http://192.168.0.100:8000/macro/front_R3
 
 #### Macro Arguments
 
-Macros can be parameterised using up to **nine** positional arguments, specified in macro definitions by the terms **`%1`** to **`%9`**. The general form for supplying the arguments when the macro is invoked is:
+Macros can be parameterised using up to **twelve** positional arguments, specified in macro definitions by the terms **`%1`** to **`%12`**. The general form for supplying the arguments when the macro is invoked is:
 
 `http://192.168.0.100:8000/macro/<macro_name>/<arg_1>/<arg_2>/<arg_3>/<arg_4>/...` etc.
 
@@ -1087,6 +1087,17 @@ and the macro invocation would take the form:
 If a macro argument needs to be supplied, but should be ignored during macro processing, then use an underscore `_` as the argument to be ignored. E.g. to ignore `%2` when processing a macro, use a URL of the form:
 
 `http://192.168.0.100:8000/macro/lower_floor_volume/30/_/25`
+
+#### Using the Generic Macro
+
+There's a built-in *generic* macro called `__` that simply maps to `%1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12`. This can be used to create arbitrary command sequences. For example, to run the equivalent of:
+```shell
+sonos diner volume 30 : diner play_favourite "radio 4"
+```
+use the following HTTP request (replacing the `:` command sequence separator with `%3A`):
+```shell
+http://192.168.0.100:8000/macro/__/diner/volume/30/%3A/diner/play_favourite/radio%204
+```
 
 #### Troubleshooting
 

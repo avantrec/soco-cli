@@ -265,6 +265,111 @@ def run_macro_9(
     return {"command": command, "result": result}
 
 
+@sc_app.get(
+    "/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}"
+    "/{arg_5}/{arg_6}/{arg_7}/{arg_8}/{arg_9}/{arg_10}"
+)
+def run_macro_10(
+    macro_name: str,
+    arg_1: str,
+    arg_2: str,
+    arg_3: str,
+    arg_4: str,
+    arg_5: str,
+    arg_6: str,
+    arg_7: str,
+    arg_8: str,
+    arg_9: str,
+    arg_10: str,
+) -> Dict:
+    command, result = _process_macro(
+        macro_name,
+        arg_1,
+        arg_2,
+        arg_3,
+        arg_4,
+        arg_5,
+        arg_6,
+        arg_7,
+        arg_8,
+        arg_9,
+        arg_10,
+    )
+    return {"command": command, "result": result}
+
+
+@sc_app.get(
+    "/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}"
+    "/{arg_5}/{arg_6}/{arg_7}/{arg_8}/{arg_9}/{arg_10}/{arg_11}"
+)
+def run_macro_11(
+    macro_name: str,
+    arg_1: str,
+    arg_2: str,
+    arg_3: str,
+    arg_4: str,
+    arg_5: str,
+    arg_6: str,
+    arg_7: str,
+    arg_8: str,
+    arg_9: str,
+    arg_10: str,
+    arg_11: str,
+) -> Dict:
+    command, result = _process_macro(
+        macro_name,
+        arg_1,
+        arg_2,
+        arg_3,
+        arg_4,
+        arg_5,
+        arg_6,
+        arg_7,
+        arg_8,
+        arg_9,
+        arg_10,
+        arg_11,
+    )
+    return {"command": command, "result": result}
+
+
+@sc_app.get(
+    "/macro/{macro_name}/{arg_1}/{arg_2}/{arg_3}/{arg_4}"
+    "/{arg_5}/{arg_6}/{arg_7}/{arg_8}/{arg_9}/{arg_10}/{arg_11}/{arg_12}"
+)
+def run_macro_12(
+    macro_name: str,
+    arg_1: str,
+    arg_2: str,
+    arg_3: str,
+    arg_4: str,
+    arg_5: str,
+    arg_6: str,
+    arg_7: str,
+    arg_8: str,
+    arg_9: str,
+    arg_10: str,
+    arg_11: str,
+    arg_12: str,
+) -> Dict:
+    command, result = _process_macro(
+        macro_name,
+        arg_1,
+        arg_2,
+        arg_3,
+        arg_4,
+        arg_5,
+        arg_6,
+        arg_7,
+        arg_8,
+        arg_9,
+        arg_10,
+        arg_11,
+        arg_12,
+    )
+    return {"command": command, "result": result}
+
+
 @sc_app.get("/{speaker}/{action}")
 def action_0(speaker: str, action: str) -> Dict:
     return command_core(speaker, action, use_local=USE_LOCAL)
@@ -426,7 +531,20 @@ def _lookup_macro(macro_name: str) -> str:
 
 def _substitute_variables(macro: str, args: Tuple) -> str:
     """Substitute positional parameters with supplied variables."""
-    parameters_list = ["%1", "%2", "%3", "%4", "%5", "%6", "%7", "%8", "%9"]
+    parameters_list = [
+        "%1",
+        "%2",
+        "%3",
+        "%4",
+        "%5",
+        "%6",
+        "%7",
+        "%8",
+        "%9",
+        "%10",
+        "%11",
+        "%12",
+    ]
     supplied_parameters = set(parameters_list[: len(args)])
     parameters = set(parameters_list)
     used_parameters = []
@@ -511,6 +629,8 @@ def _substitute_speaker_ips(macro: str, use_local: bool = False) -> str:
 
 def _load_macros(macros: dict, filename: str) -> bool:
     print(PREFIX_MACRO + "Attempting to (re)load macros from '{}'".format(filename))
+    # Create the 'generic' macro
+    macros["__"] = "%1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12"
     try:
         with open(filename, "r") as f:
             line = f.readline()
