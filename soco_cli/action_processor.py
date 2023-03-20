@@ -1219,6 +1219,14 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
         getattr(speaker, soco_function)(name)
         return True
 
+    if soco_function == "remove_sonos_playlist":
+        try:
+            playlist = get_playlist(speaker, name)
+            speaker.remove_sonos_playlist(playlist)
+        except SoCoUPnPException:
+            error_report("Playlist '{}' not found".format(name))
+        return True
+
     playlist = None
     if soco_function == "add_to_queue":
         playlist = get_playlist(speaker, name)

@@ -1,4 +1,5 @@
 v0.4.60   - Add 'generic' HTTP macro and increase number of args to 12
+          - Fix remove_playlist / delete_playist actions
 v0.4.59   - Add queue position option for 'add_sharelink_to_queue'
 v0.4.58   - Add 'stop_all' action
 v0.4.57   - Defect fix for 'if_stopped/if_playing'
