@@ -438,7 +438,7 @@ sonos Kitchen play_from_queue 5
 - **`remove_last_track_from_queue <count>` (or `rltfq`)**: Removes the last `<count>` tracks from the queue. If `<count>` is omitted, the last track is removed.
 - **`remove_from_queue <track_number|sequence|range>`** (or **`rfq`, `rq`**): Remove tracks from the queue. Track numbers start from 1, and can be supplied as single integers, sequences (e.g., '4,7,3'), or ranges (e.g., '5-10'). Note: do not use spaces either side of the commas and dashes. Sequences and ranges can be mixed, e.g., '1,3-6,10'.
 - **`save_queue <title>`** (or **`sq`, `create_playlist_from_queue`**): Save the current queue as a Sonos playlist called `<title>`.
-- **`set_queue_position <track_number>`** (or **`sqp`): Set the queue position to `track_number`, without commencing playback. Note that this will stop any current source being played.
+- **`set_queue_position <track_number>`** (or **`sqp`**): Set the queue position to `track_number`, without commencing playback. Note that this will stop any current audio being played.
 
 The following has issues and requires further development. For example, it's currently possible to add radio stations to the queue!
 
