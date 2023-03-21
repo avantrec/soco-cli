@@ -2592,6 +2592,24 @@ def sub_gain(speaker, action, args, soco_function, use_local_speaker_list):
         return False
 
 
+@one_parameter
+def set_queue_position(speaker, action, args, soco_function, use_local_speaker_list):
+    try:
+        qp = int(args[0])
+    except ValueError:
+        parameter_type_error(action, "integer")
+        return False
+    if 1 <= qp <= speaker.queue_size:
+        speaker.stop()
+        speaker.play_from_queue(index=qp - 1, start=False)
+    else:
+        error_report(
+            "Queue position '{}' is out of range (1-{})".format(qp, speaker.queue_size)
+        )
+        return False
+    return True
+
+
 @zero_or_one_parameter
 def surround_volume(speaker, action, args, soco_function, use_local_speaker_list):
     if getattr(speaker, soco_function) is None:
@@ -3037,4 +3055,6 @@ actions = {
     "playing_tv": SonosFunction(true_false_action, "is_playing_tv", True),
     "is_playing_tv": SonosFunction(true_false_action, "is_playing_tv", True),
     "stop_all": SonosFunction(operate_on_all, "stop", False),
+    "set_queue_position": SonosFunction(set_queue_position, "", True),
+    "sqp": SonosFunction(set_queue_position, "", True),
 }

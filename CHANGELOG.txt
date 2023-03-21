@@ -1,4 +1,4 @@
-v0.4.61   -
+v0.4.61   - Add 'set_queue_position' action
 v0.4.60   - Add 'generic' HTTP macro and increase number of args to 12
           - Fix remove_playlist / delete_playist actions
 v0.4.59   - Add queue position option for 'add_sharelink_to_queue'
