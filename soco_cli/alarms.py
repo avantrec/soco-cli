@@ -21,8 +21,8 @@ from soco_cli.utils import (
     zero_parameters,
 )
 
-# Stabilisation delay (in seconds) when saving multiple alarms
-ALARM_SAVE_DELAY = 1.0
+# Stabilisation delay (in seconds) when operating on multiple alarms
+ALARM_OPERATION_DELAY = 1.0
 
 
 @zero_parameters
@@ -111,10 +111,17 @@ def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
     valid_alarm_ids_to_delete = alarm_ids.intersection(alarm_ids_to_delete)
     logging.info("Valid alarm ID(s) to delete: {}".format(valid_alarm_ids_to_delete))
 
+    deleted_counter = 0
     for alarm in alarms:
         if alarm.alarm_id in valid_alarm_ids_to_delete:
             logging.info("Deleting alarm ID: {}".format(alarm.alarm_id))
             alarm.remove()
+            deleted_counter += 1
+            if deleted_counter < len(valid_alarm_ids_to_delete):
+                logging.info(
+                    "Waiting for {}s for stabilisation".format(ALARM_OPERATION_DELAY)
+                )
+                time.sleep(ALARM_OPERATION_DELAY)
 
     alarms_invalid = alarm_ids_to_delete.difference(valid_alarm_ids_to_delete)
     if len(alarms_invalid) != 0:
@@ -164,10 +171,10 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
                 # Allow alarm update to stabilise
                 logging.info(
                     "Waiting {}s after saving alarm '{}'".format(
-                        ALARM_SAVE_DELAY, alarm.alarm_id
+                        ALARM_OPERATION_DELAY, alarm.alarm_id
                     )
                 )
-                time.sleep(ALARM_SAVE_DELAY)
+                time.sleep(ALARM_OPERATION_DELAY)
         except SoCoUPnPException as e:
             error_report("Failed to modify alarm {}: {}".format(alarm.alarm_id, e))
             continue
@@ -257,10 +264,10 @@ def set_alarms(speaker, alarm_ids, enabled=True):
                     # Stabilisation delay
                     logging.info(
                         "Waiting {}s after saving alarm '{}'".format(
-                            ALARM_SAVE_DELAY, alarm.alarm_id
+                            ALARM_OPERATION_DELAY, alarm.alarm_id
                         )
                     )
-                    time.sleep(ALARM_SAVE_DELAY)
+                    time.sleep(ALARM_OPERATION_DELAY)
             alarm_ids.discard(alarm.alarm_id)
 
     if len(alarm_ids) != 0:
@@ -484,8 +491,12 @@ def set_program_data(speaker: SoCo, alarm: Alarm, fav: str):
     for s_fav in s_favs:
         # This will pick the first, case-insensitive partial match
         if fav.lower() in s_fav.title.lower():
+            logging.info(
+                "Found Sonos Favourite match for '{}' = '{}'".format(fav, s_fav.title)
+            )
             alarm.program_metadata = s_fav.resource_meta_data
             # Assume there's only one 'resources' object in the list
+            logging.info("Using URI = {}".format(s_fav.resources[0].uri))
             alarm.program_uri = s_fav.resources[0].uri
             return
     else:
