@@ -492,13 +492,13 @@ Some SoCo-CLI alarm actions below require an **alarm specification** (`alarm_spe
      representing a day of the week (Sunday is 0, Monday is 1, etc.), e.g., `ON_034` means
      Sunday, Wednesday and Thursday
   4. Whether the alarm is enabled: `ON` or `OFF` (or `YES`, `NO`)
-  5. What to play: `CHIME`, or a URI for a stream (which must be enclosed in double quotes)
+  5. What to play: `CHIME` (or `chime`) for the standard Sonos alarm sound, or a choice from your Sonos Favourites. Sonos Favourite matching will use case-insensitive, partial matches. 
   6. Play mode: one of `NORMAL`, `SHUFFLE_NOREPEAT`, `SHUFFLE`, `REPEAT_ALL`, `REPEAT_ONE`, `SHUFFLE_REPEAT_ONE` (note that `SHUFFLE` means SHUFFLE *and* REPEAT)
   7. The volume to play at: `0`-`100`
   8. Whether to include grouped speakers: `ON` or `OFF` (or `YES`, `NO`)
  
   Examples of alarm specifications:
-  - `07:00,01:30,WEEKDAYS,ON,"http://stream.live.vc.bbcmedia.co.uk/bbc_radio_fourfm",NORMAL,50,OFF`
+  - `07:00,01:30,WEEKDAYS,ON,"Radio 4",NORMAL,50,OFF`
   - `06:30,00:01,WEEKDAYS,ON,CHIME,NORMAL,50,OFF`
 
 In actions which **modify** (or copy and modify) an existing alarm, values that are to be left unchanged are denoted by an underscore in the `alarm_spec`. E.g., to change only the duration and volume of an alarm, use an alarm spec such as: `_,01:00,_,_,_,_,60,_`.

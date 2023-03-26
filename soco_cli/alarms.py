@@ -8,6 +8,8 @@ from datetime import datetime
 import soco  # type: ignore
 import soco.alarms  # type: ignore
 import tabulate  # type: ignore
+from soco.alarms import Alarm, get_alarms
+from soco.core import SoCo
 from soco.exceptions import SoCoUPnPException  # type: ignore
 
 from soco_cli.utils import (
@@ -78,7 +80,7 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
         "2: Duration",
         "3: Recurrence",
         "4: Enabled",
-        "5: Title or URI",
+        "5: Title",
         "6: Play Mode",
         "7: Vol.",
         "8: Incl. Grouped",
@@ -91,7 +93,7 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
-    alarms = soco.alarms.get_alarms(speaker)
+    alarms = get_alarms(speaker)
 
     if args[0].lower() == "all":
         for alarm in alarms:
@@ -123,14 +125,14 @@ def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
-    new_alarm = soco.alarms.Alarm(zone=speaker)
-    if not _modify_alarm_object(new_alarm, args[0]):
+    new_alarm = Alarm(zone=speaker)
+    if not _modify_alarm_object(speaker, new_alarm, args[0]):
         return False
 
     try:
         new_alarm.save()
-    except soco.exceptions.SoCoUPnPException:
-        error_report("Failed to create alarm")
+    except SoCoUPnPException as e:
+        error_report("Failed to create alarm: {}".format(e))
         return False
 
     return True
@@ -139,7 +141,7 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 @two_parameters
 def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
     alarm_ids = args[0].lower().split(",")
-    all_alarms = soco.alarms.get_alarms(speaker)
+    all_alarms = get_alarms(speaker)
     if alarm_ids[0] == "all":
         alarms = set(all_alarms)
     else:
@@ -153,7 +155,7 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
                 print("Alarm ID '{}' not found".format(alarm_id))
 
     for index, alarm in enumerate(alarms):
-        if not _modify_alarm_object(alarm, args[1]):
+        if not _modify_alarm_object(speaker, alarm, args[1]):
             continue
         try:
             logging.info("Saving alarm '{}'".format(alarm.alarm_id))
@@ -166,8 +168,8 @@ def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
                     )
                 )
                 time.sleep(ALARM_SAVE_DELAY)
-        except soco.exceptions.SoCoUPnPException:
-            error_report("Failed to modify alarm {}".format(alarm.alarm_id))
+        except SoCoUPnPException as e:
+            error_report("Failed to modify alarm {}: {}".format(alarm.alarm_id, e))
             continue
 
     return True
@@ -186,7 +188,7 @@ def move_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 
 
 def move_or_copy_alarm(speaker, alarm_id, copy=True):
-    alarms = soco.alarms.get_alarms(speaker)
+    alarms = get_alarms(speaker)
     for alarm in alarms:
         if alarm_id == alarm.alarm_id:
             break
@@ -203,8 +205,8 @@ def move_or_copy_alarm(speaker, alarm_id, copy=True):
         alarm._alarm_id = None
     try:
         alarm.save()
-    except soco.exceptions.SoCoUPnPException:
-        error_report("Failed to copy/move alarm")
+    except SoCoUPnPException as e:
+        error_report("Failed to copy/move alarm: {}".format(e))
         return False
 
     if copy is True:
@@ -224,7 +226,7 @@ def disable_alarms(speaker, action, args, soco_function, use_local_speaker_list)
 
 
 def set_alarms(speaker, alarm_ids, enabled=True):
-    alarms = soco.alarms.get_alarms(speaker)
+    alarms = get_alarms(speaker)
     alarm_ids = set(alarm_ids.lower().split(","))
 
     all_alarms = False
@@ -243,7 +245,14 @@ def set_alarms(speaker, alarm_ids, enabled=True):
             if alarm.enabled != enabled:
                 alarm.enabled = enabled
                 logging.info("Saving alarm '{}'".format(alarm.alarm_id))
-                alarm.save()
+                try:
+                    alarm.save()
+                except SoCoUPnPException as e:
+                    error_report(
+                        "Failed to change state of alarm {}: {}".format(
+                            alarm.alarm_id, e
+                        )
+                    )
                 if len(alarm_ids) != 0 or all_alarms:
                     # Stabilisation delay
                     logging.info(
@@ -321,7 +330,7 @@ def copy_modify_alarm(speaker, action, args, soco_function, use_local_speaker_li
     alarm_parms = args[1]
 
     # Find the alarm
-    alarms = soco.alarms.get_alarms(speaker)
+    alarms = get_alarms(speaker)
     for alarm in alarms:
         if alarm_id == alarm.alarm_id:
             break
@@ -339,20 +348,24 @@ def copy_modify_alarm(speaker, action, args, soco_function, use_local_speaker_li
     new_alarm.zone = speaker
 
     # Apply modifications
-    if not _modify_alarm_object(new_alarm, alarm_parms):
+    if not _modify_alarm_object(speaker, new_alarm, alarm_parms):
         return False
 
     # Save the new alarm
     try:
         new_alarm.save()
-    except soco.exceptions.SoCoUPnPException:
-        error_report("Failed to copy/move alarm; did you modify the start time?")
+    except SoCoUPnPException as e:
+        error_report(
+            "Failed to copy/move alarm; did you remember to modify the start time?: {}".format(
+                e
+            )
+        )
         return False
 
     return True
 
 
-def _modify_alarm_object(alarm: soco.alarms.Alarm, parms_string: str) -> bool:
+def _modify_alarm_object(speaker: SoCo, alarm: Alarm, parms_string: str) -> bool:
     alarm_parameters = parms_string.split(",")
     if len(alarm_parameters) != 8:
         error_report(
@@ -398,11 +411,12 @@ def _modify_alarm_object(alarm: soco.alarms.Alarm, parms_string: str) -> bool:
             return False
         alarm.enabled = enabled
 
-    uri = alarm_parameters[4]
-    if not uri == "_":
-        if uri.lower() == "chime":
-            uri = None
-        alarm.program_uri = uri
+    fav = alarm_parameters[4]
+    if not fav == "_":
+        if fav.lower() == "chime":
+            alarm.program_uri = None
+        else:
+            set_program_data(speaker, alarm, fav)
 
     play_mode = alarm_parameters[5].upper()
     if not play_mode == "_":
@@ -459,3 +473,20 @@ def _modify_alarm_object(alarm: soco.alarms.Alarm, parms_string: str) -> bool:
         alarm.include_linked_zones = include_linked
 
     return True
+
+
+def set_program_data(speaker: SoCo, alarm: Alarm, fav: str):
+    """
+    Set the program URI and metadata for the alarm, using a selection
+    from the list of Sonos Favourites.
+    """
+    s_favs = speaker.music_library.get_sonos_favorites(complete_result=True)
+    for s_fav in s_favs:
+        # This will pick the first, case-insensitive partial match
+        if fav.lower() in s_fav.title.lower():
+            alarm.program_metadata = s_fav.resource_meta_data
+            # Assume there's only one 'resources' object in the list
+            alarm.program_uri = s_fav.resources[0].uri
+            return
+    else:
+        raise Exception("Favourite '{}' not found".format(fav))
