@@ -10,9 +10,9 @@ try:
     import readline
 except ImportError:
     pass
+import platform
 import sys
 from collections.abc import Sequence
-from platform import python_version
 from time import sleep
 
 import soco  # type: ignore
@@ -23,9 +23,10 @@ from soco_cli.speakers import Speakers
 
 
 def event_unsubscribe(sub):
-    """Unsubscribe from events, with a try/catch wrapper, and a pause
-    introduced to yield the thread."""
+    """Unsubscribe from events.
 
+    Eith a try/catch wrapper, and a pause introduced to yield the thread.
+    """
     logging.info("Unsubscribing '{}'".format(sub))
     try:
         sleep(0.2)
@@ -33,6 +34,35 @@ def event_unsubscribe(sub):
     except Exception as e:
         logging.info("Failed to unsubscribe: {}".format(e))
     logging.info("Unsubscribed")
+
+
+if platform.system() == "Linux":
+    if "XDG_CONFIG_HOME" in os.environ:
+        SOCO_CLI_DIR = os.path.join(
+            os.path.expandvars("${XDG_CONFIG_HOME}"), "soco-cli"
+        )
+    else:
+        SOCO_CLI_DIR = os.path.join(
+            os.path.expanduser("~user"), ".config", "soco-cli"
+        )
+elif platform.system() == "Windows":
+    SOCO_CLI_DIR = os.path.join(
+        os.path.expandvars("%LOCALAPPDATA%"), "soco-cli"
+    )
+else:
+    SOCO_CLI_DIR = os.path.join(os.path.expanduser("~user"), ".soco-cli")
+
+
+def _confirm_soco_cli_dir() -> bool:
+    if not os.path.exists(SOCO_CLI_DIR):
+        logging.info("Creating directory '{}'".format(SOCO_CLI_DIR))
+        try:
+            os.mkdir(SOCO_CLI_DIR)
+            return True
+        except Exception as e:
+            error_report(f"{e}: Failed to create directory '{SOCO_CLI_DIR}'")
+            return False
+    return True
 
 
 INTERACTIVE = False
@@ -77,6 +107,7 @@ def parameter_number_error(action, parameter_number):
 
 # Parameter count checking
 def zero_parameters(f):
+
     def wrapper(*args, **kwargs):
         if len(args[2]) != 0:
             parameter_number_error(args[1], "no")
@@ -88,6 +119,7 @@ def zero_parameters(f):
 
 
 def one_parameter(f):
+
     def wrapper(*args, **kwargs):
         if len(args[2]) != 1:
             parameter_number_error(args[1], "1")
@@ -98,6 +130,7 @@ def one_parameter(f):
 
 
 def zero_or_one_parameter(f):
+
     def wrapper(*args, **kwargs):
         if len(args[2]) not in [0, 1]:
             parameter_number_error(args[1], "0 or 1")
@@ -108,6 +141,7 @@ def zero_or_one_parameter(f):
 
 
 def one_or_two_parameters(f):
+
     def wrapper(*args, **kwargs):
         if len(args[2]) not in [1, 2]:
             parameter_number_error(args[1], "1 or 2")
@@ -118,6 +152,7 @@ def one_or_two_parameters(f):
 
 
 def two_parameters(f):
+
     def wrapper(*args, **kwargs):
         if len(args[2]) != 2:
             parameter_number_error(args[1], "2")
@@ -128,6 +163,7 @@ def two_parameters(f):
 
 
 def zero_one_or_two_parameters(f):
+
     def wrapper(*args, **kwargs):
         if len(args[2]) > 2:
             parameter_number_error(args[1], "zero, one or two")
@@ -138,6 +174,7 @@ def zero_one_or_two_parameters(f):
 
 
 def one_or_more_parameters(f):
+
     def wrapper(*args, **kwargs):
         if len(args[2]) < 1:
             parameter_number_error(args[1], "1 or more")
@@ -153,7 +190,9 @@ def seconds_until(time_str):
     target_time = create_time_from_str(time_str)
     now_time = datetime.datetime.now().time()
     delta_target = datetime.timedelta(
-        hours=target_time.hour, minutes=target_time.minute, seconds=target_time.second
+        hours=target_time.hour,
+        minutes=target_time.minute,
+        seconds=target_time.second
     )
     delta_now = datetime.timedelta(
         hours=now_time.hour, minutes=now_time.minute, seconds=now_time.second
@@ -185,6 +224,7 @@ def create_time_from_str(time_str):
 
 def convert_to_seconds(time_str):
     """Convert a time string to seconds.
+
     time_str can be one of Nh, Nm or Ns, or of the form HH:MM:SS
     :raises ValueError
     """
@@ -195,10 +235,14 @@ def convert_to_seconds(time_str):
             parts = time_str.split(":")
             if len(parts) == 3:  # HH:MM:SS
                 td = datetime.timedelta(
-                    hours=int(parts[0]), minutes=int(parts[1]), seconds=int(parts[2])
+                    hours=int(parts[0]),
+                    minutes=int(parts[1]),
+                    seconds=int(parts[2])
                 )
             else:  # HH:MM
-                td = datetime.timedelta(hours=int(parts[0]), minutes=int(parts[1]))
+                td = datetime.timedelta(
+                    hours=int(parts[0]), minutes=int(parts[1])
+                )
             return td.seconds
 
         if time_str.endswith("s"):  # Seconds (explicit)
@@ -210,8 +254,8 @@ def convert_to_seconds(time_str):
         else:  # Seconds (default)
             duration = float(time_str)
         return duration
-    except:
-        raise ValueError
+    except ValueError as e:
+        error_report(e)
 
 
 # Miscellaneous
@@ -226,27 +270,31 @@ def convert_true_false(true_or_false, conversion="YesOrNo"):
 def version():
     print("soco-cli version:   {}".format(__version__), flush=True)
     print("soco version:       {}".format(soco.__version__), flush=True)
-    print("python version:     {}".format(python_version()), flush=True)
+    print(
+        "python version:     {}".format(platform.python_version()), flush=True
+    )
     print("command path:       {}".format(sys.argv[0]), flush=True)
+
+
+REPO_URL = "https://github.com/avantrec/soco-cli"
+RAW_REPO_URL = "https://raw.githubusercontent.com/avantrec/soco-cli"
 
 
 def docs():
     version = "v{}".format(__version__)
     if __version__.endswith("+"):
-        url = "https://github.com/avantrec/soco-cli/blob/next_version/README.md"
+        url = REPO_URL + "/blob/next_version/README.md"
     else:
-        url = "https://github.com/avantrec/soco-cli/blob/{}/README.md".format(version)
+        url = REPO_URL + f"/blob/{version}/README.md"
     print("Online documentation for {}: {}".format(version, url), flush=True)
 
 
 def logo():
     version = "v{}".format(__version__)
     if __version__.endswith("+"):
-        url = "https://raw.githubusercontent.com/avantrec/soco-cli/next_version/assets/soco-cli-logo-01-large.png"
+        url = RAW_REPO_URL + "/next_version/assets/soco-cli-logo-01-large.png"
     else:
-        url = "https://raw.githubusercontent.com/avantrec/soco-cli/{}/assets/soco-cli-logo-01-large.png".format(
-            version
-        )
+        url = RAW_REPO_URL + f"/{version}/assets/soco-cli-logo-01-large.png"
     print("SoCo-CLI Logo: {}".format(url), flush=True)
 
 
@@ -268,7 +316,9 @@ def set_speaker_playing_local_file(speaker):
     global speaker_playing_local_file
     if speaker:
         logging.info(
-            "Setting speaker playing local file to '{}'".format(speaker.player_name)
+            "Setting speaker playing local file to '{}'".format(
+                speaker.player_name
+            )
         )
     else:
         logging.info("No speaker playing local file")
@@ -297,8 +347,12 @@ def sig_handler(signal_received, frame):
 
         if INTERACTIVE:
             logging.info("INTERACTIVE set ... preventing exit")
-            print("\nPlease use 'exit' to terminate the shell > ", end="", flush=True)
-            if os.name == "nt":
+            print(
+                "\nPlease use 'exit' to terminate the shell > ",
+                end="",
+                flush=True
+            )
+            if platform.system() == "Windows":
                 print(flush=True)
             return
 
@@ -327,8 +381,9 @@ def sig_handler(signal_received, frame):
 
 
 class RewindableList(Sequence):
-    """This is a just-enough-implementation class to provide a list
-    that can be rewound during iteration.
+    """This is a just-enough-implementation class.
+
+    Provide a list that can be rewound during iteration.
     """
 
     def __init__(self, items=[]):
@@ -403,7 +458,8 @@ def configure_logging(log_level: str) -> None:
             logging.basicConfig(format=log_format, level=logging.CRITICAL)
         else:
             error_report(
-                "--log takes one of: NONE, DEBUG, INFO, WARN(ING), ERROR, CRITICAL"
+                "--log takes one of: " +
+                "NONE, DEBUG, INFO, WARN(ING), ERROR, CRITICAL"
             )
 
 
@@ -417,6 +473,7 @@ def set_speaker_list(s):
 
 
 class SpeakerCache:
+
     def __init__(self, max_threads=256, scan_timeout=0.1, min_netmask=24):
         # _cache contains (soco_instance, speaker_name) tuples
         self._cache = set()
@@ -456,10 +513,12 @@ class SpeakerCache:
             # Clear the current cache
             self._cache = set()
             scan_timeout = (
-                scan_timeout_override if scan_timeout_override else self._scan_timeout
+                scan_timeout_override
+                if scan_timeout_override else self._scan_timeout
             )
             logging.info(
-                "Performing full discovery scan with timeout = {}s".format(scan_timeout)
+                "Performing full discovery scan with timeout = {}s"
+                .format(scan_timeout)
             )
             speakers = soco.discovery.scan_network(
                 multi_household=True,
@@ -473,7 +532,9 @@ class SpeakerCache:
             else:
                 logging.info("No speakers found to cache")
         else:
-            logging.info("Full discovery scan already done, and reset not requested")
+            logging.info(
+                "Full discovery scan already done, and reset not requested"
+            )
 
     def add(self, speaker):
         logging.info("Adding speaker to cache")
@@ -495,7 +556,7 @@ class SpeakerCache:
             return speakers_found.pop()
 
         if len(speakers_found) > 1:
-            error_report("'{}' is ambiguous: {}".format(name, speakers_found_names))
+            error_report(f"'{name}' is ambiguous: {speakers_found_names}")
 
         return None
 
@@ -556,17 +617,19 @@ SPKR_CACHE = None
 def create_speaker_cache(max_threads=256, scan_timeout=1.0, min_netmask=24):
     global SPKR_CACHE
     SPKR_CACHE = SpeakerCache(
-        max_threads=max_threads, scan_timeout=scan_timeout, min_netmask=min_netmask
+        max_threads=max_threads,
+        scan_timeout=scan_timeout,
+        min_netmask=min_netmask
     )
 
 
 def speaker_cache():
-    """Return the global speaker cache object"""
+    """Return the global speaker cache object."""
     return SPKR_CACHE
 
 
 def local_speaker_list():
-    """Return the global speaker list object"""
+    """Return the global speaker list object."""
     return speaker_list
 
 
@@ -619,9 +682,9 @@ def get_right_hand_speaker(left_hand_speaker):
     # left-hand speaker is the coordinator, and not a Sub
     for rh_speaker in left_hand_speaker.all_zones:
         if (
-            rh_speaker.group.coordinator.ip_address == left_hand_speaker.ip_address
-            and not rh_speaker.is_visible
-            and "sub" not in rh_speaker.get_speaker_info()["model_name"].lower()
+            rh_speaker.group.coordinator.ip_address
+            == left_hand_speaker.ip_address and not rh_speaker.is_visible and
+            "sub" not in rh_speaker.get_speaker_info()["model_name"].lower()
         ):
             logging.info(
                 "Found right-hand speaker: {} / {}".format(
@@ -641,7 +704,7 @@ def rename_speaker_in_cache(old_name, new_name, use_local_speaker_list=True):
 
 # Argument processing
 def configure_common_args(parser):
-    """Set up the optional arguments common across the command line programs"""
+    """Set up the optional arguments common to all command line programs."""
     parser.add_argument(
         "--network-discovery-threads",
         "-t",
@@ -674,7 +737,8 @@ def configure_common_args(parser):
         "--log",
         type=str,
         default="NONE",
-        help="Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
+        help=
+        "Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
     )
     parser.add_argument(
         "--docs",
@@ -701,49 +765,55 @@ def check_args(args):
     message = ""
     if not 0 <= args.min_netmask <= 32:
         message = (
-            message + "\n    Option 'min_netmask' must be an integer between 0 and 32"
+            message +
+            "\n    Option 'min_netmask' must be an integer between 0 and 32"
         )
     if not 0.0 <= args.network_discovery_timeout <= 60.0:
-        message = message + "\n    Option 'network_timeout' must be between 0.0 and 60s"
+        message = (
+            message +
+            "\n    Option 'network_timeout' must be between 0.0 and 60s"
+        )
     if not 1 <= args.network_discovery_threads <= 32000:
-        message = message + "\n    Option 'threads' must be between 1 and 32000"
+        message = (
+            message + "\n    Option 'threads' must be between 1 and 32000"
+        )
     if message == "":
         return None
     return message
 
 
-path = os.path.expanduser("~") + "/.soco-cli/"
-filename = "saved_search.pickle"
-pathname = path + filename
+search_pathname = os.path.join(SOCO_CLI_DIR, "saved_search.pickle")
 
 
 def save_search(result):
-    if not os.path.exists(path):
-        os.mkdir(path)
-    with open(pathname, "wb") as f:
-        pickle.dump(result, f)
-    logging.info("Saved search results at {}".format(pathname))
+    if not _confirm_soco_cli_dir():
+        return
+    try:
+        with open(search_pathname, "wb") as f:
+            pickle.dump(result, f)
+        logging.info("Saved search results at {}".format(search_pathname))
+    except Exception as e:
+        logging.info("Error saving speaker search results: {}".format(e))
     return True
 
 
 def read_search():
-    if os.path.exists(pathname):
-        logging.info("Loading search results from {}".format(pathname))
+    if os.path.exists(search_pathname):
+        logging.info("Loading search results from {}".format(search_pathname))
         try:
-            with open(pathname, "rb") as f:
+            with open(search_pathname, "rb") as f:
                 return pickle.load(f)
         except Exception as e:
             logging.info("Failed to load search results: %s", e)
     return None
 
 
-filename = "queue_insertion_position.pickle"
-queue_pathname = path + filename
+queue_pathname = os.path.join(SOCO_CLI_DIR, "queue_insertion_position.pickle")
 
 
 def save_queue_insertion_position(queue_position: int):
-    if not os.path.exists(path):
-        os.mkdir(path)
+    if not _confirm_soco_cli_dir:
+        return
     with open(queue_pathname, "wb") as f:
         pickle.dump(queue_position, f)
     logging.info("Saved queue position at {}".format(queue_pathname))
@@ -765,7 +835,6 @@ def get_queue_insertion_position() -> int:
 
 
 # Interactive shell history file
-SOCO_CLI_DIR = os.path.join(os.path.expanduser("~"), ".soco-cli")
 HIST_FILE = os.path.join(SOCO_CLI_DIR, "shell-history.txt")
 HIST_LEN = 50
 
@@ -793,7 +862,9 @@ def get_readline_history():
         logging.info("Error reading shell history file: {}".format(e))
 
 
-def pretty_print_values(items, indent=2, separator=":", spacing=3, sort_by_key=False):
+def pretty_print_values(
+    items, indent=2, separator=":", spacing=3, sort_by_key=False
+):
     """Print a list of keys and values.
 
     Args:
@@ -818,7 +889,7 @@ def pretty_print_values(items, indent=2, separator=":", spacing=3, sort_by_key=F
         key_vals = sorted(key_vals)
     for key, value in key_vals:
         spacer = " " * (spacing + longest - len(key))
-        print("{}{}{}{}{}".format(prefix, key, separator, spacer, value))
+        print(f"{prefix}{key}{separator}{spacer}{value}")
 
 
 def playback_state(state):
@@ -844,17 +915,6 @@ def playback_state(state):
 
 # Ensure that event subscriptions are cleared on CTRL-C
 SUBS_LIST = set()
-
-
-def _confirm_soco_cli_dir() -> bool:
-    if not os.path.exists(SOCO_CLI_DIR):
-        logging.info("Creating directory '{}'".format(SOCO_CLI_DIR))
-        try:
-            os.mkdir(SOCO_CLI_DIR)
-            return True
-        except:
-            error_report("Failed to create directory '{}'".format(SOCO_CLI_DIR))
-            return False
 
 
 def remember_event_sub(sub):

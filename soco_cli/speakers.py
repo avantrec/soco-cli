@@ -3,7 +3,8 @@
 import ipaddress
 import logging
 import os
-import pickle
+import pickle  # nosec
+import platform
 from collections import namedtuple
 
 import soco  # type: ignore
@@ -11,6 +12,21 @@ import tabulate  # type: ignore
 
 from soco_cli.match_speaker_names import speaker_name_matches
 
+if platform.system() == "Linux":
+    if "XDG_CONFIG_HOME" in os.environ:
+        SAVE_DIR = os.path.join(
+            os.path.expandvars("${XDG_CONFIG_HOME}"), "soco-cli"
+        )
+    else:
+        SAVE_DIR = os.path.join(
+            os.path.expanduser("~user"), ".config", "soco-cli"
+        )
+elif platform.system() == "Windows":
+    SAVE_DIR = os.path.join(os.path.expandvars("%LOCALAPPDATA%"), "soco-cli")
+else:
+    SAVE_DIR = os.path.join(os.path.expanduser("~user"), ".soco-cli")
+
+# pylint: disable=consider-using-f-string
 # Type for holding speaker details
 SonosDevice = namedtuple(
     "SonosDevice",
@@ -27,8 +43,10 @@ SonosDevice = namedtuple(
 
 
 class Speakers:
-    """A class for discovering Sonos speakers, saving and loading speaker data,
-    and finding speakers by name. An alternative to using SoCo discovery.
+    """A class for discovering Sonos speakers.
+
+    Save and load speaker data and find speakers by name.
+    An alternative to using SoCo discovery.
     """
 
     def __init__(
@@ -40,11 +58,7 @@ class Speakers:
         min_netmask=24,
         subnets=None,
     ):
-        self._save_directory = (
-            save_directory
-            if save_directory
-            else os.path.expanduser("~") + "/.soco-cli/"
-        )
+        self._save_directory = (save_directory if save_directory else SAVE_DIR)
         self._save_file = save_file if save_file else "speakers_v2.pickle"
         self.remove_deprecated_pickle_files()
         self._network_threads = network_threads
@@ -54,11 +68,13 @@ class Speakers:
         self.subnets = subnets  # Calls the setter
 
     def remove_deprecated_pickle_files(self):
-        """Remove any older, incompatible versions of the pickle file"""
+        """Remove any older, incompatible versions of the pickle file."""
         for old_file in ["speakers.pickle"]:
             pathname = self._save_directory + old_file
             if os.path.exists(pathname):
-                logging.info("Removing old local speaker cache {}".format(pathname))
+                logging.info(
+                    "Removing old local speaker cache {}".format(pathname)
+                )
                 # print("Removing deprecated local speaker file:", pathname)
                 os.remove(pathname)
 
@@ -146,7 +162,7 @@ class Speakers:
         self._subnets = subnets
 
     def save(self):
-        """Saves the speaker list as a pickle file."""
+        """Save the speaker list as a pickle file."""
         if self._speakers:
             if not os.path.exists(self._save_directory):
                 os.mkdir(self._save_directory)
@@ -156,34 +172,42 @@ class Speakers:
         return False
 
     def load(self):
-        """Loads a saved speaker list"""
+        """Load a saved speaker list."""
         if os.path.exists(self.save_pathname):
             try:
                 with open(self.save_pathname, "rb") as f:
-                    self._speakers = pickle.load(f)
-            except:
+                    self._speakers = pickle.load(f)  # nosec
+            except IOError as e:
+                logging.info(
+                    "{}: Failed to load saved speakers from {}".format(
+                        e, self.save_pathname
+                    )
+                )
                 return False
             return True
         return False
 
     def clear(self):
-        """Clears the in-memory speaker list"""
+        """Clear the in-memory speaker list."""
         self._speakers = []
 
     def remove_save_file(self):
-        """Removes the saved speaker list file"""
+        """Remove the saved speaker list file."""
         os.remove(self.save_pathname)
         return self.save_pathname
 
     def rename(self, old_name, new_name):
         for index, speaker in enumerate(self._speakers):
-            if old_name.replace("’", "'") == speaker.speaker_name.replace("’", "'"):
+            if old_name.replace("’", "'"
+                                ) == speaker.speaker_name.replace("’", "'"):
                 # Update old record, delete, replace with new
                 new_speaker = speaker._replace(speaker_name=new_name)
                 del self._speakers[index]
                 self._speakers.append(new_speaker)
                 logging.info(
-                    "Renamed speaker in cache: '{}' to '{}'".format(old_name, new_name)
+                    "Renamed speaker in cache: '{}' to '{}'".format(
+                        old_name, new_name
+                    )
                 )
                 self.save()
                 logging.info("Saved updated cache file")
@@ -193,7 +217,7 @@ class Speakers:
 
     @staticmethod
     def is_ipv4_address(ip_address):
-        """Tests for an IPv4 address"""
+        """Test for an IPv4 address."""
         try:
             ipaddress.IPv4Network(ip_address)
             return True
@@ -202,7 +226,7 @@ class Speakers:
 
     @staticmethod
     def get_sonos_device_data(ip_addr):
-        """Get information from a Sonos device"""
+        """Get information from a Sonos device."""
         try:
             speaker = soco.SoCo(str(ip_addr))
             logging.info("Querying device at {}".format(str(ip_addr)))
@@ -223,8 +247,7 @@ class Speakers:
             return None
 
     def discover(self):
-        """Discover the Sonos speakers on the network(s) to which
-        this host is attached."""
+        """Discover the Sonos speakers on the connected network(s)."""
         self.clear()
         devices = None
         if not (self._subnets_arg and len(self.subnets) == 0):
@@ -248,7 +271,6 @@ class Speakers:
 
     def find(self, speaker_name, require_visible=True):
         """Find a speaker by name and return its SoCo object."""
-
         speaker_names = set()
         return_speaker = None
 
@@ -256,7 +278,9 @@ class Speakers:
             if require_visible and not speaker.is_visible:
                 continue
 
-            match, exact = speaker_name_matches(speaker_name, speaker.speaker_name)
+            match, exact = speaker_name_matches(
+                speaker_name, speaker.speaker_name
+            )
 
             if match and exact:
                 speaker_names.add(speaker.speaker_name)
@@ -305,15 +329,13 @@ class Speakers:
                 visible = "Visible"
             else:
                 visible = "Hidden"
-            households[device.household_id].append(
-                (
-                    device.speaker_name,
-                    device.ip_address,
-                    device.model_name.replace("Sonos ", ""),
-                    visible,
-                    device.display_version,
-                )
-            )
+            households[device.household_id].append((
+                device.speaker_name,
+                device.ip_address,
+                device.model_name.replace("Sonos ", ""),
+                visible,
+                device.display_version,
+            ))
             num_devices += 1
 
         headers = [
