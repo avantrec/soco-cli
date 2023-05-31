@@ -1,85 +1,84 @@
 # SoCo-CLI: Control Sonos from the Command Line
 
 <!--ts-->
-* [SoCo-CLI: Control Sonos from the Command Line](#soco-cli-control-sonos-from-the-command-line)
-   * [Overview](#overview)
-   * [Supported Environments](#supported-environments)
-   * [Installation](#installation)
-   * [User Guide](#user-guide)
-      * [The sonos Command](#the-sonos-command)
-      * [Speaker Discovery by Name](#speaker-discovery-by-name)
-      * [Simple Usage Examples](#simple-usage-examples)
-      * [The SPKR Environment Variable](#the-spkr-environment-variable)
-      * [Using Shell Aliases](#using-shell-aliases)
-      * [Options for the sonos Command](#options-for-the-sonos-command)
-      * [Firewall Rules](#firewall-rules)
-      * [Operating on All Speakers: Using _all_](#operating-on-all-speakers-using-_all_)
-   * [Guidelines on Playing Content](#guidelines-on-playing-content)
-      * [Radio Stations](#radio-stations)
-      * [Single Tracks](#single-tracks)
-      * [Albums and Playlists](#albums-and-playlists)
-      * [Audio Files on the Local Filesystem](#audio-files-on-the-local-filesystem)
-      * [Local Playlists (M3U Files)](#local-playlists-m3u-files)
-      * [Directories of Audio Files](#directories-of-audio-files)
-      * [Spotify, Tidal, Deezer, and Apple Music Share Links](#spotify-tidal-deezer-and-apple-music-share-links)
-   * [Complete List of Available Actions](#complete-list-of-available-actions)
-      * [Volume and EQ Control](#volume-and-eq-control)
-      * [Playback Control](#playback-control)
-      * [Queue Actions](#queue-actions)
-      * [Favourites and Playlists](#favourites-and-playlists)
-      * [TuneIn Radio Station Favourites](#tunein-radio-station-favourites)
-      * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
-      * [Alarms](#alarms)
-      * [Music Library Search Functions](#music-library-search-functions)
-      * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
-   * [Multiple Sequential Commands](#multiple-sequential-commands)
-      * [Chaining Commands Using the : Separator](#chaining-commands-using-the--separator)
-      * [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
-      * [Waiting Until Playback has Started/Stopped: wait_start, wait_stop and wait_end_track](#waiting-until-playback-has-startedstopped-wait_start-wait_stop-and-wait_end_track)
-      * [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
-      * [Repeating Commands: The loop Actions](#repeating-commands-the-loop-actions)
-   * [Conditional Command Execution](#conditional-command-execution)
-   * [Interactive Shell Mode](#interactive-shell-mode)
-      * [Description](#description)
-      * [Usage](#usage)
-      * [Shell History and Auto-Completion](#shell-history-and-auto-completion)
-      * [Shell Aliases](#shell-aliases)
-         * [Push and Pop](#push-and-pop)
-         * [Alias Subroutines](#alias-subroutines)
-         * [Alias Arguments](#alias-arguments)
-         * [Saving and Loading Aliases](#saving-and-loading-aliases)
-      * [Single Keystroke Mode](#single-keystroke-mode)
-   * [Cached Discovery](#cached-discovery)
-      * [Usage](#usage-1)
-      * [Speaker Naming](#speaker-naming)
-      * [Refreshing the Local Speaker List](#refreshing-the-local-speaker-list)
-      * [Discovery Options](#discovery-options)
-      * [The sonos-discover Command](#the-sonos-discover-command)
-      * [Options for the sonos-discover Command](#options-for-the-sonos-discover-command)
-   * [The SoCo-CLI HTTP API Server](#the-soco-cli-http-api-server)
-      * [Server Usage](#server-usage)
-      * [Using the Local Speaker Cache](#using-the-local-speaker-cache)
-      * [HTTP Request Structure](#http-request-structure)
-      * [Return Values](#return-values)
-      * [Macros: Defining Custom HTTP API Server Actions](#macros-defining-custom-http-api-server-actions)
-         * [Macro Definition and Usage](#macro-definition-and-usage)
-         * [Macro Arguments](#macro-arguments)
-         * [Troubleshooting](#troubleshooting)
-         * [Specifying the Macro Definition File](#specifying-the-macro-definition-file)
-         * [Reloading the Macro Definition File](#reloading-the-macro-definition-file)
-         * [Return Values](#return-values-1)
-         * [Listing Macros](#listing-macros)
-      * [Listing Speakers](#listing-speakers)
-      * [Rediscovering Speakers](#rediscovering-speakers)
-      * [Inspecting the HTTP API](#inspecting-the-http-api)
-   * [Using SoCo-CLI as a Python Library](#using-soco-cli-as-a-python-library)
-      * [Importing the API](#importing-the-api)
-      * [Using the API](#using-the-api)
-      * [Convenience Functions](#convenience-functions)
-   * [Known Issues](#known-issues)
-   * [Uninstalling](#uninstalling)
-   * [Acknowledgments](#acknowledgments)
-   * [Resources](#resources)
+- [SoCo-CLI: Control Sonos from the Command Line](#soco-cli-control-sonos-from-the-command-line)
+  - [Overview](#overview)
+  - [Supported Environments](#supported-environments)
+  - [Installation](#installation)
+  - [User Guide](#user-guide)
+    - [The sonos Command](#the-sonos-command)
+    - [Speaker Discovery by Name](#speaker-discovery-by-name)
+    - [Simple Usage Examples](#simple-usage-examples)
+    - [The SPKR Environment Variable](#the-spkr-environment-variable)
+    - [Using Shell Aliases](#using-shell-aliases)
+    - [Options for the sonos Command](#options-for-the-sonos-command)
+    - [Firewall Rules](#firewall-rules)
+    - [Operating on All Speakers: Using _all_](#operating-on-all-speakers-using-_all_)
+  - [Guidelines on Playing Content](#guidelines-on-playing-content)
+    - [Radio Stations](#radio-stations)
+    - [Single Tracks](#single-tracks)
+    - [Albums and Playlists](#albums-and-playlists)
+    - [Audio Files on the Local Filesystem](#audio-files-on-the-local-filesystem)
+    - [Local Playlists (M3U Files)](#local-playlists-m3u-files)
+    - [Directories of Audio Files](#directories-of-audio-files)
+    - [Spotify, Tidal, Deezer, and Apple Music Share Links](#spotify-tidal-deezer-and-apple-music-share-links)
+  - [Complete List of Available Actions](#complete-list-of-available-actions)
+    - [Volume and EQ Control](#volume-and-eq-control)
+    - [Playback Control](#playback-control)
+    - [Queue Actions](#queue-actions)
+    - [Favourites and Playlists](#favourites-and-playlists)
+    - [TuneIn Radio Station Favourites](#tunein-radio-station-favourites)
+    - [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
+    - [Alarms](#alarms)
+    - [Music Library Search Functions](#music-library-search-functions)
+    - [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
+  - [Multiple Sequential Commands](#multiple-sequential-commands)
+    - [Chaining Commands Using the : Separator](#chaining-commands-using-the--separator)
+    - [Inserting Delays: wait and wait_until](#inserting-delays-wait-and-wait_until)
+    - [Waiting Until Playback has Started/Stopped: wait_start, wait_stop and wait_end_track](#waiting-until-playback-has-startedstopped-wait_start-wait_stop-and-wait_end_track)
+    - [The wait_stopped_for &lt;duration&gt; Action](#the-wait_stopped_for-duration-action)
+    - [Repeating Commands: The loop Actions](#repeating-commands-the-loop-actions)
+  - [Conditional Command Execution](#conditional-command-execution)
+  - [Interactive Shell Mode](#interactive-shell-mode)
+    - [Description](#description)
+    - [Usage](#usage)
+    - [Shell History and Auto-Completion](#shell-history-and-auto-completion)
+    - [Shell Aliases](#shell-aliases)
+      - [Push and Pop](#push-and-pop)
+      - [Alias Subroutines](#alias-subroutines)
+      - [Alias Arguments](#alias-arguments)
+      - [Saving and Loading Aliases](#saving-and-loading-aliases)
+    - [Single Keystroke Mode](#single-keystroke-mode)
+  - [Cached Discovery](#cached-discovery)
+    - [How to Use](#how-to-use)
+    - [Speaker Naming](#speaker-naming)
+    - [Refreshing the Local Speaker List](#refreshing-the-local-speaker-list)
+    - [Discovery Options](#discovery-options)
+    - [The sonos-discover Command](#the-sonos-discover-command)
+    - [Options for the sonos-discover Command](#options-for-the-sonos-discover-command)
+  - [The SoCo-CLI HTTP API Server](#the-soco-cli-http-api-server)
+    - [Server Usage](#server-usage)
+    - [Using the Local Speaker Cache](#using-the-local-speaker-cache)
+    - [HTTP Request Structure](#http-request-structure)
+    - [Return Values](#return-values)
+    - [Macros: Defining Custom HTTP API Server Actions](#macros-defining-custom-http-api-server-actions)
+      - [Macro Definition and Usage](#macro-definition-and-usage)
+      - [Macro Arguments](#macro-arguments)
+      - [Troubleshooting](#troubleshooting)
+      - [Specifying the Macro Definition File](#specifying-the-macro-definition-file)
+      - [Reloading the Macro Definition File](#reloading-the-macro-definition-file)
+      - [Macro Return Values](#macro-return-values)
+      - [Listing Macros](#listing-macros)
+    - [Listing Speakers](#listing-speakers)
+    - [Rediscovering Speakers](#rediscovering-speakers)
+    - [Inspecting the HTTP API](#inspecting-the-http-api)
+  - [Using SoCo-CLI as a Python Library](#using-soco-cli-as-a-python-library)
+    - [Importing the API](#importing-the-api)
+    - [Using the API](#using-the-api)
+    - [Convenience Functions](#convenience-functions)
+  - [Known Issues](#known-issues)
+  - [Uninstalling](#uninstalling)
+  - [Acknowledgments](#acknowledgments)
 
 <!-- Added by: pwt, at: Sat Feb 19 16:39:31 GMT 2022 -->
 
@@ -87,7 +86,7 @@
 
 ## Overview
 
-SoCo-CLI is a powerful command line wrapper for the popular Python SoCo library [1], for controlling Sonos systems. SoCo-CLI is written entirely in Python and is portable across platforms.
+SoCo-CLI is a powerful command line wrapper for the popular [Python SoCo library][1], for controlling Sonos systems. SoCo-CLI is written entirely in Python and is portable across platforms.
 
 A simple `sonos` command provides easy control over a huge range of speaker functions, including playback, volume, groups, EQ settings, sleep timers, alarms, speaker settings, the playback queue, etc. Multiple commands can be run in sequence, including the ability to insert delays between commands, to wait for speakers to stop or start playing, and to create repeated action sequences using loops. Audio files from the local filesystem can be played directly on Sonos.
 
@@ -109,7 +108,7 @@ SoCo-CLI can also run as a simple [HTTP API server](#the-soco-cli-http-api-serve
 
 ## Installation
 
-Install the latest version from PyPI [2] using **`pip install -U soco-cli`**.
+Install the latest version from the [Python Package Index (PyPI)][2] using **`pip install -U soco-cli`**.
 
 Soco-CLI can also be easily installed as a self-contained application with [**pipx**](https://pypa.github.io/pipx/) using **`pipx install soco-cli`**.
 
@@ -123,7 +122,7 @@ The installer adds the `sonos` command to the PATH. If the `sonos` command is no
 
 All commands have the form:
 
-```
+```sh
 sonos SPEAKER ACTION <parameters>
 ```
 
@@ -142,9 +141,9 @@ SoCo-CLI will try a number of approaches to find a speaker's IP address by speak
 
 ### Simple Usage Examples
 
-- **`sonos "Living Room" volume`** Returns the current volume setting of the *Living Room* speaker.
-- **`sonos Study volume 25`** Sets the volume of the *Study* speaker to 25.
-- **`sonos Study group Kitchen`** Groups the *Study* speaker with the *Kitchen* speaker.
+- **`sonos "Living Room" volume`** Returns the current volume setting of the _Living Room_ speaker.
+- **`sonos Study volume 25`** Sets the volume of the _Study_ speaker to 25.
+- **`sonos Study group Kitchen`** Groups the _Study_ speaker with the _Kitchen_ speaker.
 - **`sonos 192.168.0.10 mute`** Returns the mute state ('on' or 'off') of the speaker at the given IP address.
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`** Plays 'Jazz24' for 30 minutes, then stops playback.
@@ -158,29 +157,29 @@ To avoid typing the speaker name, or to parameterise the use of SoCo-CLI command
 
 Linux and macOS:
 
-```
-$ export SPKR="Front Reception"
-$ sonos play
-$ sonos wait_stop : volume 10
+```sh
+export SPKR="Front Reception"
+sonos play
+sonos wait_stop : volume 10
 ```
 
 Windows:
 
-```
-C:\ set SPKR="Front Reception"
-C:\ sonos play
-C:\ sonos wait_stop : volume 10
+```console
+C:\> set SPKR="Front Reception"
+C:\> sonos play
+C:\> sonos wait_stop : volume 10
 ```
 
-IP addresses also work, e.g.: `$ export SPKR=192.168.0.50`.
+IP addresses also work, e.g.: `export SPKR="192.168.0.50"`.
 
 If you want to ignore the `SPKR` environment variable for a specific `sonos` invocation, use the `--no-env` command line option.
 
 ### Using Shell Aliases
 
-If your shell supports it, shell aliasing can be very convenient in creating shortcuts to SoCo-CLI commands. For example, I have the following in my `.zshrc` file:
+If your shell supports it, shell aliasing can be very convenient in creating shortcuts to SoCo-CLI commands. For example, the following could be added to the `.bashrc`/`.zshrc` file:
 
-```
+```sh
 # Sonos Aliases
 alias s="sonos"
 alias sk="sonos Kitchen"
@@ -259,10 +258,10 @@ Albums and playlists from local libraries or music services can be added to your
 
 Or, to add to the current queue, then play the first playlist track:
 
-```
-sonos <speaker_name> add_playlist_to_queue <playlist>
-24 <-- Returns queue position of the first playlist track
-sonos <speaker_name> play_from_queue last_added
+```console
+$ sonos <speaker_name> add_playlist_to_queue <playlist>
+  24  # Returns queue position of the first playlist track
+$ sonos <speaker_name> play_from_queue last_added
 ```
 
 To add imported playlists from local libraries to the queue, use the `add_library_playlist_to_queue` action.
@@ -297,11 +296,11 @@ This feature works by invoking the `play_file` action for each file in the playl
 
 ### Directories of Audio Files
 
-To play every audio file in a local directory, use the `play_directory` (or `play_dir`) action. As with the `play_m3u` action this invokes `play_file` for each valid audio file in the directory. It does not traverse into subdirectories. 
+To play every audio file in a local directory, use the `play_directory` (or `play_dir`) action. As with the `play_m3u` action this invokes `play_file` for each valid audio file in the directory. It does not traverse into subdirectories.
 
 **Example**: `sonos Lounge play_directory "Music/Mozart/The Magic Flute/CD 1"`
 
-On macOS (but not on Windows or Linux), if you have an attached CD drive, this action can be used to play a CD directly to your Sonos speakers, e.g.: 
+On macOS (but not on Windows or Linux), if you have an attached CD drive, this action can be used to play a CD directly to your Sonos speakers, e.g.:
 
 `sonos Lounge play_dir "/Volumes/Audio CD"`.
 
@@ -322,10 +321,11 @@ Links can refer to tracks, albums, or playlists. The position of the first track
 - `https://music.apple.com/dk/album/black-velvet/217502930?i=217503142`
 
 **Example**:
-```
-sonos Kitchen sharelink "https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD"
-5 <-- Returns queue position of first track
-sonos Kitchen play_from_queue 5
+
+```console
+$ sonos Kitchen sharelink "https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD"
+  5  # Returns queue position of first track
+$ sonos Kitchen play_from_queue 5
 ```
 
 ## Complete List of Available Actions
@@ -339,7 +339,7 @@ sonos Kitchen play_from_queue 5
 - **`dialog_mode`** (or **`dialog`**, **`dialogue_mode`**, **`dialogue`**): Returns the dialog mode setting of the speaker, 'on' or 'off' (if applicable).
 - **`dialog_mode <on|off>`** (or **`dialog`**, **`dialogue_mode`**, **`dialogue`**): Sets the dialog mode setting of the speaker to 'on' of 'off' (if applicable).
 - **`fixed_volume`**: Returns whether the speaker's Fixed Volume feature is enabled, 'on' or 'off'. (Applies to Sonos Connect and Port devices only.)
-- **`fixed_volume <on|off>`**: Sets whether the speaker's Fixed Volume feature is enabled.   
+- **`fixed_volume <on|off>`**: Sets whether the speaker's Fixed Volume feature is enabled.
 - **`group_mute`**: Returns the group mute state of a group of speakers, 'on' or 'off'.
 - **`group_mute <on|off>`**: Sets the group mute state of a group of speakers to 'on' or 'off'.
 - **`group_relative_volume <adjustment>` (or `group_rel_vol`, `grv`)**: Raises or lowers the group volume by `<adjustment>` which must be a number from -100 to 100.
@@ -402,7 +402,7 @@ sonos Kitchen play_from_queue 5
 - **`previous` (or `prev`)**: Move to the previous track (if applicable for the audio source).
 - **`repeat` (or `rpt`)**: Returns the repeat mode state: 'off', 'one', or 'all'.
 - **`repeat <off,none|one|all>` (or `rpt`)**: Sets the repeat mode state to one of: 'off' (or 'none'), 'one', or 'all'.
-- **`seek <time>` (or `seek_to`)**: Seek to a point within a track (if applicable for the audio source). `<time>` can be expressed using the same formats as used for `sleep_timer` below. 
+- **`seek <time>` (or `seek_to`)**: Seek to a point within a track (if applicable for the audio source). `<time>` can be expressed using the same formats as used for `sleep_timer` below.
 - **`seek_forward <time>` (or `sf`)**: Seek forward within a track (if applicable for the audio source). `<time>` can be expressed using the same formats as used for `sleep_timer` below.
 - **`seek_back <time>` (or `sb`)**: Seek backward within a track (if applicable for the audio source). `<time>` can be expressed using the same formats as used for `sleep_timer` below.
 - **`shuffle` (or `sh`)**: Returns 'on' if shuffle is enabled, 'off' if not.
@@ -448,7 +448,7 @@ The following has issues and requires further development. For example, it's cur
 
 - **`clear_playlist <playlist>`**: Clear the Sonos playlist named `<playlist>`.
 - **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`. (See also `save_queue` above).
-- **`cue_favourite <favourite_name>`** (or **`cue_favorite`, `cue_fav`, `cf`**): Cues up a Sonos favourite for playback. This is a convenience action that issues the sequence: `mute, play_favourite, stop, unmute`. It's useful for silently setting a speaker to a state where it's ready to play the nominated favourite. Mute and group mute states are preserved. 
+- **`cue_favourite <favourite_name>`** (or **`cue_favorite`, `cue_fav`, `cf`**): Cues up a Sonos favourite for playback. This is a convenience action that issues the sequence: `mute, play_favourite, stop, unmute`. It's useful for silently setting a speaker to a state where it's ready to play the nominated favourite. Mute and group mute states are preserved.
 - **`delete_playlist <playlist>`** (or **`remove_playlist`**): Delete the Sonos playlist named `<playlist>`.
 - **`list_all_playlist_tracks`** (or **`lapt`**): Lists all tracks in all Sonos Playlists.
 - **`list_favs`** (or **`list_favorites`, `list_favourites`, `lf`**): Lists all Sonos favourites.
@@ -485,37 +485,38 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 
 Some SoCo-CLI alarm actions below require an **alarm specification** (`alarm_spec`), a comma-separated list of exactly **eight** parameters (without spaces next to the commas), which defines all the properties of an alarm. The parameters are as follows:
 
-  1. Alarm start time, in hours and minutes using the 24hr clock: HH:MM
-  2. Alarm duration in hours and minutes: HH:MM
-  3. Recurrence: A valid recurrence string is  `DAILY`, `ONCE`, `WEEKDAYS`,
-     `WEEKENDS` or of the form `ON_DDDDDD` where `D` is a number from 0-6
-     representing a day of the week (Sunday is 0, Monday is 1, etc.), e.g., `ON_034` means
-     Sunday, Wednesday and Thursday
-  4. Whether the alarm is enabled: `ON` or `OFF` (or `YES`, `NO`)
-  5. What to play: `CHIME` (or `chime`) for the standard Sonos alarm sound, or a choice from your Sonos Favourites. Sonos Favourite matching will use case-insensitive, partial matches. 
-  6. Play mode: one of `NORMAL`, `SHUFFLE_NOREPEAT`, `SHUFFLE`, `REPEAT_ALL`, `REPEAT_ONE`, `SHUFFLE_REPEAT_ONE` (note that `SHUFFLE` means SHUFFLE *and* REPEAT)
-  7. The volume to play at: `0`-`100`
-  8. Whether to include grouped speakers: `ON` or `OFF` (or `YES`, `NO`)
- 
-  Examples of alarm specifications:
-  - `07:00,01:30,WEEKDAYS,ON,"Radio 4",NORMAL,50,OFF`
-  - `06:30,00:01,WEEKDAYS,ON,CHIME,NORMAL,50,OFF`
+1. Alarm start time, in hours and minutes using the 24hr clock: HH:MM
+1. Alarm duration in hours and minutes: HH:MM
+1. Recurrence: A valid recurrence string is  `DAILY`, `ONCE`, `WEEKDAYS`,
+   `WEEKENDS` or of the form `ON_DDDDDD` where `D` is a number from 0-6
+   representing a day of the week (Sunday is 0, Monday is 1, etc.), e.g., `ON_034` means
+   Sunday, Wednesday and Thursday
+1. Whether the alarm is enabled: `ON` or `OFF` (or `YES`, `NO`)
+1. What to play: `CHIME` (or `chime`) for the standard Sonos alarm sound, or a choice from your Sonos Favourites. Sonos Favourite matching will use case-insensitive, partial matches.
+1. Play mode: one of `NORMAL`, `SHUFFLE_NOREPEAT`, `SHUFFLE`, `REPEAT_ALL`, `REPEAT_ONE`, `SHUFFLE_REPEAT_ONE` (note that `SHUFFLE` means SHUFFLE _and_ REPEAT)
+1. The volume to play at: `0`-`100`
+1. Whether to include grouped speakers: `ON` or `OFF` (or `YES`, `NO`)
+
+Examples of alarm specifications:
+
+- `07:00,01:30,WEEKDAYS,ON,"Radio 4",NORMAL,50,OFF`
+- `06:30,00:01,WEEKDAYS,ON,CHIME,NORMAL,50,OFF`
 
 In actions which **modify** (or copy and modify) an existing alarm, values that are to be left unchanged are denoted by an underscore in the `alarm_spec`. E.g., to change only the duration and volume of an alarm, use an alarm spec such as: `_,01:00,_,_,_,_,60,_`.
 
 The **alarm actions** are as follows:
 
-  - **`alarms`** (or **`list_alarms`**): List all of the alarms in the Sonos system. Each alarm has a unique integer `alarm_id` that can be used in the other alarm actions.
-  - **`alarms_zone`**: List the alarms for the target zone (speaker) only.
-  - **`copy_alarm <alarm_id>`**: Copies the alarm with ID `alarm_id` to the target speaker. Note that alarms cannot be copied back to the same speaker (instead, use `copy_modify_alarm` to do this).
-  - **`copy_modify_alarm <alarm_id> <alarm_spec>`**: Copies an existing alarm to the target speaker and modifies it according to an alarm specification. Can be used to copy an alarm on the same speaker, but in that case note that the copied alarm **must** have its start time modified.
-  - **`create_alarm <alarm_spec>`** (or **`add_alarm`**): Creates a new alarm for the target speaker, according to the `alarm_spec`. 
-  - **`disable_alarm <alarm_id,[alarm_id]|all>`** (or **`disable_alarms`**): Disables an existing alarm or alarms. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To disable all alarms, use `all` as the `alarm_id`.
-  - **`enable_alarm <alarm_id,[alarm_id]|all>`** (or **`enable_alarms`**): Enables an existing alarm or alarms. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To enable all alarms, use `all` as the `alarm_id`.
-  - **`modify_alarm <alarm_id,[alarm_id]|all> <alarm_spec>`** (or **`modify_alarms`**): Modifies an existing alarm or alarms, according to the `alarm_spec` format described above (with underscores for values to be left unchanged). To modify all alarms, use `all` as the `alarm_id`.
-  - **`move_alarm <alarm_id>`**: Move the alarm with ID `alarm_id` to the target speaker.
-  - **`remove_alarm <alarm_id[,alarm_id]|all>`** (or **`remove_alarms`**): Removes one or more alarms by their alarm IDs. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To remove all alarms, use `all` as the `alarm_id`.
-  - **`snooze_alarm <snooze_duration>`**: Snooze an alarm that's already playing on the target speaker. Snooze duration can be `Nm` to snooze for `N` minutes (or just `N`). Alternatively, the duration can be expressed as `HH:MM:SS`. E.g., `sonos bedroom snooze_alarm 10m`, `sonos bedroom snooze_alarm 90`, or `sonos bedroom snooze_alarm 01:20:00`.
+- **`alarms`** (or **`list_alarms`**): List all of the alarms in the Sonos system. Each alarm has a unique integer `alarm_id` that can be used in the other alarm actions.
+- **`alarms_zone`**: List the alarms for the target zone (speaker) only.
+- **`copy_alarm <alarm_id>`**: Copies the alarm with ID `alarm_id` to the target speaker. Note that alarms cannot be copied back to the same speaker (instead, use `copy_modify_alarm` to do this).
+- **`copy_modify_alarm <alarm_id> <alarm_spec>`**: Copies an existing alarm to the target speaker and modifies it according to an alarm specification. Can be used to copy an alarm on the same speaker, but in that case note that the copied alarm **must** have its start time modified.
+- **`create_alarm <alarm_spec>`** (or **`add_alarm`**): Creates a new alarm for the target speaker, according to the `alarm_spec`.
+- **`disable_alarm <alarm_id,[alarm_id]|all>`** (or **`disable_alarms`**): Disables an existing alarm or alarms. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To disable all alarms, use `all` as the `alarm_id`.
+- **`enable_alarm <alarm_id,[alarm_id]|all>`** (or **`enable_alarms`**): Enables an existing alarm or alarms. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To enable all alarms, use `all` as the `alarm_id`.
+- **`modify_alarm <alarm_id,[alarm_id]|all> <alarm_spec>`** (or **`modify_alarms`**): Modifies an existing alarm or alarms, according to the `alarm_spec` format described above (with underscores for values to be left unchanged). To modify all alarms, use `all` as the `alarm_id`.
+- **`move_alarm <alarm_id>`**: Move the alarm with ID `alarm_id` to the target speaker.
+- **`remove_alarm <alarm_id[,alarm_id]|all>`** (or **`remove_alarms`**): Removes one or more alarms by their alarm IDs. If multiple IDs are supplied, separate them by commas without spaces, e.g., `1,5,6`. To remove all alarms, use `all` as the `alarm_id`.
+- **`snooze_alarm <snooze_duration>`**: Snooze an alarm that's already playing on the target speaker. Snooze duration can be `Nm` to snooze for `N` minutes (or just `N`). Alternatively, the duration can be expressed as `HH:MM:SS`. E.g., `sonos bedroom snooze_alarm 10m`, `sonos bedroom snooze_alarm 90`, or `sonos bedroom snooze_alarm 01:20:00`.
 
 ### Music Library Search Functions
 
@@ -525,7 +526,7 @@ The actions below search the Sonos Music library.
 - **`list_artists`** (or **`artists`**): Lists all the artists in the music library.
 - **`last_search`** (or **`ls`**): Prints the results of the last album, track or artist search performed, or the last use of `tracks_in_album`, `list_albums`, or `list_playlist_tracks`. Use with `queue_search_number` to add specific items to the queue.
 - **`search_albums <album_name>`** (or **`search_album`**, **`salb`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of matching albums.
--  **`search_artists <artist_name>`** (or **`search_artist`**, **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the list of albums featuring any artists that match the search.
+- **`search_artists <artist_name>`** (or **`search_artist`**, **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the list of albums featuring any artists that match the search.
 - **`search_library <name>`** (or **`sl`**): Searches the titles in your music library for a fuzzy match with `<name>` against artists, albums and tracks. Prints out the lists of matches. This action is a superset of `search_artists`, `search_albums`, and `search_tracks`, i.e., it searches across all categories.
 - **`search_tracks <track_name>`** (or **`search_track`**, **`st`**): Searches the tracks in your music library for a fuzzy match with `<track_name>`. Prints out the list of matching tracks.
 - **`tracks_in_album <album_name>`** (or **`tia`**, **`lta`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of tracks in each matching album.
@@ -570,7 +571,7 @@ An arbitrary number of commands can be supplied as part of a single `sonos` invo
 
 ### Inserting Delays: `wait` and `wait_until`
 
-```
+```sh
 sonos wait <duration>
 sonos wait_until <time>
 ```
@@ -589,7 +590,7 @@ Examples:
 
 ### Waiting Until Playback has Started/Stopped: `wait_start`, `wait_stop` and `wait_end_track`
 
-```
+```sh
 sonos <speaker> wait_start
 sonos <speaker> wait_stop
 sonos <speaker> wait_stop_not_pause
@@ -612,7 +613,7 @@ The **`wait_end_track`** action will pause execution of `sonos` commands until t
 
 ### The `wait_stopped_for <duration>` Action
 
-```
+```sh
 sonos <speaker> wait_stopped_for <duration>
 sonos <speaker> wait_stopped_for_not_pause <duration>
 ```
@@ -623,13 +624,13 @@ The **`<speaker> wait_stopped_for_not_pause <duration>`** (or **`wsfnp`**) actio
 
 This function is useful if one wants to perform an action on a speaker (such as ungrouping it) only once its use has definitely stopped, as opposed to it just being temporarily paused, or stopped while switched to a different audio source. For example:
 
-```
+```sh
 sonos Study wait_stopped_for 5m : Study line_in on : Study play
 ```
 
 ### Repeating Commands: The `loop` Actions
 
-```
+```sh
 loop
 loop <iterations>
 loop_for <duration>
@@ -651,7 +652,7 @@ The **`loop_to_start`** action will loop back to the very start of a command seq
 
 Examples:
 
-```
+```sh
 sonos Study wait_start : Study wait_stopped_for 10m : Study volume 25 : loop
 sonos wait_until 22:00 : Bedroom play_fav "Radio 4" : Bedroom sleep 30m : loop 3
 sonos Bedroom play_fav Jazz24 : Bedroom sleep 30m : wait 1h : loop_for 3h
@@ -660,7 +661,7 @@ sonos wait_until 08:00 : Kitchen play_fav "World Service" : Kitchen sleep 10m : 
 
 ## Conditional Command Execution
 
-```
+```sh
 sonos <speaker> if_stopped <action> <parameters>
 sonos <speaker> if_playing <action> <parameters>
 ```
@@ -675,7 +676,7 @@ Similarly, the `if_playing` modifier will execute the action that follows it onl
 
 ## Interactive Shell Mode
 
-```
+```sh
 sonos -i <speaker_name>
 sonos --interactive <speaker_name>
 sonos -i
@@ -685,7 +686,7 @@ sonos -i
 
 Interactive shell mode creates a SoCo-CLI command line session for entering `sonos` commands. Compared to using individual `sonos` invocations, using the shell is faster to perform operations, and requires less typing.
 
-Most `sonos` actions are accepted. Multiple actions can be submitted on a single command line using the ` : ` separator. Command **aliases** can be created for commonly used actions and sequences of actions. A **single-keystroke** mode allows action invocations using one touch of the keyboard. 
+Most `sonos` actions are accepted. Multiple actions can be submitted on a single command line using the ` : ` separator. Command **aliases** can be created for commonly used actions and sequences of actions. A **single-keystroke** mode allows action invocations using one touch of the keyboard.
 
 ### Usage
 
@@ -693,61 +694,61 @@ Interactive mode is started with the `-i` or `--interactive` command line option
 
 Type `help` or `?` at the sonos command line for more information on using interactive shell mode:
 
-```
+```console
 $ sonos -i
 
-Entering SoCo-CLI interactive shell.
-Type 'help' for available shell commands.
+  Entering SoCo-CLI interactive shell.
+  Type 'help' for available shell commands.
 
 Sonos [] > help
 
-This is SoCo-CLI interactive mode. Interactive commands are as follows:
+  This is SoCo-CLI interactive mode. Interactive commands are as follows:
 
-    '1', ...     :  Set the active speaker. Use the numbers shown by the
-                    'speakers' command. E.g., to set to speaker number 4
-                    in the list, just type '4'.
-                    '0' will unset the active speaker.
-    'actions'    :  Show the complete list of SoCo-CLI actions.
-    'alias'      :  Add an alias: alias <alias_name> <actions>
-                    Remove an alias: alias <alias_name>
-                    Update an alias by creating a new alias with the same name.
-                    Using 'alias' without parameters shows the current list of
-                    aliases.
-                    Aliases override existing actions and can contain
-                    sequences of actions.
-    'cd'         :  Change the working directory of the shell, e.g. 'cd ..'.
-                    Note that on Windows, backslashes must be doubled, e.g.:
-                    'cd C:\\'
-    'check_for_update' : Check whether an update is available
-    'docs'       :  Print a link to the online documentation.
-    'exec'       :  Run a shell command, e.g.: 'exec ls -l'.
-    'exit'       :  Exit the shell.
-    'help'       :  Show this help message (available shell commands).
-    'pop'        :  Restore saved active speaker state.
-    'push'       :  Save the current active speaker, and unset the active
-                    speaker.
-    'rescan'     :  If your speaker doesn't appear in the 'speakers' list,
-                    use this to perform a more comprehensive scan.
-    'rescan_max' :  Try this if you're still having trouble finding all your
-                    speakers.
-    'set <spkr>' :  Set the active speaker using its name.
-                    Use quotes when needed for the speaker name, e.g.,
-                    'set "Front Reception"'. Unambiguous, partial,
-                    case-insensitive matches are supported, e.g., 'set front'.
-                    To unset the active speaker, omit the speaker name,
-                    or just enter '0'.
-    'sk'         :  Enters 'single keystroke' mode. (Also 'single-keystroke'.)
-    'speakers'   :  List the names of all available speakers.
-    'version'    :  Print the versions of SoCo-CLI, SoCo, and Python in use.
+      '1', ...     :  Set the active speaker. Use the numbers shown by the
+                      'speakers' command. E.g., to set to speaker number 4
+                      in the list, just type '4'.
+                      '0' will unset the active speaker.
+      'actions'    :  Show the complete list of SoCo-CLI actions.
+      'alias'      :  Add an alias: alias <alias_name> <actions>
+                      Remove an alias: alias <alias_name>
+                      Update an alias by creating a new alias with the same name.
+                      Using 'alias' without parameters shows the current list of
+                      aliases.
+                      Aliases override existing actions and can contain
+                      sequences of actions.
+      'cd'         :  Change the working directory of the shell, e.g. 'cd ..'.
+                      Note that on Windows, backslashes must be doubled, e.g.:
+                      'cd C:\\'
+      'check_for_update' : Check whether an update is available
+      'docs'       :  Print a link to the online documentation.
+      'exec'       :  Run a shell command, e.g.: 'exec ls -l'.
+      'exit'       :  Exit the shell.
+      'help'       :  Show this help message (available shell commands).
+      'pop'        :  Restore saved active speaker state.
+      'push'       :  Save the current active speaker, and unset the active
+                      speaker.
+      'rescan'     :  If your speaker doesn't appear in the 'speakers' list,
+                      use this to perform a more comprehensive scan.
+      'rescan_max' :  Try this if you're still having trouble finding all your
+                      speakers.
+      'set <spkr>' :  Set the active speaker using its name.
+                      Use quotes when needed for the speaker name, e.g.,
+                      'set "Front Reception"'. Unambiguous, partial,
+                      case-insensitive matches are supported, e.g., 'set front'.
+                      To unset the active speaker, omit the speaker name,
+                      or just enter '0'.
+      'sk'         :  Enters 'single keystroke' mode. (Also 'single-keystroke'.)
+      'speakers'   :  List the names of all available speakers.
+      'version'    :  Print the versions of SoCo-CLI, SoCo, and Python in use.
     
-    The action syntax is the same as when using 'sonos' from the command line.
-    If a speaker has been set in the shell, omit the speaker name from the
-    action.
+      The action syntax is the same as when using 'sonos' from the command line.
+      If a speaker has been set in the shell, omit the speaker name from the
+      action.
 
-    Use the arrow keys for command history and command editing.
+      Use the arrow keys for command history and command editing.
     
-    [Not Available on Windows] Use the TAB key for autocompletion of shell
-    commands, SoCo-CLI actions, aliases, and speaker names.
+      [Not Available on Windows] Use the TAB key for autocompletion of shell
+      commands, SoCo-CLI actions, aliases, and speaker names.
 
 Sonos [] > 
 
@@ -757,17 +758,17 @@ Sonos [] >
 
 Commands in the shell history can be scrolled through by using the up/down arrows, and commands can be edited using the left/right arrows to position the cursor.
 
-(*Not available on Windows*) Shell commands can be auto-completed using the TAB key. The shell history is saved between shell sessions in `~/.soco-cli/shell-history.txt`.
+(_Not available on Windows_) Shell commands can be auto-completed using the TAB key. The shell history is saved between shell sessions in `${XDG_CONFIG_HOME}/soco-cli/shell-history.txt` or, if `$XDG_CONFIG_HOME` is not defined, to `${HOME}/.config/soco-cli/shell-history.txt`.
 
 ### Shell Aliases
 
 Shell aliases allow the creation of shortcuts for individual actions or sequences of actions. Aliases are created using:
 
-`> alias <alias_name> <alias_action> [ : <alias_action>]`
+`alias <alias_name> <alias_action> [ : <alias_action>]`
 
 For example, to **create** an alias action sequence `go` that sets the volume of the active speaker to '50', starts playback, and then shows the track name, use:
 
-`> alias go volume 50 : play : track`
+`alias go volume 50 : play : track`
 
 Aliases are **run** by using the alias name, e.g.: `> go`.
 
@@ -777,13 +778,13 @@ Aliases are included in **autocompletion** results, and they **override** built-
 - **Remove** an alias by using `alias <alias_name>` without additional parameters.
 - **Update** an alias by creating a new action sequence with the same alias name (the previous alias is overwritten).
 
-Aliases are **saved** between sessions, using a file in the `~/.soco-cli` directory.
+Aliases are **saved** between sessions, using a file in the `${XDG_CONFIG_HOME}/soco-cli` directory or, if `$XDG_CONFIG_HOME` is not defined, to `${HOME}/.config/soco-cli`.
 
 #### Push and Pop
 
 The **`push`** and **`pop`** commands are useful in alias actions when one wants to target actions at other speakers, but keep the current active speaker when the action sequence ends. `push` saves the current speaker and unsets it, and `pop` reselects the saved speaker, e.g.:
 
-`> alias fv push : set "Front Reception" : volume 50 : pfrs "Jazz 24" : pop`
+`alias fv push : set "Front Reception" : volume 50 : pfrs "Jazz 24" : pop`
 
 This command sequence targets the 'Front Reception' speaker, but first saves the current active speaker, restoring it at the end. (This will, of course, still work if the current active speaker is 'Front Reception'.)
 
@@ -791,19 +792,19 @@ This command sequence targets the 'Front Reception' speaker, but first saves the
 
 Aliases can include other aliases in their sequences of actions, e.g.:
 
-```
-> alias alias_1 vol 30 : play
-> alias alias_2 push : set Kitchen : alias_1 : pop 
-> alias_2
+```sh
+alias alias_1 vol 30 : play
+alias alias_2 push : set Kitchen : alias_1 : pop 
+alias_2
 ```
 
-Alias subroutines can be nested to an arbitrary depth. **Loops** are detected and prevented when an alias with a loop is invoked. 
+Alias subroutines can be nested to an arbitrary depth. **Loops** are detected and prevented when an alias with a loop is invoked.
 
 #### Alias Arguments
 
 Aliases accept arguments when invoked, which is helpful in remapping existing actions to new alias names. Arguments are specified positionally using `%1`, `%2`, etc. For example:
 
-```
+```sh
 > alias a1 pfq %1
 > a1 5          <- Invokes 'pfq 5'
 >
@@ -816,7 +817,7 @@ Aliases accept arguments when invoked, which is helpful in remapping existing ac
 
 If positional arguments are not specified, values will not be passed through. Unsatisfied positional arguments are ignored. For example:
 
-```
+```sh
 > alias a1 vol %1 %2
 >
 > a1            <- Invokes 'vol'
@@ -828,7 +829,7 @@ Positional arguments can be used multiple times within an action (unlikely to be
 
 #### Saving and Loading Aliases
 
-```
+```sh
 sonos --save_aliases <filename>
 sonos --load_aliases <filename>
 sonos --overwrite_aliases <filename>
@@ -838,7 +839,7 @@ Aliases can be exported to, and loaded from, plain text files using the command 
 
 The alias file format consists of lines containing `<alias_name> = <alias actions>`, e.g:
 
-```
+```sh
 # This is a comment line
 my_alias = vol 30 : play_fav "Radio 4"
 p = pauseplay
@@ -849,7 +850,7 @@ m = mute on
 
 ### Single Keystroke Mode
 
-Single keystroke mode allows the shell to be controlled by single character presses on the keyboard, without requiring the return key to be pressed. This is useful for some headless automation use cases, as well as sometimes being convenient for interactive use. All single character actions are available, including aliases. 
+Single keystroke mode allows the shell to be controlled by single character presses on the keyboard, without requiring the return key to be pressed. This is useful for some headless automation use cases, as well as sometimes being convenient for interactive use. All single character actions are available, including aliases.
 
 Enable by using the action `sk` or `single-keystroke` at the shell prompt. Type `x` to exit back to the normal shell.
 
@@ -865,14 +866,14 @@ If this fails, SoCo-CLI will try scanning every IP address on your local network
 
 It's often faster and more convenient to use the local cached speaker list. The disadvantage of using the cached discovery mechanism is that the speaker list can become stale due to speakers being added/removed/renamed, or IP addresses having changed, meaning the cached list must be refreshed. The `sonos-discover` command, discussed below, is a convenient way of doing this.
 
-### Usage
+### How To Use
 
 To use the cached discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. A local speaker list is stored in `<your_home_directory>/.soco-cli/` for use with future invocations of the `sonos` command.
 
 **Example:** `sonos -l "living room" volume 50` uses the local speaker database to look up the "living room" speaker.
 
 When executing a sequence of commands, supply the `-l` option only for the first speaker and it will be used for all speaker lookups, e.g.:
- 
+
  `sonos -l kitchen wait_stop : kitchen vol 25 : study play_favourite "Radio 4"`
 
 ### Speaker Naming
@@ -900,7 +901,7 @@ These options only have an effect when combined with the `-l` **and** `-r` optio
 
 ### The `sonos-discover` Command
 
-**`sonos-discover`** is a separate command for creating/updating the local speaker cache, and for seeing the results of the discovery process. It's an alternative to using the `sonos -r` command. It accepts the same `-t`, `-n` and `-m` options as the `sonos` command. 
+**`sonos-discover`** is a separate command for creating/updating the local speaker cache, and for seeing the results of the discovery process. It's an alternative to using the `sonos -r` command. It accepts the same `-t`, `-n` and `-m` options as the `sonos` command.
 
 **Example:** `sonos-discover -t 256 -n 1.0 -m 24` will run `sonos-discover` with a maximum of 256 threads, a network timeout of 1.0s, a minimum netmask of 24 bits, and will print the result.
 
@@ -927,7 +928,7 @@ Discovery works by interrogating all network adapters on the device running SoCo
 
 (Note that this functionality requires Python 3.7 or above.)
 
-```
+```sh
 sonos-http-api-server
 soco-http-api-server
 ```
@@ -938,11 +939,11 @@ SoCo-CLI can be run as a simple HTTP API server, allowing most of its features t
 
 The server is started using the `sonos-http-api-server` or `soco-http-api-server` commands:
 
-```
+```console
 % sonos-http-api-server
 SoCo-CLI: Starting SoCo-CLI HTTP API Server v0.4.41
 SoCo-CLI: Finding speakers ... ['Bedroom', 'Front Reception', 'Kitchen', 'Study']
-SoCo-CLI: Macro: Attempting to (re)load macros from '/Users/pwt/macros.txt'
+SoCo-CLI: Macro: Attempting to (re)load macros from '/Users/<username>/macros.txt'
 SoCo-CLI: Macro: Loaded macros:
           ...
 INFO:     Started server process [52137]
@@ -957,7 +958,7 @@ If accessing the HTTP server from another machine on the network, make sure that
 
 For each request, the server will report the equivalent `sonos` command line (if applicable), execute the sonos command, and report the exit code/error, followed by the URL requested and the HTTP response code, e.g.:
 
-```
+```text
 SoCo-CLI: Command = 'sonos Study volume', exit code = 0
 INFO:     127.0.0.1:51017 - "GET /study/volume HTTP/1.1" 200 OK
 SoCo-CLI: Command = 'sonos Study volume 30', exit code = 0
@@ -976,7 +977,7 @@ The `--subnets` option **only** has an effect when using the local speaker cache
 
 Example of use with both options:
 
-```
+```sh
 sonos-http-api-server -l --subnets=192.168.0.1/24
 ```
 
@@ -984,7 +985,7 @@ sonos-http-api-server -l --subnets=192.168.0.1/24
 
 All requests are simple HTTP `GET` requests. Request URLs have the form:
 
-```
+```text
 http://<server>:<port>/<speaker_name>/<action>[/parameter_1/parameter_2/parameter_3]
 ```
 
@@ -998,7 +999,7 @@ Strings with characters that are invalid within URLs should be substituted by th
 
 Usage examples:
 
-```
+```text
 http://192.168.0.100:8000/Study/volume
 http://192.168.0.100:8000/Study/volume/50
 http://192.168.0.100:8000/Front%20Reception/pause
@@ -1010,7 +1011,7 @@ http://192.168.0.100:8000/Kitchen/line_in/Lounge/right_input
 
 Return values are supplied in JSON format, and always contain the same fields. A formatted example is shown below:
 
-```
+```json
 {
   "speaker": "Study",
   "action": "volume",
@@ -1037,7 +1038,7 @@ The **macros** feature allows the creation of custom actions or sequences of act
 
 Macro definitions take the form of the macro name followed by an equals sign (`=`), then the action(s) to be performed. Comments can be included by using `#` as the first character of a line, and blank lines are ignored. For example, the contents of a macro definition file might be:
 
-```
+```sh
 # SoCo-CLI HTTP API Server Macros file
 # Format is:
 #   macro_name = speaker <action> <parameters> [: speaker <action> <parameters> ...]
@@ -1053,7 +1054,8 @@ front_R3 = "Front Reception" volume 50 : "Front Reception" play_favourite "Radio
 ```
 
 The macros above would be invoked using URLs of the form:
-```
+
+```text
 http://192.168.0.100:8000/macro/doorbell
 http://192.168.0.100:8000/macro/morning
 http://192.168.0.100:8000/macro/front_R3
@@ -1091,12 +1093,15 @@ If a macro argument needs to be supplied, but should be ignored during macro pro
 
 #### Using the Generic Macro
 
-There's a built-in *generic* macro called `__` that simply maps to `%1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12`. This can be used to create arbitrary command sequences. For example, to run the equivalent of:
-```shell
+There's a built-in _generic_ macro called `__` that simply maps to `%1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12`. This can be used to create arbitrary command sequences. For example, to run the equivalent of:
+
+```sh
 sonos diner volume 30 : diner play_favourite "radio 4"
 ```
+
 use the following HTTP request (replacing the `:` command sequence separator with `%3A`):
-```shell
+
+```sh
 http://192.168.0.100:8000/macro/__/diner/volume/30/%3A/diner/play_favourite/radio%204
 ```
 
@@ -1108,7 +1113,7 @@ There is comprehensive server-side logging that reports the macro being invoked,
 
 might generate the following server-side output:
 
-```
+```text
 SoCo-CLI: Macro: Processing macro 'test_1' = '%1 %2 %3 : %4 %5'
 SoCo-CLI: Macro: Parameter variables supplied: ['Study', 'volume', '_', "Peter's Room", 'volume']
 SoCo-CLI: Macro: Parameter variables used: ['%1', '%2', '%4', '%5'] -> ['Study', 'volume', '"Peter\'s Room"', 'volume']
@@ -1125,7 +1130,7 @@ INFO:     192.168.0.100:61548 - "GET /macro/test_1/Study/volume/_/Peter%27s%20Ro
 
 By default, the HTTP API server will look for a file named `macros.txt` in the directory from which it's invoked (the presence of the file is optional).  If instead you wish to use a specific macros file, use the `--macros` or `-m` option when starting the server, followed by the name of the macros file, e.g.:
 
-```
+```sh
 sonos-http-api-server --macros my_macros.txt
 ```
 
@@ -1133,11 +1138,11 @@ sonos-http-api-server --macros my_macros.txt
 
 The macro file can be reloaded using the `/macros/reload` endpoint (e.g.: `http://192.168.0.100:8000/macros/reload`). This will reload the macros from the original macros file, and overwrite any that are already installed. The new list of macros will be returned in JSON format.
 
-#### Return Values
+#### Macro Return Values
 
 Successful invocation of a macro will return the sonos command that was executed, and the result(s) of the actions that were performed (or the error output(s) in the case of a failure), in JSON format, e.g.:
 
-```
+```json
 {"command": "sonos Kitchen volume", result": "30"}
 ```
 
@@ -1171,7 +1176,7 @@ Note that the native SoCo library can be used alongside the SoCo-CLI API, as nee
 
 Import SoCo-CLI in your Python code as follows:
 
-```
+```python
 from soco_cli import api
 ```
 
@@ -1196,7 +1201,7 @@ The public API function definitions include type annotations, to enable type che
 
 **Examples of use:**
 
-```
+```python
 exit_code, output, error = api.run_command("Kitchen", "volume")
 exit_code, output, error = api.run_command("Study", "mute", "on")
 exit_code, output, error = api.run_command("Study", "group", "Kitchen")
@@ -1213,13 +1218,16 @@ There are some simple additional convenience functions provided by SoCo-CLI. The
 
 ## Known Issues
 
-Please report any problems you find using GitHub Issues [3].
+Please report any problems you find using [GitHub Issues][3].
 
 ## Uninstalling
 
-1. Use the normal Pip approach to uninstall the SoCo-CLI package: `pip uninstall soco-cli`. 
+1. Use the normal Pip approach to uninstall the SoCo-CLI package: `pip uninstall soco-cli`.
 2. As usual, Pip will not remove dependencies. If you'd like to perform an exhaustive removal, inspect the `requirements.txt` files for `soco-cli`, and for `SoCo`. Take care not to remove packages that may also be required by other installed packages.
-3. You may also need to remove the directory `.soco-cli` and its contents from your home directory.
+3. You may also need to remove the configuration directory and its contents, the location of which vary by platform.
+   - **Linux**: `${XDG_CONFIG_HOME}/soco-cli` or, if `$XDG_CONFIG_HOME` is not defined, `${HOME}/.config/soco-cli`
+   - **Windows**: `%LOCALAPPDATA%\soco-cli`, which defaults to `%USERPROFILE%\AppData\Local\soco-cli`
+   - **All others**: `${HOME}/.soco-cli` _(Earlier versions used this path invariably, across platforms.)_
 
 ## Acknowledgments
 
@@ -1227,8 +1235,6 @@ Developed with **[PyCharm](https://www.jetbrains.com/pycharm/)**, with many than
 
 All trademarks acknowledged. Avantrec Ltd has no connection with Sonos Inc.
 
-## Resources
-
-[1] https://github.com/SoCo/SoCo \
-[2] https://pypi.org/project/soco-cli \
-[3] https://github.com/avantrec/soco-cli/issues
+[1]: https://python-soco.com/
+[2]: https://pypi.org/project/soco-cli
+[3]: https://github.com/avantrec/soco-cli/issues
