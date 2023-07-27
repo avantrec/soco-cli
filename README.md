@@ -473,7 +473,8 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 
 ### Grouping and Stereo Pairing
 
-- **`group <master_speaker>`(or `g`)**: Groups the speaker with `<master_speaker>`.
+- **`group <master_speaker>`(or `g`)**: Groups the speaker with `<master_speaker>`, which acts as the coordinator.
+- **`multi_group <slave_speaker> [<slave_speaker> ...]`**: Groups one or more speakers with the target speaker, which acts as the coordinator.
 - **`pair <right_hand_speaker>`**: Creates a stereo pair, where the target speaker becomes the left-hand speaker of the pair and `<right_hand_speaker>` becomes the right-hand of the pair. Can be used to pair dissimilar Sonos devices (e.g., to stereo-pair a Play:1 with a One). The left-hand speaker becomes the coordinator speaker, and the stereo pair will adopt its name.
 - **`party_mode` (or `party`)**: Adds all speakers in the system into a single group. The target speaker becomes the group coordinator. Remove speakers individually using `ungroup`, or use `ungroup_all`.
 - **`transfer_playback <target_speaker>` (or `transfer_to`, `transfer`)**: Transfers playback to <target_speaker>. This is achieved by grouping and ungrouping the speakers, and swapping the group coordinator. It's a convenience shortcut for `speaker1 group speaker2 : speaker1 ungroup`.

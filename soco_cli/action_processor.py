@@ -939,6 +939,33 @@ def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@one_or_more_parameters
+def multi_group(speaker, action, args, soco_function, use_local_speaker_list):
+    """
+    Group one or more speakers with a coordinator speaker. Note: reverses the usual
+    order; the target speaker is the coordinator, not the speaker to be grouped.
+    """
+    logging.info("Grouping speakers '{}' with '{}'".format(args, speaker.player_name))
+    for index in range(len(args)):
+        target_speaker = get_speaker(args[index], use_local_speaker_list)
+        if not target_speaker:
+            error_report("Speaker '{}' not found".format(args[index]))
+            continue
+        logging.info(
+            "Grouping speaker '{}' with coordinator '{}'".format(
+                target_speaker.player_name, speaker.player_name
+            )
+        )
+        group_or_pair(
+            target_speaker,
+            action,
+            [speaker.player_name],
+            soco_function,
+            use_local_speaker_list,
+        )
+    return True
+
+
 @zero_parameters
 def operate_on_all(speaker, action, args, soco_function, use_local_speaker_list):
     zones = speaker.all_zones
@@ -2847,6 +2874,8 @@ actions = {
     "sleep": SonosFunction(sleep_timer, "sleep_timer", True),
     "group": SonosFunction(group_or_pair, "join"),
     "g": SonosFunction(group_or_pair, "join"),
+    "multi_group": SonosFunction(multi_group, "join"),
+    "mg": SonosFunction(multi_group, "join"),
     "ungroup": SonosFunction(no_args_no_output, "unjoin"),
     "ug": SonosFunction(no_args_no_output, "unjoin"),
     "u": SonosFunction(no_args_no_output, "unjoin"),
