@@ -3037,8 +3037,10 @@ actions = {
     "move_alarm": SonosFunction(alarms.move_alarm, "", False),
     "snooze_alarm": SonosFunction(alarms.snooze_alarm, "", True),
     "relative_bass": SonosFunction(eq_relative, "bass", False),
+    "rel_bass": SonosFunction(eq_relative, "bass", False),
     "rb": SonosFunction(eq_relative, "bass", False),
     "relative_treble": SonosFunction(eq_relative, "treble", False),
+    "rel_treble": SonosFunction(eq_relative, "treble", False),
     "rt": SonosFunction(eq_relative, "treble", False),
     "list_library_playlists": SonosFunction(
         list_numbered_things, "get_playlists", False
