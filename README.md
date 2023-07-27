@@ -666,6 +666,8 @@ sonos wait_until 08:00 : Kitchen play_fav "World Service" : Kitchen sleep 10m : 
 sonos <speaker> if_stopped <action> <parameters>
 sonos <speaker> if_playing <action> <parameters>
 sonos <speaker> if_coordinator <action> <parameters>
+sonos <speaker> if_queue <action> <parameters>
+sonos <speaker> if_no_queue <action> <parameters>
 ```
 
 The `if_stopped` modifier will execute the action that follows it only if the speaker is not currently playing. If the speaker is playing, the action will be skipped, and the next command in the sequence (if applicable) will be executed immediately. For example, to set the volume of a speaker back to a default value only if the speaker is not playing, use:
@@ -677,6 +679,8 @@ No action will be taken if the speaker is playing, and the command will terminat
 Similarly, the `if_playing` modifier will execute the action that follows it only if the speaker is currently playing.
 
 The `if_coordinator` modifier will execute the action that follows it only if the target speaker is a coordinator. Note that many actions are automatically redirected to the coordinator speaker.
+
+The `if_queue` modifier will execute the action that follows it only if the speaker's queue has one or more items in it. Similarly, the `if_no_queue` modifier will execute the following action only if the speaker's queue is empty.
 
 ## Interactive Shell Mode
 

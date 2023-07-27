@@ -1975,6 +1975,38 @@ def if_coordinator(speaker, action, args, soco_function, use_local_speaker_list)
     )
 
 
+@one_or_more_parameters
+def if_queue(speaker, action, args, soco_function, use_local_speaker_list):
+    """
+    Perform the action only if the queue is empty or non-empty
+    """
+    # If this is not the coordinator speaker, we need to check the state
+    # of the coordinator instead
+    queue_speaker = speaker if speaker.is_coordinator else speaker.group.coordinator
+    logging.info(
+        "Checking queue of coordinator speaker: '{}'".format(queue_speaker.player_name)
+    )
+    logging.info(
+        "Condition: '{}': Speaker '{}' has {} item(s) in the queue".format(
+            action, queue_speaker.player_name, queue_speaker.queue_size
+        )
+    )
+    if (queue_speaker.queue_size == 0 and action == "if_queue") or (
+        queue_speaker.queue_size > 0 and action == "if_no_queue"
+    ):
+        logging.info("Action suppressed")
+        return True
+
+    action = args[0]
+    args = args[1:]
+    logging.info(
+        "Action invoked: '{} {} {}'".format(speaker.player_name, action, " ".join(args))
+    )
+    return process_action(
+        speaker, action, args, use_local_speaker_list=use_local_speaker_list
+    )
+
+
 @one_parameter
 def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     """Shortcut to mute, play favourite, stop favourite, and unmute.
@@ -2971,6 +3003,8 @@ actions = {
     "if_stopped": SonosFunction(if_stopped_or_playing, ""),
     "if_playing": SonosFunction(if_stopped_or_playing, ""),
     "if_coordinator": SonosFunction(if_coordinator, ""),
+    "if_queue": SonosFunction(if_queue, ""),
+    "if_no_queue": SonosFunction(if_queue, ""),
     "wait": SonosFunction(process_wait_action, ""),
     "wait_for": SonosFunction(process_wait_action, ""),
     "wait_until": SonosFunction(process_wait_action, ""),
