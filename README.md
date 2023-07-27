@@ -682,6 +682,10 @@ The `if_coordinator` modifier will execute the action that follows it only if th
 
 The `if_queue` modifier will execute the action that follows it only if the speaker's queue has one or more items in it. Similarly, the `if_no_queue` modifier will execute the following action only if the speaker's queue is empty.
 
+Modifiers can be combined and will be evaluated in left to right sequence. All modifiers must be true for the action to be invoked. E.g.:
+
+`sonos <speaker> if_no_queue if_stopped <action> <parameters>`
+
 ## Interactive Shell Mode
 
 ```
