@@ -1429,14 +1429,22 @@ def eq(speaker, action, args, soco_function, use_local_speaker_list):
 @one_parameter
 def eq_relative(speaker, action, args, soco_function, use_local_speaker_list):
     """Set an EQ value by a relative amount"""
+    upper_limit = 15 if soco_function == "sub_gain" else 10
+    lower_limit = upper_limit * -1
     try:
         delta = int(args[0])
     except:
-        parameter_type_error(action, "integer from -10 to 10")
+        parameter_type_error(
+            action, "integer from {} to {}".format(lower_limit, upper_limit)
+        )
         return False
     current = getattr(speaker, soco_function)
     new_value = current + delta
-    new_value = -10 if new_value < -10 else 10 if new_value > 10 else new_value
+    new_value = (
+        lower_limit
+        if new_value < lower_limit
+        else upper_limit if new_value > upper_limit else new_value
+    )
     logging.info("Requested delta = '{}', new_value = '{}'".format(delta, new_value))
     setattr(speaker, soco_function, new_value)
     return True
@@ -3073,6 +3081,9 @@ actions = {
     "ungroup_all_in_group": SonosFunction(ungroup_all_in_group, "", True),
     "ugaig": SonosFunction(ungroup_all_in_group, "", True),
     "sub_gain": SonosFunction(sub_gain, "", False),
+    "relative_sub_gain": SonosFunction(eq_relative, "sub_gain", False),
+    "rel_sub_gain": SonosFunction(eq_relative, "sub_gain", False),
+    "rsg": SonosFunction(eq_relative, "sub_gain", False),
     "surround_volume_tv": SonosFunction(surround_volume, "surround_volume_tv", False),
     "surround_volume_music": SonosFunction(
         surround_volume, "surround_volume_music", False

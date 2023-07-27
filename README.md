@@ -354,8 +354,9 @@ sonos Kitchen play_from_queue 5
 - **`night_mode <on|off>`** (or **`night`**): Sets the night mode setting of the speaker to 'on' or 'off' (if applicable).
 - **`playing_tv`** (or **`is_playing_tv`**): Returns whether the speaker is currently playing from its TV input source, 'yes' or 'no'.
 - **`ramp_to_volume <volume>` (or `ramp`)**: Gently raise or reduce the volume to `<volume>`, which is between 0 and 100. Returns the number of seconds to complete the ramp.
-- **`relative_bass <adjustment>` (or `rb`)** Increase or reduce the bass setting by `<adjustment>`, a value between -10 and 10.
-- **`relative_treble <adjustment>` (or `rt`)** Increase or reduce the treble setting by `<adjustment>`, a value between -10 and 10.
+- **`relative_bass <adjustment>` (or `rel_bass`, `rb`)** Increase or reduce the bass setting by `<adjustment>`, a value between -10 and 10.
+- **`relative_sub_gain <adjustment>` (or `rel_sub_gain`, `rsg`)** Increase or reduce a Sub's gain setting by `<adjustment>`, a value between -15 and 15.
+- **`relative_treble <adjustment>` (or `rel_treble`, `rt`)** Increase or reduce the treble setting by `<adjustment>`, a value between -10 and 10.
 - **`relative_volume <adjustment>` (or `rel_vol`, `rv`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
 - **`sub_enabled`**: Returns `on` if the zone's subwoofer is enabled, otherwise `off`.
 - **`sub_enabled <on|off>`**: Enables or disables a zone's subwoofer.
