@@ -1559,6 +1559,7 @@ def info(speaker, action, args, soco_function, use_local_speaker_list):
         info["is_playing_radio"] = speaker.is_playing_radio
         info["is_playing_tv"] = speaker.is_playing_tv
         info["is_visible"] = speaker.is_visible
+        info["sub_gain"] = speaker.sub_gain
     for item in sorted(info):
         print("  {} = {}".format(item, info[item]))
     return True
