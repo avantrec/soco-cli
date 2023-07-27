@@ -1,4 +1,4 @@
-v0.4.63   -
+v0.4.63   - Add 'if_coordinator' conditional action modifier
 v0.4.62   - Use Sonos Favourites instead of URIs when creating alarms
 v0.4.61   - Add 'set_queue_position' action
 v0.4.60   - Add 'generic' HTTP macro and increase number of args to 12

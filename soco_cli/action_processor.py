@@ -1913,6 +1913,34 @@ def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speake
     )
 
 
+@one_or_more_parameters
+def if_coordinator(speaker, action, args, soco_function, use_local_speaker_list):
+    """
+    Perform the action only if the target speaker is a coordinator
+    """
+    if not speaker.is_coordinator:
+        logging.info(
+            "Speaker '{}' is not a coordinator; suppressing action".format(
+                speaker.player_name
+            )
+        )
+        return True
+
+    action = args[0]
+    args = args[1:]
+    logging.info(
+        "Speaker '{}' is a coordinator; proceeding with action".format(
+            speaker.player_name
+        )
+    )
+    logging.info(
+        "Action invoked: '{} {} {}'".format(speaker.player_name, action, " ".join(args))
+    )
+    return process_action(
+        speaker, action, args, use_local_speaker_list=use_local_speaker_list
+    )
+
+
 @one_parameter
 def cue_favourite(speaker, action, args, soco_function, use_local_speaker_list):
     """Shortcut to mute, play favourite, stop favourite, and unmute.
@@ -2906,6 +2934,7 @@ actions = {
     "wsf": SonosFunction(wait_stopped_for, "", True),
     "if_stopped": SonosFunction(if_stopped_or_playing, ""),
     "if_playing": SonosFunction(if_stopped_or_playing, ""),
+    "if_coordinator": SonosFunction(if_coordinator, ""),
     "wait": SonosFunction(process_wait_action, ""),
     "wait_for": SonosFunction(process_wait_action, ""),
     "wait_until": SonosFunction(process_wait_action, ""),
