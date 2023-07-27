@@ -39,7 +39,10 @@ def main():
     parser.add_argument(
         "--subnets",
         type=str,
-        help="Specify the networks or IP addresses to search, in dotted decimal/CIDR format",
+        help=(
+            "Specify the networks or IP addresses to search, in dotted decimal/CIDR"
+            " format"
+        ),
     )
     # The rest of the optional args are common
     configure_common_args(parser)

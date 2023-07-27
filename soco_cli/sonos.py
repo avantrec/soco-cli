@@ -111,12 +111,18 @@ def main():
     parser.add_argument(
         "--load_aliases",
         type=str,
-        help="Load shell aliases from the supplied filename and exit (aliases are merged)",
+        help=(
+            "Load shell aliases from the supplied filename and exit (aliases are"
+            " merged)"
+        ),
     )
     parser.add_argument(
         "--overwrite_aliases",
         type=str,
-        help="Overwrite current shell aliases with those from the supplied filename and exit",
+        help=(
+            "Overwrite current shell aliases with those from the supplied filename and"
+            " exit"
+        ),
     )
     # The rest of the optional args are common
     configure_common_args(parser)
@@ -307,7 +313,8 @@ def main():
                             )
                         except ValueError:
                             error_report(
-                                "Action 'loop' takes no parameters, or a number of iterations (> 0)"
+                                "Action 'loop' takes no parameters, or a number of"
+                                " iterations (> 0)"
                             )
                             cumulative_exit_code += 1
                             continue
@@ -328,7 +335,8 @@ def main():
             if speaker_name.lower() == "loop_for":
                 if len(sequence) != 2:
                     error_report(
-                        "Action 'loop_for' requires one parameter (check spaces around the ':' separator)"
+                        "Action 'loop_for' requires one parameter (check spaces around"
+                        " the ':' separator)"
                     )
                 if loop_start_time is None:
                     loop_start_time = time.time()
@@ -362,7 +370,8 @@ def main():
             if speaker_name.lower() == "loop_until":
                 if len(sequence) != 2:
                     error_report(
-                        "Action 'loop_until' requires one parameter (check spaces around the ':' separator)"
+                        "Action 'loop_until' requires one parameter (check spaces"
+                        " around the ':' separator)"
                     )
                 if loop_start_time is None:
                     loop_start_time = time.time()
@@ -401,9 +410,8 @@ def main():
             if env_speaker:
                 if env_spkr_inserted[sequence_pointer] is False:
                     logging.info(
-                        "Getting speaker name '{}' from the $SPKR environment variable".format(
-                            env_speaker
-                        )
+                        "Getting speaker name '{}' from the $SPKR environment variable"
+                        .format(env_speaker)
                     )
                     sequence.insert(0, env_speaker)
                     speaker_name = env_speaker
@@ -412,9 +420,8 @@ def main():
             # General action processing
             if len(sequence) < 2:
                 error_report(
-                    "At least 2 parameters required in action sequence '{}'; did you supply a speaker name?".format(
-                        sequence
-                    )
+                    "At least 2 parameters required in action sequence '{}'; did you"
+                    " supply a speaker name?".format(sequence)
                 )
             action = sequence[1].lower()
             args = sequence[2:]
@@ -424,9 +431,8 @@ def main():
                 else:
                     speakers = get_all_speakers(use_scan=True)
                 logging.info(
-                    "Performing action '{}' on all visible, coordinator speakers".format(
-                        action
-                    )
+                    "Performing action '{}' on all visible, coordinator speakers"
+                    .format(action)
                 )
                 for speaker in speakers:
                     if speaker.is_visible and speaker.is_coordinator:

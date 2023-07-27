@@ -761,9 +761,8 @@ def add_favourite_to_queue(
                         position = int(current_position) + 1
                 else:
                     error_report(
-                        "Second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
-                            action
-                        )
+                        "Second parameter for '{}' must be 'next/play_next' or"
+                        " 'first/start'".format(action)
                     )
                     return False
         try:
@@ -1251,9 +1250,8 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
                             position = int(current_position) + 1
                     else:
                         error_report(
-                            "Second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
-                                action
-                            )
+                            "Second parameter for '{}' must be 'next/play_next' or"
+                            " 'first/start'".format(action)
                         )
                         return False
 
@@ -1384,7 +1382,8 @@ def line_in_core(speaker, action, args, start_playback, use_local_speaker_list):
                     else:
                         parameter_type_error(
                             action,
-                            "second parameter (if present) must be 'left_input' or 'right_input'",
+                            "second parameter (if present) must be 'left_input' or"
+                            " 'right_input'",
                         )
                         return False
                 else:
@@ -1649,7 +1648,8 @@ def wait_stopped_for_core(speaker, action, duration_arg, not_paused=False):
             start_time = current_time
         remaining_time = duration - (current_time - start_time)
         logging.info(
-            "Elapsed since last 'STOPPED' = {}s | total elapsed = {}s | remaining = {}s".format(
+            "Elapsed since last 'STOPPED' = {}s | total elapsed = {}s | remaining = {}s"
+            .format(
                 int(current_time - start_time),
                 int(current_time - original_start_time),
                 int(remaining_time),
@@ -1860,9 +1860,8 @@ def get_requested_queue_position(speaker, action, args):
                 # Note that 'first/start' option is now redundant, but included
                 # here for backwards compatibility
                 error_report(
-                    "Second parameter for '{}' must be integer or 'next/play_next'".format(
-                        action
-                    )
+                    "Second parameter for '{}' must be integer or 'next/play_next'"
+                    .format(action)
                 )
                 return False
     return position
@@ -2061,9 +2060,8 @@ def queue_search_result_number(
             position = 1
         else:
             error_report(
-                "Second parameter for '{}' must be 'next/play_next' or 'first/start'".format(
-                    action
-                )
+                "Second parameter for '{}' must be 'next/play_next' or 'first/start'"
+                .format(action)
             )
             return False
     # Select the item number from the saved search
@@ -2185,9 +2183,8 @@ def add_uri_to_queue(speaker, action, args, soco_function, use_local_speaker_lis
                 # Note that 'first/start' option is now redundant, but included
                 # here for backward compatibility
                 error_report(
-                    "Second parameter for '{}' must be integer or 'next/play_next'".format(
-                        action
-                    )
+                    "Second parameter for '{}' must be integer or 'next/play_next'"
+                    .format(action)
                 )
                 return False
 
@@ -2289,9 +2286,8 @@ def trueplay(speaker, action, args, soco_function, use_local_speaker_list):
                 parameter_type_error(action, "on|off")
         except:
             error_report(
-                "No Trueplay profile available for '{}' (or Trueplay not supported)".format(
-                    speaker.player_name
-                )
+                "No Trueplay profile available for '{}' (or Trueplay not supported)"
+                .format(speaker.player_name)
             )
             return False
     return True
@@ -2316,7 +2312,8 @@ def groupstatus(speaker, action, args, soco_function, use_local_speaker_list):
             coordinator = grouped_speaker
 
     logging.info(
-        "Visible = {}, Coordinator = {}, Speakers in Group = {}, Other Visible Speakers = {}, Other Invisible Speakers = {}".format(
+        "Visible = {}, Coordinator = {}, Speakers in Group = {}, Other Visible Speakers"
+        " = {}, Other Invisible Speakers = {}".format(
             speaker.is_visible,
             speaker.is_coordinator,
             len(speaker.group.members),
@@ -2431,7 +2428,8 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                 except:
                     pass
                 logging.info(
-                    "Initial title = '{}', initial duration = '{}', initial radio show = '{}'".format(
+                    "Initial title = '{}', initial duration = '{}', initial radio show"
+                    " = '{}'".format(
                         initial_title, initial_duration, initial_radio_show
                     )
                 )
@@ -2447,7 +2445,8 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                 except:
                     current_radio_show = None
                 logging.info(
-                    "Current title = '{}', current duration = '{}', current radio show = '{}'".format(
+                    "Current title = '{}', current duration = '{}', current radio show"
+                    " = '{}'".format(
                         current_title, current_duration, current_radio_show
                     )
                 )

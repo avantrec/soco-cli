@@ -443,25 +443,22 @@ def interactive_loop(
                         name = args.pop(0)
                         if name in ACTIONS_TO_EXEC_NO_SPEAKER:
                             print(
-                                "Please set an active speaker to use the '{}' action".format(
-                                    name
-                                )
+                                "Please set an active speaker to use the '{}' action"
+                                .format(name)
                             )
                             continue
                         else:
                             speaker = get_speaker(name, use_local_speaker_list)
                             if not speaker:
                                 print(
-                                    "Error: Speaker '{}' not found; should an active speaker be set?".format(
-                                        name
-                                    )
+                                    "Error: Speaker '{}' not found; should an active"
+                                    " speaker be set?".format(name)
                                 )
                                 continue
                         if len(args) == 0:
                             print(
-                                "Error: no action or arguments supplied for speaker '{}'".format(
-                                    speaker.player_name
-                                )
+                                "Error: no action or arguments supplied for speaker"
+                                " '{}'".format(speaker.player_name)
                             )
                             continue
 
@@ -652,9 +649,8 @@ def _get_speaker_names(use_local_speaker_list=False):
             names = speaker_cache().get_all_speaker_names()
         except Exception as e:
             print(
-                "Speaker listing failed: please check your network connection [{}]".format(
-                    e
-                )
+                "Speaker listing failed: please check your network connection [{}]"
+                .format(e)
             )
             names = []
     return names

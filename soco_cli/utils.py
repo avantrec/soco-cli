@@ -674,7 +674,10 @@ def configure_common_args(parser):
         "--log",
         type=str,
         default="NONE",
-        help="Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'| 'INFO' | 'DEBUG'",
+        help=(
+            "Set the logging level: 'NONE' (default) |'CRITICAL' | 'ERROR' | 'WARN'|"
+            " 'INFO' | 'DEBUG'"
+        ),
     )
     parser.add_argument(
         "--docs",

@@ -12,7 +12,8 @@ def process_wait(sequence: List):
         duration = 0
         if len(sequence) != 2:
             error_report(
-                "Action 'wait' requires 1 parameter (check spaces around the ':' separator?)"
+                "Action 'wait' requires 1 parameter (check spaces around the ':'"
+                " separator?)"
             )
             return
         action = sequence[1].lower()
@@ -20,7 +21,8 @@ def process_wait(sequence: List):
             duration = convert_to_seconds(action)
         except ValueError:
             error_report(
-                "Action 'wait' requires positive number of hours, seconds or minutes + 'h/m/s', or HH:MM(:SS)"
+                "Action 'wait' requires positive number of hours, seconds or minutes +"
+                " 'h/m/s', or HH:MM(:SS)"
             )
         logging.info("Waiting for {}s".format(duration))
         time.sleep(duration)
@@ -29,7 +31,8 @@ def process_wait(sequence: List):
     elif sequence[0] in ["wait_until"]:
         if len(sequence) != 2:
             error_report(
-                "'wait_until' requires 1 parameter (check spaces around the ':' separator?)"
+                "'wait_until' requires 1 parameter (check spaces around the ':'"
+                " separator?)"
             )
             return
         try:
