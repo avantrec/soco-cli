@@ -946,10 +946,10 @@ def multi_group(speaker, action, args, soco_function, use_local_speaker_list):
     order; the target speaker is the coordinator, not the speaker to be grouped.
     """
     logging.info("Grouping speakers '{}' with '{}'".format(args, speaker.player_name))
-    for index in range(len(args)):
-        target_speaker = get_speaker(args[index], use_local_speaker_list)
+    for speaker_name in args:
+        target_speaker = get_speaker(speaker_name, use_local_speaker_list)
         if not target_speaker:
-            error_report("Speaker '{}' not found".format(args[index]))
+            error_report("Speaker '{}' not found".format(speaker_name))
             continue
         logging.info(
             "Grouping speaker '{}' with coordinator '{}'".format(
