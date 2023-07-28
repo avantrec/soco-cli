@@ -14,6 +14,7 @@
       * [Options for the sonos Command](#options-for-the-sonos-command)
       * [Firewall Rules](#firewall-rules)
       * [Operating on All Speakers: Using _all_](#operating-on-all-speakers-using-_all_)
+      * [Redirection of Actions to Coordinator Devices](#redirection-of-actions-to-coordinator-devices)
    * [Guidelines on Playing Content](#guidelines-on-playing-content)
       * [Radio Stations](#radio-stations)
       * [Single Tracks](#single-tracks)
@@ -64,6 +65,7 @@
       * [Macros: Defining Custom HTTP API Server Actions](#macros-defining-custom-http-api-server-actions)
          * [Macro Definition and Usage](#macro-definition-and-usage)
          * [Macro Arguments](#macro-arguments)
+         * [Using the Generic Macro](#using-the-generic-macro)
          * [Troubleshooting](#troubleshooting)
          * [Specifying the Macro Definition File](#specifying-the-macro-definition-file)
          * [Reloading the Macro Definition File](#reloading-the-macro-definition-file)
@@ -81,7 +83,7 @@
    * [Acknowledgments](#acknowledgments)
    * [Resources](#resources)
 
-<!-- Added by: pwt, at: Sat Feb 19 16:39:31 GMT 2022 -->
+<!-- Added by: pwt, at: Fri Jul 28 09:15:02 BST 2023 -->
 
 <!--te-->
 
@@ -234,6 +236,13 @@ There is a limited set of operations where it can be desirable to operate on all
 **Examples**: `sonos _all_ mute on` and `sonos _all_ relative_volume -10`.
 
 Note that `_all_` can be used with every `sonos` operation: no checking is performed to ensure that the use of `all` is appropriate, so use with caution.
+
+### Redirection of Actions to Coordinator Devices
+
+If an action is applied to a non-coordinator device, there are some cases where the action is automatically redirected to the coordinator. For example, if `lounge` is the coordinator speaker and `kitchen` is a grouped speaker:
+
+- `sonos kitchen queue` will be redirected to the `lounge` speaker, because that's the queue in use
+- `sonos kitchen volume 40` will remain directed to the `kitchen` speaker
 
 ## Guidelines on Playing Content
 
