@@ -1,3 +1,4 @@
+v0.4.68   - 
 v0.4.67   - Multiple artist search results from 'search_albums' are now saved
 v0.4.66   - '_all_' now targets all visible speakers (including non-cordinators)
 v0.4.65   - Add 'if_queue/if_no_queue' conditional action modifiers
