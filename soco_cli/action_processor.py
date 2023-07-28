@@ -1741,7 +1741,7 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
             pass
 
 
-@one_parameter
+@one_or_two_parameters
 def search_artists(speaker, action, args, soco_function, use_local_speaker_list):
     """
     Search for albums featuring the specified artist
@@ -1756,6 +1756,12 @@ def search_artists(speaker, action, args, soco_function, use_local_speaker_list)
     all_search_results = None
     all_artists = ""
     for index, artist in enumerate(artists):
+        if (
+            len(args) == 2
+            and "strict" in args[1].lower()
+            and name.lower() != artist.title.lower()
+        ):
+            continue
         search_result = ml.get_music_library_information(
             "artists", subcategories=[artist.title], max_items=SONOS_MAX_ITEMS
         )
