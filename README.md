@@ -229,7 +229,7 @@ If using the HTTP API Server functionality, its listen port must be open to inco
 
 ### Operating on All Speakers: Using `_all_`
 
-There is a limited set of operations where it can be desirable to operate on all speakers, e.g., muting every speaker in the house. This is done by using **`_all_`** as the speaker name. Operations will only be performed on devices that are coordinators (i.e., the master speakers in any groups or bonded configurations).
+There is a limited set of operations where it can be desirable to operate on all speakers, e.g., muting every speaker in the house. This is done by using **`_all_`** as the speaker name. Operations will be performed on all visible devices.
 
 **Examples**: `sonos _all_ mute on` and `sonos _all_ relative_volume -10`.
 

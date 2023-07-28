@@ -431,11 +431,10 @@ def main():
                 else:
                     speakers = get_all_speakers(use_scan=True)
                 logging.info(
-                    "Performing action '{}' on all visible, coordinator speakers"
-                    .format(action)
+                    "Performing action '{}' on all visible speakers".format(action)
                 )
                 for speaker in speakers:
-                    if speaker.is_visible and speaker.is_coordinator:
+                    if speaker.is_visible:
                         logging.info(
                             "Performing action '{}' on speaker '{}'".format(
                                 action, speaker.player_name
