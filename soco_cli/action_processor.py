@@ -1743,32 +1743,44 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
 
 @one_parameter
 def search_artists(speaker, action, args, soco_function, use_local_speaker_list):
+    """
+    Search for albums featuring the specified artist
+    """
     ml = speaker.music_library
     name = args[0]
     artists = ml.get_music_library_information(
         "artists", search_term=name, complete_result=True
     )
-    albums = []
-    for artist in artists:
-        print()
-        print_list_header("Sonos Music Library Albums including Artist:", artist.title)
-        albums = ml.get_music_library_information(
+
+    # Accumulate search results & artist names
+    all_search_results = None
+    all_artists = ""
+    for index, artist in enumerate(artists):
+        search_result = ml.get_music_library_information(
             "artists", subcategories=[artist.title], max_items=SONOS_MAX_ITEMS
         )
-        print_albums(albums, omit_first=True)  # Omit the first (empty) entry
-        print()
-        # TODO: Debating whether to include lists of all the tracks that feature the artist...
-        # print_list_header("Sonos Music Library Tracks with Artist:", artist.title)
-        # tracks = ml.search_track(artist.title)
-        # # tracks = ml.get_music_library_information("artists", subcategories=[name, ""], complete_result=True)
-        # print_tracks(tracks)
-        # print()
-    if len(artists) == 1:
-        # Remove the first (redundant) element from the list before saving
-        albums.pop(0)
-        save_search(albums)
-    elif len(artists) > 1:
-        print("Note: multiple artists found ... search not saved\n")
+        # Remove the first, unnecessary element from the list
+        search_result.pop(0)
+        if len(search_result) > 0:
+            if index == 0:
+                all_artists += artist.title
+            else:
+                all_artists += ", " + artist.title
+        if all_search_results is None:
+            all_search_results = search_result
+        else:
+            # The SearchResult class is a subclass of List
+            all_search_results += search_result
+
+    if all_search_results is None:
+        return True
+
+    print()
+    print_list_header("Sonos Music Library Albums including Artist(s):", all_artists)
+    print_albums(all_search_results, omit_first=False)
+    print()
+
+    save_search(all_search_results)
     return True
 
 
