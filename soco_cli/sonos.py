@@ -433,6 +433,7 @@ def main():
                 logging.info(
                     "Performing action '{}' on all visible speakers".format(action)
                 )
+                last_line_was_single_line = False
                 for speaker in speakers:
                     if speaker.is_visible:
                         logging.info(
@@ -440,7 +441,6 @@ def main():
                                 action, speaker.player_name
                             )
                         )
-                        print(speaker.player_name + ": ", end="", flush=True)
                         exit_code, output_msg, error_msg = run_command(
                             speaker,
                             action,
@@ -449,10 +449,18 @@ def main():
                         )
                         if exit_code == 0:
                             if len(output_msg) != 0:
-                                print(output_msg, flush=True)
+                                num_lines = len(output_msg.splitlines())
+                                if num_lines > 1 and last_line_was_single_line:
+                                    print()
+                                    last_line_was_single_line = False
+                                if num_lines == 1:
+                                    last_line_was_single_line = True
                             else:
-                                print("OK", flush=True)
+                                output_msg = "OK"
+                            print(speaker.player_name + ": ", end="", flush=True)
+                            print(output_msg, flush=True)
                         elif len(error_msg) != 0:
+                            print(speaker.player_name + ": ", end="", flush=True)
                             print(error_msg, file=sys.stderr, flush=True)
                         cumulative_exit_code += exit_code
             else:
