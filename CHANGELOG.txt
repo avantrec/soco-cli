@@ -1,3 +1,4 @@
+v0.4.69   -
 v0.4.68   - Add 'strict' option to 'search_artists'
           - Add 'queue_multiple_serach_results' action
 v0.4.67   - Multiple artist search results from 'search_artists' are now saved
