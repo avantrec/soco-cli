@@ -2114,8 +2114,15 @@ def get_desired_insertion_position(speaker, insertion_point, action):
     Position is 1-based.
     """
     try:
-        return int(insertion_point)
-    except:
+        position = int(insertion_point)
+        if not 1 <= position <= speaker.queue_size + 1:
+            raise Exception(
+                "Queue insertion point {} is out of range ({}-{})".format(
+                    insertion_point, 1, speaker.queue_size + 1
+                )
+            )
+        return position
+    except ValueError:
         pass
 
     if insertion_point.lower() in ["play_next", "next"]:
@@ -2137,11 +2144,11 @@ def get_desired_insertion_position(speaker, insertion_point, action):
     elif insertion_point.lower() in ["first", "start"]:
         position = 1
     elif insertion_point.lower() in ["last", "end"]:
-        position = 0
+        position = speaker.queue_size + 1
     else:
         raise Exception(
             "Additional parameter for '{}' must be 'next/play_next' or 'first/start' or"
-            " 'last/end'".format(action)
+            " 'last/end', or integer queue position".format(action)
         )
     return position
 
@@ -2162,9 +2169,11 @@ def queue_search_result_number(
         error_report("No saved search")
         return False
     logging.info("Loaded saved search")
-    position = 0
+
     if len(args) == 2:
         position = get_desired_insertion_position(speaker, args[1], action)
+    else:
+        position = 0
 
     # Select the item number from the saved search
     if 1 <= saved_search_number <= len(items):
@@ -2178,7 +2187,7 @@ def queue_search_result_number(
     return False
 
 
-@one_parameter
+@one_or_two_parameters
 def queue_multiple_search_results(
     speaker, action, args, soco_function, use_local_speaker_list
 ):
@@ -2194,12 +2203,22 @@ def queue_multiple_search_results(
     item_numbers = create_list_of_items_from_range(args[0], len(items))
     logging.info("Search items to add to queue: {}".format(item_numbers))
 
-    insertion_position = speaker.queue_size + 1
+    if len(args) == 2:
+        insertion_position = get_desired_insertion_position(speaker, args[1], action)
+    else:
+        insertion_position = speaker.queue_size + 1
     save_queue_insertion_position(insertion_position)
-    logging.info("Inserting at end of queue (position: {})".format(insertion_position))
+    logging.info("Inserting at queue position: {}".format(insertion_position))
 
-    for item_number in item_numbers:
-        speaker.add_to_queue(items[item_number - 1], 0)
+    current_position = insertion_position
+    for index, item_number in enumerate(item_numbers):
+        current_queue_size = speaker.queue_size
+        speaker.add_to_queue(items[item_number - 1], current_position)
+        if index + 1 != len(item_numbers):
+            current_position += speaker.queue_size - current_queue_size
+            logging.info(
+                "Advancing queue insertion point to: {}".format(current_position)
+            )
 
     print(insertion_position)
     return True
