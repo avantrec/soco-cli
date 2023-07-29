@@ -2113,6 +2113,11 @@ def get_desired_insertion_position(speaker, insertion_point, action):
     Find out where to insert something in the queue.
     Position is 1-based.
     """
+    try:
+        return int(insertion_point)
+    except:
+        pass
+
     if insertion_point.lower() in ["play_next", "next"]:
         # Check if currently playing from the queue
         # If so, add at the next track position
