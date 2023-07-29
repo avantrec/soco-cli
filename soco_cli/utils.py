@@ -883,3 +883,35 @@ def unsub_all_remembered_event_subs():
         except:
             break
     SUBS_LIST.clear()
+
+
+def create_list_of_items_from_range(range_definition: str, upper_limit: int):
+    """
+    Take a range string and generate a set of items defined by the
+    range.
+    """
+    if "all" in range_definition.lower():
+        return [item for item in range(1, upper_limit + 1)]
+    items_set = set()
+    for range_element in range_definition.split(","):
+        # Check for a range ('x-y') instead of a single integer
+        if "-" in range_element:
+            rng = range_element.split("-")
+            if len(rng) != 2:
+                raise IndexError(
+                    "Invalid range specification '{}'".format(range_element)
+                )
+            index_1 = int(rng[0])
+            index_2 = int(rng[1])
+            if index_1 > index_2:  # Reverse the indices
+                index_2, index_1 = index_1, index_2
+            if not (0 < index_1 <= upper_limit and index_1 <= index_2 <= upper_limit):
+                raise IndexError("Item(s) out of range in '{}'".format(range_element))
+            for i in range(index_1, index_2 + 1):
+                items_set.add(i)
+        else:
+            index = int(range_element)
+            if not 0 < index <= upper_limit:
+                raise IndexError("Item out of range '{}'".format(range_element))
+            items_set.add(index)
+    return sorted(list(items_set))

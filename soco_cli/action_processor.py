@@ -25,6 +25,7 @@ from soco_cli.play_local_file_lists import play_directory_files, play_m3u_file
 from soco_cli.speaker_info import print_speaker_table
 from soco_cli.utils import (
     convert_to_seconds,
+    create_list_of_items_from_range,
     error_report,
     event_unsubscribe,
     forget_event_sub,
@@ -1045,6 +1046,7 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
     for _ in range(speaker.queue_size):
         queue.append(1)
     # Catch exceptions at the end
+    # Note: this can be refactored using utils.create_list_of_items_from_range()
     try:
         # Create a list of items to remove based on the input args
         # Mark these as '0'
@@ -2106,6 +2108,39 @@ def last_search(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+def get_desired_insertion_position(speaker, insertion_point, action):
+    """
+    Find out where to insert something in the queue.
+    Position is 1-based.
+    """
+    if insertion_point.lower() in ["play_next", "next"]:
+        # Check if currently playing from the queue
+        # If so, add at the next track position
+        if (
+            speaker.get_current_transport_info()["current_transport_state"]
+            == "PLAYING"  # noqa: W503
+            and speaker.get_current_track_info()["position"]  # noqa: W503
+            != "NOT_IMPLEMENTED"  # noqa: W503
+        ):
+            logging.info("Currently playing from queue; add as next track")
+            offset = 1
+        # Otherwise use the current position
+        else:
+            logging.info("Not currently playing; add at current queue position")
+            offset = 0
+        position = int(speaker.get_current_track_info()["playlist_position"]) + offset
+    elif insertion_point.lower() in ["first", "start"]:
+        position = 1
+    elif insertion_point.lower() in ["last", "end"]:
+        position = 0
+    else:
+        raise Exception(
+            "Additional parameter for '{}' must be 'next/play_next' or 'first/start' or"
+            " 'last/end'".format(action)
+        )
+    return position
+
+
 @one_or_two_parameters
 def queue_search_result_number(
     speaker, action, args, soco_function, use_local_speaker_list
@@ -2124,32 +2159,8 @@ def queue_search_result_number(
     logging.info("Loaded saved search")
     position = 0
     if len(args) == 2:
-        if args[1].lower() in ["play_next", "next"]:
-            # Check if currently playing from the queue
-            # If so, add at the next track position
-            if (
-                speaker.get_current_transport_info()["current_transport_state"]
-                == "PLAYING"  # noqa: W503
-                and speaker.get_current_track_info()["position"]  # noqa: W503
-                != "NOT_IMPLEMENTED"  # noqa: W503
-            ):
-                logging.info("Currently playing from queue; add as next track")
-                offset = 1
-            # Otherwise use the current position
-            else:
-                logging.info("Not currently playing; add at current queue position")
-                offset = 0
-            position = (
-                int(speaker.get_current_track_info()["playlist_position"]) + offset
-            )
-        elif args[1].lower() in ["first", "start"]:
-            position = 1
-        else:
-            error_report(
-                "Second parameter for '{}' must be 'next/play_next' or 'first/start'"
-                .format(action)
-            )
-            return False
+        position = get_desired_insertion_position(speaker, args[1], action)
+
     # Select the item number from the saved search
     if 1 <= saved_search_number <= len(items):
         item = items[saved_search_number - 1]
@@ -2160,6 +2171,33 @@ def queue_search_result_number(
 
     error_report("Item search index must be between 1 and {}".format(len(items)))
     return False
+
+
+@one_parameter
+def queue_multiple_search_results(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
+    """
+    Queue one or more items from the last saved search.
+    """
+    items = read_search()
+    if not items:
+        error_report("No saved search")
+        return False
+    logging.info("Loaded saved search")
+
+    item_numbers = create_list_of_items_from_range(args[0], len(items))
+    logging.info("Search items to add to queue: {}".format(item_numbers))
+
+    insertion_position = speaker.queue_size + 1
+    save_queue_insertion_position(insertion_position)
+    logging.info("Inserting at end of queue (position: {})".format(insertion_position))
+
+    for item_number in item_numbers:
+        speaker.add_to_queue(items[item_number - 1], 0)
+
+    print(insertion_position)
+    return True
 
 
 def cue_favourite_radio_station(
@@ -3075,6 +3113,10 @@ actions = {
     "queue_search_result_number": SonosFunction(queue_search_result_number, "", True),
     "queue_search_number": SonosFunction(queue_search_result_number, "", True),
     "qsn": SonosFunction(queue_search_result_number, "", True),
+    "queue_multiple_search_results": SonosFunction(
+        queue_multiple_search_results, "", True
+    ),
+    "qmsr": SonosFunction(queue_multiple_search_results, "", True),
     "cue_favourite_radio_station": SonosFunction(cue_favourite_radio_station, "", True),
     "cue_favorite_radio_station": SonosFunction(cue_favourite_radio_station, "", True),
     "cfrs": SonosFunction(cue_favourite_radio_station, "", True),
