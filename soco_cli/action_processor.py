@@ -2755,7 +2755,9 @@ def set_queue_position(speaker, action, args, soco_function, use_local_speaker_l
         speaker.play_from_queue(index=qp - 1, start=False)
     else:
         error_report(
-            "Queue position '{}' is out of range (1-{})".format(qp, speaker.queue_size)
+            "Queue position '{}' is out of range (queue length = {})".format(
+                qp, speaker.queue_size
+            )
         )
         return False
     return True
