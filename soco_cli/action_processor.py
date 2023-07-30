@@ -3100,11 +3100,17 @@ actions = {
     "qp": SonosFunction(queue_position, "", True),
     "last_search": SonosFunction(last_search, "", True),
     "ls": SonosFunction(last_search, ""),
-    "queue_search_result_number": SonosFunction(queue_search_results, "", True),
-    "queue_search_number": SonosFunction(queue_search_results, "", True),
-    "qsn": SonosFunction(queue_search_results, "", True),
-    "queue_multiple_search_results": SonosFunction(queue_search_results, "", True),
-    "qmsr": SonosFunction(queue_search_results, "", True),
+    "queue_search_results": SonosFunction(queue_search_results, "", True),
+    "qsr": SonosFunction(queue_search_results, "", True),
+    "queue_search_result_number": SonosFunction(
+        queue_search_results, "", True
+    ),  # Legacy
+    "queue_search_number": SonosFunction(queue_search_results, "", True),  # Legacy
+    "qsn": SonosFunction(queue_search_results, "", True),  # Legacy
+    "queue_multiple_search_results": SonosFunction(
+        queue_search_results, "", True
+    ),  # Legacy
+    "qmsr": SonosFunction(queue_search_results, "", True),  # Legacy
     "cue_favourite_radio_station": SonosFunction(cue_favourite_radio_station, "", True),
     "cue_favorite_radio_station": SonosFunction(cue_favourite_radio_station, "", True),
     "cfrs": SonosFunction(cue_favourite_radio_station, "", True),
