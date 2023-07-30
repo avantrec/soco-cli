@@ -555,11 +555,11 @@ The actions below search the Sonos Music library.
 - **`list_albums`** (or **`albums`**): Lists all the albums in the music library.
 - **`list_artists`** (or **`artists`**): Lists all the artists in the music library.
 - **`last_search`** (or **`ls`**): Prints the results of the last album, track or artist search performed, or the last use of `tracks_in_album`, `list_albums`, or `list_playlist_tracks`. Use with `queue_search_results` to add specific items to the queue.
-- **`search_albums <album_name>`** (or **`search_album`**, **`salb`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of matching albums.
--  **`search_artists <artist_name> <strict>`** (or **`search_artist`**, **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the list of albums featuring any artists that match the search. (For a strict (but case-insensitive) match with the artist name, add the `strict` parameter, e.g.: `sonos Kitchen search_artists Sting strict`.)
-- **`search_library <name>`** (or **`sl`**): Searches the titles in your music library for a fuzzy match with `<name>` against artists, albums and tracks. Prints out the lists of matches. This action is a superset of `search_artists`, `search_albums`, and `search_tracks`, i.e., it searches across all categories. Note: only the last populated search is saved.
-- **`search_tracks <track_name>`** (or **`search_track`**, **`st`**): Searches the tracks in your music library for a fuzzy match with `<track_name>`. Prints out the list of matching tracks.
-- **`tracks_in_album <album_name>`** (or **`tia`**, **`lta`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of tracks in each matching album.
+- **`search_albums <album_name> <strict>`** (or **`search_album`**, **`salb`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of matching albums. Use `strict` to require an exact (case-insensitive) match.
+-  **`search_artists <artist_name> <strict>`** (or **`search_artist`**, **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the list of albums featuring any artists that match the search. Use `strict` to require an exact (case-insensitive) match.
+- **`search_library <name> <strict>`** (or **`sl`**): Searches the titles in your music library for a fuzzy match with `<name>` against artists, albums and tracks. Prints out the lists of matches. This action is a superset of `search_artists`, `search_albums`, and `search_tracks`, i.e., it searches across all categories. Note: only the last populated search is saved.
+- **`search_tracks <track_name> <strict>`** (or **`search_track`**, **`st`**): Searches the tracks in your music library for a fuzzy match with `<track_name>`. Prints out the list of matching tracks. Use `strict` to require an exact (case-insensitive) match.
+- **`tracks_in_album <album_name> <strict>`** (or **`tia`**, **`lta`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of tracks in each matching album. Use `strict` to require an exact (case-insensitive) match.
 
 ### Speaker and Sonos System Information
 

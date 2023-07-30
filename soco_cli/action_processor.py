@@ -1783,13 +1783,21 @@ def list_albums(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-@one_parameter
+@one_or_two_parameters
 def search_albums(speaker, action, args, soco_function, use_local_speaker_list):
     ml = speaker.music_library
     name = args[0]
     albums = ml.get_music_library_information(
         "albums", search_term=name, complete_result=True
     )
+
+    if len(args) == 2:
+        if "strict" == args[1].lower():
+            albums = [album for album in albums if album.title.lower() == name.lower()]
+        else:
+            error_report("Second parameter must be 'strict' not '{}'".format(args[1]))
+            return False
+
     if len(albums) > 0:
         print()
         print_list_header("Sonos Music Library Album Search:", name)
@@ -1799,13 +1807,21 @@ def search_albums(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-@one_parameter
+@one_or_two_parameters
 def search_tracks(speaker, action, args, soco_function, use_local_speaker_list):
     ml = speaker.music_library
     name = args[0]
     tracks = ml.get_music_library_information(
         "tracks", search_term=name, complete_result=True
     )
+
+    if len(args) == 2:
+        if "strict" == args[1].lower():
+            tracks = [track for track in tracks if track.title.lower() == name.lower()]
+        else:
+            error_report("Second parameter must be 'strict' not '{}'".format(args[1]))
+            return False
+
     if len(tracks) > 0:
         print()
         print_list_header("Sonos Music Library Track Search:", name)
@@ -1815,7 +1831,7 @@ def search_tracks(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-@one_parameter
+@one_or_two_parameters
 def search_library(speaker, action, args, soco_function, use_local_speaker_list):
     search_artists(speaker, action, args, soco_function, use_local_speaker_list)
     search_albums(speaker, action, args, soco_function, use_local_speaker_list)
@@ -1823,14 +1839,23 @@ def search_library(speaker, action, args, soco_function, use_local_speaker_list)
     return True
 
 
-@one_parameter
+@one_or_two_parameters
 def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list):
     ml = speaker.music_library
     name = args[0]
     albums = ml.get_music_library_information(
         "albums", search_term=name, complete_result=True
     )
+
+    if len(args) == 2:
+        if "strict" == args[1].lower():
+            albums = [album for album in albums if album.title.lower() == name.lower()]
+        else:
+            error_report("Second parameter must be 'strict' not '{}'".format(args[1]))
+            return False
+
     logging.info("Found {} album(s) matching '{}'".format(len(albums), name))
+
     for album in albums:
         tracks = ml.get_music_library_information(
             "artists", subcategories=["", album.title], complete_result=True
@@ -1840,6 +1865,7 @@ def tracks_in_album(speaker, action, args, soco_function, use_local_speaker_list
         print_tracks(tracks)
         print()
         save_search(tracks)
+
     return True
 
 
