@@ -2154,43 +2154,7 @@ def get_desired_insertion_position(speaker, insertion_point, action):
 
 
 @one_or_two_parameters
-def queue_search_result_number(
-    speaker, action, args, soco_function, use_local_speaker_list
-):
-    try:
-        saved_search_number = int(args[0])
-    except ValueError:
-        parameter_type_error(
-            action, "An integer index from the previous search results"
-        )
-        return False
-    items = read_search()
-    if not items:
-        error_report("No saved search")
-        return False
-    logging.info("Loaded saved search")
-
-    if len(args) == 2:
-        position = get_desired_insertion_position(speaker, args[1], action)
-    else:
-        position = 0
-
-    # Select the item number from the saved search
-    if 1 <= saved_search_number <= len(items):
-        item = items[saved_search_number - 1]
-        queue_position = speaker.add_to_queue(item, position=position)
-        save_queue_insertion_position(queue_position)
-        print(queue_position)
-        return True
-
-    error_report("Item search index must be between 1 and {}".format(len(items)))
-    return False
-
-
-@one_or_two_parameters
-def queue_multiple_search_results(
-    speaker, action, args, soco_function, use_local_speaker_list
-):
+def queue_search_results(speaker, action, args, soco_function, use_local_speaker_list):
     """
     Queue one or more items from the last saved search.
     """
@@ -3136,13 +3100,11 @@ actions = {
     "qp": SonosFunction(queue_position, "", True),
     "last_search": SonosFunction(last_search, "", True),
     "ls": SonosFunction(last_search, ""),
-    "queue_search_result_number": SonosFunction(queue_search_result_number, "", True),
-    "queue_search_number": SonosFunction(queue_search_result_number, "", True),
-    "qsn": SonosFunction(queue_search_result_number, "", True),
-    "queue_multiple_search_results": SonosFunction(
-        queue_multiple_search_results, "", True
-    ),
-    "qmsr": SonosFunction(queue_multiple_search_results, "", True),
+    "queue_search_result_number": SonosFunction(queue_search_results, "", True),
+    "queue_search_number": SonosFunction(queue_search_results, "", True),
+    "qsn": SonosFunction(queue_search_results, "", True),
+    "queue_multiple_search_results": SonosFunction(queue_search_results, "", True),
+    "qmsr": SonosFunction(queue_search_results, "", True),
     "cue_favourite_radio_station": SonosFunction(cue_favourite_radio_station, "", True),
     "cue_favorite_radio_station": SonosFunction(cue_favourite_radio_station, "", True),
     "cfrs": SonosFunction(cue_favourite_radio_station, "", True),
