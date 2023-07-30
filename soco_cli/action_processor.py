@@ -1938,23 +1938,17 @@ def if_stopped_or_playing(speaker, action, args, soco_function, use_local_speake
 @one_or_more_parameters
 def if_coordinator(speaker, action, args, soco_function, use_local_speaker_list):
     """
-    Perform the action only if the target speaker is a coordinator
+    Perform the action only if the target speaker is (or is not) a coordinator.
     """
-    if not speaker.is_coordinator:
-        logging.info(
-            "Speaker '{}' is not a coordinator; suppressing action".format(
-                speaker.player_name
-            )
-        )
+
+    if (speaker.is_coordinator and action == "if_not_coordinator") or (
+        not speaker.is_coordinator and action == "if_coordinator"
+    ):
+        logging.info("Action suppressed")
         return True
 
     action = args[0]
     args = args[1:]
-    logging.info(
-        "Speaker '{}' is a coordinator; proceeding with action".format(
-            speaker.player_name
-        )
-    )
     logging.info(
         "Action invoked: '{} {} {}'".format(speaker.player_name, action, " ".join(args))
     )
@@ -3014,6 +3008,7 @@ actions = {
     "if_stopped": SonosFunction(if_stopped_or_playing, ""),
     "if_playing": SonosFunction(if_stopped_or_playing, ""),
     "if_coordinator": SonosFunction(if_coordinator, ""),
+    "if_not_coordinator": SonosFunction(if_coordinator, ""),
     "if_queue": SonosFunction(if_queue, ""),
     "if_no_queue": SonosFunction(if_queue, ""),
     "wait": SonosFunction(process_wait_action, ""),

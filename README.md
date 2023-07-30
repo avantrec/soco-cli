@@ -691,10 +691,13 @@ sonos wait_until 08:00 : Kitchen play_fav "World Service" : Kitchen sleep 10m : 
 
 ## Conditional Command Execution
 
+The following modifiers are available that will invoke or suppress an action depending on the state of the target speaker:
+
 ```
 sonos <speaker> if_stopped <action> <parameters>
 sonos <speaker> if_playing <action> <parameters>
 sonos <speaker> if_coordinator <action> <parameters>
+sonos <speaker> if_not_coordinator <action> <parameters>
 sonos <speaker> if_queue <action> <parameters>
 sonos <speaker> if_no_queue <action> <parameters>
 ```
@@ -707,7 +710,7 @@ No action will be taken if the speaker is playing, and the command will terminat
 
 Similarly, the `if_playing` modifier will execute the action that follows it only if the speaker is currently playing.
 
-The `if_coordinator` modifier will execute the action that follows it only if the target speaker is a coordinator. Note that many actions are automatically redirected to the coordinator speaker.
+The `if_coordinator` modifier will execute the action that follows only if the target speaker is a coordinator. The `if_not_coordinator` modifier will execute the action that follows only if the target speaker is not a coordinator. Note that many actions are automatically redirected to the coordinator speaker, so this modifier may not be required, depending on your use case.
 
 The `if_queue` modifier will execute the action that follows it only if the speaker's queue has one or more items in it. Similarly, the `if_no_queue` modifier will execute the following action only if the speaker's queue is empty.
 
