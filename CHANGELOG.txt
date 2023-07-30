@@ -1,3 +1,4 @@
+v0.4.70   -
 v0.4.69   - Add 'strict' option for all music library searches
           - Consolidate queueing search results under action
             'queue_search_results'. Earlier, equivalent actions remain but are
