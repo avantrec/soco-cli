@@ -746,31 +746,15 @@ def add_favourite_to_queue(
                 the_fav = f
                 break
     if the_fav:
-        position = 0
         if len(args) == 2:
-            position = 1
-            if len(args) == 2:
-                if args[1].lower() in ["first", "start"]:
-                    position = 1
-                elif args[1].lower() in ["play_next", "next"]:
-                    current_position = speaker.get_current_track_info()[
-                        "playlist_position"
-                    ]
-                    if current_position == "NOT_IMPLEMENTED":
-                        position = 1
-                    else:
-                        position = int(current_position) + 1
-                else:
-                    error_report(
-                        "Second parameter for '{}' must be 'next/play_next' or"
-                        " 'first/start'".format(action)
-                    )
-                    return False
+            position = get_queue_insertion_position(speaker, args[1], action)
+        else:
+            position = speaker.queue_size + 1
         try:
             # Print the queue position and return
-            queue_position = speaker.add_to_queue(the_fav, position=position)
-            print(queue_position)
-            save_queue_insertion_position(queue_position)
+            speaker.add_to_queue(the_fav, position=position)
+            save_queue_insertion_position(position)
+            print(position)
             return True
         except Exception as e:
             error_report("{}".format(str(e)))
@@ -1263,28 +1247,12 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
 
     if playlist is not None:
         if soco_function in ["add_to_queue", "add_library_playlist_to_queue"]:
-            position = 0
             if len(args) == 2:
-                position = 1
-                if len(args) == 2:
-                    if args[1].lower() in ["first", "start"]:
-                        position = 1
-                    elif args[1].lower() in ["play_next", "next"]:
-                        current_position = speaker.get_current_track_info()[
-                            "playlist_position"
-                        ]
-                        if current_position == "NOT_IMPLEMENTED":
-                            position = 1
-                        else:
-                            position = int(current_position) + 1
-                    else:
-                        error_report(
-                            "Second parameter for '{}' must be 'next/play_next' or"
-                            " 'first/start'".format(action)
-                        )
-                        return False
-
+                position = get_queue_insertion_position(speaker, args[1], action)
+            else:
+                position = speaker.queue_size + 1
             result = speaker.add_to_queue(playlist, position=position)
+            save_queue_insertion_position(position)
             print(result)
         else:
             getattr(speaker, soco_function)(playlist)
@@ -1881,7 +1849,10 @@ def queue_item_core(speaker, action, args, info_type):
         info_type, search_term=name, complete_result=True
     )
     if len(items) > 0:
-        position = get_requested_queue_position(speaker, action, args)
+        if len(args) == 2:
+            position = get_queue_insertion_position(speaker, args[1], action)
+        else:
+            position = speaker.queue_size + 1
         # Select a random entry from the list, in case there's more than one
         item = items[randint(0, len(items) - 1)]
         queue_position = speaker.add_to_queue(item, position=position)
@@ -1891,36 +1862,6 @@ def queue_item_core(speaker, action, args, info_type):
 
     error_report("'{}' not found".format(name))
     return False
-
-
-def get_requested_queue_position(speaker, action, args):
-    """
-    Helper function to find a requested position in the queue.
-    """
-    position = 0
-    if len(args) == 2:
-        if args[1].lower() in ["first", "start"]:
-            position = 1
-        elif args[1].lower() in ["play_next", "next"]:
-            current_position = speaker.get_current_track_info()["playlist_position"]
-            if current_position == "NOT_IMPLEMENTED":
-                position = 1
-            else:
-                position = int(current_position) + 1
-        else:
-            try:
-                position = int(args[1])
-                position = position if position > 0 else 1
-                position = position if position <= speaker.queue_size else 0
-            except ValueError:
-                # Note that 'first/start' option is now redundant, but included
-                # here for backwards compatibility
-                error_report(
-                    "Second parameter for '{}' must be integer or 'next/play_next'"
-                    .format(action)
-                )
-                return False
-    return position
 
 
 @one_or_two_parameters
@@ -2108,19 +2049,29 @@ def last_search(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-def get_desired_insertion_position(speaker, insertion_point, action):
+def get_queue_insertion_position(speaker, insertion_point, action):
     """
-    Find out where to insert something in the queue.
+    Helper function to find out where to insert something in the queue.
     Position is 1-based.
+    Options:
+       - integer queue position
+       - first/start
+       - next/play_next
+       - last/end
     """
     try:
         position = int(insertion_point)
         if not 1 <= position <= speaker.queue_size + 1:
-            raise Exception(
-                "Queue insertion point {} is out of range ({}-{})".format(
-                    insertion_point, 1, speaker.queue_size + 1
+            logging.info(
+                "Position {} is out of range ... will be constrained".format(
+                    insertion_point
                 )
             )
+        if position < 1:
+            position = 1
+        elif position > speaker.queue_size + 1:
+            position = speaker.queue_size + 1
+        logging.info("Setting position to {}".format(position))
         return position
     except ValueError:
         pass
@@ -2138,7 +2089,9 @@ def get_desired_insertion_position(speaker, insertion_point, action):
             offset = 1
         # Otherwise use the current position
         else:
-            logging.info("Not currently playing; add at current queue position")
+            logging.info(
+                "Not currently playing from queue; add at current queue position"
+            )
             offset = 0
         position = int(speaker.get_current_track_info()["playlist_position"]) + offset
     elif insertion_point.lower() in ["first", "start"]:
@@ -2147,9 +2100,10 @@ def get_desired_insertion_position(speaker, insertion_point, action):
         position = speaker.queue_size + 1
     else:
         raise Exception(
-            "Additional parameter for '{}' must be 'next/play_next' or 'first/start' or"
-            " 'last/end', or integer queue position".format(action)
+            "Additional parameter for '{}' must be 'first/start', 'next/play_next',"
+            " 'last/end', or an integer queue position".format(action)
         )
+    logging.info("Setting position to {}".format(position))
     return position
 
 
@@ -2168,7 +2122,7 @@ def queue_search_results(speaker, action, args, soco_function, use_local_speaker
     logging.info("Search items to add to queue: {}".format(item_numbers))
 
     if len(args) == 2:
-        insertion_position = get_desired_insertion_position(speaker, args[1], action)
+        insertion_position = get_queue_insertion_position(speaker, args[1], action)
     else:
         insertion_position = speaker.queue_size + 1
     save_queue_insertion_position(insertion_position)
@@ -2276,32 +2230,13 @@ def album_art(speaker, action, args, soco_function, use_local_speaker_list):
 @one_or_two_parameters
 def add_uri_to_queue(speaker, action, args, soco_function, use_local_speaker_list):
     uri = args[0]
-    position = 0
     if len(args) == 2:
-        if args[1].lower() in ["first", "start"]:
-            position = 1
-        elif args[1].lower() in ["play_next", "next"]:
-            current_position = speaker.get_current_track_info()["playlist_position"]
-            if current_position == "NOT_IMPLEMENTED":
-                position = 1
-            else:
-                position = int(current_position) + 1
-        else:
-            try:
-                position = int(args[1])
-                position = position if position > 0 else 1
-                position = position if position <= speaker.queue_size else 0
-            except ValueError:
-                # Note that 'first/start' option is now redundant, but included
-                # here for backward compatibility
-                error_report(
-                    "Second parameter for '{}' must be integer or 'next/play_next'"
-                    .format(action)
-                )
-                return False
+        position = get_queue_insertion_position(speaker, args[1], action)
+    else:
+        position = speaker.queue_size + 1
 
-    queue_position = speaker.add_uri_to_queue(uri, position=position)
-    save_queue_insertion_position(queue_position)
+    speaker.add_uri_to_queue(uri, position=position)
+    save_queue_insertion_position(position)
     print(queue_position)
     return True
 
@@ -2598,7 +2533,10 @@ def add_sharelink_to_queue(
     share_link = ShareLinkPlugin(speaker)
     uri = args[0]
 
-    position = get_requested_queue_position(speaker, action, args)
+    if len(args) == 2:
+        position = get_queue_insertion_position(speaker, args[1], action)
+    else:
+        position = speaker.queue_size + 1
 
     if not share_link.is_share_link(uri):
         error_report("Invalid sharelink: '{}'".format(uri))
