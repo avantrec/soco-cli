@@ -431,19 +431,39 @@ sonos Kitchen play_from_queue 5
 
 ### Queue Actions
 
-- **`add_playlist_to_queue <playlist_name> <play_next|next or first|start or queue_position>`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case-insensitive, and will work on partial matches. The number in the queue of the first track in the playlist will be returned. Optionally, `play_next` or `next` can be added to insert the playlist at the next queue position. To start playback, follow with action `play_from_queue`.
-- **`add_library_playlist_to_queue <playlist_name> <play_next|next or first|start or queue_position>`** (or **`alpq`**): As above, but targets local library imported playlists instead of Sonos playlists.
-- **`add_sharelink_to_queue <sharelink> <play_next|next or first|start or queue_position>`** (or **`sharelink`**): Add a **Spotify**, **Tidal**, **Deezer**, or **Apple Music** link (for a track, album, playlist, etc.) to the queue. Returns the queue position of the first track. Supported links formats are: `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`, `spotify:album:6wiUBliPe76YAVpNEdidpY`, `https://tidal.com/browse/album/157273956`, `https://www.deezer.com/en/playlist/5390258182`, `https://music.apple.com/dk/album/black-velvet/217502930?i=217503142`.
-- **`add_uri_to_queue <uri> <queue_position or next>`** Adds a URI to the queue. The URI is added to the end of the queue if no queue position (an integer, or `next`) is supplied. Returns the queue position of the URI.
+When adding items to the queue, the default is to add the items at the end of the queue unless an optional **`<position>`** parameter is supplied, which can take one of the following values:
+
+- An **integer** queue position. If this is <= 0, the position will be set to 1; if greater than the end of the current queue, this will be set to the end of the queue.
+- **`start`** or **`first`**: insert at the start of the queue (equivalent to `1`).
+- **`play_next`** or **`next`**: Insert at the current queue playback position unless the queue is being used for playback, in which case the item is added directly after the currently playing track, and will play next.
+- **`end`** or **`last`**: Insert at the end of the queue -- which is the default if the `position` parameter is not supplied.
+
+Examples:
+
+```shell
+sonos lounge queue_search_results all start  <-- 'start' is equivalent to '1'
+sonos lounge queue_search_results 1-5,9 next
+sonos lounge queue_search_results 1,3,4 end  <-- Note: 'end' can be omitted
+sonos kitchen queue_album zooropa next
+```
+
+When items are added to the queue successfully, the queue position of the first added track is returned. Use `play_from_queue` with this track number to commence playback of the added items.
+
+The available actions are:
+
+- **`add_playlist_to_queue <playlist_name> <position>`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case-insensitive, and will work on partial matches.
+- **`add_library_playlist_to_queue <playlist_name> <position>`** (or **`alpq`**): As above, but targets local library imported playlists instead of Sonos playlists.
+- **`add_sharelink_to_queue <sharelink> <position>`** (or **`sharelink`**): Add a **Spotify**, **Tidal**, **Deezer**, or **Apple Music** link (for a track, album, playlist, etc.) to the queue. Returns the queue position of the first track. Supported links formats are: `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`, `spotify:album:6wiUBliPe76YAVpNEdidpY`, `https://tidal.com/browse/album/157273956`, `https://www.deezer.com/en/playlist/5390258182`, `https://music.apple.com/dk/album/black-velvet/217502930?i=217503142`.
+- **`add_uri_to_queue <uri> <queue_position or next>`** Adds a URI to the queue.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
 - **`list_queue <track_number>`** (or **`lq`, `q`**): List the track in the queue at position `<track_number>`
 - **`play_from_queue <track_number, or 'current', or 'last_added', or 'last', or 'random'>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue. If `current` is provided, play starts at the current queue position. If `last_added` is provided, play starts from the queue position of the last added track or set of tracks. If `last` is provided, the last track in the queue is played. If `random` is provided, playback will start at a random queue position.
-- **`queue_album <album_name> <play_next|next or first|start or queue_position>`** (or **`qa`**): Add `<album_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the album name, a random match will be chosen. Optionally, `next` or `play_next` can be added to insert the album at the next_play position in the queue. The queue position of the first track in the album will be returned.
+- **`queue_album <album_name> <position>`** (or **`qa`**): Add `<album_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the album name, a random match will be chosen.
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
 - **`queue_position`** (or **`qp`**): Return the current queue position.
-- **`queue_search_results <search_result_numbers> <first|start|next|last|end or queue_position>`** (or **`qsr`**): Queue one or more items from the list of items returned by the last search performed, at the end of the queue by default. Search result numbers start from 1, and can be supplied as single integers, sequences (e.g., '4,7,3'), ranges (e.g., '5-10'), or 'all' (for all tracks). Note: do not use spaces either side of the commas and dashes. Sequences and ranges can be mixed, e.g., '1,3-6,10'. Optionally, `next` or `play_next` can be added to insert the item at the next_play position in the queue; `start` or `first` can be used to insert the item at the start of the queue, or a queue position can be specified.  The queue position of the first item added to the queue will be returned.
-- **`queue_track <track_name> <play_next|next or first|start or queue_position>`** (or **`qt`**): Add `<track_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the track name, a random match will be chosen. Optionally, `next` or `play_next` can be added to insert the track at the next_play position in the queue. The queue position of the track will be returned.
+- **`queue_search_results <search_result_numbers> <position>`** (or **`qsr`**): Queue one or more items from the list of items returned by the last search performed, at the end of the queue by default. Search result numbers start from 1, and can be supplied as single integers, sequences (e.g., '4,7,3'), ranges (e.g., '5-10'), or 'all' (for all tracks). Note: do not use spaces either side of the commas and dashes. Sequences and ranges can be mixed, e.g., '1,3-6,10'.
+- **`queue_track <track_name> <position>`** (or **`qt`**): Add `<track_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the track name, a random match will be chosen. Optionally, `next` or `play_next` can be added to insert the track at the next_play position in the queue. The queue position of the track will be returned.
 - **`remove_current_track_from_queue` (or `rctfq`)**: Remove from the queue the track at the current queue position. If the track is playing, this will have the effect of stopping playback and starting to play the next track. (If the last track in the queue is playing, playback will stop and the previous track will start to play.)
 - **`remove_last_track_from_queue <count>` (or `rltfq`)**: Removes the last `<count>` tracks from the queue. If `<count>` is omitted, the last track is removed.
 - **`remove_from_queue <track_number|sequence|range>`** (or **`rfq`, `rq`**): Remove tracks from the queue. Track numbers start from 1, and can be supplied as single integers, sequences (e.g., '4,7,3'), or ranges (e.g., '5-10'). Note: do not use spaces either side of the commas and dashes. Sequences and ranges can be mixed, e.g., '1,3-6,10'.
@@ -534,9 +554,9 @@ The actions below search the Sonos Music library.
 
 - **`list_albums`** (or **`albums`**): Lists all the albums in the music library.
 - **`list_artists`** (or **`artists`**): Lists all the artists in the music library.
-- **`last_search`** (or **`ls`**): Prints the results of the last album, track or artist search performed, or the last use of `tracks_in_album`, `list_albums`, or `list_playlist_tracks`. Use with `queue_search_number` to add specific items to the queue.
+- **`last_search`** (or **`ls`**): Prints the results of the last album, track or artist search performed, or the last use of `tracks_in_album`, `list_albums`, or `list_playlist_tracks`. Use with `queue_search_results` to add specific items to the queue.
 - **`search_albums <album_name>`** (or **`search_album`**, **`salb`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of matching albums.
--  **`search_artists <artist_name>`** (or **`search_artist`**, **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the list of albums featuring any artists that match the search. (For a strict (but case-insensitive) match with the artist name, add the `strict` parameter, e.g.: `sonos Kitchen search_artists Sting strict`.)
+-  **`search_artists <artist_name> <strict>`** (or **`search_artist`**, **`sart`**): Searches the artists in your music library for a fuzzy match with `<artist_name>`. Prints out the list of albums featuring any artists that match the search. (For a strict (but case-insensitive) match with the artist name, add the `strict` parameter, e.g.: `sonos Kitchen search_artists Sting strict`.)
 - **`search_library <name>`** (or **`sl`**): Searches the titles in your music library for a fuzzy match with `<name>` against artists, albums and tracks. Prints out the lists of matches. This action is a superset of `search_artists`, `search_albums`, and `search_tracks`, i.e., it searches across all categories. Note: only the last populated search is saved.
 - **`search_tracks <track_name>`** (or **`search_track`**, **`st`**): Searches the tracks in your music library for a fuzzy match with `<track_name>`. Prints out the list of matching tracks.
 - **`tracks_in_album <album_name>`** (or **`tia`**, **`lta`**): Searches the albums in your music library for a fuzzy match with `<album_name>`. Prints out the list of tracks in each matching album.
