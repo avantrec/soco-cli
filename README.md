@@ -83,7 +83,8 @@
    * [Acknowledgments](#acknowledgments)
    * [Resources](#resources)
 
-<!-- Added by: pwt, at: Fri Jul 28 09:15:02 BST 2023 -->
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+<!-- Added by: pwt, at: Mon Oct  9 14:49:13 BST 2023 -->
 
 <!--te-->
 
@@ -451,19 +452,19 @@ When items are added to the queue successfully, the queue position of the first 
 
 The available actions are:
 
-- **`add_playlist_to_queue <playlist_name> <position>`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case-insensitive, and will work on partial matches.
-- **`add_library_playlist_to_queue <playlist_name> <position>`** (or **`alpq`**): As above, but targets local library imported playlists instead of Sonos playlists.
-- **`add_sharelink_to_queue <sharelink> <position>`** (or **`sharelink`**): Add a **Spotify**, **Tidal**, **Deezer**, or **Apple Music** link (for a track, album, playlist, etc.) to the queue. Returns the queue position of the first track. Supported links formats are: `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`, `spotify:album:6wiUBliPe76YAVpNEdidpY`, `https://tidal.com/browse/album/157273956`, `https://www.deezer.com/en/playlist/5390258182`, `https://music.apple.com/dk/album/black-velvet/217502930?i=217503142`.
-- **`add_uri_to_queue <uri> <queue_position or next>`** Adds a URI to the queue.
+- **`add_playlist_to_queue <playlist_name> [<position>]`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case-insensitive, and will work on partial matches.
+- **`add_library_playlist_to_queue <playlist_name> ]<position>]`** (or **`alpq`**): As above, but targets local library imported playlists instead of Sonos playlists.
+- **`add_sharelink_to_queue <sharelink> [<position>]`** (or **`sharelink`**): Add a **Spotify**, **Tidal**, **Deezer**, or **Apple Music** link (for a track, album, playlist, etc.) to the queue. Returns the queue position of the first track. Supported links formats are: `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`, `spotify:album:6wiUBliPe76YAVpNEdidpY`, `https://tidal.com/browse/album/157273956`, `https://www.deezer.com/en/playlist/5390258182`, `https://music.apple.com/dk/album/black-velvet/217502930?i=217503142`.
+- **`add_uri_to_queue <uri> [<position>]`** Adds a URI to the queue.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
 - **`list_queue <track_number>`** (or **`lq`, `q`**): List the track in the queue at position `<track_number>`
 - **`play_from_queue <track_number, or 'current', or 'last_added', or 'last', or 'random'>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue. If `current` is provided, play starts at the current queue position. If `last_added` is provided, play starts from the queue position of the last added track or set of tracks. If `last` is provided, the last track in the queue is played. If `random` is provided, playback will start at a random queue position.
-- **`queue_album <album_name> <position>`** (or **`qa`**): Add `<album_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the album name, a random match will be chosen.
+- **`queue_album <album_name> [<position>]`** (or **`qa`**): Add `<album_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the album name, a random match will be chosen.
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
 - **`queue_position`** (or **`qp`**): Return the current queue position.
-- **`queue_search_results <search_result_numbers> <position>`** (or **`qsr`**): Queue one or more items from the list of items returned by the last search performed, at the end of the queue by default. Search result numbers start from 1, and can be supplied as single integers, sequences (e.g., '4,7,3'), ranges (e.g., '5-10'), or 'all' (for all tracks). Note: do not use spaces either side of the commas and dashes. Sequences and ranges can be mixed, e.g., '1,3-6,10'.
-- **`queue_track <track_name> <position>`** (or **`qt`**): Add `<track_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the track name, a random match will be chosen. Optionally, `next` or `play_next` can be added to insert the track at the next_play position in the queue. The queue position of the track will be returned.
+- **`queue_search_results <search_result_numbers> [<position>]`** (or **`qsr`**): Queue one or more items from the list of items returned by the last search performed, at the end of the queue by default. Search result numbers start from 1, and can be supplied as single integers, sequences (e.g., '4,7,3'), ranges (e.g., '5-10'), or 'all' (for all tracks). Note: do not use spaces either side of the commas and dashes. Sequences and ranges can be mixed, e.g., '1,3-6,10'.
+- **`queue_track <track_name> [<position>]`** (or **`qt`**): Add `<track_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the track name, a random match will be chosen. Optionally, `next` or `play_next` can be added to insert the track at the next_play position in the queue. The queue position of the track will be returned.
 - **`remove_current_track_from_queue` (or `rctfq`)**: Remove from the queue the track at the current queue position. If the track is playing, this will have the effect of stopping playback and starting to play the next track. (If the last track in the queue is playing, playback will stop and the previous track will start to play.)
 - **`remove_last_track_from_queue <count>` (or `rltfq`)**: Removes the last `<count>` tracks from the queue. If `<count>` is omitted, the last track is removed.
 - **`remove_from_queue <track_number|sequence|range>`** (or **`rfq`, `rq`**): Remove tracks from the queue. Track numbers start from 1, and can be supplied as single integers, sequences (e.g., '4,7,3'), or ranges (e.g., '5-10'). Note: do not use spaces either side of the commas and dashes. Sequences and ranges can be mixed, e.g., '1,3-6,10'.
@@ -472,7 +473,7 @@ The available actions are:
 
 The following has issues and requires further development. For example, it's currently possible to add radio stations to the queue!
 
-- **`add_favourite_to_queue <play_next|next or first|start or queue_position>` (or `add_favorite_to_queue`, `add_fav_to_queue`, `afq`)**: Add a Sonos Favourite to the queue. Optionally, `play_next` or `next` can be added to add the favourite as the next track or playlist to be played. Returns the queue position of the favourite.
+- **`add_favourite_to_queue <favourite> [<position>]` (or `add_favorite_to_queue`, `add_fav_to_queue`, `afq`)**: Add a Sonos Favourite to the queue. Optionally, `play_next` or `next` can be added to add the favourite as the next track or playlist to be played. Returns the queue position of the favourite.
 
 ### Favourites and Playlists
 
