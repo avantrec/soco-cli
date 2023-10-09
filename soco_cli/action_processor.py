@@ -2257,7 +2257,7 @@ def add_uri_to_queue(speaker, action, args, soco_function, use_local_speaker_lis
 
     speaker.add_uri_to_queue(uri, position=position)
     save_queue_insertion_position(position)
-    print(queue_position)
+    print(position)
     return True
 
 

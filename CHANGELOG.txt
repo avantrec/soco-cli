@@ -1,4 +1,4 @@
-v0.4.71   -
+v0.4.71   - Fix for https://github.com/avantrec/soco-cli/issues/64
 v0.4.70   - Add 'is_not_coordinator' conditional action modifier
 v0.4.69   - Add 'strict' option for all music library searches
           - Consolidate queueing search results under action
