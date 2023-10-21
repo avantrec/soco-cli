@@ -404,15 +404,24 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                 "uri",
             ]:
                 elements[item.capitalize()] = track_info[item]
+
         try:
-            logging.info("Attempting to find 'Artist' and 'Title' from metadata")
             metadata = parse(track_info["metadata"])
             if elements["Artist"] == "":
-                elements["Artist"] = metadata["DIDL-Lite"]["item"]["dc:creator"]
+                logging.info("Attempting to find 'Artist' from metadata")
+                try:
+                    elements["Artist"] = metadata["DIDL-Lite"]["item"]["dc:creator"]
+                except:
+                    logging.info("Unable to find 'Artist'")
             if elements["Title"] == "":
-                elements["Title"] = metadata["DIDL-Lite"]["item"]["dc:title"]
+                logging.info("Attempting to find 'Title' from metadata")
+                try:
+                    elements["Title"] = metadata["DIDL-Lite"]["item"]["dc:title"]
+                except:
+                    logging.info("Unable to find 'Title'")
         except:
-            logging.info("Unable to find 'Artist' and/or 'Title'")
+            pass
+
         try:
             logging.info("Attempting to find 'Radio Show' using events")
             sub = speaker.avTransport.subscribe()
