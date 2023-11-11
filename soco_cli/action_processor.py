@@ -9,7 +9,6 @@ import pprint
 import time
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from distutils.version import StrictVersion
 from os import get_terminal_size
 from random import randint
 
@@ -245,11 +244,6 @@ def true_false_action(speaker, action, args, soco_function, use_local_speaker_li
 
 @zero_parameters
 def no_args_no_output(speaker, action, args, soco_function, use_local_speaker_list):
-    if soco_function == "separate_stereo_pair" and StrictVersion(
-        soco.__version__
-    ) < StrictVersion("0.20"):
-        error_report("Pairing operations require SoCo v0.20 or greater")
-        return False
     getattr(speaker, soco_function)()
     return True
 

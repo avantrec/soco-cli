@@ -1,4 +1,5 @@
-v0.4.73   -
+v0.4.73   - Remove dependency on distutils.version.StrictVersion for Python 3.12
+            compatibility
 v0.4.72   - Workaround for https://github.com/SoCo/SoCo/issues/950
 v0.4.71   - Fix for https://github.com/avantrec/soco-cli/issues/64
 v0.4.70   - Add 'is_not_coordinator' conditional action modifier
@@ -7,7 +8,7 @@ v0.4.69   - Add 'strict' option for all music library searches
             'queue_search_results'. Earlier, equivalent actions remain but are
             now undocumented
 v0.4.68   - Add 'strict' option to 'search_artists'
-          - Add 'queue_multiple_serach_results' action
+          - Add 'queue_multiple_search_results' action
 v0.4.67   - Multiple artist search results from 'search_artists' are now saved
 v0.4.66   - '_all_' now targets all visible speakers (including non-cordinators)
 v0.4.65   - Add 'if_queue/if_no_queue' conditional action modifiers
