@@ -1,4 +1,4 @@
-v0.4.75   -
+v0.4.75   - Use dual-stage approach for determining 'play_file' server IP address
 v0.4.74   - Determine HTTP server IP to use for 'play_file' using target speaker
             reachability
 v0.4.73   - Remove dependency on distutils.version.StrictVersion for Python 3.12

@@ -124,16 +124,33 @@ def http_server(
 
 
 def get_server_ip(speaker: SoCo) -> Optional[str]:
-    # Get the IP address to use as a server address for Sonos
-    # on this host by finding an IP that can reach the
-    # target speaker.
+    # Get the host IP address to use as a server IP for Sonos
+    # on this host.
+
     adapters = ifaddr.get_adapters()
+
+    # First, try to find a host IP address in the same network as the speaker
+    for adapter in adapters:
+        for ip in adapter.ips:
+            if ip.is_IPv4 and ip.ip != "127.0.0.1":
+                logging.info(
+                    "Checking if IP address '{}' is in target speaker's network".format(
+                        ip.ip
+                    )
+                )
+                network = IPv4Network(
+                    ip.ip + "/" + str(ip.network_prefix), strict=False
+                )
+                if IPv4Address(speaker.ip_address) in network:
+                    return ip.ip
+
+    # If that fails, try to find a host IP address that can reach the target speaker
     for adapter in adapters:
         for ip in adapter.ips:
             if ip.is_IPv4 and ip.ip != "127.0.0.1":
                 try:
                     logging.info(
-                        "Checking target speaker reachability from IP address '{}'"
+                        "Checking target speaker's reachability from IP address '{}'"
                         .format(ip.ip)
                     )
                     http_connection = http.client.HTTPConnection(
@@ -147,6 +164,7 @@ def get_server_ip(speaker: SoCo) -> Optional[str]:
                         return ip.ip
                 except:
                     continue
+
     return None
 
 
@@ -199,7 +217,6 @@ def is_supported_type(filename: str) -> bool:
     file_upper = filename.upper()
     for file_type in SUPPORTED_TYPES:
         if file_upper.endswith("." + file_type):
-            # Supported file type
             return True
     return False
 
