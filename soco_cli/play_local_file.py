@@ -1,6 +1,7 @@
 """Plays files from the local filesystem."""
 
 import functools
+import http.client
 import logging
 import sys
 import time
@@ -10,7 +11,7 @@ from ipaddress import IPv4Address, IPv4Network
 from os import chdir, path
 from socketserver import ThreadingMixIn
 from threading import Thread
-from typing import List, Union
+from typing import List, Optional
 
 import ifaddr  # type: ignore
 from RangeHTTPServer import RangeRequestHandler  # type: ignore
@@ -93,7 +94,7 @@ class MyHTTPHandler(RangeRequestHandler):
 
 def http_server(
     server_ip: str, directory: str, filename: str, speaker_ips: List[str]
-) -> Union[ThreadedHTTPServer, None]:
+) -> Optional[ThreadedHTTPServer]:
     # Set the directory from which to serve files, in the handler
     # Set the specific filename and client IP that are authorised
     handler = functools.partial(
@@ -122,18 +123,30 @@ def http_server(
     return None
 
 
-def get_server_ip(speaker: SoCo) -> Union[str, None]:
-    # Get a suitable IP address to use as a server address for Sonos
-    # on this host
+def get_server_ip(speaker: SoCo) -> Optional[str]:
+    # Get the IP address to use as a server address for Sonos
+    # on this host by finding an IP that can reach the
+    # target speaker.
     adapters = ifaddr.get_adapters()
     for adapter in adapters:
         for ip in adapter.ips:
-            if ip.is_IPv4:
-                network = IPv4Network(
-                    ip.ip + "/" + str(ip.network_prefix), strict=False
-                )
-                if IPv4Address(speaker.ip_address) in network:
-                    return ip.ip
+            if ip.is_IPv4 and ip.ip != "127.0.0.1":
+                try:
+                    logging.info(
+                        "Checking target speaker reachability from IP address '{}'"
+                        .format(ip.ip)
+                    )
+                    http_connection = http.client.HTTPConnection(
+                        speaker.ip_address,
+                        port=1400,
+                        timeout=0.5,
+                        source_address=(ip.ip, PORT_END),
+                    )
+                    http_connection.request("GET", "/status/info")
+                    if http_connection.getresponse().status == 200:
+                        return ip.ip
+                except:
+                    continue
     return None
 
 
