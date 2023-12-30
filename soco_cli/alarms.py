@@ -53,20 +53,18 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
             duration = alarm.duration.strftime("%H:%M")
         else:
             duration = "No Limit"
-        details.append(
-            [
-                alarm.alarm_id,
-                alarm.zone.player_name,
-                time,
-                duration,
-                alarm.recurrence,
-                convert_true_false(alarm.enabled),
-                title,
-                alarm.play_mode,
-                alarm.volume,
-                convert_true_false(alarm.include_linked_zones),
-            ]
-        )
+        details.append([
+            alarm.alarm_id,
+            alarm.zone.player_name,
+            time,
+            duration,
+            alarm.recurrence,
+            convert_true_false(alarm.enabled),
+            title,
+            alarm.play_mode,
+            alarm.volume,
+            convert_true_false(alarm.include_linked_zones),
+        ])
 
     # Sort alarms by start time, room. Apply sorts in reverse order.
     details.sort(key=lambda field: field[1])  # Room
