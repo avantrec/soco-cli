@@ -2579,6 +2579,29 @@ def add_sharelink_to_queue(
     return True
 
 
+@one_parameter
+def play_sharelink(speaker, action, args, soco_function, use_local_speaker_list):
+    share_link = ShareLinkPlugin(speaker)
+    uri = args[0]
+
+    if not share_link.is_share_link(uri):
+        error_report("Invalid sharelink: '{}'".format(uri))
+        return False
+
+    position = speaker.queue_size + 1
+
+    try:
+        # Return the queue position of the first added item
+        queue_position = share_link.add_share_link_to_queue(uri, position)
+        save_queue_insertion_position(queue_position)
+    except SoCoUPnPException as e:
+        error_report("Unable to play sharelink to queue: {}".format(e))
+        return False
+
+    speaker.play_from_queue(queue_position - 1)
+    return True
+
+
 @zero_parameters
 def reboot_count(speaker, action, args, soco_function, use_local_speaker_list):
     print(speaker.boot_seqnum)
@@ -3142,6 +3165,7 @@ actions = {
     "channel": SonosFunction(get_channel, "", True),
     "add_sharelink_to_queue": SonosFunction(add_sharelink_to_queue, "", True),
     "sharelink": SonosFunction(add_sharelink_to_queue, "", True),
+    "play_sharelink": SonosFunction(play_sharelink, "", True),
     "is_indexing": SonosFunction(is_indexing, "", False),
     "reboot_count": SonosFunction(reboot_count, "", False),
     "play_directory": SonosFunction(play_directory, "", True),

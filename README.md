@@ -410,6 +410,7 @@ sonos Kitchen play_from_queue 5
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE`, `SHUFFLE_REPEAT_ONE`, or `SHUFFLE_NOREPEAT`.
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
 - **`play_uri <uri> <title>` (or `uri`, `pu`)**: Plays the audio object given by the `<uri>` parameter (e.g., a radio stream URL). `<title>` is optional, and if present will be used for the title of the audio stream.
+- **`play_sharelink <sharelink>`**: Adds a sharelink to the end of the queue and starts playback.
 - **`previous` (or `prev`)**: Move to the previous track (if applicable for the audio source).
 - **`repeat` (or `rpt`)**: Returns the repeat mode state: 'off', 'one', or 'all'.
 - **`repeat <off,none|one|all>` (or `rpt`)**: Sets the repeat mode state to one of: 'off' (or 'none'), 'one', or 'all'.
