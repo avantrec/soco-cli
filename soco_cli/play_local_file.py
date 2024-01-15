@@ -3,6 +3,7 @@
 import functools
 import http.client
 import logging
+import socket
 import sys
 import time
 import urllib.parse
@@ -148,6 +149,20 @@ def get_server_ip(speaker: SoCo) -> Optional[str]:
     for adapter in adapters:
         for ip in adapter.ips:
             if ip.is_IPv4 and ip.ip != "127.0.0.1":
+                # Find an available port
+                for port in range(PORT_START, PORT_END + 1):
+                    try:
+                        logging.info("Checking if port {} is available".format(port))
+                        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                            s.bind((ip.ip, port))
+                            available_port = port
+                            logging.info("Port {} is available".format(port))
+                            break
+                    except socket.error:
+                        continue
+                else:
+                    logging.info("No available ports for IP address '{}'".format(ip.ip))
+                    continue
                 try:
                     logging.info(
                         "Checking target speaker's reachability from IP address '{}'"
@@ -156,12 +171,13 @@ def get_server_ip(speaker: SoCo) -> Optional[str]:
                     http_connection = http.client.HTTPConnection(
                         speaker.ip_address,
                         port=1400,
-                        timeout=0.5,
-                        source_address=(ip.ip, PORT_END),
+                        timeout=5.0,
+                        source_address=(ip.ip, available_port),
                     )
                     http_connection.request("GET", "/status/info")
+                    response = http_connection.getresponse()
                     http_connection.close()
-                    if http_connection.getresponse().status == 200:
+                    if response.status == 200:
                         return ip.ip
                 except:
                     continue
