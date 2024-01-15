@@ -160,6 +160,7 @@ def get_server_ip(speaker: SoCo) -> Optional[str]:
                         source_address=(ip.ip, PORT_END),
                     )
                     http_connection.request("GET", "/status/info")
+                    http_connection.close()
                     if http_connection.getresponse().status == 200:
                         return ip.ip
                 except:
