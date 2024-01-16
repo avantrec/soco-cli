@@ -409,8 +409,8 @@ sonos Kitchen play_from_queue 5
 - **`play_m3u <m3u_file> <options>`** (or **`play_local_m3u`**): Plays a local M3U/M3U8 playlist consisting of local audio files (in supported audio formats). Can be followed by options `p` to print each filename before it plays, and/or `s` to shuffle the playlist, or `r` to play a single, random track from the playlist. (If using multiple options, concatenate them: e.g., `ps`.) Example: `sonos Study play_m3u my_playlist.m3u ps`. Add the `i` option to invoke **interactive** mode, which allows use of the keyboard to go to the (N)ext track, to (P)ause, or to (R)esume playback.
 - **`play_mode` (or `mode`)**: Returns the play mode of the speaker, one of `NORMAL`, `REPEAT_ONE`, `REPEAT_ALL`, `SHUFFLE`, `SHUFFLE_REPEAT_ONE`, or `SHUFFLE_NOREPEAT`.
 - **`play_mode <mode>` (or `mode`)**: Sets the play mode of the speaker to `<mode>`, which is one of the values above.
-- **`play_uri <uri> <title>` (or `uri`, `pu`)**: Plays the audio object given by the `<uri>` parameter (e.g., a radio stream URL). `<title>` is optional, and if present will be used for the title of the audio stream.
 - **`play_sharelink <sharelink>`**: Adds a sharelink to the end of the queue and starts playback.
+- **`play_uri <uri> <title>` (or `uri`, `pu`)**: Plays the audio object given by the `<uri>` parameter (e.g., a radio stream URL). `<title>` is optional, and if present will be used for the title of the audio stream.
 - **`previous` (or `prev`)**: Move to the previous track (if applicable for the audio source).
 - **`repeat` (or `rpt`)**: Returns the repeat mode state: 'off', 'one', or 'all'.
 - **`repeat <off,none|one|all>` (or `rpt`)**: Sets the repeat mode state to one of: 'off' (or 'none'), 'one', or 'all'.
