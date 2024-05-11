@@ -1,4 +1,5 @@
 v0.4.77   - Changes to 'play_file' speaker reachability fallback logic
+          - Add support for HTTP API Server 'async_' actions
 v0.4.76   - Add 'play_sharelink' action
 v0.4.75   - Use dual-stage approach for determining 'play_file' server IP address
 v0.4.74   - Determine HTTP server IP to use for 'play_file' using target speaker

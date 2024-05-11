@@ -10,7 +10,7 @@ import argparse
 import pprint
 import shlex
 from os.path import abspath
-from subprocess import STDOUT, CalledProcessError, check_output
+from subprocess import STDOUT, CalledProcessError, Popen, check_output
 from typing import Dict, Tuple
 
 import uvicorn  # type: ignore
@@ -33,6 +33,7 @@ PREFIX_MACRO = PREFIX + "Macro: "
 MACROS: Dict[str, str] = {}
 MACRO_FILE = ""
 PP = pprint.PrettyPrinter(indent=len(PREFIX_MACRO))
+ASYNC_PREFIX = "async_"
 
 # Gets used with the local speaker list only
 SPEAKER_LIST = Speakers(network_timeout=1.0)
@@ -56,9 +57,21 @@ def command_core(
     device, error_msg = get_speaker(speaker, use_local_speaker_list=use_local)
     if device:
         speaker = device.player_name
-        exit_code, result, error_msg = sc_run(
-            device, action, *args, use_local_speaker_list=use_local
-        )
+        if not action.startswith(ASYNC_PREFIX):
+            exit_code, result, error_msg = sc_run(
+                device, action, *args, use_local_speaker_list=use_local
+            )
+        else:
+            action = action.replace(ASYNC_PREFIX, "")
+            try:
+                Popen(["sonos", str(device.ip_address), action, *args])
+                exit_code = 0
+                error_msg = ""
+                result = ""
+            except Exception as e:
+                exit_code = 1
+                error_msg = str(e)
+                result = ""
     else:
         exit_code = 1
         result = ""

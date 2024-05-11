@@ -62,6 +62,7 @@
       * [Using the Local Speaker Cache](#using-the-local-speaker-cache)
       * [HTTP Request Structure](#http-request-structure)
       * [Return Values](#return-values)
+      * [Asynchronous Commands (Experimental)](#asynchronous-commands-experimental)
       * [Macros: Defining Custom HTTP API Server Actions](#macros-defining-custom-http-api-server-actions)
          * [Macro Definition and Usage](#macro-definition-and-usage)
          * [Macro Arguments](#macro-arguments)
@@ -84,7 +85,7 @@
    * [Resources](#resources)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: pwt, at: Mon Oct  9 14:49:13 BST 2023 -->
+<!-- Added by: pwt, at: Sat May 11 11:52:19 BST 2024 -->
 
 <!--te-->
 
@@ -1075,6 +1076,20 @@ The **`exit_code`** field is an integer. This will be zero if the command comple
 If the command is successful, the **`result`** field contains the result string, which is exactly the string that would have been printed if the action had been performed on the command line.
 
 If the command is unsuccessful, the **`error_msg`** field contains an error message describing the error.
+
+### Asynchronous Commands (Experimental)
+
+It's sometimes useful for the HTTP API server to respond immediately while its invoked action continues to run in the background. For example, if one wants to invoke a `play_file` action, and allow it to run in the background.
+
+This can be achieved by prefixing the action with `async_`. For example:
+
+```commandline
+http://192.168.0.100:8000/Kitchen/async_play_file/my_file.mp3
+```
+
+Note that the data returned in this case may not be useful: it will simply indicate whether the background command was invoked successfully, not whether the command was successful.
+
+The `async_` functionality does not (yet) apply to the Macros feature described below.
 
 ### Macros: Defining Custom HTTP API Server Actions
 
