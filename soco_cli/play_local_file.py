@@ -165,8 +165,9 @@ def get_server_ip(speaker: SoCo) -> Optional[str]:
                     continue
                 try:
                     logging.info(
-                        "Checking target speaker's reachability from IP address '{}'"
-                        .format(ip.ip)
+                        "Checking target speaker's reachability from IP address '{}'".format(
+                            ip.ip
+                        )
                     )
                     http_connection = http.client.HTTPConnection(
                         speaker.ip_address,

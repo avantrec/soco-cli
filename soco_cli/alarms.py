@@ -53,18 +53,20 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
             duration = alarm.duration.strftime("%H:%M")
         else:
             duration = "No Limit"
-        details.append([
-            alarm.alarm_id,
-            alarm.zone.player_name,
-            time,
-            duration,
-            alarm.recurrence,
-            convert_true_false(alarm.enabled),
-            title,
-            alarm.play_mode,
-            alarm.volume,
-            convert_true_false(alarm.include_linked_zones),
-        ])
+        details.append(
+            [
+                alarm.alarm_id,
+                alarm.zone.player_name,
+                time,
+                duration,
+                alarm.recurrence,
+                convert_true_false(alarm.enabled),
+                title,
+                alarm.play_mode,
+                alarm.volume,
+                convert_true_false(alarm.include_linked_zones),
+            ]
+        )
 
     # Sort alarms by start time, room. Apply sorts in reverse order.
     details.sort(key=lambda field: field[1])  # Room
@@ -341,8 +343,9 @@ def copy_modify_alarm(speaker, action, args, soco_function, use_local_speaker_li
             break
     else:
         error_report(
-            "Alarm ID '{}' not found; use the 'alarms' action to find the integer ID"
-            .format(alarm_id)
+            "Alarm ID '{}' not found; use the 'alarms' action to find the integer ID".format(
+                alarm_id
+            )
         )
         return False
 
@@ -360,8 +363,9 @@ def copy_modify_alarm(speaker, action, args, soco_function, use_local_speaker_li
         new_alarm.save()
     except SoCoUPnPException as e:
         error_report(
-            "Failed to copy/move alarm; did you remember to modify the start time?: {}"
-            .format(e)
+            "Failed to copy/move alarm; did you remember to modify the start time?: {}".format(
+                e
+            )
         )
         return False
 

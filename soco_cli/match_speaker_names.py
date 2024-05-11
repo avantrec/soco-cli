@@ -36,8 +36,9 @@ def speaker_name_matches(name_supplied, name_stored):
     name_stored = name_stored.replace("’", "'")
     if name_supplied == name_stored:
         logging.info(
-            "Found apostrophe-normalised exact speaker name match for '{}' as '{}'"
-            .format(name_supplied_original, name_stored_original)
+            "Found apostrophe-normalised exact speaker name match for '{}' as '{}'".format(
+                name_supplied_original, name_stored_original
+            )
         )
         return True, True
 

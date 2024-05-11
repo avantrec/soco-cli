@@ -410,8 +410,9 @@ def main():
             if env_speaker:
                 if env_spkr_inserted[sequence_pointer] is False:
                     logging.info(
-                        "Getting speaker name '{}' from the $SPKR environment variable"
-                        .format(env_speaker)
+                        "Getting speaker name '{}' from the $SPKR environment variable".format(
+                            env_speaker
+                        )
                     )
                     sequence.insert(0, env_speaker)
                     speaker_name = env_speaker

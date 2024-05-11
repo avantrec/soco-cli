@@ -1659,8 +1659,7 @@ def wait_stopped_for_core(speaker, action, duration_arg, not_paused=False):
             start_time = current_time
         remaining_time = duration - (current_time - start_time)
         logging.info(
-            "Elapsed since last 'STOPPED' = {}s | total elapsed = {}s | remaining = {}s"
-            .format(
+            "Elapsed since last 'STOPPED' = {}s | total elapsed = {}s | remaining = {}s".format(
                 int(current_time - start_time),
                 int(current_time - original_start_time),
                 int(remaining_time),
@@ -2358,8 +2357,9 @@ def trueplay(speaker, action, args, soco_function, use_local_speaker_list):
                 parameter_type_error(action, "on|off")
         except:
             error_report(
-                "No Trueplay profile available for '{}' (or Trueplay not supported)"
-                .format(speaker.player_name)
+                "No Trueplay profile available for '{}' (or Trueplay not supported)".format(
+                    speaker.player_name
+                )
             )
             return False
     return True

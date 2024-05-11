@@ -305,13 +305,15 @@ class Speakers:
                 visible = "Visible"
             else:
                 visible = "Hidden"
-            households[device.household_id].append((
-                device.speaker_name,
-                device.ip_address,
-                device.model_name.replace("Sonos ", ""),
-                visible,
-                device.display_version,
-            ))
+            households[device.household_id].append(
+                (
+                    device.speaker_name,
+                    device.ip_address,
+                    device.model_name.replace("Sonos ", ""),
+                    visible,
+                    device.display_version,
+                )
+            )
             num_devices += 1
 
         headers = [
