@@ -11,6 +11,7 @@ import pprint
 import shlex
 from os.path import abspath
 from subprocess import STDOUT, CalledProcessError, Popen, check_output
+from sys import exit
 from typing import Dict, Tuple
 
 import uvicorn  # type: ignore
@@ -496,7 +497,10 @@ def main() -> None:
                 print(PREFIX + "Discovery failed: try '/rediscover'")
 
         # Start the server
-        uvicorn.run(sc_app, host="0.0.0.0", use_colors=False, port=PORT)
+        try:
+            uvicorn.run(sc_app, host="0.0.0.0", use_colors=False, port=PORT)
+        except KeyboardInterrupt:
+            pass
         print(PREFIX + INFO + " stopped")
         exit(0)
 
