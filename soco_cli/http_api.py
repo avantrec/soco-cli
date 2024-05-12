@@ -64,7 +64,7 @@ def command_core(
         else:
             action = action.replace(ASYNC_PREFIX, "")
             try:
-                Popen(["sonos", str(device.ip_address), action, *args])
+                Popen(["sonos", device.ip_address, action, *args])
                 exit_code = 0
                 error_msg = ""
                 result = ""
