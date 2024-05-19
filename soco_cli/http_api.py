@@ -399,6 +399,14 @@ def action_1_path(speaker: str, action: str, arg_1: str) -> Dict:
     """
     Handle the case where 'arg_1' is a path.
     """
+
+    # Handle special case of _end_on_pause_ being appended to a file path
+    # instead of being treated as a separate argument.
+    arg_2 = "_end_on_pause_"
+    if arg_1.endswith(arg_2):
+        arg_1 = arg_1.replace("/" + arg_2, "")
+        return command_core(speaker, action, arg_1, arg_2, use_local=USE_LOCAL)
+
     return command_core(speaker, action, arg_1, use_local=USE_LOCAL)
 
 

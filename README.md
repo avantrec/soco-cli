@@ -288,7 +288,7 @@ It's possible to play local audio files in **MP3, M4A, MP4, FLAC, OGG, WMA, WAV,
 
 SoCo-CLI establishes a temporary internal HTTP server from which the specified audio file can be streamed, and then instructs the speaker to play it. The `play_file` action will terminate once playback stops. Note that playback can be paused using a Sonos app (or SoCo-CLI), and the HTTP server will remain active so that playback can be resumed.
 
-Unfortunately, one can pause but not fully stop playback when using the Sonos apps. Hence, stop playback by playing something else on Sonos, by issuing a 'CTRL-C' to the active `play_file` action, or by issuing `sonos <SPEAKER> stop` from another command line. Alternatively, use the '_end_on_pause_' option to terminate the `play_file` action if playback is paused.
+Unfortunately, one can pause but not fully stop playback when using the Sonos apps. Hence, stop playback by playing something else on Sonos, by issuing a 'CTRL-C' to the active `play_file` action, or by issuing `sonos <SPEAKER> stop` from another command line. Alternatively, use the `_end_on_pause_` option to terminate the `play_file` action if playback is paused.
 
 The host running SoCo-CLI must remain on and connected to the network during playback, in order to serve the file to the speaker. The internal HTTP server is active only for the duration of the `play_file` action. For security reasons, it will only serve the specified audio file, and only to the IP addresses of the Sonos speakers in the system.
 
