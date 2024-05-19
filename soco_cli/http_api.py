@@ -63,15 +63,16 @@ class ActiveAsyncOps:
             self.active_async_ops.pop(speaker_ip)
         return pid
 
-    def stop_async_process(self, speaker_ip: str):
+    def stop_async_process(self, speaker_ip: str) -> Optional[int]:
         pid = self.get_async_pid(speaker_ip)
         if pid is None:
-            return
+            return None
         try:
             kill(pid, SIGINT)
         except:
             pass
         self.remove_async_pid(speaker_ip)
+        return pid
 
 
 ASYNC_OPS = ActiveAsyncOps()
