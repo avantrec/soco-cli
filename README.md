@@ -62,7 +62,7 @@
       * [Using the Local Speaker Cache](#using-the-local-speaker-cache)
       * [HTTP Request Structure](#http-request-structure)
       * [Return Values](#return-values)
-      * [Asynchronous Actions](#asynchronous-actions)
+      * [Asynchronous Actions (Experimental)](#asynchronous-actions-experimental)
       * [Macros: Defining Custom HTTP API Server Actions](#macros-defining-custom-http-api-server-actions)
          * [Macro Definition and Usage](#macro-definition-and-usage)
          * [Macro Arguments](#macro-arguments)
@@ -85,7 +85,7 @@
    * [Resources](#resources)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: pwt, at: Mon May 13 16:02:37 BST 2024 -->
+<!-- Added by: pwt, at: Sun May 19 15:54:07 BST 2024 -->
 
 <!--te-->
 
