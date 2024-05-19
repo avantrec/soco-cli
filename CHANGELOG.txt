@@ -1,4 +1,6 @@
 v0.4.78   - Allow pass-through of '_end_on_pause' via HTTP API
+          - HTTP API server: new 'async' operation will cancel an existing,
+            running one
 v0.4.77   - Changes to 'play_file' speaker reachability fallback logic
           - Add support for HTTP API Server 'async_' actions
 v0.4.76   - Add 'play_sharelink' action

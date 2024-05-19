@@ -1077,7 +1077,7 @@ If the command is successful, the **`result`** field contains the result string,
 
 If the command is unsuccessful, the **`error_msg`** field contains an error message describing the error.
 
-### Asynchronous Actions
+### Asynchronous Actions (Experimental)
 
 It's sometimes useful for the HTTP API server to respond immediately while its invoked action continues to run in the background. For example, if one wants to invoke a `play_file` action, and have the server respond immediately while the file is played in separate process.
 
@@ -1088,6 +1088,8 @@ http://192.168.0.100:8000/Kitchen/async_play_file/my_file.mp3
 ```
 
 Note that the data returned in this case is probably not useful: it will simply indicate whether the background command was invoked successfully, not whether the command was successful.
+
+Async actions are mutually exclusive for a given speaker: any running async action will be cancelled if a new async action is invoked.
 
 The `async_` functionality does not (yet) apply to the Macros feature described below.
 

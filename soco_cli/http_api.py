@@ -9,10 +9,12 @@ if version_info.major == 3 and version_info.minor < 7:
 import argparse
 import pprint
 import shlex
+from os import kill
 from os.path import abspath
+from signal import SIGINT
 from subprocess import STDOUT, CalledProcessError, Popen, check_output
 from sys import exit
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import uvicorn  # type: ignore
 from fastapi import FastAPI
@@ -40,6 +42,41 @@ ASYNC_PREFIX = "async_"
 SPEAKER_LIST = Speakers(network_timeout=1.0)
 
 
+class ActiveAsyncOps:
+    """
+    Keep track of running async processes, and allow
+    processes to be stopped.
+    """
+
+    def __init__(self):
+        self.active_async_ops = {}
+
+    def add_async_pid(self, speaker_ip: str, pid: int):
+        self.active_async_ops.update({speaker_ip: pid})
+
+    def get_async_pid(self, speaker_ip) -> Optional[int]:
+        return self.active_async_ops.get(speaker_ip)
+
+    def remove_async_pid(self, speaker_ip) -> Optional[int]:
+        pid = self.active_async_ops.get(speaker_ip)
+        if pid is not None:
+            self.active_async_ops.pop(speaker_ip)
+        return pid
+
+    def stop_async_process(self, speaker_ip: str):
+        pid = self.get_async_pid(speaker_ip)
+        if pid is None:
+            return
+        try:
+            kill(pid, SIGINT)
+        except:
+            pass
+        self.remove_async_pid(speaker_ip)
+
+
+ASYNC_OPS = ActiveAsyncOps()
+
+
 sc_app = FastAPI(
     title="SoCo-CLI HTTP API Server",
     description="**Use this interface to review and test SoCo-CLI's HTTP API**",
@@ -65,7 +102,9 @@ def command_core(
         else:
             action = action.replace(ASYNC_PREFIX, "")
             try:
-                Popen(["sonos", device.ip_address, action, *args])
+                ASYNC_OPS.stop_async_process(device.ip_address)
+                proc = Popen(["sonos", device.ip_address, action, *args])
+                ASYNC_OPS.add_async_pid(device.ip_address, proc.pid)
                 exit_code = 0
                 error_msg = ""
                 result = ""
