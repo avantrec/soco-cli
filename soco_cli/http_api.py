@@ -188,7 +188,6 @@ def rediscover() -> Dict:
 
 @sc_app.get("/list_audio_files/{directory:path}")
 def list_audio_files(directory: str) -> List[str]:
-    print(directory)
     tracks = []
     try:
         with scandir(directory) as files:
