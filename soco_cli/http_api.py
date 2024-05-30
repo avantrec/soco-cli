@@ -9,12 +9,12 @@ if version_info.major == 3 and version_info.minor < 7:
 import argparse
 import pprint
 import shlex
-from os import kill
+from os import kill, scandir
 from os.path import abspath
 from signal import SIGINT
 from subprocess import STDOUT, CalledProcessError, Popen, check_output
 from sys import exit
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import uvicorn  # type: ignore
 from fastapi import FastAPI
@@ -24,6 +24,7 @@ from soco_cli.api import get_all_speaker_names
 from soco_cli.api import get_soco_object as get_speaker
 from soco_cli.api import rescan_speakers
 from soco_cli.api import run_command as sc_run
+from soco_cli.play_local_file import is_supported_type
 from soco_cli.speakers import Speakers
 from soco_cli.utils import version as print_version
 
@@ -183,6 +184,20 @@ def rediscover() -> Dict:
         speakers = get_all_speaker_names()
     print(PREFIX + "Speakers (re)discovered: {}".format(speakers))
     return {"speakers_discovered": speakers}
+
+
+@sc_app.get("/list_audio_files/{directory:path}")
+def list_audio_files(directory: str) -> List[str]:
+    print(directory)
+    tracks = []
+    try:
+        with scandir(directory) as files:
+            for file in files:
+                if is_supported_type(file.name):
+                    tracks.append(file.name)
+    except FileNotFoundError:
+        pass
+    return tracks
 
 
 # Deprecated
