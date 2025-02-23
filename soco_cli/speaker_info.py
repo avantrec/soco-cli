@@ -98,7 +98,9 @@ def print_speaker_table(device):
     print()
     print(
         "Report generated on:",
-        datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC%z (%A)"),
+        datetime.datetime.now(datetime.timezone.utc).strftime(
+            "%Y-%m-%d %H:%M UTC (%A)"
+        ),
     )
 
     # Print the speaker information table in a nice format
