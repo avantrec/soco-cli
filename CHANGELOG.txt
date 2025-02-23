@@ -1,4 +1,4 @@
-v0.4.80   -
+v0.4.80   - Minor fixes & bump SoCo version requirement
 v0.4.79   - Add 'list_audio_files' path to HTTP API Server
 v0.4.78   - Allow pass-through of '_end_on_pause' via HTTP API
           - HTTP API server: new 'async' operation will cancel an existing,
