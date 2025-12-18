@@ -105,11 +105,13 @@ def main():
     )
     parser.add_argument(
         "--save_aliases",
+        "--save-aliases",
         type=str,
         help="Save the current shell aliases to the supplied filename and exit",
     )
     parser.add_argument(
         "--load_aliases",
+        "--load-aliases",
         type=str,
         help=(
             "Load shell aliases from the supplied filename and exit (aliases are"
@@ -118,6 +120,7 @@ def main():
     )
     parser.add_argument(
         "--overwrite_aliases",
+        "--overwrite-aliases",
         type=str,
         help=(
             "Overwrite current shell aliases with those from the supplied filename and"

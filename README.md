@@ -202,7 +202,7 @@ This allows the use of shorthand like `sk stop`, to stop playback on the Kitchen
 ### Options for the `sonos` Command
 
 - **`--version, -v`**: Print the versions of SoCo-CLI, SoCo, and Python.
-- **`--check_for_update`**: Check for a more recent version of SoCo-CLI.
+- **`--check-for-update`**: Check for a more recent version of SoCo-CLI.
 - **`--actions`**: Print the list of available actions.
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are `NONE` (default), `CRITICAL`, `ERROR`, `WARN`, `INFO`, `DEBUG`, in order of increasing verbosity. `INFO` level logging tends to be the most useful when troubleshooting SoCo-CLI issues.
@@ -211,13 +211,13 @@ The following options are for use with the cached discovery mechanism:
 
 - **`--use-local-speaker-list, -l`**: Use the local speaker list instead of SoCo discovery. The speaker list will first be created and saved if it doesn't already exist.
 - **`--refresh-local-speaker-list, -r`**: In conjunction with the `-l` option, the speaker list will be regenerated and saved.
-- **`--network_discovery_threads, -t`**: The maximum number of parallel threads used to scan the local network.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up).
-- **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
+- **`--network-discovery-threads, -t`**: The maximum number of parallel threads used to scan the local network.
+- **`--network-discovery-timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up).
+- **`--min-netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space.
 
 Note that the `sonos-discover` utility (discussed below) can also be used to manage the local speaker list. This is the recommended way of using cached discovery: first run `sonos-discover` to create the local speaker database, then use `sonos` with the `-l` option to use the local database when invoking `sonos` actions.
 
-If you set the environment variable **`USE_LOCAL_CACHE=TRUE`**, the `--use_local_speaker_list` option will always be used.
+If you set the environment variable **`USE_LOCAL_CACHE=TRUE`**, the `--use-local-speaker-list` option will always be used.
 
 ### Firewall Rules
 
@@ -766,7 +766,8 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'cd'         :  Change the working directory of the shell, e.g. 'cd ..'.
                     Note that on Windows, backslashes must be doubled, e.g.:
                     'cd C:\\'
-    'check_for_update' : Check whether an update is available
+    'check-for-update' 
+                 : Check whether an update is available
     'docs'       :  Print a link to the online documentation.
     'exec'       :  Run a shell command, e.g.: 'exec ls -l'.
     'exit'       :  Exit the shell.
@@ -877,12 +878,12 @@ Positional arguments can be used multiple times within an action (unlikely to be
 #### Saving and Loading Aliases
 
 ```
-sonos --save_aliases <filename>
-sonos --load_aliases <filename>
-sonos --overwrite_aliases <filename>
+sonos --save-aliases <filename>
+sonos --load-aliases <filename>
+sonos --overwrite-aliases <filename>
 ```
 
-Aliases can be exported to, and loaded from, plain text files using the command line options above. The command will terminate once the file operation is complete. Option `save_aliases` will export the current aliases to the supplied filename; `load_aliases` will load a list of aliases and merge them with the current list (overwriting any duplicate alias names); `overwrite_aliases` will overwrite all current aliases with the list from the file.
+Aliases can be exported to, and loaded from, plain text files using the command line options above. The command will terminate once the file operation is complete. Option `save-aliases` will export the current aliases to the supplied filename; `load-aliases` will load a list of aliases and merge them with the current list (overwriting any duplicate alias names); `overwrite-aliases` will overwrite all current aliases with the list from the file.
 
 The alias file format consists of lines containing `<alias_name> = <alias actions>`, e.g:
 
@@ -939,8 +940,8 @@ If your speakers change in some way (e.g., they are renamed, are assigned differ
 
 The following flags can be used to adjust network discovery behaviour if the discovery process is failing:
 
-- **`--network_discovery_threads, -t`**: The number of parallel threads used to scan the local network.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up).
+- **`--network-discovery-threads, -t`**: The number of parallel threads used to scan the local network.
+- **`--network-discovery-timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up).
 
 These options only have an effect when combined with the `-l` **and** `-r` options.
 
@@ -962,14 +963,14 @@ Discovery works by interrogating all network adapters on the device running SoCo
 
 - **`--print, -p`**: Print the the current contents of the speaker cache file
 - **`--delete-local-speaker-cache, -d`**: Delete the local speaker cache file.
-- **`--network_discovery_threads, -t`**: The maximum number of parallel threads used to scan the local network.
-- **`--network_discovery_timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). Use this if `sonos-discover` is not finding all of your Sonos devices.
-- **`--min_netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space. (Note that this option will never **increase** the search space, e.g., if one of the attached networks is 192.168.0.0/24, supplying a `--min_netmask` value of 16 will not increase the search space to 192.168.0.0/16.)
+- **`--network-discovery-threads, -t`**: The maximum number of parallel threads used to scan the local network.
+- **`--network-discovery-timeout, -n`**: The timeout used when scanning each host on the local network (how long to wait for a socket connection on port 1400 before giving up). Use this if `sonos-discover` is not finding all of your Sonos devices.
+- **`--min-netmask, -m`**: The minimum netmask to use when scanning networks. Used to constrain the IP search space. (Note that this option will never **increase** the search space, e.g., if one of the attached networks is 192.168.0.0/24, supplying a `--min-netmask` value of 16 will not increase the search space to 192.168.0.0/16.)
 - **`--version, -v`**: Print the versions of SoCo-CLI, SoCo, Python, and exit.
-- **`--check_for_update`**: Check for a more recent version of SoCo-CLI.  
+- **`--check-for-update`**: Check for a more recent version of SoCo-CLI.  
 - **`--docs`**: Print the URL of this README documentation, for the version of SoCo-CLI being used.
 - **`--log <level>`**: Turn on logging. Available levels are NONE (default), CRITICAL, ERROR, WARN, INFO, DEBUG, in order of increasing verbosity.
-- **`--subnets <subnets_list>`**: Specify which subnet(s) to search, as a comma separated list (without spaces). E.g.: `--subnets 192.168.0.0/24,192.168.1.0/24` or `--subnets 192.168.0.30`. When this option is used, only the specified subnet(s) will be searched, and the `--min_netmask` option (if supplied) is ignored.
+- **`--subnets <subnets_list>`**: Specify which subnet(s) to search, as a comma separated list (without spaces). E.g.: `--subnets 192.168.0.0/24,192.168.1.0/24` or `--subnets 192.168.0.30`. When this option is used, only the specified subnet(s) will be searched, and the `--min-netmask` option (if supplied) is ignored.
 
 ## The SoCo-CLI HTTP API Server
 

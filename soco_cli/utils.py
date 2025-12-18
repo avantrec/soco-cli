@@ -658,6 +658,7 @@ def configure_common_args(parser):
     )
     parser.add_argument(
         "--min_netmask",
+        "--min-netmask",
         "-m",
         type=int,
         default=24,
@@ -693,6 +694,7 @@ def configure_common_args(parser):
     )
     parser.add_argument(
         "--check_for_update",
+        "--check-for-update",
         action="store_true",
         default=False,
         help="Check for a more recent version of SoCo-CLI",

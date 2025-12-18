@@ -264,7 +264,7 @@ def interactive_loop(
                     docs()
                     continue
 
-                if command_lower in ["check_for_update"]:
+                if command_lower in ["check-for-update"]:
                     print_update_status()
                     continue
 
@@ -526,7 +526,7 @@ SHELL_COMMANDS = [
     "actions",
     "alias ",
     "cd",
-    "check_for_update",
+    "check-for-update",
     "docs",
     "exec",
     "exit",
@@ -609,7 +609,8 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'cd'         :  Change the working directory of the shell, e.g. 'cd ..'.
                     Note that on Windows, backslashes must be doubled, e.g.:
                     'cd C:\\'
-    'check_for_update' : Check whether an update is available
+    'check-for-update'
+                 : Check whether an update is available
     'docs'       :  Print a link to the online documentation.
     'exec'       :  Run a shell command, e.g.: 'exec ls -l'.
     'exit'       :  Exit the shell.
