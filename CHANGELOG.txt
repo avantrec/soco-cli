@@ -1,3 +1,4 @@
+v0.4.82   -
 v0.4.81   - Eliminate/alias inconsistent use of underscore in command line
             option names (#84)
 v0.4.80   - Minor fixes & bump SoCo version requirement
