@@ -575,8 +575,7 @@ def _set_actions_and_commands_list(use_local_speaker_list=False):
                 include_loop_actions=True,
                 include_wait_actions=True,
                 include_track_follow_actions=True,
-            )
-            + _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
+            ) + _get_speaker_names(use_local_speaker_list=use_local_speaker_list)
         ]
         + SHELL_COMMANDS
         + am.alias_names()

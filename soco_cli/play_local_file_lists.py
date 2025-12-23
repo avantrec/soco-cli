@@ -141,7 +141,7 @@ def play_m3u_file(speaker: SoCo, m3u_file: str, options: str = "") -> bool:
     directory, _ = path.split(m3u_file)
     if directory != "":
         chdir(directory)
-    tracks = [str(Path(track.path).absolute()) for track in track_list]  # type:ignore
+    tracks = [str(Path(track.path).absolute()) for track in track_list]  # type: ignore
     logging.info("Files to to play: {}".format(tracks))
 
     play_file_list(speaker, tracks, options)
