@@ -29,7 +29,8 @@ def run_command(
     speaker_name: Union[str, SoCo],
     action: str,
     *args: str,  # Means that all args are strings
-    use_local_speaker_list: bool = False
+    use_local_speaker_list: bool = False,
+    redirect_io: bool = True,
 ) -> Tuple[int, str, str]:
     """Use SoCo-CLI to run a sonos command.
 
@@ -43,24 +44,30 @@ def run_command(
     Args:
         speaker_name (str or SoCo): The name of the speaker, or its IP address.
             Alternatively, a 'SoCo' object can be supplied.
-        action (str): The The name of the SoCo-CLI action to perform.
+        action (str): The name of the SoCo-CLI action to perform.
         *args (list[str]): The set of arguments that accompany the action.
         use_local_speaker_list (bool, optional): Whether to use the local
             speaker cache.
+        redirect_io (bool, optional): Whether to redirect stdout and stderr
+            to capture their output for inclusion in the return value. If
+            False, messages will be emitted directly to stdout & stderr
+            during execution of the command, and this content will not be
+            included in the return tuple.
 
     Returns:
         (int, str, str): a three-tuple of exit_code, output_string and
-        error_msg.
+        error_msg. If redirect_io is false, output_string will be empty.
     """
 
     # Prevent errors from causing exit
     set_api()
 
-    # Capture stdout and stderr for the duration of this command
-    output = StringIO()
-    sys.stdout = output
-    error = StringIO()
-    sys.stderr = error
+    if redirect_io:
+        # Capture stdout and stderr for the duration of this command
+        output = StringIO()
+        sys.stdout = output
+        error = StringIO()
+        sys.stderr = error
 
     speaker = None
     exception_error = None
@@ -88,8 +95,12 @@ def run_command(
             logging.info("Exception: {}".format(e))
             exception_error = e
 
-        output_msg = output.getvalue().rstrip()
-        error_out = error.getvalue().rstrip()
+        if redirect_io:
+            output_msg = output.getvalue().rstrip()
+            error_out = error.getvalue().rstrip()
+        else:
+            output_msg = ""
+            error_out = ""
 
         if output_msg != "":
             lines = output_msg.splitlines()
@@ -118,9 +129,10 @@ def run_command(
             "Speaker '{}' not found: {}".format(speaker_name, exception_error),
         )
 
-    # Restore stdout and stderr
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+    if redirect_io:
+        # Restore stdout and stderr
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
 
     logging.info("Return value: {}".format(return_tuple))
 

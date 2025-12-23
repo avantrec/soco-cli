@@ -1,4 +1,5 @@
-v0.4.82   -
+v0.4.82   - Add 'redirect_io' boolean option to API 'run_command()' to
+            prevent capture of stdout and stderr (fixes #85)
 v0.4.81   - Eliminate/alias inconsistent use of underscore in command line
             option names (#84)
 v0.4.80   - Minor fixes & bump SoCo version requirement
