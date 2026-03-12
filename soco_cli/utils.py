@@ -860,6 +860,8 @@ def _confirm_soco_cli_dir() -> bool:
         except:
             error_report("Failed to create directory '{}'".format(SOCO_CLI_DIR))
             return False
+    else:
+        return True
 
 
 def remember_event_sub(sub):
