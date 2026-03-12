@@ -1,3 +1,4 @@
+v0.4.84   -
 v0.4.83   - Fix tab completion in interactive mode for Python 3.10+
           - Fix bug when checking for .soco-cli directory
 v0.4.82   - Add 'redirect_io' boolean option to API 'run_command()' to
