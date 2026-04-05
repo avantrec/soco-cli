@@ -260,6 +260,19 @@ def set_suspend_sighandling(suspend=True):
     suspend_sighandling = suspend
 
 
+# Flag set when CTRL-C interrupts a suspended-sighandling subprocess
+_ctrl_c_interrupted = False
+
+
+def set_ctrl_c_interrupted(value=True):
+    global _ctrl_c_interrupted
+    _ctrl_c_interrupted = value
+
+
+def get_ctrl_c_interrupted():
+    return _ctrl_c_interrupted
+
+
 # Stop a stream if playing a local file
 speaker_playing_local_file = None
 
@@ -279,6 +292,8 @@ def sig_handler(signal_received, frame):
     logging.info("Caught signal: {}".format(signal_received))
 
     if suspend_sighandling:
+        if signal_received == signal.SIGINT:
+            set_ctrl_c_interrupted(True)
         logging.info("Signal handling suspended ... ignoring")
         return
 
