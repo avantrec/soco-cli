@@ -29,7 +29,7 @@
       * [Queue Actions](#queue-actions)
       * [Favourites and Playlists](#favourites-and-playlists)
       * [TuneIn Radio Station Favourites](#tunein-radio-station-favourites)
-      * [Grouping and Stereo Pairing](#grouping-and-stereo-pairing)
+      * [Grouping, Stereo Pairing, and Surround (Satellite) Speakers](#grouping-stereo-pairing-and-surround-satellite-speakers)
       * [Alarms](#alarms)
       * [Music Library Search Functions](#music-library-search-functions)
       * [Speaker and Sonos System Information](#speaker-and-sonos-system-information)
@@ -85,7 +85,7 @@
    * [Resources](#resources)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: pwt, at: Sun May 19 15:54:07 BST 2024 -->
+<!-- Added by: pwt, at: Sun Apr  5 10:16:32 BST 2026 -->
 
 <!--te-->
 
@@ -503,12 +503,14 @@ The following operate on the stations in TuneIn's 'My Radio Stations' list.
 - **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station.
 - **`play_fav_radio_station_no <station_number>`** (or **`pfrsn`**): Play a favourite radio station by its number.
 
-### Grouping and Stereo Pairing
+### Grouping, Stereo Pairing, and Surround (Satellite) Speakers
 
+- **`add_satellite_speakers <left_rear_speaker> <right_rear_speaker>`** (or **`add_satellites`**): Bonds `<left_rear_speaker>` and `<right_rear_speaker>` as rear satellite speakers to the target soundbar. The target speaker must be a soundbar. Example: `sonos "Arc" add_satellites "Era 100 L" "Era 100 R"`.
 - **`group <master_speaker>`(or `g`)**: Groups the speaker with `<master_speaker>`, which acts as the coordinator.
 - **`multi_group <slave_speaker> [<slave_speaker> ...]`**: Groups one or more speakers with the target speaker, which acts as the coordinator.
 - **`pair <right_hand_speaker>`**: Creates a stereo pair, where the target speaker becomes the left-hand speaker of the pair and `<right_hand_speaker>` becomes the right-hand of the pair. Can be used to pair dissimilar Sonos devices (e.g., to stereo-pair a Play:1 with a One). The left-hand speaker becomes the coordinator speaker, and the stereo pair will adopt its name.
 - **`party_mode` (or `party`)**: Adds all speakers in the system into a single group. The target speaker becomes the group coordinator. Remove speakers individually using `ungroup`, or use `ungroup_all`.
+- **`separate_satellite_speakers`** (or **`separate_satellites`**): Removes all bonded satellite speakers from the target soundbar. The target speaker must be a soundbar. Note: this will reset the Trueplay tuning for the device.
 - **`transfer_playback <target_speaker>` (or `transfer_to`, `transfer`)**: Transfers playback to <target_speaker>. This is achieved by grouping and ungrouping the speakers, and swapping the group coordinator. It's a convenience shortcut for `speaker1 group speaker2 : speaker1 ungroup`.
 - **`ungroup` (or `ug`, `u`)**: Removes the speaker from a group.
 - **`ungroup_all`**: Removes all speakers in the target speaker's household from all groups.
