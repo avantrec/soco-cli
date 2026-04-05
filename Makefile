@@ -20,7 +20,7 @@ uninstall:
 	pip uninstall -y soco_cli
 
 black: $(SRC)
-	black --preview $(SRC) $(TESTS)
+	black --preview --target-version=py37 $(SRC) $(TESTS)
 
 isort: $(SRC)
 	isort --profile black $(SRC) $(TESTS)
