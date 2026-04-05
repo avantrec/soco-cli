@@ -1,4 +1,5 @@
-v0.4.85   -
+v0.4.85   - Add 'alarms_spec' and 'alarms_spec_zone' actions to list alarms in
+            alarm spec format for easy copy/paste into 'modify_alarm'/'add_alarm'
 v0.4.84   - Interrupt command sequence on break (fixes #35)
           - Add support for adding & removing surround sound satellite speakers
           - Add requirement for SoCo v0.31.0
@@ -31,7 +32,7 @@ v0.4.69   - Add 'strict' option for all music library searches
 v0.4.68   - Add 'strict' option to 'search_artists'
           - Add 'queue_multiple_search_results' action
 v0.4.67   - Multiple artist search results from 'search_artists' are now saved
-v0.4.66   - '_all_' now targets all visible speakers (including non-cordinators)
+v0.4.66   - '_all_' now targets all visible speakers (including non-coordinators)
 v0.4.65   - Add 'if_queue/if_no_queue' conditional action modifiers
 v0.4.64   - Add 'multi_group/mg' action
 v0.4.63   - Add 'if_coordinator' conditional action modifier

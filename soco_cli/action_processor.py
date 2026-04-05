@@ -3208,6 +3208,8 @@ actions = {
     "copy_modify_alarm": SonosFunction(alarms.copy_modify_alarm, "", False),
     "tv_audio_delay": SonosFunction(tv_audio_delay, "", True),
     "alarms_zone": SonosFunction(alarms.list_alarms, "", False),
+    "alarms_spec": SonosFunction(alarms.list_alarms_spec, "", False),
+    "alarms_spec_zone": SonosFunction(alarms.list_alarms_spec, "", False),
     "mic_enabled": SonosFunction(mic_enabled, "", False),
     "group_volume_equalise": SonosFunction(group_volume_equalise, "", True),
     "group_volume_equalize": SonosFunction(group_volume_equalise, "", True),

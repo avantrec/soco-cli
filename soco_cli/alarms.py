@@ -91,6 +91,65 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@zero_parameters
+def list_alarms_spec(speaker, action, args, soco_function, use_local_speaker_list):
+    """List alarms in 'alarm spec' format for easy copy/paste into modify_alarm or add_alarm."""
+    alarms = soco.alarms.get_alarms(speaker)
+    if not alarms:
+        return True
+    # Sort before building rows so quoting doesn't corrupt time-based ordering.
+    sorted_alarms = sorted(alarms, key=lambda a: (a.start_time, a.zone.player_name))
+
+    details = []
+    warned_comma = False
+    for alarm in sorted_alarms:
+        if action == "alarms_spec_zone":
+            if alarm.zone != speaker:
+                continue
+        didl = alarm.program_metadata
+        title_start = didl.find("<dc:title>")
+        if title_start >= 0:
+            title_start += len("<dc:title>")
+            title_end = didl.find("</dc:title>")
+            fav = didl[title_start:title_end]
+        elif alarm.program_uri is None:
+            fav = "chime"
+        elif alarm.program_uri != "":
+            fav = alarm.program_uri
+        else:
+            fav = "chime"
+
+        start_time = alarm.start_time.strftime("%H:%M")
+        duration = alarm.duration.strftime("%H:%M") if alarm.duration else "_"
+        enabled = "on" if alarm.enabled else "off"
+        include_linked = "on" if alarm.include_linked_zones else "off"
+        spec = "{},{},{},{},{},{},{},{}".format(
+            start_time,
+            duration,
+            alarm.recurrence,
+            enabled,
+            fav,
+            alarm.play_mode,
+            alarm.volume,
+            include_linked,
+        )
+        if "," in fav:
+            warned_comma = True
+        if " " in spec:
+            spec = '"{}"'.format(spec)
+        details.append([alarm.alarm_id, alarm.zone.player_name, spec])
+
+    headers = ["Alarm ID", "Speaker", "Alarm Spec"]
+    print()
+    print(tabulate.tabulate(details, headers, tablefmt="github", numalign="left"))
+    if warned_comma:
+        print(
+            "\nNote: one or more favourite names contain a comma; those specs cannot be used directly with 'modify_alarm'."
+        )
+    print()
+    return True
+
+
 @one_parameter
 def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
     alarms = get_alarms(speaker)
