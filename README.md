@@ -197,7 +197,7 @@ alias ss="sonos Study"
 alias sd="sonos-discover"
 ```
 
-This allows the use of shorthand like `sk stop`, to stop playback on the Kitchen speaker. Note, however, that this won't work with sequences of commands using a single `sonos` invocation, separated with ` : ` (see [Multiple Sequential Commands](#multiple-sequential-commands)), only for the first command in such a sequence. (Normal, mutiple `sonos` invocation, shell sequences using `;` or `&&` as separators will work, of course.)
+This allows the use of shorthand like `sk stop`, to stop playback on the Kitchen speaker. Note, however, that this won't work with sequences of commands using a single `sonos` invocation, separated with ` : ` (see [Multiple Sequential Commands](#multiple-sequential-commands)), only for the first command in such a sequence. (Normal, multiple `sonos` invocation, shell sequences using `;` or `&&` as separators will work, of course.)
 
 ### Options for the `sonos` Command
 
@@ -348,7 +348,7 @@ sonos Kitchen play_from_queue 5
 - **`bass`**: Returns the bass setting of the speaker, from -10 to 10.
 - **`bass <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.
 - **`dialog_mode`** (or **`dialog`**, **`dialogue_mode`**, **`dialogue`**): Returns the dialog mode setting of the speaker, 'on' or 'off' (if applicable).
-- **`dialog_mode <on|off>`** (or **`dialog`**, **`dialogue_mode`**, **`dialogue`**): Sets the dialog mode setting of the speaker to 'on' of 'off' (if applicable).
+- **`dialog_mode <on|off>`** (or **`dialog`**, **`dialogue_mode`**, **`dialogue`**): Sets the dialog mode setting of the speaker to 'on' or 'off' (if applicable).
 - **`fixed_volume`**: Returns whether the speaker's Fixed Volume feature is enabled, 'on' or 'off'. (Applies to Sonos Connect and Port devices only.)
 - **`fixed_volume <on|off>`**: Sets whether the speaker's Fixed Volume feature is enabled.   
 - **`group_mute`**: Returns the group mute state of a group of speakers, 'on' or 'off'.
@@ -365,9 +365,9 @@ sonos Kitchen play_from_queue 5
 - **`night_mode <on|off>`** (or **`night`**): Sets the night mode setting of the speaker to 'on' or 'off' (if applicable).
 - **`playing_tv`** (or **`is_playing_tv`**): Returns whether the speaker is currently playing from its TV input source, 'yes' or 'no'.
 - **`ramp_to_volume <volume>` (or `ramp`)**: Gently raise or reduce the volume to `<volume>`, which is between 0 and 100. Returns the number of seconds to complete the ramp.
-- **`relative_bass <adjustment>` (or `rel_bass`, `rb`)** Increase or reduce the bass setting by `<adjustment>`, a value between -10 and 10.
-- **`relative_sub_gain <adjustment>` (or `rel_sub_gain`, `rsg`)** Increase or reduce a Sub's gain setting by `<adjustment>`, a value between -15 and 15.
-- **`relative_treble <adjustment>` (or `rel_treble`, `rt`)** Increase or reduce the treble setting by `<adjustment>`, a value between -10 and 10.
+- **`relative_bass <adjustment>` (or `rel_bass`, `rb`)**: Increase or reduce the bass setting by `<adjustment>`, a value between -10 and 10.
+- **`relative_sub_gain <adjustment>` (or `rel_sub_gain`, `rsg`)**: Increase or reduce a Sub's gain setting by `<adjustment>`, a value between -15 and 15.
+- **`relative_treble <adjustment>` (or `rel_treble`, `rt`)**: Increase or reduce the treble setting by `<adjustment>`, a value between -10 and 10.
 - **`relative_volume <adjustment>` (or `rel_vol`, `rv`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
 - **`sub_enabled`**: Returns `on` if the zone's subwoofer is enabled, otherwise `off`.
 - **`sub_enabled <on|off>`**: Enables or disables a zone's subwoofer.
@@ -382,10 +382,10 @@ sonos Kitchen play_from_queue 5
 - **`surround_volume_tv`**: Reports the value of the volume level for surround speakers, when playing TV sources, from `-15` to `+15`.
 - **`surround_volume_tv <level>`**: Sets the value of the volume level for surround speakers, when playing TV sources, from `-15` to `+15`.
 - **`treble`**: Returns the treble setting of the speaker, from -10 to 10.
-- **`treble <number>`**: Sets the bass setting of the speaker to `<number>`. Values must be between -10 and 10.
+- **`treble <number>`**: Sets the treble setting of the speaker to `<number>`. Values must be between -10 and 10.
 - **`trueplay`**: Returns whether a speaker's Trueplay profile is enabled, 'on' or 'off'.
 - **`trueplay <on|off>`**: Sets whether a speaker's Trueplay profile is enabled. Can only be set to 'on' for speakers that have a current Trueplay tuning profile available.
-- **`volume` (or `vol`)**: Returns the current volume setting of the speaker (0 to 100)
+- **`volume` (or `vol`)**: Returns the current volume setting of the speaker (0 to 100).
 - **`volume <volume>` (or `vol`)**: Sets the volume of the speaker to `<volume>` (0 to 100).
 
 ### Playback Control
@@ -455,7 +455,7 @@ When items are added to the queue successfully, the queue position of the first 
 The available actions are:
 
 - **`add_playlist_to_queue <playlist_name> [<position>]`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case-insensitive, and will work on partial matches.
-- **`add_library_playlist_to_queue <playlist_name> ]<position>]`** (or **`alpq`**): As above, but targets local library imported playlists instead of Sonos playlists.
+- **`add_library_playlist_to_queue <playlist_name> [<position>]`** (or **`alpq`**): As above, but targets local library imported playlists instead of Sonos playlists.
 - **`add_sharelink_to_queue <sharelink> [<position>]`** (or **`sharelink`**): Add a **Spotify**, **Tidal**, **Deezer**, or **Apple Music** link (for a track, album, playlist, etc.) to the queue. Returns the queue position of the first track. Supported links formats are: `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`, `spotify:album:6wiUBliPe76YAVpNEdidpY`, `https://tidal.com/browse/album/157273956`, `https://www.deezer.com/en/playlist/5390258182`, `https://music.apple.com/dk/album/black-velvet/217502930?i=217503142`.
 - **`add_uri_to_queue <uri> [<position>]`** Adds a URI to the queue.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
@@ -932,7 +932,7 @@ Note that if you have speakers with the same names in multiple Sonos systems (Ho
 
 ### Refreshing the Local Speaker List
 
-If your speakers change in some way (e.g., they are renamed, are assigned different IP addresses, or you add/remove speakers), you can refresh the discovery cache using the `--refresh-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option. You can also use the `sonos-discover` command (below).
+If your speakers change in some way (e.g., they are renamed, are assigned different IP addresses, or you add/remove speakers), you can refresh the discovery cache using the `--refresh-local-speaker-list` or `-r` option. Note that this option only has an effect when combined with the `-l` option. You can also use the `sonos-discover` command (below).
 
 **Example:** `sonos -lr "living room" volume 50` will refresh the discovery cache before executing the `sonos` command.
 
@@ -1203,7 +1203,7 @@ The macro file can be reloaded using the `/macros/reload` endpoint (e.g.: `http:
 Successful invocation of a macro will return the sonos command that was executed, and the result(s) of the actions that were performed (or the error output(s) in the case of a failure), in JSON format, e.g.:
 
 ```
-{"command": "sonos Kitchen volume", result": "30"}
+{"command": "sonos Kitchen volume", "result": "30"}
 ```
 
 #### Listing Macros
