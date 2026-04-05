@@ -210,7 +210,7 @@ def convert_to_seconds(time_str):
         else:  # Seconds (default)
             duration = float(time_str)
         return duration
-    except:
+    except (ValueError, TypeError):
         raise ValueError
 
 
@@ -870,7 +870,7 @@ def _confirm_soco_cli_dir() -> bool:
         try:
             os.mkdir(SOCO_CLI_DIR)
             return True
-        except:
+        except OSError:
             error_report("Failed to create directory '{}'".format(SOCO_CLI_DIR))
             return False
     else:
@@ -897,9 +897,34 @@ def unsub_all_remembered_event_subs():
     for sub in SUBS_LIST:
         try:
             event_unsubscribe(sub)
-        except:
+        except Exception:
             break
     SUBS_LIST.clear()
+
+
+def find_by_name(items, name):
+    """Find an item by strict then fuzzy match on its .title attribute.
+
+    Returns the first matched item, or None if not found.
+    """
+    for item in items:
+        if name == item.title:
+            logging.info("Strict match '{}' found".format(item.title))
+            return item
+    name_lower = name.lower()
+    for item in items:
+        if name_lower in item.title.lower():
+            logging.info("Fuzzy match '{}' found".format(item.title))
+            return item
+    return None
+
+
+def queue_is_empty(speaker):
+    """Return True and report error if the queue is empty, otherwise False."""
+    if speaker.queue_size == 0:
+        error_report("Queue is empty")
+        return True
+    return False
 
 
 def create_list_of_items_from_range(range_definition: str, upper_limit: int):

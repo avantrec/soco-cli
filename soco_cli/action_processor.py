@@ -27,6 +27,7 @@ from soco_cli.utils import (
     create_list_of_items_from_range,
     error_report,
     event_unsubscribe,
+    find_by_name,
     forget_event_sub,
     get_queue_insertion_position,
     get_right_hand_speaker,
@@ -37,6 +38,7 @@ from soco_cli.utils import (
     parameter_type_error,
     playback_state,
     pretty_print_values,
+    queue_is_empty,
     read_search,
     remember_event_sub,
     rename_speaker_in_cache,
@@ -55,29 +57,30 @@ pp = pprint.PrettyPrinter(width=120)
 SONOS_MAX_ITEMS = 66000
 
 
+def filter_track_info(track_info, excluded_fields):
+    """Return a capitalised-key dict of track_info entries, excluding specified fields."""
+    return {
+        item.capitalize(): track_info[item]
+        for item in sorted(track_info)
+        if item not in excluded_fields
+    }
+
+
+def _get_track_position_timedelta(speaker):
+    """Return the current track position as a timedelta."""
+    current_position = speaker.get_current_track_info()["position"]
+    logging.info("Current playback position is '{}'".format(current_position))
+    h, m, s = [int(x) for x in current_position.split(":")]
+    return timedelta(hours=h, minutes=m, seconds=s)
+
+
 def get_playlist(speaker, name, library=False):
     """Returns the playlist object with 'name' otherwise None."""
     if library:
         playlists = speaker.music_library.get_playlists(complete_result=True)
     else:
         playlists = speaker.get_sonos_playlists(complete_result=True)
-
-    # Strict match
-    for playlist in playlists:
-        if name == playlist.title:
-            logging.info(
-                "Found playlist '{}' using strict match".format(playlist.title)
-            )
-            return playlist
-
-    # Fuzzy match
-    name = name.lower()
-    for playlist in playlists:
-        if name in playlist.title.lower():
-            logging.info("Found playlist '{}' using fuzzy match".format(playlist.title))
-            return playlist
-
-    return None
+    return find_by_name(playlists, name)
 
 
 def print_list_header(prefix, name):
@@ -102,7 +105,7 @@ def get_current_queue_position(speaker, tracks=None):
         track_info = speaker.get_current_track_info()
         qp = int(track_info["playlist_position"])
         track_title = track_info["title"]
-    except:
+    except Exception:
         qp = 0
 
     try:
@@ -115,14 +118,14 @@ def get_current_queue_position(speaker, tracks=None):
                     else:
                         is_playing = False
                         qp = 1
-                except:
+                except (IndexError, AttributeError):
                     is_playing = False
                     qp = 1
             else:
                 is_playing = True
         else:
             is_playing = False
-    except:
+    except Exception:
         is_playing = False
 
     return qp, is_playing
@@ -188,11 +191,11 @@ def print_albums(albums, omit_first=False):
     for album in albums:
         try:
             artist = album.creator
-        except:
+        except AttributeError:
             artist = ""
         try:
             title = album.title
-        except:
+        except AttributeError:
             title = ""
         if item_number == 1 and omit_first:
             omit_first = False
@@ -388,16 +391,12 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
     if track_info["duration"] in ["0:00:00", "NOT_IMPLEMENTED"]:
         logging.info("Track is a radio stream")
         stream = True
-        for item in sorted(track_info):
-            if item not in [
-                "metadata",
-                "album_art",
-                "duration",
-                "playlist_position",
-                # "position",
-                "uri",
-            ]:
-                elements[item.capitalize()] = track_info[item]
+        elements.update(
+            filter_track_info(
+                track_info,
+                ["metadata", "album_art", "duration", "playlist_position", "uri"],
+            )
+        )
 
         try:
             metadata = parse(track_info["metadata"])
@@ -405,15 +404,15 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                 logging.info("Attempting to find 'Artist' from metadata")
                 try:
                     elements["Artist"] = metadata["DIDL-Lite"]["item"]["dc:creator"]
-                except:
+                except (KeyError, TypeError):
                     logging.info("Unable to find 'Artist'")
             if elements["Title"] == "":
                 logging.info("Attempting to find 'Title' from metadata")
                 try:
                     elements["Title"] = metadata["DIDL-Lite"]["item"]["dc:title"]
-                except:
+                except (KeyError, TypeError):
                     logging.info("Unable to find 'Title'")
-        except:
+        except Exception:
             pass
 
         try:
@@ -437,7 +436,7 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
         try:
             metadata = parse(track_info["metadata"])
             logging.info("Track metadata: {}".format(metadata))
-        except:
+        except Exception:
             logging.info("No usable metadata available")
             metadata = None
 
@@ -453,11 +452,13 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                 elements["Release Date"] = metadata["DIDL-Lite"]["item"][
                     "r:releaseDate"
                 ][:10]
-            except:
+            except (KeyError, TypeError):
                 logging.info("Failed to find 'Podcast' and/or 'Release Date'")
-            for item in sorted(track_info):
-                if item not in ["metadata", "uri", "album_art", "album", "artist"]:
-                    elements[item.capitalize()] = track_info[item]
+            elements.update(
+                filter_track_info(
+                    track_info, ["metadata", "uri", "album_art", "album", "artist"]
+                )
+            )
             try:
                 elements["Episode"] = elements.pop("Title")
             except KeyError:
@@ -475,26 +476,29 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
                 elements["Creator(s)"] = track_info["artist"]
                 elements["Narrator(s)"] = metadata["DIDL-Lite"]["item"]["r:narrator"]
                 elements["Chapter"] = metadata["DIDL-Lite"]["item"]["dc:title"]
-            except:
+            except (KeyError, TypeError):
                 logging.info("Failed to find book details")
-            for item in sorted(track_info):
-                if item not in [
-                    "metadata",
-                    "uri",
-                    "album_art",
-                    "album",
-                    "artist",
-                    "title",
-                    "playlist_position",
-                ]:
-                    elements[item.capitalize()] = track_info[item]
+            elements.update(
+                filter_track_info(
+                    track_info,
+                    [
+                        "metadata",
+                        "uri",
+                        "album_art",
+                        "album",
+                        "artist",
+                        "title",
+                        "playlist_position",
+                    ],
+                )
+            )
 
         # Regular track
         else:
             logging.info("Track is a normal audio track")
-            for item in sorted(track_info):
-                if item not in ["metadata", "uri", "album_art"]:
-                    elements[item.capitalize()] = track_info[item]
+            elements.update(
+                filter_track_info(track_info, ["metadata", "uri", "album_art"])
+            )
             # If there's no title, look in the metadata
             try:
                 if elements["Title"] == "" or title_not_useful(elements["Title"]):
@@ -662,22 +666,7 @@ def play_favourite_core(speaker, favourite, favourite_number=None):
         )
 
     else:
-        the_fav = None
-        # Strict match
-        for f in fs:
-            if favourite == f.title:
-                logging.info("Strict match '{}' found".format(f.title))
-                the_fav = f
-                break
-
-        # Fuzzy match
-        if not the_fav:
-            favourite = favourite.lower()
-            for f in fs:
-                if favourite in f.title.lower():
-                    logging.info("Fuzzy match '{}' found".format(f.title))
-                    the_fav = f
-                    break
+        the_fav = find_by_name(fs, favourite)
 
     if the_fav:
         # play_uri works for some favourites
@@ -735,21 +724,7 @@ def add_favourite_to_queue(
 ):
     favourite = args[0]
     fs = speaker.music_library.get_sonos_favorites()
-    the_fav = None
-    # Strict match
-    for f in fs:
-        if favourite == f.title:
-            logging.info("Strict match '{}' found".format(f.title))
-            the_fav = f
-            break
-    # Fuzzy match
-    favourite = favourite.lower()
-    if not the_fav:
-        for f in fs:
-            if favourite in f.title.lower():
-                logging.info("Fuzzy match '{}' found".format(f.title))
-                the_fav = f
-                break
+    the_fav = find_by_name(fs, favourite)
     if the_fav:
         if len(args) == 2:
             position = get_queue_insertion_position(speaker, args[1], action)
@@ -774,7 +749,7 @@ def play_favourite_radio_number(
 ):
     try:
         fav_no = int(args[0])
-    except:
+    except ValueError:
         parameter_type_error(action, "integer")
         return False
 
@@ -801,21 +776,7 @@ def play_favourite_radio(speaker, action, args, soco_function, use_local_speaker
     preset = 0
     limit = 99
     fs = speaker.music_library.get_favorite_radio_stations(preset, limit)
-    the_fav = None
-    # Strict match
-    for f in fs:
-        if favourite == f.title:
-            logging.info("Strict match '{}' found".format(f.title))
-            the_fav = f
-            break
-    # Fuzzy match
-    favourite = favourite.lower()
-    if not the_fav:
-        for f in fs:
-            if favourite in f.title.lower():
-                logging.info("Fuzzy match '{}' found".format(f.title))
-                the_fav = f
-                break
+    the_fav = find_by_name(fs, favourite)
     if the_fav:
         uri = the_fav.get_uri()
         meta_template = """
@@ -850,7 +811,7 @@ def play_uri(speaker, action, args, soco_function, use_local_speaker_list):
         try:
             speaker.play_uri(uri, title=title, force_radio=radio)
             return True
-        except:
+        except Exception:
             continue
 
     error_report("Failed to play URI: '{}'".format(uri))
@@ -984,7 +945,7 @@ def operate_on_all(speaker, action, args, soco_function, use_local_speaker_list)
                     )
                 )
                 getattr(zone, soco_function)()
-            except:
+            except Exception:
                 logging.info("Operation failed ... continuing")
                 # Ignore errors here; don't want to halt on
                 # a failed pause (e.g., if speaker isn't playing)
@@ -1044,8 +1005,7 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
 def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_list):
     # Generate a list that represents which tracks to remove, denoted by '0'
     # Initially mark each track as '1' (retain)
-    if speaker.queue_size == 0:
-        error_report("Queue is empty")
+    if queue_is_empty(speaker):
         return False
     queue = []
     for _ in range(speaker.queue_size):
@@ -1115,8 +1075,7 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
 def remove_current_track_from_queue(
     speaker, action, args, soco_function, use_local_speaker_list
 ):
-    if speaker.queue_size == 0:
-        error_report("Queue is empty")
+    if queue_is_empty(speaker):
         return False
     current_track = int(speaker.get_current_track_info()["playlist_position"])
     logging.info("Removing track {}".format(current_track))
@@ -1130,8 +1089,7 @@ def remove_last_track_from_queue(
 ):
     queue_size = speaker.queue_size
     logging.info("Queue size is {}".format(queue_size))
-    if queue_size == 0:
-        error_report("Queue is empty")
+    if queue_is_empty(speaker):
         return False
     if len(args) == 1:
         try:
@@ -1154,8 +1112,7 @@ def remove_last_track_from_queue(
 
 @one_parameter
 def save_queue(speaker, action, args, soco_function, use_local_speaker_list):
-    if speaker.queue_size == 0:
-        error_report("Queue is empty")
+    if queue_is_empty(speaker):
         return False
     speaker.create_sonos_playlist_from_queue(args[0])
     return True
@@ -1176,7 +1133,7 @@ def seek(speaker, action, args, soco_function, use_local_speaker_list):
     try:
         # seek() will handle out-of-bounds
         speaker.seek(seek_point)
-    except:
+    except SoCoUPnPException:
         parameter_type_error(action, "valid time value on a seekable source")
         return False
     return True
@@ -1191,12 +1148,7 @@ def seek_forward(speaker, action, args, soco_function, use_local_speaker_list):
         return False
     logging.info("Seeking forward by {}s".format(increment))
 
-    # Get the current position
-    current_position = speaker.get_current_track_info()["position"]
-    logging.info("Current playback position is '{}'".format(current_position))
-    h, m, s = [int(s) for s in current_position.split(":")]
-
-    td_current = timedelta(hours=h, minutes=m, seconds=s)
+    td_current = _get_track_position_timedelta(speaker)
     td_increment = timedelta(seconds=increment)
     td_new_str = str(td_current + td_increment)
     logging.info(
@@ -1206,7 +1158,7 @@ def seek_forward(speaker, action, args, soco_function, use_local_speaker_list):
     )
     try:
         speaker.seek(td_new_str)
-    except:
+    except SoCoUPnPException:
         parameter_type_error(action, "time increment on a seekable source")
         return False
     return True
@@ -1221,12 +1173,7 @@ def seek_back(speaker, action, args, soco_function, use_local_speaker_list):
         return False
     logging.info("Seeking backward by {}s".format(increment))
 
-    # Get the current position
-    current_position = speaker.get_current_track_info()["position"]
-    logging.info("Current playback position is '{}'".format(current_position))
-    h, m, s = [int(s) for s in current_position.split(":")]
-
-    td_current = timedelta(hours=h, minutes=m, seconds=s)
+    td_current = _get_track_position_timedelta(speaker)
     td_increment = timedelta(seconds=increment)
     if td_current - td_increment < timedelta():
         logging.info("Cannot seek beyond start of track ... seek to start instead")
@@ -1236,7 +1183,7 @@ def seek_back(speaker, action, args, soco_function, use_local_speaker_list):
     logging.info("Seeking backward to position '{}'".format(td_new_str))
     try:
         speaker.seek(td_new_str)
-    except:
+    except SoCoUPnPException:
         parameter_type_error(action, "time increment on a seekable source")
         return False
     return True
@@ -1326,7 +1273,7 @@ def remove_from_playlist(speaker, action, args, soco_function, use_local_speaker
     name = args[0]
     try:
         track_number = int(args[1])
-    except:
+    except ValueError:
         parameter_type_error(action, "integer (track number)")
         return False
     playlist = get_playlist(speaker, name)
@@ -1433,7 +1380,7 @@ def eq(speaker, action, args, soco_function, use_local_speaker_list):
     elif np == 1:
         try:
             setting = int(args[0])
-        except:
+        except ValueError:
             parameter_type_error(action, "integer from -10 to 10")
             return False
         if -10 <= setting <= 10:
@@ -1451,7 +1398,7 @@ def eq_relative(speaker, action, args, soco_function, use_local_speaker_list):
     lower_limit = upper_limit * -1
     try:
         delta = int(args[0])
-    except:
+    except ValueError:
         parameter_type_error(
             action, "integer from {} to {}".format(lower_limit, upper_limit)
         )
@@ -1479,7 +1426,7 @@ def balance(speaker, action, args, soco_function, use_local_speaker_list):
     elif np == 1:
         try:
             setting = int(args[0])
-        except:
+        except ValueError:
             parameter_type_error(action, "integer from -100 to 100")
             return False
         if -100 <= setting <= 100:
@@ -1630,7 +1577,7 @@ def wait_stop_core(speaker, not_paused=False):
                 event_unsubscribe(sub)
                 forget_event_sub(sub)
                 return True
-        except:
+        except Exception:
             pass
 
 
@@ -1727,7 +1674,7 @@ def wait_start(speaker, action, args, soco_function, use_local_speaker_list):
                 event_unsubscribe(sub)
                 forget_event_sub(sub)
                 return True
-        except:
+        except Exception:
             pass
 
 
@@ -2195,7 +2142,7 @@ def battery(speaker, action, args, soco_function, use_local_speaker_list):
     except NotSupportedException:
         error_report("Battery status not supported by '{}'".format(speaker.player_name))
         return False
-    except:
+    except Exception:
         error_report("Unable to retrieve battery status")
         return False
 
@@ -2234,7 +2181,7 @@ def album_art(speaker, action, args, soco_function, use_local_speaker_list):
             data = parse(metadata)
             album_art_uri = data["DIDL-Lite"]["item"]["upnp:albumArtURI"]
         logging.info("Found album art directly: '{}'".format(album_art_uri))
-    except:
+    except Exception:
         logging.info("Unable to find album art directly")
         album_art_uri = None
 
@@ -2347,7 +2294,7 @@ def fixed_volume(speaker, action, args, soco_function, use_local_speaker_list):
                 speaker.fixed_volume = False
             else:
                 parameter_type_error(action, "on|off")
-        except:
+        except SoCoUPnPException:
             error_report(
                 "Fixed Volume feature not supported by '{}'".format(speaker.player_name)
             )
@@ -2371,7 +2318,7 @@ def trueplay(speaker, action, args, soco_function, use_local_speaker_list):
                 speaker.trueplay = False
             else:
                 parameter_type_error(action, "on|off")
-        except:
+        except SoCoUPnPException:
             error_report(
                 "No Trueplay profile available for '{}' (or Trueplay not supported)".format(
                     speaker.player_name
@@ -2447,7 +2394,7 @@ def pauseplay(speaker, action, args, soco_function, use_local_speaker_list):
         try:
             logging.info("Trying 'pause'")
             speaker.pause()
-        except:
+        except SoCoUPnPException:
             logging.info("'Pause' failed ... using 'stop'")
             speaker.stop()
 
@@ -2513,7 +2460,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                     initial_radio_show = event.variables[
                         "current_track_meta_data"
                     ].radio_show
-                except:
+                except AttributeError:
                     pass
                 logging.info(
                     "Initial title = '{}', initial duration = '{}', initial radio show"
@@ -2530,7 +2477,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                     current_radio_show = event.variables[
                         "current_track_meta_data"
                     ].radio_show
-                except:
+                except AttributeError:
                     current_radio_show = None
                 logging.info(
                     "Current title = '{}', current duration = '{}', current radio show"
@@ -2549,7 +2496,7 @@ def wait_end_track(speaker, action, args, soco_function, use_local_speaker_list)
                     event_unsubscribe(sub)
                     forget_event_sub(sub)
                     return True
-        except:
+        except Exception:
             pass
 
 
