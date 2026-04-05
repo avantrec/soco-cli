@@ -1,3 +1,4 @@
+v0.4.85   -
 v0.4.84   - Interrupt command sequence on break (fixes #35)
           - Add support for adding & removing surround sound satellite speakers
           - Add requirement for SoCo v0.31.0
