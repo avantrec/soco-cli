@@ -482,7 +482,8 @@ def _modify_alarm_object(speaker: SoCo, alarm: Alarm, parms_string: str) -> bool
         if fav.lower() == "chime":
             alarm.program_uri = None
         else:
-            set_program_data(speaker, alarm, fav)
+            if not set_program_data(speaker, alarm, fav):
+                return False
 
     play_mode = alarm_parameters[5].upper()
     if not play_mode == "_":
@@ -541,7 +542,7 @@ def _modify_alarm_object(speaker: SoCo, alarm: Alarm, parms_string: str) -> bool
     return True
 
 
-def set_program_data(speaker: SoCo, alarm: Alarm, fav: str):
+def set_program_data(speaker: SoCo, alarm: Alarm, fav: str) -> bool:
     """
     Set the program URI and metadata for the alarm, using a selection
     from the list of Sonos Favourites.
@@ -557,6 +558,6 @@ def set_program_data(speaker: SoCo, alarm: Alarm, fav: str):
             # Assume there's only one 'resources' object in the list
             logging.info("Using URI = {}".format(s_fav.resources[0].uri))
             alarm.program_uri = s_fav.resources[0].uri
-            return
-    else:
-        raise Exception("Favourite '{}' not found".format(fav))
+            return True
+    error_report("Favourite '{}' not found".format(fav))
+    return False

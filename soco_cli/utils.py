@@ -600,10 +600,8 @@ def get_speaker(name, local=False):
     # Use discovery
     # Try various lookup methods in order of expense,
     # and cache results where possible
-    speaker = None
-    if not speaker:
-        logging.info("Trying direct cache lookup")
-        speaker = SPKR_CACHE.find(name)
+    logging.info("Trying direct cache lookup")
+    speaker = SPKR_CACHE.find(name)
     if not speaker:
         logging.info("Trying indirect cache lookup")
         speaker = SPKR_CACHE.find_indirect(name)
@@ -627,7 +625,7 @@ def get_right_hand_speaker(left_hand_speaker):
     # left-hand speaker is supplied
     if not left_hand_speaker.is_visible:
         # If not visible, this is not a left-hand speaker
-        logging.info("Speaker is visible: not a left-hand speaker")
+        logging.info("Speaker is not visible: not a left-hand speaker")
         return None
 
     # Find the speaker which is not visible, for which the
