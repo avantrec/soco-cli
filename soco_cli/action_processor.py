@@ -929,6 +929,22 @@ def group_or_pair(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+@two_parameters
+def add_satellite_speakers(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
+    left_rear = get_speaker(args[0], use_local_speaker_list)
+    if not left_rear:
+        error_report("Speaker '{}' not found".format(args[0]))
+        return False
+    right_rear = get_speaker(args[1], use_local_speaker_list)
+    if not right_rear:
+        error_report("Speaker '{}' not found".format(args[1]))
+        return False
+    getattr(speaker, soco_function)(left_rear, right_rear)
+    return True
+
+
 @one_or_more_parameters
 def multi_group(speaker, action, args, soco_function, use_local_speaker_list):
     """
@@ -2991,6 +3007,16 @@ actions = {
     "groups": SonosFunction(groups, "groups"),
     "pair": SonosFunction(group_or_pair, "create_stereo_pair"),
     "unpair": SonosFunction(no_args_no_output, "separate_stereo_pair"),
+    "add_satellite_speakers": SonosFunction(
+        add_satellite_speakers, "add_satellite_speakers"
+    ),
+    "add_satellites": SonosFunction(add_satellite_speakers, "add_satellite_speakers"),
+    "separate_satellite_speakers": SonosFunction(
+        no_args_no_output, "separate_satellite_speakers"
+    ),
+    "separate_satellites": SonosFunction(
+        no_args_no_output, "separate_satellite_speakers"
+    ),
     "delete_playlist": SonosFunction(playlist_operations, "remove_sonos_playlist"),
     "remove_playlist": SonosFunction(playlist_operations, "remove_sonos_playlist"),
     "clear_playlist": SonosFunction(playlist_operations, "clear_sonos_playlist"),

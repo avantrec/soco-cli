@@ -37,10 +37,12 @@ from soco_cli.keystroke_capture import get_keystroke
 from soco_cli.utils import (
     RewindableList,
     docs,
+    get_ctrl_c_interrupted,
     get_readline_history,
     get_speaker,
     local_speaker_list,
     save_readline_history,
+    set_ctrl_c_interrupted,
     set_interactive,
     set_single_keystroke,
     set_suspend_sighandling,
@@ -311,8 +313,8 @@ def interactive_loop(
                     continue
 
                 if command_lower == "exec":
-                    if len(command) > 1:
-                        _exec(command[1:])
+                    if len(command) > 1 and _exec(command[1:]):
+                        break
                     continue
 
                 if command_lower == "cd":
@@ -489,7 +491,8 @@ def interactive_loop(
                         action in ACTIONS_TO_EXEC
                         or action in ACTIONS_TO_EXEC_NO_SPEAKER
                     ):
-                        _exec_action(speaker.ip_address, action, args)
+                        if _exec_action(speaker.ip_address, action, args):
+                            break
                     else:
                         exit_code, output, error_msg = run_command(
                             speaker,
@@ -820,11 +823,14 @@ def _rescan(use_local_speaker_list=False, max_scan=False):
         print("Rescan failed: please check your network connection [{}]".format(e))
 
 
-def _exec(command_args: List[str]) -> None:
+def _exec(command_args: List[str]) -> bool:
     """Runs a command as a subprocess, in its own shell.
 
     Args:
         command_args (list): The command to execute.
+
+    Returns:
+        bool: True if the subprocess was interrupted by CTRL-C, False otherwise.
     """
 
     # Check for spaces within any of the command line args,
@@ -836,6 +842,7 @@ def _exec(command_args: List[str]) -> None:
     # Convert command list to a unified command line
     command_line = " ".join(command_args)
 
+    set_ctrl_c_interrupted(False)
     set_suspend_sighandling(suspend=True)
     try:
         logging.info("Running command: '{}'".format(command_line))
@@ -843,12 +850,13 @@ def _exec(command_args: List[str]) -> None:
     except Exception as e:
         print(e)
     set_suspend_sighandling(suspend=False)
+    return get_ctrl_c_interrupted()
 
 
 CTRL_C_MSG_ISSUED = False
 
 
-def _exec_action(speaker_ip: str, action: str, args: List[str]) -> None:
+def _exec_action(speaker_ip: str, action: str, args: List[str]) -> bool:
     # Commands to run in a subprocess, to allow CTRL-C
     # to exit the subprocess only, and not the shell.
 
@@ -865,7 +873,7 @@ def _exec_action(speaker_ip: str, action: str, args: List[str]) -> None:
         print("(Use CTRL-C to return to the Sonos shell prompt.)")
         CTRL_C_MSG_ISSUED = True
 
-    _exec(command_line)
+    return _exec(command_line)
 
 
 def _exec_command_line(command_line: str) -> None:
