@@ -594,7 +594,7 @@ def _process_macro(macro_name: str, *args) -> Tuple[str, str]:
     # Execute the command
     print(PREFIX_MACRO + "Executing: '" + sonos_command_line + "' in a subprocess")
     try:
-        output = check_output(sonos_command_line, stderr=STDOUT, shell=True)
+        output = check_output(shlex.split(sonos_command_line), stderr=STDOUT)
         print(PREFIX_MACRO + "Exit code = 0")
         return sonos_command_line, output.decode("utf-8").rstrip()
     except CalledProcessError as exc:

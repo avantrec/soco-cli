@@ -127,12 +127,15 @@ class Speakers:
         # Check for valid networks
         if subnets is not None:
             self._subnets_arg = True  # True if subnets has been set
+            invalid = []
             for subnet in subnets:
                 try:
                     _ = ipaddress.IPv4Network(subnet, strict=False)
                 except (ipaddress.AddressValueError, ValueError):
                     logging.info("Invalid network/subnet: {}".format(subnet))
-                    subnets.remove(subnet)
+                    invalid.append(subnet)
+            for subnet in invalid:
+                subnets.remove(subnet)
             logging.info("Setting search subnets to: {}".format(subnets))
         else:
             self._subnets_arg = False

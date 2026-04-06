@@ -210,7 +210,7 @@ def convert_to_seconds(time_str):
         else:  # Seconds (default)
             duration = float(time_str)
         return duration
-    except:
+    except (ValueError, TypeError):
         raise ValueError
 
 
@@ -600,10 +600,8 @@ def get_speaker(name, local=False):
     # Use discovery
     # Try various lookup methods in order of expense,
     # and cache results where possible
-    speaker = None
-    if not speaker:
-        logging.info("Trying direct cache lookup")
-        speaker = SPKR_CACHE.find(name)
+    logging.info("Trying direct cache lookup")
+    speaker = SPKR_CACHE.find(name)
     if not speaker:
         logging.info("Trying indirect cache lookup")
         speaker = SPKR_CACHE.find_indirect(name)
@@ -627,7 +625,7 @@ def get_right_hand_speaker(left_hand_speaker):
     # left-hand speaker is supplied
     if not left_hand_speaker.is_visible:
         # If not visible, this is not a left-hand speaker
-        logging.info("Speaker is visible: not a left-hand speaker")
+        logging.info("Speaker is not visible: not a left-hand speaker")
         return None
 
     # Find the speaker which is not visible, for which the
@@ -872,7 +870,7 @@ def _confirm_soco_cli_dir() -> bool:
         try:
             os.mkdir(SOCO_CLI_DIR)
             return True
-        except:
+        except OSError:
             error_report("Failed to create directory '{}'".format(SOCO_CLI_DIR))
             return False
     else:
@@ -899,9 +897,34 @@ def unsub_all_remembered_event_subs():
     for sub in SUBS_LIST:
         try:
             event_unsubscribe(sub)
-        except:
+        except Exception:
             break
     SUBS_LIST.clear()
+
+
+def find_by_name(items, name):
+    """Find an item by strict then fuzzy match on its .title attribute.
+
+    Returns the first matched item, or None if not found.
+    """
+    for item in items:
+        if name == item.title:
+            logging.info("Strict match '{}' found".format(item.title))
+            return item
+    name_lower = name.lower()
+    for item in items:
+        if name_lower in item.title.lower():
+            logging.info("Fuzzy match '{}' found".format(item.title))
+            return item
+    return None
+
+
+def queue_is_empty(speaker):
+    """Return True and report error if the queue is empty, otherwise False."""
+    if speaker.queue_size == 0:
+        error_report("Queue is empty")
+        return True
+    return False
 
 
 def create_list_of_items_from_range(range_definition: str, upper_limit: int):
