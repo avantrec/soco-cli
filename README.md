@@ -323,9 +323,9 @@ The `play_file` action can be used to play individual tracks on the CD, e.g.:
 
 ### Spotify, Tidal, Deezer, and Apple Music Share Links
 
-The `add_sharelink_to_queue` (or `sharelink`) action can be used to add share links from Spotify, Tidal, Deezer, or Apple Music to the queue, provided the Sonos system has a subscription to the required service.
+The `add_sharelink_to_queue` (or `sharelink`) action can be used to add one or more share links from Spotify, Tidal, Deezer, or Apple Music to the queue, provided the Sonos system has a subscription to the required service.
 
-Links can refer to tracks, albums, or playlists. The position of the first track added to the queue is returned, which can then be played using `play_from_queue`. Share links can be of the form:
+Links can refer to tracks, albums, or playlists. The queue position of the first track added is returned, which can then be played using `play_from_queue`. Share links can be of the form:
 
 - `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`
 - `spotify:album:6wiUBliPe76YAVpNEdidpY`
@@ -333,11 +333,16 @@ Links can refer to tracks, albums, or playlists. The position of the first track
 - `https://www.deezer.com/en/playlist/5390258182`
 - `https://music.apple.com/dk/album/black-velvet/217502930?i=217503142`
 
-**Example**:
+Multiple sharelinks can be supplied in a single action; they are added to the queue in order. An optional queue position can be supplied as the final argument; it applies to the first sharelink, and subsequent sharelinks are appended after it.
+
+**Examples**:
 ```
 sonos Kitchen sharelink "https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD"
 5 <-- Returns queue position of first track
 sonos Kitchen play_from_queue 5
+
+sonos Kitchen sharelink "https://open.spotify.com/track/AAA" "https://open.spotify.com/album/BBB"
+5 <-- Both added; returns queue position of first track
 ```
 
 ## Complete List of Available Actions
@@ -457,7 +462,7 @@ The available actions are:
 
 - **`add_playlist_to_queue <playlist_name> [<position>]`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case-insensitive, and will work on partial matches.
 - **`add_library_playlist_to_queue <playlist_name> [<position>]`** (or **`alpq`**): As above, but targets local library imported playlists instead of Sonos playlists.
-- **`add_sharelink_to_queue <sharelink> [<position>]`** (or **`sharelink`**): Add a **Spotify**, **Tidal**, **Deezer**, or **Apple Music** link (for a track, album, playlist, etc.) to the queue. Returns the queue position of the first track. Supported links formats are: `https://open.spotify.com/track/6cpcorzV5cmVjBsuAXq4wD`, `spotify:album:6wiUBliPe76YAVpNEdidpY`, `https://tidal.com/browse/album/157273956`, `https://www.deezer.com/en/playlist/5390258182`, `https://music.apple.com/dk/album/black-velvet/217502930?i=217503142`.
+- **`add_sharelink_to_queue <sharelink> [<sharelink2> ...] [<position>]`** (or **`sharelink`**): Add one or more **Spotify**, **Tidal**, **Deezer**, or **Apple Music** links (for tracks, albums, playlists, etc.) to the queue. Returns the queue position of the first track added. Multiple sharelinks are added in order; an optional position applies to the first, and the rest are appended.
 - **`add_uri_to_queue <uri> [<position>]`** Adds a URI to the queue.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue

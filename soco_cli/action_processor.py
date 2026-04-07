@@ -2514,31 +2514,43 @@ def get_channel(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
-@one_or_two_parameters
+@one_or_more_parameters
 def add_sharelink_to_queue(
     speaker, action, args, soco_function, use_local_speaker_list
 ):
     share_link = ShareLinkPlugin(speaker)
-    uri = args[0]
 
-    if len(args) == 2:
-        position = get_queue_insertion_position(speaker, args[1], action)
+    # If the last arg is not a sharelink, treat it as a queue position
+    if len(args) > 1 and not share_link.is_share_link(args[-1]):
+        uris = args[:-1]
+        first_position = get_queue_insertion_position(speaker, args[-1], action)
     else:
-        position = speaker.queue_size + 1
+        uris = args
+        first_position = None  # will use queue_size + 1 for each
 
-    if not share_link.is_share_link(uri):
-        error_report("Invalid sharelink: '{}'".format(uri))
-        return False
+    # Validate all URIs before adding any
+    for uri in uris:
+        if not share_link.is_share_link(uri):
+            error_report("Invalid sharelink: '{}'".format(uri))
+            return False
 
-    try:
-        # Return the queue position of the first added item
-        queue_position = share_link.add_share_link_to_queue(uri, position)
-        save_queue_insertion_position(queue_position)
-        print(queue_position)
-    except SoCoUPnPException as e:
-        error_report("Unable to add sharelink to queue: {}".format(e))
-        return False
+    first_queue_position = None
+    for uri in uris:
+        position = (
+            first_position if first_queue_position is None else speaker.queue_size + 1
+        )
+        if position is None:
+            position = speaker.queue_size + 1
+        try:
+            queue_position = share_link.add_share_link_to_queue(uri, position)
+            if first_queue_position is None:
+                first_queue_position = queue_position
+                save_queue_insertion_position(queue_position)
+        except SoCoUPnPException as e:
+            error_report("Unable to add sharelink to queue: {}".format(e))
+            return False
 
+    print(first_queue_position)
     return True
 
 
