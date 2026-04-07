@@ -77,6 +77,7 @@ class ActiveAsyncOps:
 
 
 ASYNC_OPS = ActiveAsyncOps()
+ASYNC_MACRO_OPS = ActiveAsyncOps()
 
 
 sc_app = FastAPI(
@@ -572,6 +573,11 @@ def main() -> None:
 
 
 def _process_macro(macro_name: str, *args) -> Tuple[str, str]:
+    # Check for async prefix
+    is_async = macro_name.startswith(ASYNC_PREFIX)
+    if is_async:
+        macro_name = macro_name[len(ASYNC_PREFIX) :]
+
     # Look up the macro
     try:
         macro = _lookup_macro(macro_name)
@@ -592,15 +598,33 @@ def _process_macro(macro_name: str, *args) -> Tuple[str, str]:
         sonos_command_line = "sonos " + sonos_command_line
 
     # Execute the command
-    print(PREFIX_MACRO + "Executing: '" + sonos_command_line + "' in a subprocess")
-    try:
-        output = check_output(shlex.split(sonos_command_line), stderr=STDOUT)
-        print(PREFIX_MACRO + "Exit code = 0")
-        return sonos_command_line, output.decode("utf-8").rstrip()
-    except CalledProcessError as exc:
-        error = exc.output.decode("utf-8").rstrip().replace("\n", "; ")
-        print(PREFIX_MACRO + "Exit code = {} [{}]".format(exc.returncode, error))
-        return sonos_command_line, error
+    if is_async:
+        print(
+            PREFIX_MACRO
+            + "Executing async: '"
+            + sonos_command_line
+            + "' in a background subprocess"
+        )
+        try:
+            async_key = macro_name + ("|" + "|".join(args) if args else "")
+            ASYNC_MACRO_OPS.stop_async_process(async_key)
+            proc = Popen(shlex.split(sonos_command_line))
+            ASYNC_MACRO_OPS.add_async_pid(async_key, proc.pid)
+            print(PREFIX_MACRO + "Async macro started with PID {}".format(proc.pid))
+            return sonos_command_line, ""
+        except Exception as e:
+            print(PREFIX_MACRO + "Async macro failed: {}".format(e))
+            return sonos_command_line, "Error: {}".format(e)
+    else:
+        print(PREFIX_MACRO + "Executing: '" + sonos_command_line + "' in a subprocess")
+        try:
+            output = check_output(shlex.split(sonos_command_line), stderr=STDOUT)
+            print(PREFIX_MACRO + "Exit code = 0")
+            return sonos_command_line, output.decode("utf-8").rstrip()
+        except CalledProcessError as exc:
+            error = exc.output.decode("utf-8").rstrip().replace("\n", "; ")
+            print(PREFIX_MACRO + "Exit code = {} [{}]".format(exc.returncode, error))
+            return sonos_command_line, error
 
 
 def _lookup_macro(macro_name: str) -> str:

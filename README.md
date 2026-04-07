@@ -72,6 +72,7 @@
          * [Reloading the Macro Definition File](#reloading-the-macro-definition-file)
          * [Return Values](#return-values-1)
          * [Listing Macros](#listing-macros)
+         * [Asynchronous Macros](#asynchronous-macros)
       * [Listing Speakers](#listing-speakers)
       * [Rediscovering Speakers](#rediscovering-speakers)
       * [Inspecting the HTTP API](#inspecting-the-http-api)
@@ -85,7 +86,7 @@
    * [Resources](#resources)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: pwt, at: Sun Apr  5 10:16:32 BST 2026 -->
+<!-- Added by: pwt, at: Tue Apr  7 08:43:38 BST 2026 -->
 
 <!--te-->
 
@@ -1096,7 +1097,7 @@ Note that the data returned in this case is probably not useful: it will simply 
 
 Async actions are mutually exclusive for a given speaker: any running async action will be cancelled if a new async action is invoked.
 
-The `async_` functionality does not (yet) apply to the Macros feature described below.
+The `async_` prefix also works with macros. See [Asynchronous Macros](#asynchronous-macros) below.
 
 ### Macros: Defining Custom HTTP API Server Actions
 
@@ -1213,6 +1214,17 @@ Successful invocation of a macro will return the sonos command that was executed
 #### Listing Macros
 
 The `macros/list` endpoint (e.g.: `http://192.168.0.100:8000/macros/list`) will return a JSON list of the macros installed in the server.
+
+#### Asynchronous Macros
+
+Macros can be run asynchronously by prefixing the macro name with `async_` in the URL. The server responds immediately while the macro continues to run in the background. For example:
+
+```
+http://192.168.0.100:8000/macro/async_doorbell
+http://192.168.0.100:8000/macro/async_lower_floor_volume/30
+```
+
+As with asynchronous actions, the data returned is not the macro's output — it will simply indicate whether the background process was successfully invoked. Asynchronous macros are mutually exclusive per macro name: if an async macro with the same name is already running, it will be cancelled before the new one is started.
 
 ### Listing Speakers
 
