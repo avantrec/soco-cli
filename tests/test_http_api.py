@@ -107,6 +107,22 @@ class TestActiveAsyncOps:
         ops = ActiveAsyncOps()
         assert ops.stop_async_process("192.168.0.99") is None
 
+    def test_stop_already_dead_process_cleans_up_pid(self):
+        ops = ActiveAsyncOps()
+        ops.add_async_pid("192.168.0.1", 9999)
+        with patch("soco_cli.http_api.kill", side_effect=ProcessLookupError):
+            pid = ops.stop_async_process("192.168.0.1")
+        assert pid == 9999
+        assert ops.get_async_pid("192.168.0.1") is None
+
+    def test_stop_unkillable_process_leaves_pid_tracked(self):
+        ops = ActiveAsyncOps()
+        ops.add_async_pid("192.168.0.1", 9999)
+        with patch("soco_cli.http_api.kill", side_effect=PermissionError):
+            result = ops.stop_async_process("192.168.0.1")
+        assert result is None
+        assert ops.get_async_pid("192.168.0.1") == 9999
+
     def test_overwrite_pid(self):
         ops = ActiveAsyncOps()
         ops.add_async_pid("192.168.0.1", 100)
@@ -234,6 +250,18 @@ class TestLoadMacros:
             _load_macros(macros, name)
             assert "vol" in macros
             assert "bad line without equals" not in macros
+        finally:
+            os.unlink(name)
+
+    def test_value_containing_equals_is_accepted(self):
+        macros = {}
+        content = "stream = Kitchen play_uri http://host?key=value\n"
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
+            f.write(content)
+            name = f.name
+        try:
+            _load_macros(macros, name)
+            assert macros["stream"] == "Kitchen play_uri http://host?key=value"
         finally:
             os.unlink(name)
 
@@ -580,6 +608,42 @@ class TestEndpoints:
                 response = client.get("/Kitchen/volume/40")
         assert response.status_code == 200
         assert mock_run.called
+
+    def test_end_on_pause_suffix_split_correctly(self, client):
+        """_end_on_pause_ appended to a path is split into a separate arg."""
+        device = MagicMock()
+        device.player_name = "Kitchen"
+        device.ip_address = "192.168.0.10"
+        with patch("soco_cli.http_api.get_speaker", return_value=(device, "")):
+            with patch(
+                "soco_cli.http_api.sc_run", return_value=(0, "", "")
+            ) as mock_run:
+                response = client.get(
+                    "/Kitchen/play_file/music/track.mp3/_end_on_pause_"
+                )
+        assert response.status_code == 200
+        call_args = mock_run.call_args[0]
+        # arg_1 should be the path without the suffix, arg_2 should be the sentinel
+        assert "_end_on_pause_" not in call_args[2]
+        assert call_args[3] == "_end_on_pause_"
+
+    def test_filename_ending_with_end_on_pause_not_falsely_split(self, client):
+        """A filename that ends with _end_on_pause_ (no preceding slash) is NOT split."""
+        device = MagicMock()
+        device.player_name = "Kitchen"
+        device.ip_address = "192.168.0.10"
+        with patch("soco_cli.http_api.get_speaker", return_value=(device, "")):
+            with patch(
+                "soco_cli.http_api.sc_run", return_value=(0, "", "")
+            ) as mock_run:
+                response = client.get(
+                    "/Kitchen/play_file/music/track_end_on_pause_.mp3"
+                )
+        assert response.status_code == 200
+        call_args = mock_run.call_args[0]
+        # Only one path arg, no sentinel injected
+        assert call_args[2] == "music/track_end_on_pause_.mp3"
+        assert len(call_args) == 3
 
     def test_speakers_endpoint(self, client):
         with patch(

@@ -70,9 +70,13 @@ class ActiveAsyncOps:
             return None
         try:
             kill(pid, SIGINT)
-        except:
-            pass
-        self.remove_async_pid(speaker_ip)
+            self.remove_async_pid(speaker_ip)
+        except ProcessLookupError:
+            # Process already dead; clean up the stale PID
+            self.remove_async_pid(speaker_ip)
+        except Exception:
+            # Kill failed for another reason (e.g. permissions); leave PID tracked
+            return None
         return pid
 
 
@@ -458,8 +462,8 @@ def action_1_path(speaker: str, action: str, arg_1: str) -> Dict:
     # Handle special case of _end_on_pause_ being appended to a file path
     # instead of being treated as a separate argument.
     arg_2 = "_end_on_pause_"
-    if arg_1.endswith(arg_2):
-        arg_1 = arg_1.replace("/" + arg_2, "")
+    if arg_1.endswith("/" + arg_2):
+        arg_1 = arg_1[: -(len(arg_2) + 1)]
         return command_core(speaker, action, arg_1, arg_2, use_local=USE_LOCAL)
 
     return command_core(speaker, action, arg_1, use_local=USE_LOCAL)
@@ -739,21 +743,21 @@ def _load_macros(macros: dict, filename: str) -> bool:
             line = f.readline()
             while line != "":
                 if not line.startswith("#") and line != "\n":
-                    if line.count("=") != 1:
+                    if "=" not in line:
                         print(
                             PREFIX_MACRO
                             + "Malformed macro '{}'... ignored".format(line)
                         )
                         print(line, end="")
                     else:
-                        macro = line.split("=")
-                        macros[macro[0].strip()] = macro[1].strip()
+                        name, _, value = line.partition("=")
+                        macros[name.strip()] = value.strip()
                 line = f.readline()
         print(PREFIX_MACRO + "Loaded macros:")
         PP.pprint(macros)
         return True
-    except:
-        print(PREFIX_MACRO + "Macro file not found")
+    except Exception as e:
+        print(PREFIX_MACRO + "Failed to load macro file: {}".format(e))
         return False
 
 
