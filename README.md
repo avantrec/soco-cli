@@ -104,6 +104,8 @@ SoCo-CLI can be imported as a streamlined, high-level [API](#using-soco-cli-as-a
 
 SoCo-CLI can also run as a simple [HTTP API server](#the-soco-cli-http-api-server), providing access to a huge range of actions via simple HTTP requests. (Requires Python 3.7 or above.)
 
+SoCo-CLI only uses **local network** (UPnP) interaction with Sonos devices. There is no support for the Sonos cloud API and there is no intention to change this. This means that support for music service content is limited to Sonos Playlists and music service shared links.
+
 ## Supported Environments
 
 - Requires Python 3.5+
