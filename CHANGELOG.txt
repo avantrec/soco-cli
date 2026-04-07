@@ -1,3 +1,4 @@
+v0.4.87   -
 v0.4.86   - Add 'async_' prefix support for HTTP API Server macros
           - Allow multiple sharelinks in a single 'add_sharelink_to_queue' action
           - Allow multiple sharelinks in a single 'play_sharelink' action;
