@@ -2514,6 +2514,15 @@ def get_channel(speaker, action, args, soco_function, use_local_speaker_list):
     return True
 
 
+def _is_queue_position(arg):
+    """Return True if arg is a recognised queue insertion position."""
+    try:
+        int(arg)
+        return True
+    except ValueError:
+        return arg.lower() in {"first", "start", "next", "play_next", "last", "end"}
+
+
 @one_or_more_parameters
 def add_sharelink_to_queue(
     speaker, action, args, soco_function, use_local_speaker_list
@@ -2521,7 +2530,7 @@ def add_sharelink_to_queue(
     share_link = ShareLinkPlugin(speaker)
 
     # If the last arg is not a sharelink, treat it as a queue position
-    if len(args) > 1 and not share_link.is_share_link(args[-1]):
+    if len(args) > 1 and _is_queue_position(args[-1]):
         uris = args[:-1]
         first_position = get_queue_insertion_position(speaker, args[-1], action)
     else:
@@ -2554,26 +2563,41 @@ def add_sharelink_to_queue(
     return True
 
 
-@one_parameter
+@one_or_more_parameters
 def play_sharelink(speaker, action, args, soco_function, use_local_speaker_list):
     share_link = ShareLinkPlugin(speaker)
-    uri = args[0]
 
-    if not share_link.is_share_link(uri):
-        error_report("Invalid sharelink: '{}'".format(uri))
-        return False
+    # If the last arg is not a sharelink, treat it as a queue position
+    if len(args) > 1 and _is_queue_position(args[-1]):
+        uris = args[:-1]
+        first_position = get_queue_insertion_position(speaker, args[-1], action)
+    else:
+        uris = args
+        first_position = None  # will use queue_size + 1 for each
 
-    position = speaker.queue_size + 1
+    # Validate all URIs before adding any
+    for uri in uris:
+        if not share_link.is_share_link(uri):
+            error_report("Invalid sharelink: '{}'".format(uri))
+            return False
 
-    try:
-        # Return the queue position of the first added item
-        queue_position = share_link.add_share_link_to_queue(uri, position)
-        save_queue_insertion_position(queue_position)
-    except SoCoUPnPException as e:
-        error_report("Unable to play sharelink to queue: {}".format(e))
-        return False
+    first_queue_position = None
+    for uri in uris:
+        position = (
+            first_position if first_queue_position is None else speaker.queue_size + 1
+        )
+        if position is None:
+            position = speaker.queue_size + 1
+        try:
+            queue_position = share_link.add_share_link_to_queue(uri, position)
+            if first_queue_position is None:
+                first_queue_position = queue_position
+                save_queue_insertion_position(queue_position)
+        except SoCoUPnPException as e:
+            error_report("Unable to play sharelink: {}".format(e))
+            return False
 
-    speaker.play_from_queue(queue_position - 1)
+    speaker.play_from_queue(first_queue_position - 1)
     return True
 
 

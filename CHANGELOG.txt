@@ -1,5 +1,7 @@
 v0.4.86   - Add 'async_' prefix support for HTTP API Server macros
           - Allow multiple sharelinks in a single 'add_sharelink_to_queue' action
+          - Allow multiple sharelinks in a single 'play_sharelink' action;
+            add optional 'position' argument
 v0.4.85   - Add 'alarms_spec' and 'alarms_spec_zone' actions to list alarms in
             alarm spec format for easy copy/paste into 'modify_alarm'/'add_alarm'
 v0.4.84   - Interrupt command sequence on break (fixes #35)

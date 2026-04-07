@@ -11,9 +11,15 @@ import types
 from unittest.mock import MagicMock, call, patch
 
 import pytest
+from soco.exceptions import SoCoUPnPException
 
 import soco_cli.utils as utils
-from soco_cli.action_processor import SonosFunction, get_actions
+from soco_cli.action_processor import (
+    SonosFunction,
+    add_sharelink_to_queue,
+    get_actions,
+    play_sharelink,
+)
 from soco_cli.aliases import AliasManager
 from soco_cli.cmd_parser import CLIParser
 from soco_cli.match_speaker_names import speaker_name_matches
@@ -956,3 +962,261 @@ class TestProcessWait:
             mock_sleep.assert_called_once_with(0)
             _, err = capsys.readouterr()
             assert "Error" in err
+
+
+# ===========================================================================
+# add_sharelink_to_queue / play_sharelink
+# ===========================================================================
+
+SPOTIFY_URI_1 = "https://open.spotify.com/track/AAA"
+SPOTIFY_URI_2 = "https://open.spotify.com/album/BBB"
+INVALID_URI = "not_a_sharelink"
+
+
+def _make_speaker(queue_size=5):
+    speaker = MagicMock()
+    speaker.queue_size = queue_size
+    return speaker
+
+
+def _make_share_link_plugin(valid_uris, add_return_values=None):
+    """
+    Return a mock ShareLinkPlugin instance.
+    valid_uris: set of URIs that is_share_link() should accept.
+    add_return_values: list of return values for sequential add_share_link_to_queue calls.
+    """
+    plugin = MagicMock()
+    plugin.is_share_link.side_effect = lambda uri: uri in valid_uris
+    if add_return_values is not None:
+        plugin.add_share_link_to_queue.side_effect = add_return_values
+    return plugin
+
+
+class TestAddSharelinkToQueue:
+    def _call(self, speaker, args):
+        return add_sharelink_to_queue(
+            speaker, "add_sharelink_to_queue", args, None, False
+        )
+
+    def test_single_uri_appends_and_prints_position(self, capsys):
+        speaker = _make_speaker(queue_size=4)
+        plugin = _make_share_link_plugin({SPOTIFY_URI_1}, add_return_values=[5])
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            with patch(
+                "soco_cli.action_processor.save_queue_insertion_position"
+            ) as mock_save:
+                result = self._call(speaker, [SPOTIFY_URI_1])
+        assert result is True
+        plugin.add_share_link_to_queue.assert_called_once_with(SPOTIFY_URI_1, 5)
+        mock_save.assert_called_once_with(5)
+        assert capsys.readouterr().out.strip() == "5"
+
+    def test_single_uri_with_position(self):
+        speaker = _make_speaker(queue_size=10)
+        plugin = _make_share_link_plugin({SPOTIFY_URI_1}, add_return_values=[3])
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            with patch(
+                "soco_cli.action_processor.get_queue_insertion_position", return_value=3
+            ) as mock_pos:
+                with patch("soco_cli.action_processor.save_queue_insertion_position"):
+                    result = self._call(speaker, [SPOTIFY_URI_1, "3"])
+        assert result is True
+        mock_pos.assert_called_once()
+        plugin.add_share_link_to_queue.assert_called_once_with(SPOTIFY_URI_1, 3)
+
+    def test_multiple_uris_appended_in_order(self, capsys):
+        speaker = _make_speaker(queue_size=4)
+        plugin = _make_share_link_plugin(
+            {SPOTIFY_URI_1, SPOTIFY_URI_2}, add_return_values=[5, 8]
+        )
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            with patch("soco_cli.action_processor.save_queue_insertion_position"):
+                result = self._call(speaker, [SPOTIFY_URI_1, SPOTIFY_URI_2])
+        assert result is True
+        assert plugin.add_share_link_to_queue.call_count == 2
+        # First call uses queue_size + 1; second also uses queue_size + 1 (appended)
+        first_call_pos = plugin.add_share_link_to_queue.call_args_list[0][0][1]
+        assert first_call_pos == 5
+        assert capsys.readouterr().out.strip() == "5"
+
+    def test_multiple_uris_with_position_first_uses_position(self):
+        speaker = _make_speaker(queue_size=10)
+        plugin = _make_share_link_plugin(
+            {SPOTIFY_URI_1, SPOTIFY_URI_2}, add_return_values=[3, 7]
+        )
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            with patch(
+                "soco_cli.action_processor.get_queue_insertion_position", return_value=3
+            ):
+                with patch("soco_cli.action_processor.save_queue_insertion_position"):
+                    result = self._call(speaker, [SPOTIFY_URI_1, SPOTIFY_URI_2, "3"])
+        assert result is True
+        first_call_pos = plugin.add_share_link_to_queue.call_args_list[0][0][1]
+        second_call_pos = plugin.add_share_link_to_queue.call_args_list[1][0][1]
+        assert first_call_pos == 3
+        # Second uses queue_size + 1, not the position
+        assert second_call_pos == speaker.queue_size + 1
+
+    def test_only_first_position_is_saved(self):
+        speaker = _make_speaker(queue_size=4)
+        plugin = _make_share_link_plugin(
+            {SPOTIFY_URI_1, SPOTIFY_URI_2}, add_return_values=[5, 9]
+        )
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            with patch(
+                "soco_cli.action_processor.save_queue_insertion_position"
+            ) as mock_save:
+                self._call(speaker, [SPOTIFY_URI_1, SPOTIFY_URI_2])
+        mock_save.assert_called_once_with(5)
+
+    def test_invalid_single_uri_returns_false(self, capsys):
+        speaker = _make_speaker()
+        plugin = _make_share_link_plugin(set())
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            result = self._call(speaker, [INVALID_URI])
+        assert result is False
+        plugin.add_share_link_to_queue.assert_not_called()
+        assert "Error" in capsys.readouterr().err
+
+    def test_invalid_uri_in_list_prevents_all_adds(self):
+        """Validation happens before any URI is added."""
+        speaker = _make_speaker()
+        plugin = _make_share_link_plugin({SPOTIFY_URI_1})  # SPOTIFY_URI_2 invalid
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            result = self._call(speaker, [SPOTIFY_URI_1, SPOTIFY_URI_2])
+        assert result is False
+        plugin.add_share_link_to_queue.assert_not_called()
+
+    def test_invalid_last_arg_treated_as_uri_not_position(self, capsys):
+        """An unrecognised final arg is validated as a URI, not passed to
+        get_queue_insertion_position."""
+        speaker = _make_speaker()
+        plugin = _make_share_link_plugin({SPOTIFY_URI_1})  # INVALID_URI not valid
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            result = self._call(speaker, [SPOTIFY_URI_1, INVALID_URI])
+        assert result is False
+        plugin.add_share_link_to_queue.assert_not_called()
+        assert "Error" in capsys.readouterr().err
+
+    def test_upnp_exception_returns_false(self, capsys):
+        speaker = _make_speaker()
+        plugin = _make_share_link_plugin({SPOTIFY_URI_1})
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            with patch("soco_cli.action_processor.SoCoUPnPException", Exception):
+                plugin.add_share_link_to_queue.side_effect = Exception("fail")
+                result = self._call(speaker, [SPOTIFY_URI_1])
+        assert result is False
+        assert "Error" in capsys.readouterr().err
+
+    def test_zero_args_rejected_by_decorator(self, capsys):
+        speaker = _make_speaker()
+        result = add_sharelink_to_queue(
+            speaker, "add_sharelink_to_queue", [], None, False
+        )
+        assert result is False
+
+
+class TestPlaySharelink:
+    def _call(self, speaker, args):
+        return play_sharelink(speaker, "play_sharelink", args, None, False)
+
+    def test_single_uri_adds_and_plays(self):
+        speaker = _make_speaker(queue_size=4)
+        plugin = _make_share_link_plugin({SPOTIFY_URI_1}, add_return_values=[5])
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            with patch("soco_cli.action_processor.save_queue_insertion_position"):
+                result = self._call(speaker, [SPOTIFY_URI_1])
+        assert result is True
+        plugin.add_share_link_to_queue.assert_called_once_with(SPOTIFY_URI_1, 5)
+        # play_from_queue uses 0-based index
+        speaker.play_from_queue.assert_called_once_with(4)
+
+    def test_single_uri_with_position(self):
+        speaker = _make_speaker(queue_size=10)
+        plugin = _make_share_link_plugin({SPOTIFY_URI_1}, add_return_values=[3])
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            with patch(
+                "soco_cli.action_processor.get_queue_insertion_position", return_value=3
+            ):
+                with patch("soco_cli.action_processor.save_queue_insertion_position"):
+                    result = self._call(speaker, [SPOTIFY_URI_1, "3"])
+        assert result is True
+        plugin.add_share_link_to_queue.assert_called_once_with(SPOTIFY_URI_1, 3)
+        speaker.play_from_queue.assert_called_once_with(2)
+
+    def test_multiple_uris_plays_from_first_position(self):
+        speaker = _make_speaker(queue_size=4)
+        plugin = _make_share_link_plugin(
+            {SPOTIFY_URI_1, SPOTIFY_URI_2}, add_return_values=[5, 8]
+        )
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            with patch("soco_cli.action_processor.save_queue_insertion_position"):
+                result = self._call(speaker, [SPOTIFY_URI_1, SPOTIFY_URI_2])
+        assert result is True
+        assert plugin.add_share_link_to_queue.call_count == 2
+        # Playback starts at the first added position (0-based)
+        speaker.play_from_queue.assert_called_once_with(4)
+
+    def test_multiple_uris_with_position_first_uses_position(self):
+        speaker = _make_speaker(queue_size=10)
+        plugin = _make_share_link_plugin(
+            {SPOTIFY_URI_1, SPOTIFY_URI_2}, add_return_values=[3, 9]
+        )
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            with patch(
+                "soco_cli.action_processor.get_queue_insertion_position", return_value=3
+            ):
+                with patch("soco_cli.action_processor.save_queue_insertion_position"):
+                    result = self._call(speaker, [SPOTIFY_URI_1, SPOTIFY_URI_2, "3"])
+        assert result is True
+        first_call_pos = plugin.add_share_link_to_queue.call_args_list[0][0][1]
+        assert first_call_pos == 3
+        speaker.play_from_queue.assert_called_once_with(2)
+
+    def test_invalid_uri_prevents_any_add_or_play(self, capsys):
+        speaker = _make_speaker()
+        plugin = _make_share_link_plugin(set())
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            result = self._call(speaker, [INVALID_URI])
+        assert result is False
+        plugin.add_share_link_to_queue.assert_not_called()
+        speaker.play_from_queue.assert_not_called()
+        assert "Error" in capsys.readouterr().err
+
+    def test_invalid_uri_in_list_prevents_all_adds_and_play(self):
+        """Validation happens before any URI is added."""
+        speaker = _make_speaker()
+        plugin = _make_share_link_plugin({SPOTIFY_URI_1})  # SPOTIFY_URI_2 invalid
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            result = self._call(speaker, [SPOTIFY_URI_1, SPOTIFY_URI_2])
+        assert result is False
+        plugin.add_share_link_to_queue.assert_not_called()
+        speaker.play_from_queue.assert_not_called()
+
+    def test_invalid_last_arg_treated_as_uri_not_position(self, capsys):
+        """An unrecognised final arg is validated as a URI, not passed to
+        get_queue_insertion_position."""
+        speaker = _make_speaker()
+        plugin = _make_share_link_plugin({SPOTIFY_URI_1})  # INVALID_URI not valid
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            result = self._call(speaker, [SPOTIFY_URI_1, INVALID_URI])
+        assert result is False
+        plugin.add_share_link_to_queue.assert_not_called()
+        speaker.play_from_queue.assert_not_called()
+        assert "Error" in capsys.readouterr().err
+
+    def test_upnp_exception_does_not_play(self, capsys):
+        speaker = _make_speaker()
+        plugin = _make_share_link_plugin({SPOTIFY_URI_1})
+        with patch("soco_cli.action_processor.ShareLinkPlugin", return_value=plugin):
+            with patch("soco_cli.action_processor.SoCoUPnPException", Exception):
+                plugin.add_share_link_to_queue.side_effect = Exception("fail")
+                result = self._call(speaker, [SPOTIFY_URI_1])
+        assert result is False
+        speaker.play_from_queue.assert_not_called()
+        assert "Error" in capsys.readouterr().err
+
+    def test_zero_args_rejected_by_decorator(self):
+        speaker = _make_speaker()
+        result = play_sharelink(speaker, "play_sharelink", [], None, False)
+        assert result is False
