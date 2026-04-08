@@ -1231,7 +1231,7 @@ http://192.168.0.100:8000/macro/async_doorbell
 http://192.168.0.100:8000/macro/async_lower_floor_volume/30
 ```
 
-As with asynchronous actions, the data returned is not the macro's output — it will simply indicate whether the background process was successfully invoked. Asynchronous macros are mutually exclusive per macro name: if an async macro with the same name is already running, it will be cancelled before the new one is started.
+As with asynchronous actions, the data returned is not the macro's output — it will simply indicate whether the background process was successfully invoked. There is no mutual exclusivity for macros; any invoked processes will run to conclusion (or until the HTTP API server is stopped).
 
 ### Listing Speakers
 

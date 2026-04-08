@@ -81,7 +81,6 @@ class ActiveAsyncOps:
 
 
 ASYNC_OPS = ActiveAsyncOps()
-ASYNC_MACRO_OPS = ActiveAsyncOps()
 
 
 sc_app = FastAPI(
@@ -610,10 +609,7 @@ def _process_macro(macro_name: str, *args) -> Tuple[str, str]:
             + "' in a background subprocess"
         )
         try:
-            async_key = macro_name + ("|" + "|".join(args) if args else "")
-            ASYNC_MACRO_OPS.stop_async_process(async_key)
             proc = Popen(shlex.split(sonos_command_line))
-            ASYNC_MACRO_OPS.add_async_pid(async_key, proc.pid)
             print(PREFIX_MACRO + "Async macro started with PID {}".format(proc.pid))
             return sonos_command_line, ""
         except Exception as e:
