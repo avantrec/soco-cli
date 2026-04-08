@@ -51,9 +51,15 @@ class ActiveAsyncOps:
 
     def __init__(self):
         self.active_async_ops = {}
+        self._all_pids = set()
 
     def add_async_pid(self, speaker_ip: str, pid: int):
         self.active_async_ops.update({speaker_ip: pid})
+        self._all_pids.add(pid)
+
+    def add_pid(self, pid: int):
+        """Track a PID without a key (e.g., macro async ops)."""
+        self._all_pids.add(pid)
 
     def get_async_pid(self, speaker_ip) -> Optional[int]:
         return self.active_async_ops.get(speaker_ip)
@@ -62,6 +68,7 @@ class ActiveAsyncOps:
         pid = self.active_async_ops.get(speaker_ip)
         if pid is not None:
             self.active_async_ops.pop(speaker_ip)
+            self._all_pids.discard(pid)
         return pid
 
     def stop_async_process(self, speaker_ip: str) -> Optional[int]:
@@ -78,6 +85,21 @@ class ActiveAsyncOps:
             # Kill failed for another reason (e.g. permissions); leave PID tracked
             return None
         return pid
+
+    def stop_all_processes(self) -> int:
+        """
+        Stop all tracked async processes. Returns count of processes signalled.
+        """
+        count = 0
+        for pid in list(self._all_pids):
+            try:
+                kill(pid, SIGINT)
+                count += 1
+            except (ProcessLookupError, Exception):
+                pass
+        self.active_async_ops.clear()
+        self._all_pids.clear()
+        return count
 
 
 ASYNC_OPS = ActiveAsyncOps()
@@ -219,6 +241,12 @@ def macros_reload() -> Dict:
     global MACROS
     _load_macros(MACROS, filename=MACRO_FILE)
     return MACROS
+
+
+@sc_app.get("/cancel_async")
+def cancel_async() -> Dict:
+    count = ASYNC_OPS.stop_all_processes()
+    return {"cancelled": count}
 
 
 @sc_app.get("/macro/{macro_name}")
@@ -610,6 +638,7 @@ def _process_macro(macro_name: str, *args) -> Tuple[str, str]:
         )
         try:
             proc = Popen(shlex.split(sonos_command_line))
+            ASYNC_OPS.add_pid(proc.pid)
             print(PREFIX_MACRO + "Async macro started with PID {}".format(proc.pid))
             return sonos_command_line, ""
         except Exception as e:

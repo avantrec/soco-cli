@@ -37,13 +37,13 @@ def reset_globals():
     original_macros = dict(http_api.MACROS)
     original_use_local = http_api.USE_LOCAL
     http_api.ASYNC_OPS.active_async_ops.clear()
-    http_api.ASYNC_MACRO_OPS.active_async_ops.clear()
+    http_api.ASYNC_OPS._all_pids.clear()
     yield
     http_api.MACROS.clear()
     http_api.MACROS.update(original_macros)
     http_api.USE_LOCAL = original_use_local
     http_api.ASYNC_OPS.active_async_ops.clear()
-    http_api.ASYNC_MACRO_OPS.active_async_ops.clear()
+    http_api.ASYNC_OPS._all_pids.clear()
 
 
 @pytest.fixture
@@ -137,6 +137,50 @@ class TestActiveAsyncOps:
         assert ops.get_async_pid("192.168.0.2") == 2
         ops.remove_async_pid("192.168.0.1")
         assert ops.get_async_pid("192.168.0.2") == 2
+
+    def test_add_async_pid_also_tracked_in_all_pids(self):
+        ops = ActiveAsyncOps()
+        ops.add_async_pid("192.168.0.1", 42)
+        assert 42 in ops._all_pids
+
+    def test_remove_async_pid_also_removes_from_all_pids(self):
+        ops = ActiveAsyncOps()
+        ops.add_async_pid("192.168.0.1", 42)
+        ops.remove_async_pid("192.168.0.1")
+        assert 42 not in ops._all_pids
+
+    def test_add_pid_keyless(self):
+        ops = ActiveAsyncOps()
+        ops.add_pid(99)
+        assert 99 in ops._all_pids
+        assert ops.active_async_ops == {}
+
+    def test_stop_all_signals_all_pids_and_clears(self):
+        ops = ActiveAsyncOps()
+        ops.add_async_pid("192.168.0.1", 100)
+        ops.add_pid(200)
+        with patch("soco_cli.http_api.kill") as mock_kill:
+            from signal import SIGINT
+
+            count = ops.stop_all_processes()
+        assert count == 2
+        assert mock_kill.call_count == 2
+        mock_kill.assert_any_call(100, SIGINT)
+        mock_kill.assert_any_call(200, SIGINT)
+        assert ops._all_pids == set()
+        assert ops.active_async_ops == {}
+
+    def test_stop_all_skips_dead_processes(self):
+        ops = ActiveAsyncOps()
+        ops.add_pid(300)
+        with patch("soco_cli.http_api.kill", side_effect=ProcessLookupError):
+            count = ops.stop_all_processes()
+        assert count == 0
+        assert ops._all_pids == set()
+
+    def test_stop_all_empty_returns_zero(self):
+        ops = ActiveAsyncOps()
+        assert ops.stop_all_processes() == 0
 
 
 # ===========================================================================
@@ -390,7 +434,7 @@ class TestProcessMacroAsync:
         assert command == ""
         assert "not found" in result
 
-    def test_async_pid_is_tracked(self, loaded_macros):
+    def test_async_pid_registered_in_async_ops(self, loaded_macros):
         mock_proc = MagicMock()
         mock_proc.pid = 4444
         with patch("soco_cli.http_api.Popen", return_value=mock_proc):
@@ -399,34 +443,10 @@ class TestProcessMacroAsync:
                 side_effect=lambda x, **kw: x,
             ):
                 _process_macro("async_vol", "30")
-        assert http_api.ASYNC_MACRO_OPS.get_async_pid("vol|30") == 4444
+        assert 4444 in http_api.ASYNC_OPS._all_pids
 
-    def test_async_same_name_and_args_cancels_previous(self, loaded_macros):
-        mock_proc = MagicMock()
-        mock_proc.pid = 5555
-        with patch("soco_cli.http_api.Popen", return_value=mock_proc):
-            with patch(
-                "soco_cli.http_api._substitute_speaker_ips",
-                side_effect=lambda x, **kw: x,
-            ):
-                _process_macro("async_vol", "30")
-
-        mock_proc2 = MagicMock()
-        mock_proc2.pid = 6666
-        with patch("soco_cli.http_api.Popen", return_value=mock_proc2):
-            with patch(
-                "soco_cli.http_api._substitute_speaker_ips",
-                side_effect=lambda x, **kw: x,
-            ):
-                with patch("soco_cli.http_api.kill") as mock_kill:
-                    _process_macro("async_vol", "30")
-        from signal import SIGINT
-
-        mock_kill.assert_called_once_with(5555, SIGINT)
-        assert http_api.ASYNC_MACRO_OPS.get_async_pid("vol|30") == 6666
-
-    def test_async_different_args_run_concurrently(self, loaded_macros):
-        """Same macro with different args should NOT cancel each other."""
+    def test_async_multiple_macros_all_tracked(self, loaded_macros):
+        """Multiple concurrent async macros are all tracked in ASYNC_OPS._all_pids."""
         mock_proc_a = MagicMock()
         mock_proc_a.pid = 7777
         mock_proc_b = MagicMock()
@@ -444,12 +464,10 @@ class TestProcessMacroAsync:
                 "soco_cli.http_api._substitute_speaker_ips",
                 side_effect=lambda x, **kw: x,
             ):
-                with patch("soco_cli.http_api.kill") as mock_kill:
-                    _process_macro("async_vol", "40")
+                _process_macro("async_vol", "40")
 
-        mock_kill.assert_not_called()
-        assert http_api.ASYNC_MACRO_OPS.get_async_pid("vol|30") == 7777
-        assert http_api.ASYNC_MACRO_OPS.get_async_pid("vol|40") == 8888
+        assert 7777 in http_api.ASYNC_OPS._all_pids
+        assert 8888 in http_api.ASYNC_OPS._all_pids
 
     def test_async_popen_failure_returns_error(self, loaded_macros):
         with patch("soco_cli.http_api.Popen", side_effect=OSError("boom")):
@@ -644,6 +662,27 @@ class TestEndpoints:
         # Only one path arg, no sentinel injected
         assert call_args[2] == "music/track_end_on_pause_.mp3"
         assert len(call_args) == 3
+
+    def test_cancel_async_no_processes(self, client):
+        response = client.get("/cancel_async")
+        assert response.status_code == 200
+        assert response.json()["cancelled"] == 0
+
+    def test_cancel_async_kills_tracked_processes(self, client):
+        http_api.ASYNC_OPS.add_pid(1001)
+        http_api.ASYNC_OPS.add_pid(1002)
+        with patch("soco_cli.http_api.kill") as mock_kill:
+            response = client.get("/cancel_async")
+        assert response.status_code == 200
+        assert response.json()["cancelled"] == 2
+        assert mock_kill.call_count == 2
+        assert http_api.ASYNC_OPS._all_pids == set()
+
+    def test_cancel_async_clears_keyed_ops(self, client):
+        http_api.ASYNC_OPS.add_async_pid("192.168.0.1", 2001)
+        with patch("soco_cli.http_api.kill"):
+            client.get("/cancel_async")
+        assert http_api.ASYNC_OPS.active_async_ops == {}
 
     def test_speakers_endpoint(self, client):
         with patch(

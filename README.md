@@ -1104,6 +1104,14 @@ Note that the data returned in this case is probably not useful: it will simply 
 
 Async actions are mutually exclusive for a given speaker: any running async action will be cancelled if a new async action is invoked.
 
+All async processes (actions and macros) are tracked by the server. To cancel all currently-running async processes, use:
+
+```
+http://192.168.0.100:8000/cancel_async
+```
+
+This sends an interrupt signal to every tracked async process and returns the count of processes signalled.
+
 The `async_` prefix also works with macros. See [Asynchronous Macros](#asynchronous-macros) below.
 
 ### Macros: Defining Custom HTTP API Server Actions
@@ -1231,7 +1239,7 @@ http://192.168.0.100:8000/macro/async_doorbell
 http://192.168.0.100:8000/macro/async_lower_floor_volume/30
 ```
 
-As with asynchronous actions, the data returned is not the macro's output — it will simply indicate whether the background process was successfully invoked. There is no mutual exclusivity for macros; any invoked processes will run to conclusion (or until the HTTP API server is stopped).
+As with asynchronous actions, the data returned is not the macro's output — it will simply indicate whether the background process was successfully invoked. There is no mutual exclusivity for macros; any invoked processes will run to conclusion, or until cancelled or the HTTP API Server is stopped.
 
 ### Listing Speakers
 
