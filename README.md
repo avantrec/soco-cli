@@ -62,7 +62,7 @@
       * [Using the Local Speaker Cache](#using-the-local-speaker-cache)
       * [HTTP Request Structure](#http-request-structure)
       * [Return Values](#return-values)
-      * [Asynchronous Actions (Experimental)](#asynchronous-actions-experimental)
+      * [Asynchronous Actions](#asynchronous-actions)
       * [Macros: Defining Custom HTTP API Server Actions](#macros-defining-custom-http-api-server-actions)
          * [Macro Definition and Usage](#macro-definition-and-usage)
          * [Macro Arguments](#macro-arguments)
@@ -86,7 +86,7 @@
    * [Resources](#resources)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: pwt, at: Tue Apr  7 08:43:38 BST 2026 -->
+<!-- Added by: pwt, at: Wed Apr  8 08:18:09 BST 2026 -->
 
 <!--te-->
 
@@ -1090,7 +1090,7 @@ If the command is successful, the **`result`** field contains the result string,
 
 If the command is unsuccessful, the **`error_msg`** field contains an error message describing the error.
 
-### Asynchronous Actions (Experimental)
+### Asynchronous Actions
 
 It's sometimes useful for the HTTP API server to respond immediately while its invoked action continues to run in the background. For example, if one wants to invoke a `play_file` action, and have the server respond immediately while the file is played in separate process.
 
