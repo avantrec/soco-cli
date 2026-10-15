@@ -19,6 +19,7 @@ from soco_cli.action_processor import (
     audio_format,
     filter_track_info,
     get_current_queue_position,
+    info,
     list_queue,
     mic_enabled,
     move_in_queue,
@@ -830,6 +831,37 @@ class TestSetQueuePosition:
         result = _call(set_queue_position, speaker, ["abc"])
         assert result is False
         speaker.stop.assert_not_called()
+
+
+# ===========================================================================
+# info
+# ===========================================================================
+
+
+class TestInfo:
+    def _speaker(self, model="Sonos One", port=1400):
+        speaker = _make_speaker(ip_address="10.0.0.5", port=port)
+        speaker.get_speaker_info.return_value = {"model_name": model}
+        return speaker
+
+    def test_includes_ip_address_and_port(self, capsys):
+        assert _call(info, self._speaker(), []) is True
+        out = capsys.readouterr().out
+        assert "  ip_address = 10.0.0.5\n" in out
+        assert "  port = 1400\n" in out
+
+    def test_non_default_port(self, capsys):
+        assert (
+            _call(info, self._speaker(model="Sonos Amp Multi", port=1500), []) is True
+        )
+        assert "  port = 1500\n" in capsys.readouterr().out
+
+    @pytest.mark.parametrize("model", ["Sonos Boost", "Sonos Bridge"])
+    def test_boost_and_bridge_have_basic_info_only(self, model, capsys):
+        assert _call(info, self._speaker(model=model), []) is True
+        out = capsys.readouterr().out
+        assert "model_name = {}".format(model) in out
+        assert "port" not in out
 
 
 # ===========================================================================

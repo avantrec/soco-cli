@@ -596,7 +596,7 @@ The actions below search the Sonos Music library.
 - **`groupstatus`**: Indicates whether the speaker is part of a group, and whether it's part of a stereo pair or bonded home theatre configuration. Note that first can override the second: if a paired/bonded coordinator speaker is also part of a group, the group will be reported but not the paired/bonded status.
 - **`has_satellites`**: Returns `yes` if the zone/room has satellite (surround) speakers bonded, otherwise `no`.
 - **`has_subwoofer`**: Returns `yes` if the zone/room has a subwoofer bonded, otherwise `no`.
-- **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address, etc.
+- **`info`**: Provides detailed information on the speaker's settings, current state, software version, IP address and port, etc.
 - **`is_indexing`**: Reports on whether the system is currently in the process of reindexing its local libraries: possible responses are `yes` or `no`.
 - **`is_satellite`**: Returns `yes` if the target device is a satellite (surround) speaker, otherwise `no`.
 - **`is_subwoofer`**: Returns `yes` if the target device is a subwoofer, otherwise `no`.

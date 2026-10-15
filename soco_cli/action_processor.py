@@ -1654,6 +1654,7 @@ def info(speaker, action, args, soco_function, use_local_speaker_list):
         info["title"] = speaker.get_current_track_info()["title"]
         info["player_name"] = speaker.player_name
         info["ip_address"] = speaker.ip_address
+        info["port"] = getattr(speaker, "port", 1400)
         info["household_id"] = speaker.household_id
         info["status_light"] = speaker.status_light
         info["is_coordinator"] = speaker.is_coordinator
