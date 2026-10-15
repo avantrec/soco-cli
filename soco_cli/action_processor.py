@@ -1155,81 +1155,47 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
 
 @one_parameter
 def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_list):
-    # Generate a list that represents which tracks to remove, denoted by '0'
-    # Initially mark each track as '1' (retain)
     if queue_is_empty(speaker):
         return False
-    queue = []
-    for _ in range(speaker.queue_size):
-        queue.append(1)
-    # Catch exceptions at the end
-    # Note: this can be refactored using utils.create_list_of_items_from_range()
+    queue_size = speaker.queue_size
     try:
-        # Create a list of items to remove based on the input args
-        # Mark these as '0'
-        items = args[0].split(",")
-        for index in items:
-            # Check for a range ('x-y') instead of a single integer
-            if "-" in index:
-                rng = index.split("-")
-                if len(rng) != 2:
-                    parameter_type_error(
-                        action, "two integers and a '-', e.g., '3-7' when using a range"
-                    )
-                    return False
-                index_1 = int(rng[0])
-                index_2 = int(rng[1])
-                if index_1 < 1 or index_2 < 1:
-                    raise IndexError
-                if index_1 > index_2:
-                    # Reverse the indices
-                    index_2, index_1 = index_1, index_2
-                for i in range(index_1 - 1, index_2):
-                    queue[i] = 0
-            else:
-                index = int(index)
-                if index < 1:
-                    raise IndexError
-                queue[index - 1] = 0
-    # Exception handling
-    # Catch any non-integer input values
+        track_numbers = create_list_of_items_from_range(args[0], queue_size)
     except ValueError:
         parameter_type_error(
             action,
             "integer, or comma-separated integers without spaces (e.g., 3,7,4)",
         )
         return False
-    # Catch any out-of-range values
-    except IndexError:
+    except IndexError as e:
         error_report(
-            "Queue index(es) must be between 1 and {} (inclusive)".format(len(queue))
-        )
-        return False
-    logging.info("Created map of queue items to delete (==0) {}".format(queue))
-    # Remove each contiguous block of items marked '0' using a single request,
-    # working backwards from the end of the queue so that removals don't
-    # shift the positions of blocks still to be removed
-    for start, num_tracks in reversed(_contiguous_blocks(queue, 0)):
-        logging.info(
-            "Removing {} queue item(s) starting at index {}".format(
-                num_tracks, start + 1
+            "{}: queue positions must be between 1 and {} (inclusive)".format(
+                e, queue_size
             )
         )
-        speaker.remove_range_from_queue(start, num_tracks)
+        return False
+    logging.info("Queue items to remove: {}".format(track_numbers))
+    # Remove each contiguous block of tracks using a single request,
+    # working backwards from the end of the queue so that removals don't
+    # shift the positions of blocks still to be removed
+    for start, num_tracks in reversed(_contiguous_blocks(track_numbers)):
+        logging.info(
+            "Removing {} queue item(s) starting at position {}".format(
+                num_tracks, start
+            )
+        )
+        speaker.remove_range_from_queue(start - 1, num_tracks)
     return True
 
 
-def _contiguous_blocks(items, value):
+def _contiguous_blocks(numbers):
     """Return a list of (start, length) tuples, one for each run of
-    consecutive entries in 'items' that are equal to 'value'."""
+    consecutive integers in the sorted list 'numbers'."""
     blocks = []
-    start = None
-    for index, item in enumerate(items + [None]):
-        if item == value and start is None:
-            start = index
-        elif item != value and start is not None:
-            blocks.append((start, index - start))
-            start = None
+    for number in numbers:
+        if blocks and number == blocks[-1][0] + blocks[-1][1]:
+            blocks[-1] = (blocks[-1][0], blocks[-1][1] + 1)
+        else:
+            blocks.append((number, 1))
     return blocks
 
 

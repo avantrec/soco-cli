@@ -891,9 +891,26 @@ class TestRemoveFromQueue:
             call(0, 1),
         ]
 
+    def test_all(self):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(remove_from_queue, speaker, ["all"]) is True
+        speaker.remove_range_from_queue.assert_called_once_with(0, 10)
+
+    def test_overlapping_items_merged(self):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(remove_from_queue, speaker, ["5,3-4,4,6"]) is True
+        speaker.remove_range_from_queue.assert_called_once_with(2, 4)
+
+    def test_malformed_range(self, capsys):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(remove_from_queue, speaker, ["1-2-3"]) is False
+        assert "Invalid range specification" in capsys.readouterr().err
+        speaker.remove_range_from_queue.assert_not_called()
+
     def test_out_of_range(self, capsys):
         speaker = _make_speaker(queue_size=5)
         assert _call(remove_from_queue, speaker, ["6"]) is False
+        assert "between 1 and 5" in capsys.readouterr().err
         speaker.remove_range_from_queue.assert_not_called()
 
     def test_non_integer(self, capsys):

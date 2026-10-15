@@ -1,5 +1,6 @@
 v0.4.87   - Add 'move_in_queue' and 'reorder_queue' actions
-          - Use a single request per range in 'remove_from_queue'
+          - Use a single request per range in 'remove_from_queue', and
+            accept 'all'
           - Add 'remove_favourite' and 'rename_favourite' actions, and
             '_number' variants
           - Add 'add_search_result_to_favourites' and
