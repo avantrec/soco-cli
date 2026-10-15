@@ -13,3 +13,4 @@ __pycache__/
 /examples
 /.mypy_cache
 /.pytest_cache
+.DS_Store
