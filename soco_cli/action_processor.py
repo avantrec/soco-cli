@@ -54,6 +54,20 @@ from soco_cli.utils import (
 )
 from soco_cli.wait_actions import process_wait
 
+try:
+    from soco.exceptions import (  # type: ignore
+        FavoritesAlreadyAddedError,
+        FavoritesFullError,
+    )
+except ImportError:  # SoCo < v0.32.0 (Python < 3.6)
+
+    class FavoritesAlreadyAddedError(Exception):  # type: ignore
+        pass
+
+    class FavoritesFullError(Exception):  # type: ignore
+        pass
+
+
 pp = pprint.PrettyPrinter(width=120)
 SONOS_MAX_ITEMS = 66000
 
@@ -781,6 +795,79 @@ def rename_favourite(speaker, action, args, soco_function, use_local_speaker_lis
     logging.info("Renaming favourite '{}' to '{}'".format(the_fav.title, args[1]))
     speaker.favorites.rename(the_fav, args[1])
     return True
+
+
+def add_to_favourites_core(speaker, item, title=None):
+    """Add a DIDL item to the Sonos favourites. Returns a (success,
+    error_message) tuple. Raises FavoritesFullError if the favourites list
+    is full."""
+    try:
+        favourite = speaker.favorites.add(item, title=title)
+    except FavoritesAlreadyAddedError:
+        return False, "'{}' is already a favourite".format(item.title)
+    except (TypeError, ValueError) as e:
+        return False, "Cannot add '{}' as a favourite: {}".format(item.title, e)
+    logging.info("Added favourite '{}' ({})".format(favourite.title, favourite.item_id))
+    return True, ""
+
+
+@one_or_two_parameters
+def add_search_result_to_favourites(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
+    items = read_search()
+    if not items:
+        error_report("No saved search")
+        return False
+    try:
+        item_numbers = create_list_of_items_from_range(args[0], len(items))
+    except (ValueError, IndexError):
+        parameter_type_error(
+            action,
+            "search result number(s) between 1 and {}".format(len(items)),
+        )
+        return False
+    title = args[1] if len(args) == 2 else None
+    if title is not None and len(item_numbers) != 1:
+        error_report("A title can only be supplied when adding a single favourite")
+        return False
+    if title == "":
+        error_report("Favourite title cannot be empty")
+        return False
+
+    success = True
+    for item_number in item_numbers:
+        try:
+            result, msg = add_to_favourites_core(speaker, items[item_number - 1], title)
+        except FavoritesFullError:
+            error_report("The Sonos favourites list is full")
+            return False
+        if not result:
+            error_report(msg)
+            success = False
+    return success
+
+
+@one_or_two_parameters
+def add_playlist_to_favourites(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
+    title = args[1] if len(args) == 2 else None
+    if title == "":
+        error_report("Favourite title cannot be empty")
+        return False
+    playlist = get_playlist(speaker, args[0])
+    if not playlist:
+        error_report("Playlist '{}' not found".format(args[0]))
+        return False
+    try:
+        result, msg = add_to_favourites_core(speaker, playlist, title)
+    except FavoritesFullError:
+        error_report("The Sonos favourites list is full")
+        return False
+    if not result:
+        error_report(msg)
+    return result
 
 
 @one_or_two_parameters
@@ -3275,6 +3362,16 @@ actions = {
     "rename_favourite_number": SonosFunction(rename_favourite, ""),
     "rename_favorite_number": SonosFunction(rename_favourite, ""),
     "rnfn": SonosFunction(rename_favourite, ""),
+    "add_search_result_to_favourites": SonosFunction(
+        add_search_result_to_favourites, ""
+    ),
+    "add_search_result_to_favorites": SonosFunction(
+        add_search_result_to_favourites, ""
+    ),
+    "asrf": SonosFunction(add_search_result_to_favourites, ""),
+    "add_playlist_to_favourites": SonosFunction(add_playlist_to_favourites, ""),
+    "add_playlist_to_favorites": SonosFunction(add_playlist_to_favourites, ""),
+    "aptf": SonosFunction(add_playlist_to_favourites, ""),
     "play_fav_radio_station_no": SonosFunction(play_favourite_radio_number, "", True),
     "pfrsn": SonosFunction(play_favourite_radio_number, "", True),
     "album_art": SonosFunction(album_art, "", True),

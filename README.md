@@ -490,6 +490,8 @@ The following has issues and requires further development. For example, it's cur
 
 ### Favourites and Playlists
 
+- **`add_playlist_to_favourites <playlist> [<title>]`** (or **`add_playlist_to_favorites`**, **`aptf`**): Add the Sonos playlist named `<playlist>` to the Sonos favourites. Optionally, supply a `<title>` for the favourite; otherwise the playlist name is used.
+- **`add_search_result_to_favourites <search_result_numbers> [<title>]`** (or **`add_search_result_to_favorites`**, **`asrf`**): Add one or more items (tracks, albums, artists) from the list of items returned by the last search performed to the Sonos favourites. Search result numbers are specified in the same way as for `queue_search_results`. Optionally, supply a `<title>` for the favourite when adding a single item.
 - **`clear_playlist <playlist>`**: Clear the Sonos playlist named `<playlist>`.
 - **`create_playlist <playlist>`**: Create a Sonos playlist named `<playlist>`. (See also `save_queue` above).
 - **`cue_favourite <favourite_name>`** (or **`cue_favorite`, `cue_fav`, `cf`**): Cues up a Sonos favourite for playback. This is a convenience action that issues the sequence: `mute, play_favourite, stop, unmute`. It's useful for silently setting a speaker to a state where it's ready to play the nominated favourite. Mute and group mute states are preserved. 

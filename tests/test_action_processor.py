@@ -8,12 +8,15 @@ from collections import OrderedDict
 from unittest.mock import MagicMock, call, patch
 
 import pytest
+from soco.exceptions import FavoritesAlreadyAddedError, FavoritesFullError
 
 import soco_cli.utils as utils
 from soco_cli.action_processor import (
     SonosFunction,
     _is_queue_position,
     add_favourite_to_queue,
+    add_playlist_to_favourites,
+    add_search_result_to_favourites,
     audio_format,
     filter_track_info,
     get_actions,
@@ -959,6 +962,133 @@ class TestRenameFavourite:
         speaker, _ = _fav_speaker(["Radio 4"])
         assert _call(rename_favourite, speaker, ["Radio 4"]) is False
         speaker.favorites.rename.assert_not_called()
+
+
+# ===========================================================================
+# add_search_result_to_favourites / add_playlist_to_favourites
+# ===========================================================================
+
+
+def _named(title):
+    item = MagicMock()
+    item.title = title
+    return item
+
+
+class TestAddSearchResultToFavourites:
+    def _call(self, args, items, speaker=None):
+        speaker = speaker or MagicMock()
+        with patch("soco_cli.action_processor.read_search", return_value=items):
+            return speaker, _call(add_search_result_to_favourites, speaker, args)
+
+    def test_single_item(self):
+        items = [_named("A"), _named("B")]
+        speaker, result = self._call(["2"], items)
+        assert result is True
+        speaker.favorites.add.assert_called_once_with(items[1], title=None)
+
+    def test_single_item_with_title(self):
+        items = [_named("A"), _named("B")]
+        speaker, result = self._call(["1", "My Fav"], items)
+        assert result is True
+        speaker.favorites.add.assert_called_once_with(items[0], title="My Fav")
+
+    def test_multiple_items(self):
+        items = [_named("A"), _named("B"), _named("C")]
+        speaker, result = self._call(["1,3"], items)
+        assert result is True
+        assert speaker.favorites.add.call_args_list == [
+            call(items[0], title=None),
+            call(items[2], title=None),
+        ]
+
+    def test_title_with_multiple_items_rejected(self, capsys):
+        items = [_named("A"), _named("B")]
+        speaker, result = self._call(["1-2", "Title"], items)
+        assert result is False
+        assert "single favourite" in capsys.readouterr().err
+        speaker.favorites.add.assert_not_called()
+
+    def test_empty_title_rejected(self, capsys):
+        speaker, result = self._call(["1", ""], [_named("A")])
+        assert result is False
+        speaker.favorites.add.assert_not_called()
+
+    def test_no_saved_search(self, capsys):
+        speaker, result = self._call(["1"], None)
+        assert result is False
+        assert "No saved search" in capsys.readouterr().err
+
+    @pytest.mark.parametrize("arg", ["0", "3", "x"])
+    def test_bad_item_number(self, arg, capsys):
+        speaker, result = self._call([arg], [_named("A"), _named("B")])
+        assert result is False
+        speaker.favorites.add.assert_not_called()
+
+    def test_already_a_favourite_continues(self, capsys):
+        items = [_named("A"), _named("B")]
+        speaker = MagicMock()
+        speaker.favorites.add.side_effect = [
+            FavoritesAlreadyAddedError("x"),
+            MagicMock(),
+        ]
+        _, result = self._call(["1-2"], items, speaker)
+        assert result is False
+        assert "'A' is already a favourite" in capsys.readouterr().err
+        assert speaker.favorites.add.call_count == 2
+
+    def test_favourites_full_stops(self, capsys):
+        items = [_named("A"), _named("B")]
+        speaker = MagicMock()
+        speaker.favorites.add.side_effect = FavoritesFullError("x")
+        _, result = self._call(["1-2"], items, speaker)
+        assert result is False
+        assert "full" in capsys.readouterr().err
+        assert speaker.favorites.add.call_count == 1
+
+    def test_item_without_uri(self, capsys):
+        speaker = MagicMock()
+        speaker.favorites.add.side_effect = ValueError("no URI")
+        _, result = self._call(["1"], [_named("A")], speaker)
+        assert result is False
+        assert "Cannot add 'A' as a favourite: no URI" in capsys.readouterr().err
+
+
+class TestAddPlaylistToFavourites:
+    def _speaker(self, titles):
+        speaker = MagicMock()
+        speaker.get_sonos_playlists.return_value = [_named(t) for t in titles]
+        return speaker
+
+    def test_add_playlist(self):
+        speaker = self._speaker(["Chill", "Party"])
+        assert _call(add_playlist_to_favourites, speaker, ["party"]) is True
+        added = speaker.favorites.add.call_args
+        assert added[0][0].title == "Party"
+        assert added[1] == {"title": None}
+
+    def test_add_playlist_with_title(self):
+        speaker = self._speaker(["Chill"])
+        assert _call(add_playlist_to_favourites, speaker, ["Chill", "Relax"]) is True
+        assert speaker.favorites.add.call_args[1] == {"title": "Relax"}
+
+    def test_playlist_not_found(self, capsys):
+        speaker = self._speaker(["Chill"])
+        assert _call(add_playlist_to_favourites, speaker, ["Jazz"]) is False
+        assert "Playlist 'Jazz' not found" in capsys.readouterr().err
+        speaker.favorites.add.assert_not_called()
+
+    def test_already_a_favourite(self, capsys):
+        speaker = self._speaker(["Chill"])
+        speaker.favorites.add.side_effect = FavoritesAlreadyAddedError("x")
+        assert _call(add_playlist_to_favourites, speaker, ["Chill"]) is False
+        assert "already a favourite" in capsys.readouterr().err
+
+    def test_favourites_full(self, capsys):
+        speaker = self._speaker(["Chill"])
+        speaker.favorites.add.side_effect = FavoritesFullError("x")
+        assert _call(add_playlist_to_favourites, speaker, ["Chill"]) is False
+        assert "full" in capsys.readouterr().err
 
 
 # ===========================================================================
