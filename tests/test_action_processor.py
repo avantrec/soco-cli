@@ -20,6 +20,7 @@ from soco_cli.action_processor import (
     get_current_queue_position,
     list_queue,
     mic_enabled,
+    move_in_queue,
     on_off_action,
     play_favourite_core,
     play_uri,
@@ -28,6 +29,8 @@ from soco_cli.action_processor import (
     print_list_header,
     print_tracks,
     process_action,
+    remove_from_queue,
+    reorder_queue,
     repeat,
     set_queue_position,
     shuffle,
@@ -823,6 +826,138 @@ class TestSetQueuePosition:
         result = _call(set_queue_position, speaker, ["abc"])
         assert result is False
         speaker.stop.assert_not_called()
+
+
+# ===========================================================================
+# remove_from_queue
+# ===========================================================================
+
+
+class TestRemoveFromQueue:
+    def test_single_track(self):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(remove_from_queue, speaker, ["3"]) is True
+        speaker.remove_range_from_queue.assert_called_once_with(2, 1)
+
+    def test_range_uses_single_request(self):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(remove_from_queue, speaker, ["3-7"]) is True
+        speaker.remove_range_from_queue.assert_called_once_with(2, 5)
+
+    def test_reversed_range(self):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(remove_from_queue, speaker, ["7-3"]) is True
+        speaker.remove_range_from_queue.assert_called_once_with(2, 5)
+
+    def test_mixed_blocks_removed_from_end_first(self):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(remove_from_queue, speaker, ["1,3-4,5,9,10"]) is True
+        assert speaker.remove_range_from_queue.call_args_list == [
+            call(8, 2),
+            call(2, 3),
+            call(0, 1),
+        ]
+
+    def test_out_of_range(self, capsys):
+        speaker = _make_speaker(queue_size=5)
+        assert _call(remove_from_queue, speaker, ["6"]) is False
+        speaker.remove_range_from_queue.assert_not_called()
+
+    def test_non_integer(self, capsys):
+        speaker = _make_speaker(queue_size=5)
+        assert _call(remove_from_queue, speaker, ["abc"]) is False
+        speaker.remove_range_from_queue.assert_not_called()
+
+    def test_empty_queue(self, capsys):
+        speaker = _make_speaker(queue_size=0)
+        assert _call(remove_from_queue, speaker, ["1"]) is False
+        assert "Queue is empty" in capsys.readouterr().err
+
+
+# ===========================================================================
+# move_in_queue
+# ===========================================================================
+
+
+class TestMoveInQueue:
+    def test_move_later(self):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(move_in_queue, speaker, ["2", "8"]) is True
+        speaker.move_in_queue.assert_called_once_with(1, 7)
+
+    def test_move_to_front(self):
+        speaker = _make_speaker(queue_size=12)
+        assert _call(move_in_queue, speaker, ["12", "1"]) is True
+        speaker.move_in_queue.assert_called_once_with(11, 0)
+
+    @pytest.mark.parametrize("args", [["0", "1"], ["1", "0"], ["1", "11"]])
+    def test_out_of_range(self, args, capsys):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(move_in_queue, speaker, args) is False
+        speaker.move_in_queue.assert_not_called()
+
+    def test_non_integer(self, capsys):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(move_in_queue, speaker, ["a", "1"]) is False
+        speaker.move_in_queue.assert_not_called()
+
+    def test_wrong_parameter_count(self, capsys):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(move_in_queue, speaker, ["1"]) is False
+        speaker.move_in_queue.assert_not_called()
+
+    def test_empty_queue(self, capsys):
+        speaker = _make_speaker(queue_size=0)
+        assert _call(move_in_queue, speaker, ["1", "2"]) is False
+        speaker.move_in_queue.assert_not_called()
+
+
+# ===========================================================================
+# reorder_queue
+# ===========================================================================
+
+
+class TestReorderQueue:
+    def test_range_to_front(self):
+        speaker = _make_speaker(queue_size=30)
+        assert _call(reorder_queue, speaker, ["20-25", "3"]) is True
+        speaker.reorder_queue.assert_called_once_with(19, 6, 2)
+
+    def test_single_track(self):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(reorder_queue, speaker, ["5", "1"]) is True
+        speaker.reorder_queue.assert_called_once_with(4, 1, 0)
+
+    def test_reversed_range(self):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(reorder_queue, speaker, ["4-2", "8"]) is True
+        speaker.reorder_queue.assert_called_once_with(1, 3, 7)
+
+    @pytest.mark.parametrize("end", ["end", "END", "11"])
+    def test_move_to_end(self, end):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(reorder_queue, speaker, ["2-3", end]) is True
+        speaker.reorder_queue.assert_called_once_with(1, 2, 10)
+
+    @pytest.mark.parametrize(
+        "args", [["0-2", "5"], ["8-11", "1"], ["1", "12"], ["2", "0"]]
+    )
+    def test_out_of_range(self, args, capsys):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(reorder_queue, speaker, args) is False
+        speaker.reorder_queue.assert_not_called()
+
+    def test_insert_inside_moved_block(self, capsys):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(reorder_queue, speaker, ["3-6", "5"]) is False
+        assert "within the tracks being moved" in capsys.readouterr().err
+        speaker.reorder_queue.assert_not_called()
+
+    @pytest.mark.parametrize("args", [["a", "1"], ["1-2-3", "5"], ["1", "x"]])
+    def test_bad_parameters(self, args, capsys):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(reorder_queue, speaker, args) is False
+        speaker.reorder_queue.assert_not_called()
 
 
 # ===========================================================================

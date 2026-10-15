@@ -1053,21 +1053,86 @@ def remove_from_queue(speaker, action, args, soco_function, use_local_speaker_li
             "Queue index(es) must be between 1 and {} (inclusive)".format(len(queue))
         )
         return False
-    # Walk though the list of tracks from position 1, removing items marked '0'
-    # Account for the queue shift by keeping count of those deleted
     logging.info("Created map of queue items to delete (==0) {}".format(queue))
-    # Note: do not switch the loop below to 'enumerate'. Yield behaviour breaks
-    # the sequencing of requests to Sonos.
-    # pylint: disable = consider-using-enumerate
-    count_removed = 0
-    for index in range(len(queue)):
-        if queue[index] == 0:
-            updated_index = index - count_removed
-            speaker.remove_from_queue(updated_index)
-            logging.info(
-                "Removing queue item at (adjusted) index {}".format(updated_index + 1)
+    # Remove each contiguous block of items marked '0' using a single request,
+    # working backwards from the end of the queue so that removals don't
+    # shift the positions of blocks still to be removed
+    for start, num_tracks in reversed(_contiguous_blocks(queue, 0)):
+        logging.info(
+            "Removing {} queue item(s) starting at index {}".format(
+                num_tracks, start + 1
             )
-            count_removed += 1
+        )
+        speaker.remove_range_from_queue(start, num_tracks)
+    return True
+
+
+def _contiguous_blocks(items, value):
+    """Return a list of (start, length) tuples, one for each run of
+    consecutive entries in 'items' that are equal to 'value'."""
+    blocks = []
+    start = None
+    for index, item in enumerate(items + [None]):
+        if item == value and start is None:
+            start = index
+        elif item != value and start is not None:
+            blocks.append((start, index - start))
+            start = None
+    return blocks
+
+
+@two_parameters
+def move_in_queue(speaker, action, args, soco_function, use_local_speaker_list):
+    if queue_is_empty(speaker):
+        return False
+    queue_size = speaker.queue_size
+    try:
+        track = int(args[0])
+        new_position = int(args[1])
+    except ValueError:
+        parameter_type_error(action, "two integers (track number, new position)")
+        return False
+    if not (1 <= track <= queue_size and 1 <= new_position <= queue_size):
+        error_report(
+            "Queue positions must be between 1 and {} (inclusive)".format(queue_size)
+        )
+        return False
+    speaker.move_in_queue(track - 1, new_position - 1)
+    return True
+
+
+@two_parameters
+def reorder_queue(speaker, action, args, soco_function, use_local_speaker_list):
+    if queue_is_empty(speaker):
+        return False
+    queue_size = speaker.queue_size
+    try:
+        rng = args[0].split("-")
+        if len(rng) not in [1, 2]:
+            raise ValueError
+        first = int(rng[0])
+        last = int(rng[-1])
+        if first > last:
+            first, last = last, first
+        if args[1].lower() == "end":
+            insert_before = queue_size + 1
+        else:
+            insert_before = int(args[1])
+    except ValueError:
+        parameter_type_error(
+            action,
+            "track number or range (e.g., '3-7'), then a track number or 'end'",
+        )
+        return False
+    if not (1 <= first and last <= queue_size and 1 <= insert_before <= queue_size + 1):
+        error_report(
+            "Queue positions must be between 1 and {} (inclusive)".format(queue_size)
+        )
+        return False
+    if first < insert_before <= last:
+        error_report("Cannot move tracks to a position within the tracks being moved")
+        return False
+    speaker.reorder_queue(first - 1, last - first + 1, insert_before - 1)
     return True
 
 
@@ -2959,6 +3024,10 @@ actions = {
     "remove_from_queue": SonosFunction(remove_from_queue, "remove_from_queue", True),
     "rfq": SonosFunction(remove_from_queue, "remove_from_queue", True),
     "rq": SonosFunction(remove_from_queue, "remove_from_queue", True),
+    "move_in_queue": SonosFunction(move_in_queue, "move_in_queue", True),
+    "miq": SonosFunction(move_in_queue, "move_in_queue", True),
+    "reorder_queue": SonosFunction(reorder_queue, "reorder_queue", True),
+    "roq": SonosFunction(reorder_queue, "reorder_queue", True),
     "clear_queue": SonosFunction(no_args_no_output, "clear_queue", True),
     "cq": SonosFunction(no_args_no_output, "clear_queue", True),
     "group_mute": SonosFunction(on_off_action, "group_mute"),

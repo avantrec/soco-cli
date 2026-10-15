@@ -469,6 +469,7 @@ The available actions are:
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
 - **`list_queue <track_number>`** (or **`lq`, `q`**): List the track in the queue at position `<track_number>`
+- **`move_in_queue <track_number> <new_position>`** (or **`miq`**): Move the track at `<track_number>` so that it is at `<new_position>` in the queue. Track numbers start from 1. E.g., `move_in_queue 12 1` makes track 12 the first track in the queue.
 - **`play_from_queue <track_number, or 'current', or 'last_added', or 'last', or 'random'>`** (or **`pfq`, `pq`**): Play `<track_number>` from the queue. Track numbers start from 1. If no `<track_number>` is provided, play starts from the beginning of the queue. If `current` is provided, play starts at the current queue position. If `last_added` is provided, play starts from the queue position of the last added track or set of tracks. If `last` is provided, the last track in the queue is played. If `random` is provided, playback will start at a random queue position.
 - **`queue_album <album_name> [<position>]`** (or **`qa`**): Add `<album_name>` from the local library to the queue. If multiple (fuzzy) matches are found for the album name, a random match will be chosen.
 - **`queue_length`** (or **`ql`**): Return the length of the current queue.
@@ -478,6 +479,7 @@ The available actions are:
 - **`remove_current_track_from_queue` (or `rctfq`)**: Remove from the queue the track at the current queue position. If the track is playing, this will have the effect of stopping playback and starting to play the next track. (If the last track in the queue is playing, playback will stop and the previous track will start to play.)
 - **`remove_last_track_from_queue <count>` (or `rltfq`)**: Removes the last `<count>` tracks from the queue. If `<count>` is omitted, the last track is removed.
 - **`remove_from_queue <track_number|sequence|range>`** (or **`rfq`, `rq`**): Remove tracks from the queue. Track numbers start from 1, and can be supplied as single integers, sequences (e.g., '4,7,3'), or ranges (e.g., '5-10'). Note: do not use spaces either side of the commas and dashes. Sequences and ranges can be mixed, e.g., '1,3-6,10'.
+- **`reorder_queue <track_number|range> <insert_before>`** (or **`roq`**): Move a track, or a range of tracks (e.g., '5-10'), so that they are inserted before the track currently at position `<insert_before>`. Use `end` as `<insert_before>` to move the tracks to the end of the queue. Track numbers start from 1. E.g., `reorder_queue 20-25 3` moves tracks 20 to 25 to positions 3 to 8.
 - **`save_queue <title>`** (or **`sq`, `create_playlist_from_queue`**): Save the current queue as a Sonos playlist called `<title>`.
 - **`set_queue_position <track_number>`** (or **`sqp`**): Set the queue position to `track_number`, without commencing playback. Note that this will stop any current audio being played.
 
