@@ -8,7 +8,7 @@ class ConvertToSeconds(unittest.TestCase):
         assert convert_to_seconds("00:01:01") == 61
         assert convert_to_seconds("01:30") == 90 * 60
         with self.assertRaises(ValueError):
-            seconds = convert_to_seconds("")
+            convert_to_seconds("")
         assert convert_to_seconds("00:61:65") == (61 * 60) + 65
 
     def test_hms(self):

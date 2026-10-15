@@ -217,7 +217,7 @@ class TestPrintSpeakerList:
             "soco_cli.interactive._get_speaker_names", return_value=["OneSpeaker"]
         ):
             _print_speaker_list()
-        lines = [l for l in capsys.readouterr().out.splitlines() if l.strip()]
+        lines = [line for line in capsys.readouterr().out.splitlines() if line.strip()]
         assert lines[0].lstrip().startswith("0")
         assert lines[1].lstrip().startswith("1")
 

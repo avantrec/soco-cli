@@ -8,10 +8,9 @@ interrupt-flag mechanism, wait-action dispatch, and more.
 
 import datetime
 import types
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
-from soco.exceptions import SoCoUPnPException
 
 import soco_cli.utils as utils
 from soco_cli.action_processor import (
@@ -266,7 +265,7 @@ class TestPrettyPrintValues:
         pretty_print_values({"Short": "MARKER_A", "LongerKey": "MARKER_B"})
         out, _ = capsys.readouterr()
         # Don't use .strip() before splitlines — it would eat the indent on the first line
-        lines = [l for l in out.splitlines() if l]
+        lines = [line for line in out.splitlines() if line]
         assert len(lines) == 2
         # Values should start at the same column regardless of key length
         assert lines[0].index("MARKER_A") == lines[1].index("MARKER_B")
@@ -608,8 +607,8 @@ class TestAliasManager:
         am.create_alias("longeralias", "PLAY_ACTION")
         text = am._aliases_to_text(raw=False)
         # Find each line by its unique value — don't use .strip() which eats indent
-        sk_line = next(l for l in text.splitlines() if "STOP_ACTION" in l)
-        long_line = next(l for l in text.splitlines() if "PLAY_ACTION" in l)
+        sk_line = next(line for line in text.splitlines() if "STOP_ACTION" in line)
+        long_line = next(line for line in text.splitlines() if "PLAY_ACTION" in line)
         # Shorter alias should be padded so '=' aligns with the longer alias line
         assert sk_line.index("=") == long_line.index("=")
 
@@ -783,14 +782,18 @@ class TestCtrlCInterruptFlag:
 
 class TestSonosFunction:
     def test_properties(self):
-        fn = lambda: None
+        def fn():
+            return None
+
         sf = SonosFunction(fn, "play", True)
         assert sf.processing_function is fn
         assert sf.soco_function == "play"
         assert sf.switch_to_coordinator is True
 
     def test_defaults(self):
-        fn = lambda: None
+        def fn():
+            return None
+
         sf = SonosFunction(fn)
         assert sf.soco_function is None
         assert sf.switch_to_coordinator is False

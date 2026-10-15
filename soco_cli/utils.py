@@ -880,13 +880,11 @@ def _confirm_soco_cli_dir() -> bool:
 
 
 def remember_event_sub(sub):
-    global SUBS_LIST
     logging.info("Adding event subscription record: '{}'".format(sub))
     SUBS_LIST.add(sub)
 
 
 def forget_event_sub(sub):
-    global SUBS_LIST
     try:
         logging.info("Removing event subscription record: '{}'".format(sub))
         SUBS_LIST.remove(sub)
@@ -895,7 +893,6 @@ def forget_event_sub(sub):
 
 
 def unsub_all_remembered_event_subs():
-    global SUBS_LIST
     for sub in SUBS_LIST:
         try:
             event_unsubscribe(sub)

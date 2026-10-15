@@ -1,6 +1,5 @@
 """Extended tests for utils.py — covering functions not tested in test_utils.py."""
 
-import argparse
 import datetime as real_datetime
 from unittest.mock import MagicMock, patch
 
@@ -292,8 +291,8 @@ class TestPrettyPrintValues:
         # not the colons (which immediately follow the key).
         pretty_print_values({"Short": "a_val", "LongerKey": "b_val"})
         out = capsys.readouterr().out
-        lines = [l for l in out.splitlines() if l.strip()]
-        value_positions = [l.index("_val") - 1 for l in lines]
+        lines = [line for line in out.splitlines() if line.strip()]
+        value_positions = [line.index("_val") - 1 for line in lines]
         assert len(set(value_positions)) == 1
 
     def test_sort_by_key(self, capsys):

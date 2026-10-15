@@ -239,7 +239,6 @@ def macros_list() -> Dict:
 
 @sc_app.get("/macros/reload")
 def macros_reload() -> Dict:
-    global MACROS
     _load_macros(MACROS, filename=MACRO_FILE)
     return MACROS
 
@@ -574,7 +573,6 @@ def main() -> None:
     print(PREFIX + "Starting " + INFO)
 
     # Load local macros
-    global MACROS
     _load_macros(MACROS, filename=MACRO_FILE)
 
     try:
@@ -658,7 +656,6 @@ def _process_macro(macro_name: str, *args) -> Tuple[str, str]:
 
 
 def _lookup_macro(macro_name: str) -> str:
-    global MACROS
     return MACROS[macro_name]
 
 

@@ -1,7 +1,5 @@
 """Tests for play_local_file.py — testable portions only."""
 
-import pytest
-
 from soco_cli.play_local_file import SUPPORTED_TYPES, is_supported_type
 
 

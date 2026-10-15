@@ -639,13 +639,13 @@ This is SoCo-CLI interactive mode. Interactive commands are as follows:
     'sk'         :  Enters 'single keystroke' mode. (Also 'single-keystroke'.)
     'speakers'   :  List the names of all available speakers.
     'version'    :  Print the versions of SoCo-CLI, SoCo, and Python in use.
-    
+
     The action syntax is the same as when using 'sonos' from the command line.
     If a speaker has been set in the shell, omit the speaker name from the
     action.
 
     Use the arrow keys for command history and command editing.
-    
+
     [Not Available on Windows] Use the TAB key for autocompletion of shell
     commands, SoCo-CLI actions, aliases, and speaker names.
 """
@@ -767,7 +767,7 @@ class AliasProcessor:
             # Remove unsatisfied arguments and substituted parameters
             sequence = [x for x in sequence if x is not None]
             alias_parms_local = [
-                y for x, y in enumerate(alias_parms_local) if not x in alias_parms_used
+                y for x, y in enumerate(alias_parms_local) if x not in alias_parms_used
             ]
 
             # Recurse if the sequence is itself an alias
@@ -942,7 +942,6 @@ def _exec_loop(
             except IndexError:
                 break
 
-        global LOG_SETTING
         sonos_command = "sonos " + LOG_SETTING + " "
         if speaker is not None:
             # This is a way of using the required speaker for each

@@ -8,14 +8,13 @@ TestClient. No live Sonos network or running server required.
 import os
 import tempfile
 from subprocess import CalledProcessError
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
 
 import soco_cli.http_api as http_api
 from soco_cli.http_api import (
-    ASYNC_PREFIX,
     ActiveAsyncOps,
     _load_macros,
     _lookup_macro,
@@ -376,7 +375,7 @@ class TestProcessMacroSync:
         assert args[1] == "-l"
 
     def test_command_contains_substituted_arg(self, loaded_macros):
-        with patch("soco_cli.http_api.check_output", return_value=b"") as mock_co:
+        with patch("soco_cli.http_api.check_output", return_value=b""):
             with patch(
                 "soco_cli.http_api._substitute_speaker_ips",
                 side_effect=lambda x, **kw: x,

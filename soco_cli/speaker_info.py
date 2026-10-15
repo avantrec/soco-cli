@@ -58,7 +58,7 @@ def print_speaker_table(device):
             # Wrap in an exception, and ignore.
             try:
                 state = sco.get_current_transport_info()["current_transport_state"]
-            except BaseException as e:
+            except BaseException:
                 # If we're here, assume the speakers are bonded
                 # in a Home Theatre configuration
                 state = "Bonded"

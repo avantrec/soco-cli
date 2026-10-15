@@ -144,7 +144,8 @@ def list_alarms_spec(speaker, action, args, soco_function, use_local_speaker_lis
     print(tabulate.tabulate(details, headers, tablefmt="github", numalign="left"))
     if warned_comma:
         print(
-            "\nNote: one or more favourite names contain a comma; those specs cannot be used directly with 'modify_alarm'."
+            "\nNote: one or more favourite names contain a comma; those specs cannot"
+            " be used directly with 'modify_alarm'."
         )
     print()
     return True

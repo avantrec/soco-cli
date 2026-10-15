@@ -4,7 +4,6 @@ Covers pure helpers, output formatters, and action-processing functions
 that can be exercised without a live Sonos network.
 """
 
-from collections import OrderedDict
 from unittest.mock import MagicMock, call, patch
 
 import pytest
@@ -19,7 +18,6 @@ from soco_cli.action_processor import (
     add_search_result_to_favourites,
     audio_format,
     filter_track_info,
-    get_actions,
     get_current_queue_position,
     list_queue,
     mic_enabled,
@@ -323,7 +321,7 @@ class TestPrintTracks:
         ):
             print_tracks(tracks, speaker=MagicMock())
         out = capsys.readouterr().out
-        lines = [l for l in out.splitlines() if "Active" in l]
+        lines = [line for line in out.splitlines() if "Active" in line]
         assert lines[0].startswith(" *> ")
 
     def test_current_track_prefix_paused(self, capsys):
@@ -334,7 +332,7 @@ class TestPrintTracks:
         ):
             print_tracks(tracks, speaker=MagicMock())
         out = capsys.readouterr().out
-        lines = [l for l in out.splitlines() if "Paused" in l]
+        lines = [line for line in out.splitlines() if "Paused" in line]
         assert lines[0].startswith(" *  ")
 
     def test_non_current_track_has_plain_prefix(self, capsys):
@@ -345,7 +343,7 @@ class TestPrintTracks:
         ):
             print_tracks(tracks, speaker=MagicMock())
         out = capsys.readouterr().out
-        lines = [l for l in out.splitlines() if "T2" in l]
+        lines = [line for line in out.splitlines() if "T2" in line]
         assert lines[0].startswith("    ")
 
     def test_single_track_mode_uses_given_number(self, capsys):

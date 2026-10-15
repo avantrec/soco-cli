@@ -13,7 +13,6 @@ from os import get_terminal_size
 from random import randint
 
 import soco  # type: ignore
-import tabulate  # type: ignore
 from soco.exceptions import NotSupportedException, SoCoUPnPException  # type: ignore
 from soco.plugins.sharelink import ShareLinkPlugin  # type: ignore
 from xmltodict import parse  # type: ignore
