@@ -4,6 +4,8 @@ import datetime
 
 import tabulate  # type: ignore
 
+from soco_cli.speakers import speaker_address
+
 # Collect speaker information from each speaker in turn
 headers = [
     "Zone Name",
@@ -40,7 +42,7 @@ def print_speaker_table(device):
         try:
             sco.get_speaker_info()
         except BaseException as e:
-            add_err_and_exc(sco.player_name, sco.ip_address, e)
+            add_err_and_exc(sco.player_name, speaker_address(sco), e)
             continue
 
         # Boost and Bridge don't support some attributes
@@ -66,7 +68,7 @@ def print_speaker_table(device):
         if sco is coord:
             coord_ip = ""
         else:
-            coord_ip = coord.ip_address
+            coord_ip = speaker_address(coord)
             # Overwrite the 'state'
             if state != "Bonded":
                 state = sco.group.coordinator.get_current_transport_info()[
@@ -76,7 +78,7 @@ def print_speaker_table(device):
         # Set up the information for the speaker
         speaker = [
             sco.player_name,
-            sco.ip_address,
+            speaker_address(sco),
             "Yes" if sco.is_visible else "No",
             "Yes" if sco.is_coordinator else "No",
             coord_ip,

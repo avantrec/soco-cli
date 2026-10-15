@@ -655,3 +655,20 @@ class TestSpeakerCache:
         outer.visible_zones = [inner]
         sc._cache.add((outer, "GroupName"))
         assert sc.find_indirect("Bedroom") is None
+
+
+# ---------------------------------------------------------------------------
+# get_speaker with an IP address (and optional port)
+# ---------------------------------------------------------------------------
+
+
+class TestGetSpeakerByAddress:
+    def test_ip_address(self):
+        with patch("soco_cli.speakers.soco.SoCo") as mock_soco:
+            utils.get_speaker("10.0.0.5")
+        mock_soco.assert_called_once_with("10.0.0.5")
+
+    def test_ip_address_and_port(self):
+        with patch("soco_cli.speakers.soco.SoCo") as mock_soco:
+            utils.get_speaker("10.0.0.5:1500", local=True)
+        mock_soco.assert_called_once_with("10.0.0.5", 1500)

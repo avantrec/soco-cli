@@ -1,15 +1,23 @@
 """Tests for speakers.py — Speakers class."""
 
 import os
+import pickle
 import tempfile
+from collections import namedtuple
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from soco_cli.speakers import SonosDevice, Speakers
+from soco_cli.speakers import (
+    SonosDevice,
+    Speakers,
+    create_soco,
+    parse_speaker_address,
+    speaker_address,
+)
 
 
-def _make_device(name, ip="192.168.1.1", visible=True, household="HH1"):
+def _make_device(name, ip="192.168.1.1", visible=True, household="HH1", port=1400):
     return SonosDevice(
         household_id=household,
         ip_address=ip,
@@ -17,6 +25,7 @@ def _make_device(name, ip="192.168.1.1", visible=True, household="HH1"):
         is_visible=visible,
         model_name="Sonos One",
         display_version="15.0",
+        port=port,
     )
 
 
@@ -261,3 +270,150 @@ class TestFind:
             result = s.find("Kitchen")
         assert result is None
         assert "ambiguous" in capsys.readouterr().out
+
+
+# ---------------------------------------------------------------------------
+# Multi-port players (e.g., Sonos Amp Multi)
+# ---------------------------------------------------------------------------
+
+
+class TestSpeakerAddress:
+    def test_default_port_is_plain_ip(self):
+        assert speaker_address(_make_device("A", ip="10.0.0.5")) == "10.0.0.5"
+
+    def test_other_port_is_included(self):
+        device = _make_device("A", ip="10.0.0.5", port=1500)
+        assert speaker_address(device) == "10.0.0.5:1500"
+
+    def test_object_without_port_attribute(self):
+        speaker = MagicMock(spec=["ip_address"])
+        speaker.ip_address = "10.0.0.5"
+        assert speaker_address(speaker) == "10.0.0.5"
+
+
+class TestParseSpeakerAddress:
+    @pytest.mark.parametrize(
+        "address, expected",
+        [
+            ("10.0.0.5", ("10.0.0.5", 1400)),
+            ("10.0.0.5:1500", ("10.0.0.5", 1500)),
+            ("10.0.0.5:1400", ("10.0.0.5", 1400)),
+        ],
+    )
+    def test_valid(self, address, expected):
+        assert parse_speaker_address(address) == expected
+
+    @pytest.mark.parametrize(
+        "address",
+        [
+            "Kitchen",
+            "10.0.0.5:",
+            "10.0.0.5:abc",
+            "10.0.0.5:0",
+            "10.0.0.5:70000",
+            "Kitchen:1500",
+            "",
+        ],
+    )
+    def test_invalid(self, address):
+        assert parse_speaker_address(address) is None
+
+
+class TestCreateSoco:
+    def test_default_port_omitted(self):
+        with patch("soco_cli.speakers.soco.SoCo") as mock_soco:
+            create_soco("10.0.0.5")
+        mock_soco.assert_called_once_with("10.0.0.5")
+
+    def test_other_port_passed(self):
+        with patch("soco_cli.speakers.soco.SoCo") as mock_soco:
+            create_soco("10.0.0.5", 1500)
+        mock_soco.assert_called_once_with("10.0.0.5", 1500)
+
+
+class TestMultiPortCache:
+    def test_old_cache_records_load_with_default_port(self):
+        # Simulate a cache saved by a version without the 'port' field
+        old_sonos_device = namedtuple("SonosDevice", SonosDevice._fields[:-1])
+        old_sonos_device.__module__ = SonosDevice.__module__
+        old_record = old_sonos_device(
+            "HH1", "10.0.0.5", "Kitchen", True, "Sonos One", "15.0"
+        )
+        with patch("soco_cli.speakers.SonosDevice", old_sonos_device):
+            data = pickle.dumps([old_record])
+        device = pickle.loads(data)[0]
+        assert isinstance(device, SonosDevice)
+        assert device.port == 1400
+        assert device.speaker_name == "Kitchen"
+
+    def test_save_and_load_preserves_port(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            spkrs = Speakers(save_directory=tmp + "/", save_file="test.pickle")
+            spkrs._speakers = [_make_device("Zone 2", ip="10.0.0.5", port=1500)]
+            spkrs.save()
+            loaded = Speakers(save_directory=tmp + "/", save_file="test.pickle")
+            loaded.load()
+            assert loaded.speakers[0].port == 1500
+
+    def test_find_uses_port(self):
+        spkrs = Speakers()
+        spkrs._speakers = [
+            _make_device("Zone 1", ip="10.0.0.5"),
+            _make_device("Zone 2", ip="10.0.0.5", port=1500),
+        ]
+        with patch("soco_cli.speakers.soco.SoCo") as mock_soco:
+            spkrs.find("Zone 2")
+        mock_soco.assert_called_once_with("10.0.0.5", 1500)
+
+    def test_get_all_speakers_uses_ports(self):
+        spkrs = Speakers()
+        spkrs._speakers = [
+            _make_device("Zone 1", ip="10.0.0.5"),
+            _make_device("Zone 2", ip="10.0.0.5", port=1500),
+        ]
+        with patch("soco_cli.speakers.soco.SoCo") as mock_soco:
+            spkrs.get_all_speakers()
+        assert mock_soco.call_args_list == [
+            (("10.0.0.5",),),
+            (("10.0.0.5", 1500),),
+        ]
+
+    def test_discover_keeps_players_sharing_an_ip(self):
+        zones = []
+        for port in (1400, 1500):
+            zone = MagicMock()
+            zone.ip_address = "10.0.0.5"
+            zone.port = port
+            zones.append(zone)
+        spkrs = Speakers()
+        with patch("soco_cli.speakers.soco.discovery.scan_network", return_value=zones):
+            with patch.object(
+                Speakers,
+                "get_sonos_device_data",
+                side_effect=lambda ip, port: _make_device(str(port), ip=ip, port=port),
+            ) as mock_get:
+                spkrs.discover()
+        assert mock_get.call_args_list == [
+            (("10.0.0.5", 1400),),
+            (("10.0.0.5", 1500),),
+        ]
+        assert [d.port for d in spkrs.speakers] == [1400, 1500]
+
+    def test_get_sonos_device_data_records_port(self):
+        mock_soco = MagicMock()
+        mock_soco.get_speaker_info.return_value = {
+            "zone_name": "Zone 2",
+            "model_name": "Sonos Amp Multi",
+            "display_version": "17.0",
+        }
+        with patch("soco_cli.speakers.soco.SoCo", return_value=mock_soco) as soco_cls:
+            device = Speakers.get_sonos_device_data("10.0.0.5", 1500)
+        soco_cls.assert_called_once_with("10.0.0.5", 1500)
+        assert device.port == 1500
+        assert device.speaker_name == "Zone 2"
+
+    def test_print_shows_port(self, capsys):
+        spkrs = Speakers()
+        spkrs._speakers = [_make_device("Zone 2", ip="10.0.0.5", port=1500)]
+        spkrs.print()
+        assert "10.0.0.5:1500" in capsys.readouterr().out

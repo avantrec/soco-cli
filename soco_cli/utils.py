@@ -19,7 +19,7 @@ import soco  # type: ignore
 
 from soco_cli.__init__ import __version__  # type: ignore
 from soco_cli.match_speaker_names import speaker_name_matches
-from soco_cli.speakers import Speakers
+from soco_cli.speakers import create_soco, parse_speaker_address, speaker_address
 
 
 def event_unsubscribe(sub):
@@ -586,11 +586,12 @@ def local_speaker_list():
 
 
 def get_speaker(name, local=False):
-    # Use an IP address
+    # Use an IP address, optionally with a port: 'ip_address:port'
     # (Allow the use of an IP address even if 'local' is specified)
-    if Speakers.is_ipv4_address(name):
+    address = parse_speaker_address(name)
+    if address:
         logging.info("Using IP address instead of speaker name")
-        return soco.SoCo(name)
+        return create_soco(*address)
 
     # Use the local speaker list
     if local:
@@ -632,7 +633,8 @@ def get_right_hand_speaker(left_hand_speaker):
     # left-hand speaker is the coordinator, and not a Sub
     for rh_speaker in left_hand_speaker.all_zones:
         if (
-            rh_speaker.group.coordinator.ip_address == left_hand_speaker.ip_address
+            speaker_address(rh_speaker.group.coordinator)
+            == speaker_address(left_hand_speaker)
             and not rh_speaker.is_visible
             and "sub" not in rh_speaker.get_speaker_info()["model_name"].lower()
         ):

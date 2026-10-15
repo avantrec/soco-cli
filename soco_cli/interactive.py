@@ -34,6 +34,7 @@ from soco_cli.api import get_soco_object, run_command
 from soco_cli.check_for_update import print_update_status
 from soco_cli.cmd_parser import CLIParser
 from soco_cli.keystroke_capture import get_keystroke
+from soco_cli.speakers import speaker_address
 from soco_cli.utils import (
     RewindableList,
     docs,
@@ -491,7 +492,7 @@ def interactive_loop(
                         action in ACTIONS_TO_EXEC
                         or action in ACTIONS_TO_EXEC_NO_SPEAKER
                     ):
-                        if _exec_action(speaker.ip_address, action, args):
+                        if _exec_action(speaker_address(speaker), action, args):
                             break
                     else:
                         exit_code, output, error_msg = run_command(
@@ -949,7 +950,7 @@ def _exec_loop(
             if UNIX:
                 command_line = (
                     "export SPKR="
-                    + speaker.ip_address
+                    + speaker_address(speaker)
                     + " && "
                     + sonos_command
                     + command_line
@@ -957,7 +958,7 @@ def _exec_loop(
             elif WINDOWS:
                 command_line = (
                     'set "SPKR='
-                    + speaker.ip_address
+                    + speaker_address(speaker)
                     + '" && '
                     + sonos_command
                     + command_line

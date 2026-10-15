@@ -13,12 +13,13 @@ from soco import SoCo  # type: ignore
 
 from soco_cli.m3u_parser import parse_m3u
 from soco_cli.play_local_file import is_supported_type, play_local_file
+from soco_cli.speakers import create_soco, parse_speaker_address, speaker_address
 from soco_cli.utils import error_report
 
 
-def interaction_manager(speaker_ip: str) -> None:
+def interaction_manager(address: str) -> None:
     sys.stdin = open(0)
-    speaker = SoCo(speaker_ip)
+    speaker = create_soco(*parse_speaker_address(address))
     while True:
         try:
             # keypress = wait_for_keypress()
@@ -95,7 +96,9 @@ def play_file_list(speaker: SoCo, tracks: List[str], options: str = "") -> bool:
         try:
             logging.info("Interactive mode ... starting keypress process")
             keypress_process = Process(
-                target=interaction_manager, args=(speaker.ip_address,), daemon=True
+                target=interaction_manager,
+                args=(speaker_address(speaker),),
+                daemon=True,
             )
             keypress_process.start()
             logging.info("Process PID {} created".format(keypress_process.pid))

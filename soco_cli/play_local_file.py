@@ -171,7 +171,7 @@ def get_server_ip(speaker: SoCo) -> Optional[str]:
                     )
                     http_connection = http.client.HTTPConnection(
                         speaker.ip_address,
-                        port=1400,
+                        port=getattr(speaker, "port", 1400),
                         timeout=5.0,
                         source_address=(ip.ip, available_port),
                     )

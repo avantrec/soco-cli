@@ -489,6 +489,7 @@ class TestCommandCore:
         device = MagicMock()
         device.player_name = name
         device.ip_address = ip
+        device.port = 1400
         return device
 
     def test_speaker_not_found_returns_exit_code_1(self):
@@ -607,6 +608,7 @@ class TestEndpoints:
         device = MagicMock()
         device.player_name = "Kitchen"
         device.ip_address = "192.168.0.10"
+        device.port = 1400
         with patch("soco_cli.http_api.get_speaker", return_value=(device, "")):
             with patch("soco_cli.http_api.sc_run", return_value=(0, "25", "")):
                 response = client.get("/Kitchen/volume")
@@ -619,6 +621,7 @@ class TestEndpoints:
         device = MagicMock()
         device.player_name = "Kitchen"
         device.ip_address = "192.168.0.10"
+        device.port = 1400
         with patch("soco_cli.http_api.get_speaker", return_value=(device, "")):
             with patch(
                 "soco_cli.http_api.sc_run", return_value=(0, "", "")
@@ -632,6 +635,7 @@ class TestEndpoints:
         device = MagicMock()
         device.player_name = "Kitchen"
         device.ip_address = "192.168.0.10"
+        device.port = 1400
         with patch("soco_cli.http_api.get_speaker", return_value=(device, "")):
             with patch(
                 "soco_cli.http_api.sc_run", return_value=(0, "", "")
@@ -650,6 +654,7 @@ class TestEndpoints:
         device = MagicMock()
         device.player_name = "Kitchen"
         device.ip_address = "192.168.0.10"
+        device.port = 1400
         with patch("soco_cli.http_api.get_speaker", return_value=(device, "")):
             with patch(
                 "soco_cli.http_api.sc_run", return_value=(0, "", "")

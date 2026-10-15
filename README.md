@@ -154,6 +154,7 @@ SoCo-CLI will try a number of approaches to find a speaker's IP address by speak
 - **`sonos Study group Kitchen`** Groups the *Study* speaker with the *Kitchen* speaker.
 - **`sonos 192.168.0.10 mute`** Returns the mute state ('on' or 'off') of the speaker at the given IP address.
 - **`sonos 192.168.0.10 mute on`** Mutes the speaker at the given IP address.
+- **`sonos 192.168.0.10:1500 volume`** Returns the volume of the player using port 1500 at the given IP address. Devices such as the Sonos Amp Multi provide several independent players that share an IP address and use different ports (1400, 1500, 1600 and 1700). The port can be omitted for the player using the default port, 1400.
 - **`sonos Kitchen play_favourite Jazz24 : wait 30m : Kitchen stop`** Plays 'Jazz24' for 30 minutes, then stops playback.
 - **`sonos Study play_file "Zoo Station.mp3"`** Plays a local audio file.
 

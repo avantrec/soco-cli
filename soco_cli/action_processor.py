@@ -22,6 +22,7 @@ from soco_cli import alarms
 from soco_cli.play_local_file import play_local_file
 from soco_cli.play_local_file_lists import play_directory_files, play_m3u_file
 from soco_cli.speaker_info import print_speaker_table
+from soco_cli.speakers import speaker_address
 from soco_cli.utils import (
     convert_to_seconds,
     create_list_of_items_from_range,
@@ -2336,7 +2337,9 @@ def album_art(speaker, action, args, soco_function, use_local_speaker_list):
         return False
 
     if not album_art_uri.startswith("http"):
-        album_art_uri = "http://" + speaker.ip_address + ":1400" + album_art_uri
+        album_art_uri = "http://{}:{}{}".format(
+            speaker.ip_address, getattr(speaker, "port", 1400), album_art_uri
+        )
         logging.info("Prefixed HTTP: '{}'".format(album_art_uri))
 
     print(album_art_uri)
@@ -2495,7 +2498,7 @@ def groupstatus(speaker, action, args, soco_function, use_local_speaker_list):
     if not speaker.is_visible:
         print(
             "Paired or bonded, not coordinator [coordinator = {} @ {}]".format(
-                coordinator.player_name, coordinator.ip_address
+                coordinator.player_name, speaker_address(coordinator)
             )
         )
 
@@ -2505,7 +2508,7 @@ def groupstatus(speaker, action, args, soco_function, use_local_speaker_list):
     if speaker.is_visible and not speaker.is_coordinator:
         print(
             "Grouped, not coordinator [coordinator = {} @ {}]".format(
-                coordinator.player_name, coordinator.ip_address
+                coordinator.player_name, speaker_address(coordinator)
             )
         )
 

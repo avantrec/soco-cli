@@ -21,9 +21,51 @@ SonosDevice = namedtuple(
         "is_visible",
         "model_name",
         "display_version",
+        "port",
     ],
     rename=False,
 )
+# Speaker caches saved before 'port' was added unpickle with the default port
+SonosDevice.__new__.__defaults__ = (1400,)
+
+DEFAULT_PORT = 1400
+
+
+def speaker_address(speaker):
+    """Return the address of a speaker as 'ip_address', or as
+    'ip_address:port' if the speaker doesn't use the default port. Players
+    such as the Sonos Amp Multi share an IP address, using different ports.
+    Works for both SoCo and SonosDevice objects."""
+    port = getattr(speaker, "port", DEFAULT_PORT)
+    if port == DEFAULT_PORT:
+        return speaker.ip_address
+    return "{}:{}".format(speaker.ip_address, port)
+
+
+def parse_speaker_address(address):
+    """Parse a speaker address of the form 'ip_address' or
+    'ip_address:port'. Returns an (ip_address, port) tuple, or None if
+    'address' is not a valid speaker address."""
+    ip_address, port = address, DEFAULT_PORT
+    if ":" in address:
+        ip_address, port_str = address.rsplit(":", 1)
+        try:
+            port = int(port_str)
+        except ValueError:
+            return None
+        if not 1 <= port <= 65535:
+            return None
+    if not Speakers.is_ipv4_address(ip_address):
+        return None
+    return ip_address, port
+
+
+def create_soco(ip_address, port=DEFAULT_PORT):
+    """Create a SoCo object, only supplying the port if it's not the default
+    (older SoCo versions don't accept a port argument)."""
+    if port == DEFAULT_PORT:
+        return soco.SoCo(ip_address)
+    return soco.SoCo(ip_address, port)
 
 
 class Speakers:
@@ -204,11 +246,11 @@ class Speakers:
             return False
 
     @staticmethod
-    def get_sonos_device_data(ip_addr):
+    def get_sonos_device_data(ip_addr, port=DEFAULT_PORT):
         """Get information from a Sonos device"""
         try:
-            speaker = soco.SoCo(str(ip_addr))
-            logging.info("Querying device at {}".format(str(ip_addr)))
+            speaker = create_soco(str(ip_addr), port)
+            logging.info("Querying device at {}".format(speaker_address(speaker)))
             info = speaker.get_speaker_info(refresh=True, timeout=3.0)
             if info is not None:
                 return SonosDevice(
@@ -218,11 +260,12 @@ class Speakers:
                     speaker.is_visible,
                     info["model_name"],
                     info["display_version"],
+                    port,
                 )
             else:
                 raise Exception
         except:
-            logging.info("Not a Sonos device: '{}'".format(ip_addr))
+            logging.info("Not a Sonos device: '{}' (port {})".format(ip_addr, port))
             return None
 
     def discover(self):
@@ -245,7 +288,9 @@ class Speakers:
         else:
             # Populate the device information for each speaker
             for device in devices:
-                speaker_data = self.get_sonos_device_data(device.ip_address)
+                speaker_data = self.get_sonos_device_data(
+                    device.ip_address, getattr(device, "port", DEFAULT_PORT)
+                )
                 if speaker_data is not None:
                     self._speakers.append(speaker_data)
 
@@ -263,12 +308,12 @@ class Speakers:
 
             if match and exact:
                 speaker_names.add(speaker.speaker_name)
-                return soco.SoCo(speaker.ip_address)
+                return create_soco(speaker.ip_address, speaker.port)
 
             if match and not exact:
                 speaker_names.add(speaker.speaker_name)
                 if not return_speaker:
-                    return_speaker = soco.SoCo(speaker.ip_address)
+                    return_speaker = create_soco(speaker.ip_address, speaker.port)
 
         if len(speaker_names) > 1:
             print(
@@ -283,7 +328,7 @@ class Speakers:
     def get_all_speakers(self):
         soco_speakers = []
         for speaker in self._speakers:
-            soco_speakers.append(soco.SoCo(speaker.ip_address))
+            soco_speakers.append(create_soco(speaker.ip_address, speaker.port))
         if soco_speakers:
             return soco_speakers
         return None
@@ -311,7 +356,7 @@ class Speakers:
             households[device.household_id].append(
                 (
                     device.speaker_name,
-                    device.ip_address,
+                    speaker_address(device),
                     device.model_name.replace("Sonos ", ""),
                     visible,
                     device.display_version,

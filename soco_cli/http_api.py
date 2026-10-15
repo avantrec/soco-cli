@@ -25,7 +25,7 @@ from soco_cli.api import get_soco_object as get_speaker
 from soco_cli.api import rescan_speakers
 from soco_cli.api import run_command as sc_run
 from soco_cli.play_local_file import is_supported_type
-from soco_cli.speakers import Speakers
+from soco_cli.speakers import Speakers, speaker_address
 from soco_cli.utils import version as print_version
 
 # Globals
@@ -130,9 +130,10 @@ def command_core(
         else:
             action = action.replace(ASYNC_PREFIX, "")
             try:
-                ASYNC_OPS.stop_async_process(device.ip_address)
-                proc = Popen(["sonos", device.ip_address, action, *args])
-                ASYNC_OPS.add_async_pid(device.ip_address, proc.pid)
+                address = speaker_address(device)
+                ASYNC_OPS.stop_async_process(address)
+                proc = Popen(["sonos", address, action, *args])
+                ASYNC_OPS.add_async_pid(address, proc.pid)
                 exit_code = 0
                 error_msg = ""
                 result = ""
@@ -747,11 +748,11 @@ def _substitute_speaker_ips(macro: str, use_local: bool = False) -> str:
     for element in elements:
         device, error_msg = get_speaker(element, use_local_speaker_list=use_local)
         if device is not None and device.player_name == element:
-            new_macro_list.append(device.ip_address)
+            new_macro_list.append(speaker_address(device))
             print(
                 PREFIX_MACRO
                 + "Substituting speaker name '{}' by IP address '{}'".format(
-                    device.player_name, device.ip_address
+                    device.player_name, speaker_address(device)
                 )
             )
         else:

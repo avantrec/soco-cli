@@ -431,6 +431,7 @@ class TestExecLoop:
     def test_unix_includes_export_spkr_env(self):
         speaker = MagicMock()
         speaker.ip_address = "192.168.1.5"
+        speaker.port = 1400
         seqs = RewindableList([["loop"]])
         with patch("soco_cli.interactive._exec_command_line") as mock_exec:
             with patch.object(interactive_mod, "UNIX", True):
@@ -443,6 +444,7 @@ class TestExecLoop:
     def test_windows_includes_set_spkr_env(self):
         speaker = MagicMock()
         speaker.ip_address = "192.168.1.5"
+        speaker.port = 1400
         seqs = RewindableList([["loop"]])
         with patch("soco_cli.interactive._exec_command_line") as mock_exec:
             with patch.object(interactive_mod, "UNIX", False):
@@ -469,6 +471,7 @@ class TestExecLoop:
     def test_sequences_joined_with_colon_separator(self):
         speaker = MagicMock()
         speaker.ip_address = "1.2.3.4"
+        speaker.port = 1400
         seqs = RewindableList([["volume", "50"], ["loop"]])
         with patch("soco_cli.interactive._exec_command_line") as mock_exec:
             with patch.object(interactive_mod, "UNIX", True):
