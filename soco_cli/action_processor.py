@@ -4,6 +4,7 @@ This module requires refactoring, improvements to its argument handling,
 and needs to be converted to a Class.
 """
 
+import copy
 import logging
 import pprint
 import time
@@ -13,6 +14,8 @@ from os import get_terminal_size
 from random import randint
 
 import soco  # type: ignore
+from soco.data_structures import DidlResource, didl_class_to_soco_class  # type: ignore
+from soco.data_structures_entry import from_didl_string  # type: ignore
 from soco.exceptions import NotSupportedException, SoCoUPnPException  # type: ignore
 from soco.plugins.sharelink import ShareLinkPlugin  # type: ignore
 from xmltodict import parse  # type: ignore
@@ -861,6 +864,138 @@ def add_playlist_to_favourites(
         return False
     try:
         result, msg = add_to_favourites_core(speaker, playlist, title)
+    except FavoritesFullError:
+        error_report("The Sonos favourites list is full")
+        return False
+    if not result:
+        error_report(msg)
+    return result
+
+
+# URI schemes for sources that can't be saved as favourites
+UNFAVOURITABLE_URI_PREFIXES = ("x-rincon-stream:", "x-sonos-htastream:", "x-rincon:")
+
+
+def _protocol_info_for_uri(uri):
+    """Return a generic UPnP protocolInfo string for a URI."""
+    scheme = uri.split(":", 1)[0]
+    if scheme in ["http", "https"]:
+        return "http-get:*:*:*"
+    return "{}:*:*:*".format(scheme)
+
+
+def _item_with_resource(metadata, uri):
+    """Create a DIDL item from a metadata string, adding a resource for 'uri'
+    if the metadata doesn't include a playable one. Returns None if the
+    metadata can't be parsed."""
+    try:
+        item = from_didl_string(metadata)[0]
+    except Exception as e:
+        logging.info("Failed to parse metadata '{}': {}".format(metadata, e))
+        return None
+    if not (item.resources and item.resources[0].uri):
+        # from_didl_string() caches its results, so don't modify its item
+        item = copy.copy(item)
+        item.resources = [DidlResource(uri, _protocol_info_for_uri(uri))]
+    return item
+
+
+def get_current_item(speaker):
+    """Return a DIDL item for what the speaker is playing, suitable for adding
+    as a favourite. Returns an (item, error_message) tuple."""
+    media_info = speaker.avTransport.GetMediaInfo([("InstanceID", 0)])
+    current_uri = media_info["CurrentURI"]
+    logging.info("Current URI: '{}'".format(current_uri))
+    if not current_uri:
+        return None, "Nothing is playing"
+    if current_uri.startswith(UNFAVOURITABLE_URI_PREFIXES):
+        return None, "Line-in and TV audio cannot be added as favourites"
+    if current_uri.startswith("x-rincon-queue:"):
+        # Playing from the queue: use the current track
+        track = speaker.get_current_track_info()
+        if not track["uri"]:
+            return None, "Nothing is playing"
+        metadata, uri = track["metadata"], track["uri"]
+    else:
+        # Playing a stream or container directly, e.g., a radio station
+        metadata, uri = media_info["CurrentURIMetaData"], current_uri
+    if not metadata or metadata == "NOT_IMPLEMENTED":
+        return None, "No information is available for what's playing"
+    item = _item_with_resource(metadata, uri)
+    if item is None:
+        return None, "Cannot read the information for what's playing"
+    return item, ""
+
+
+@zero_or_one_parameter
+def add_current_to_favourites(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
+    title = args[0] if len(args) == 1 else None
+    if title == "":
+        error_report("Favourite title cannot be empty")
+        return False
+    item, msg = get_current_item(speaker)
+    if item is None:
+        error_report(msg)
+        return False
+    try:
+        result, msg = add_to_favourites_core(speaker, item, title)
+    except FavoritesFullError:
+        error_report("The Sonos favourites list is full")
+        return False
+    if not result:
+        error_report(msg)
+    return result
+
+
+def get_sharelink_item(speaker, sharelink, title):
+    """Return a DIDL item for a music service sharelink, suitable for adding
+    as a favourite. Only containers (albums, playlists, shows) are supported.
+    Returns an (item, error_message) tuple."""
+    container_prefix = "x-rincon-cpcontainer:"
+    for service in ShareLinkPlugin(speaker).services:
+        if not service.canonical_uri(sharelink):
+            continue
+        share_type, encoded_uri = service.extract(sharelink)
+        magic = service.magic()[share_type]
+        if not magic["prefix"].startswith(container_prefix):
+            return None, "Sharelinks for a {} cannot be added as favourites".format(
+                share_type
+            )
+        # Use the item id from the prefix that's used when queueing the
+        # sharelink, so the favourite's URI matches the one used for the queue
+        item_id = magic["prefix"][len(container_prefix) :] + encoded_uri
+        sn = service.service_number()
+        item = didl_class_to_soco_class(magic["class"])(
+            title,
+            parent_id="-1",
+            item_id=item_id,
+            desc="SA_RINCON{0}_X_#Svc{0}-0-Token".format(sn),
+        )
+        logging.info(
+            "Sharelink item: id='{}', class='{}', service={}".format(
+                item_id, magic["class"], sn
+            )
+        )
+        return item, ""
+    return None, "'{}' is not a supported sharelink".format(sharelink)
+
+
+@two_parameters
+def add_sharelink_to_favourites(
+    speaker, action, args, soco_function, use_local_speaker_list
+):
+    sharelink, title = args
+    if title == "":
+        error_report("Favourite title cannot be empty")
+        return False
+    item, msg = get_sharelink_item(speaker, sharelink, title)
+    if item is None:
+        error_report(msg)
+        return False
+    try:
+        result, msg = add_to_favourites_core(speaker, item)
     except FavoritesFullError:
         error_report("The Sonos favourites list is full")
         return False
@@ -3338,6 +3473,12 @@ actions = {
     "add_playlist_to_favourites": SonosFunction(add_playlist_to_favourites, ""),
     "add_playlist_to_favorites": SonosFunction(add_playlist_to_favourites, ""),
     "aptf": SonosFunction(add_playlist_to_favourites, ""),
+    "add_current_to_favourites": SonosFunction(add_current_to_favourites, "", True),
+    "add_current_to_favorites": SonosFunction(add_current_to_favourites, "", True),
+    "actf": SonosFunction(add_current_to_favourites, "", True),
+    "add_sharelink_to_favourites": SonosFunction(add_sharelink_to_favourites, ""),
+    "add_sharelink_to_favorites": SonosFunction(add_sharelink_to_favourites, ""),
+    "asltf": SonosFunction(add_sharelink_to_favourites, ""),
     "play_fav_radio_station_no": SonosFunction(play_favourite_radio_number, "", True),
     "pfrsn": SonosFunction(play_favourite_radio_number, "", True),
     "album_art": SonosFunction(album_art, "", True),

@@ -8,14 +8,17 @@ from unittest.mock import MagicMock, call, patch
 
 import pytest
 from soco.exceptions import FavoritesAlreadyAddedError, FavoritesFullError
+from soco.favorites import Favorites
 
 import soco_cli.utils as utils
 from soco_cli.action_processor import (
     SonosFunction,
     _is_queue_position,
+    add_current_to_favourites,
     add_favourite_to_queue,
     add_playlist_to_favourites,
     add_search_result_to_favourites,
+    add_sharelink_to_favourites,
     audio_format,
     filter_track_info,
     get_current_queue_position,
@@ -1164,6 +1167,224 @@ class TestAddPlaylistToFavourites:
         speaker.favorites.add.side_effect = FavoritesFullError("x")
         assert _call(add_playlist_to_favourites, speaker, ["Chill"]) is False
         assert "full" in capsys.readouterr().err
+
+
+# ===========================================================================
+# add_current_to_favourites / add_sharelink_to_favourites
+# ===========================================================================
+
+_DIDL_OPEN = (
+    '<DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" '
+    'xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" '
+    'xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/" '
+    'xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">'
+)
+TRACK_URI = "x-file-cifs://nas/music/song.flac"
+TRACK_METADATA = (
+    _DIDL_OPEN + '<item id="-1" parentID="-1" restricted="true">'
+    '<res protocolInfo="x-file-cifs:*:audio/flac:*" duration="0:03:00">'
+    + TRACK_URI
+    + "</res><dc:title>Song</dc:title>"
+    "<upnp:class>object.item.audioItem.musicTrack</upnp:class>"
+    "<dc:creator>Artist</dc:creator><upnp:album>Album</upnp:album>"
+    "</item></DIDL-Lite>"
+)
+RADIO_URI = "x-sonosapi-stream:s25419?sid=254&flags=8224&sn=0"
+RADIO_METADATA = (
+    _DIDL_OPEN + '<item id="-1" parentID="-1" restricted="true">'
+    "<dc:title>BBC Radio 4</dc:title>"
+    "<upnp:class>object.item.audioItem.audioBroadcast</upnp:class>"
+    '<desc id="cdudn" nameSpace="urn:schemas-rinconnetworks-com:metadata-1-0/">'
+    "SA_RINCON65031_</desc></item></DIDL-Lite>"
+)
+
+
+def _playing_speaker(current_uri, media_metadata="", track_uri="", track_metadata=""):
+    speaker = MagicMock()
+    speaker.avTransport.GetMediaInfo.return_value = {
+        "CurrentURI": current_uri,
+        "CurrentURIMetaData": media_metadata,
+    }
+    speaker.get_current_track_info.return_value = {
+        "uri": track_uri,
+        "metadata": track_metadata,
+    }
+    return speaker
+
+
+def _added_item(speaker):
+    return speaker.favorites.add.call_args[0][0]
+
+
+def _use_real_favorites(speaker):
+    """Route favorites.add() through SoCo's real implementation, mocking only
+    the UPnP call, and return the mock CreateObject."""
+    soco = MagicMock()
+    soco.contentDirectory.CreateObject.return_value = {"ObjectID": "FV:2/99"}
+    speaker.favorites = Favorites(soco)
+    return soco.contentDirectory.CreateObject
+
+
+class TestAddCurrentToFavourites:
+    def test_queue_track(self):
+        speaker = _playing_speaker(
+            "x-rincon-queue:RINCON_1#0",
+            track_uri=TRACK_URI,
+            track_metadata=TRACK_METADATA,
+        )
+        assert _call(add_current_to_favourites, speaker, []) is True
+        item = _added_item(speaker)
+        assert item.title == "Song"
+        assert item.resources[0].uri == TRACK_URI
+        assert item.resources[0].protocol_info == "x-file-cifs:*:audio/flac:*"
+        assert speaker.favorites.add.call_args[1] == {"title": None}
+
+    def test_queue_track_with_title(self):
+        speaker = _playing_speaker(
+            "x-rincon-queue:RINCON_1#0",
+            track_uri=TRACK_URI,
+            track_metadata=TRACK_METADATA,
+        )
+        assert _call(add_current_to_favourites, speaker, ["Fav Song"]) is True
+        assert speaker.favorites.add.call_args[1] == {"title": "Fav Song"}
+
+    def test_radio_station_gets_stream_resource(self):
+        speaker = _playing_speaker(RADIO_URI, media_metadata=RADIO_METADATA)
+        assert _call(add_current_to_favourites, speaker, []) is True
+        item = _added_item(speaker)
+        assert item.title == "BBC Radio 4"
+        assert item.resources[0].uri == RADIO_URI
+        assert item.resources[0].protocol_info == "x-sonosapi-stream:*:*:*"
+
+    def test_cached_metadata_not_modified(self):
+        # SoCo caches parsed metadata: the same metadata playing from a
+        # different URI must not pick up the first URI
+        speaker = _playing_speaker(RADIO_URI, media_metadata=RADIO_METADATA)
+        _call(add_current_to_favourites, speaker, [])
+        other_uri = "x-sonosapi-stream:s99999?sid=254&flags=8224&sn=0"
+        speaker = _playing_speaker(other_uri, media_metadata=RADIO_METADATA)
+        _call(add_current_to_favourites, speaker, [])
+        assert _added_item(speaker).resources[0].uri == other_uri
+
+    def test_http_stream_protocol(self):
+        uri = "https://stream.example.com/live.mp3"
+        speaker = _playing_speaker(uri, media_metadata=RADIO_METADATA)
+        assert _call(add_current_to_favourites, speaker, []) is True
+        assert _added_item(speaker).resources[0].protocol_info == "http-get:*:*:*"
+
+    def test_radio_station_through_soco_favorites(self):
+        speaker = _playing_speaker(RADIO_URI, media_metadata=RADIO_METADATA)
+        create_object = _use_real_favorites(speaker)
+        assert _call(add_current_to_favourites, speaker, []) is True
+        elements = dict(create_object.call_args[0][0])["Elements"]
+        assert "<dc:title>BBC Radio 4</dc:title>" in elements
+        assert "x-sonosapi-stream:s25419?sid=254&amp;flags=8224&amp;sn=0" in elements
+        assert "<r:type>instantPlay</r:type>" in elements
+
+    @pytest.mark.parametrize(
+        "uri",
+        [
+            "x-rincon-stream:RINCON_1",
+            "x-sonos-htastream:RINCON_1:spdif",
+            "x-rincon:RINCON_2",
+        ],
+    )
+    def test_line_in_and_tv_rejected(self, uri, capsys):
+        speaker = _playing_speaker(uri)
+        assert _call(add_current_to_favourites, speaker, []) is False
+        assert "cannot be added" in capsys.readouterr().err
+        speaker.favorites.add.assert_not_called()
+
+    def test_nothing_playing(self, capsys):
+        speaker = _playing_speaker("")
+        assert _call(add_current_to_favourites, speaker, []) is False
+        assert "Nothing is playing" in capsys.readouterr().err
+
+    def test_empty_queue_position(self, capsys):
+        speaker = _playing_speaker("x-rincon-queue:RINCON_1#0")
+        assert _call(add_current_to_favourites, speaker, []) is False
+        assert "Nothing is playing" in capsys.readouterr().err
+
+    @pytest.mark.parametrize("metadata", ["", "NOT_IMPLEMENTED"])
+    def test_no_metadata(self, metadata, capsys):
+        speaker = _playing_speaker(RADIO_URI, media_metadata=metadata)
+        assert _call(add_current_to_favourites, speaker, []) is False
+        assert "No information" in capsys.readouterr().err
+
+    def test_unparseable_metadata(self, capsys):
+        speaker = _playing_speaker(RADIO_URI, media_metadata="<not-didl/>")
+        assert _call(add_current_to_favourites, speaker, []) is False
+        assert "Cannot read" in capsys.readouterr().err
+
+    def test_already_a_favourite(self, capsys):
+        speaker = _playing_speaker(RADIO_URI, media_metadata=RADIO_METADATA)
+        speaker.favorites.add.side_effect = FavoritesAlreadyAddedError("x")
+        assert _call(add_current_to_favourites, speaker, []) is False
+        assert "'BBC Radio 4' is already a favourite" in capsys.readouterr().err
+
+
+class TestAddSharelinkToFavourites:
+    ALBUM = "https://open.spotify.com/album/6wiUBliPe76YAVpNEdidpY"
+    PLAYLIST = "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
+    TRACK = "https://open.spotify.com/track/7ouMYWpwJ422jRcDASZB7P"
+
+    def test_album(self):
+        speaker = MagicMock()
+        assert _call(add_sharelink_to_favourites, speaker, [self.ALBUM, "An Album"])
+        item = _added_item(speaker)
+        assert item.title == "An Album"
+        assert item.item_class == "object.container.album.musicAlbum"
+        assert item.item_id == "1004206cspotify%3aalbum%3a6wiUBliPe76YAVpNEdidpY"
+        assert item.desc == "SA_RINCON2311_X_#Svc2311-0-Token"
+
+    def test_album_uri_matches_queue_uri(self):
+        # The favourite's URI should be the one used to queue the sharelink
+        speaker = MagicMock()
+        create_object = _use_real_favorites(speaker)
+        assert _call(add_sharelink_to_favourites, speaker, [self.ALBUM, "An Album"])
+        elements = dict(create_object.call_args[0][0])["Elements"]
+        assert (
+            ">x-rincon-cpcontainer:1004206cspotify%3aalbum%3a6wiUBliPe76YAVpNEdidpY</res>"
+            in elements
+        )
+        assert "SA_RINCON2311_X_#Svc2311-0-Token" in elements
+
+    def test_playlist(self):
+        speaker = MagicMock()
+        assert _call(add_sharelink_to_favourites, speaker, [self.PLAYLIST, "Hits"])
+        item = _added_item(speaker)
+        assert item.item_class == "object.container.playlistContainer"
+        assert item.item_id == "1006206cspotify%3aplaylist%3a37i9dQZF1DXcBWIGoYBM5M"
+
+    def test_track_rejected(self, capsys):
+        speaker = MagicMock()
+        assert (
+            _call(add_sharelink_to_favourites, speaker, [self.TRACK, "A Song"]) is False
+        )
+        assert "a track cannot be added" in capsys.readouterr().err
+        speaker.favorites.add.assert_not_called()
+
+    def test_unsupported_link(self, capsys):
+        speaker = MagicMock()
+        assert (
+            _call(
+                add_sharelink_to_favourites,
+                speaker,
+                ["https://example.com/album/1", "X"],
+            )
+            is False
+        )
+        assert "not a supported sharelink" in capsys.readouterr().err
+
+    def test_empty_title(self, capsys):
+        speaker = MagicMock()
+        assert _call(add_sharelink_to_favourites, speaker, [self.ALBUM, ""]) is False
+        speaker.favorites.add.assert_not_called()
+
+    def test_title_required(self, capsys):
+        speaker = MagicMock()
+        assert _call(add_sharelink_to_favourites, speaker, [self.ALBUM]) is False
+        speaker.favorites.add.assert_not_called()
 
 
 # ===========================================================================

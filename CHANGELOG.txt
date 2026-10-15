@@ -5,6 +5,8 @@ v0.4.87   - Add 'move_in_queue' and 'reorder_queue' actions
             '_number' variants
           - Add 'add_search_result_to_favourites' and
             'add_playlist_to_favourites' actions
+          - Add 'add_current_to_favourites' and 'add_sharelink_to_favourites'
+            actions
           - Support players that share an IP address on different ports,
             such as the Sonos Amp Multi; speakers can be specified as
             'ip_address:port'
