@@ -718,6 +718,70 @@ def play_favourite_number(speaker, action, args, soco_function, use_local_speake
     return True
 
 
+def find_favourite_to_modify(speaker, favourite, favourite_number=None):
+    """Find a single favourite by name or by number, for actions that modify
+    favourites. Unlike 'play_favourite', a fuzzy name match must be unique.
+    Returns a (favourite, error_message) tuple."""
+
+    fs = speaker.music_library.get_sonos_favorites(complete_result=True)
+
+    if favourite_number:
+        err_msg = "Favourite number must be integer between 1 and {}".format(len(fs))
+        try:
+            favourite_number = int(favourite_number)
+        except ValueError:
+            return None, err_msg
+        if not 0 < favourite_number <= len(fs):
+            return None, err_msg
+        # List must be sorted by title to match the output of 'list_favourites'
+        fs.sort(key=lambda x: x.title)
+        return fs[favourite_number - 1], ""
+
+    for fav in fs:
+        if fav.title == favourite:
+            return fav, ""
+    matches = [fav for fav in fs if favourite.lower() in fav.title.lower()]
+    if len(matches) == 1:
+        logging.info("Fuzzy match '{}' found".format(matches[0].title))
+        return matches[0], ""
+    if len(matches) > 1:
+        return None, "'{}' matches more than one favourite: {}".format(
+            favourite, ", ".join("'{}'".format(fav.title) for fav in matches)
+        )
+    return None, "Favourite '{}' not found".format(favourite)
+
+
+@one_parameter
+def remove_favourite(speaker, action, args, soco_function, use_local_speaker_list):
+    if action in ["remove_favourite_number", "remove_favorite_number", "rmfn"]:
+        the_fav, msg = find_favourite_to_modify(speaker, "", args[0])
+    else:
+        the_fav, msg = find_favourite_to_modify(speaker, args[0])
+    if not the_fav:
+        error_report(msg)
+        return False
+    logging.info("Removing favourite '{}' ({})".format(the_fav.title, the_fav.item_id))
+    speaker.favorites.remove(the_fav)
+    return True
+
+
+@two_parameters
+def rename_favourite(speaker, action, args, soco_function, use_local_speaker_list):
+    if args[1] == "":
+        error_report("New favourite name cannot be empty")
+        return False
+    if action in ["rename_favourite_number", "rename_favorite_number", "rnfn"]:
+        the_fav, msg = find_favourite_to_modify(speaker, "", args[0])
+    else:
+        the_fav, msg = find_favourite_to_modify(speaker, args[0])
+    if not the_fav:
+        error_report(msg)
+        return False
+    logging.info("Renaming favourite '{}' to '{}'".format(the_fav.title, args[1]))
+    speaker.favorites.rename(the_fav, args[1])
+    return True
+
+
 @one_or_two_parameters
 def add_favourite_to_queue(
     speaker, action, args, soco_function, use_local_speaker_list
@@ -3196,6 +3260,18 @@ actions = {
     "play_favourite_number": SonosFunction(play_favourite_number, "", True),
     "play_favorite_number": SonosFunction(play_favourite_number, "", True),
     "pfn": SonosFunction(play_favourite_number, "", True),
+    "remove_favourite": SonosFunction(remove_favourite, ""),
+    "remove_favorite": SonosFunction(remove_favourite, ""),
+    "rmf": SonosFunction(remove_favourite, ""),
+    "remove_favourite_number": SonosFunction(remove_favourite, ""),
+    "remove_favorite_number": SonosFunction(remove_favourite, ""),
+    "rmfn": SonosFunction(remove_favourite, ""),
+    "rename_favourite": SonosFunction(rename_favourite, ""),
+    "rename_favorite": SonosFunction(rename_favourite, ""),
+    "rnf": SonosFunction(rename_favourite, ""),
+    "rename_favourite_number": SonosFunction(rename_favourite, ""),
+    "rename_favorite_number": SonosFunction(rename_favourite, ""),
+    "rnfn": SonosFunction(rename_favourite, ""),
     "play_fav_radio_station_no": SonosFunction(play_favourite_radio_number, "", True),
     "pfrsn": SonosFunction(play_favourite_radio_number, "", True),
     "album_art": SonosFunction(album_art, "", True),

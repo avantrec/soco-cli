@@ -1,5 +1,7 @@
 v0.4.87   - Add 'move_in_queue' and 'reorder_queue' actions
           - Use a single request per range in 'remove_from_queue'
+          - Add 'remove_favourite' and 'rename_favourite' actions, and
+            '_number' variants
           - Add requirement for SoCo v0.32.0
 v0.4.86   - Add 'async_' prefix support for HTTP API Server macros
           - Allow multiple sharelinks in a single 'add_sharelink_to_queue' action

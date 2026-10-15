@@ -502,7 +502,11 @@ The following has issues and requires further development. For example, it's cur
 - **`play_favourite <favourite_name>` (or `play_favorite`, `favourite`, `favorite`, `fav`, `pf`, `play_fav`)**: Plays the Sonos favourite identified by `<favourite_name>`. The name is loosely matched; if `<favourite_name>` is a (case insensitive) substring of a Sonos favourite, it will match. In the case of duplicates, the first match encountered will be used. If a queueable item, the favourite will be added to the end of the current queue and played. **Note: this currently works only for certain types of favourite: local library tracks and playlists, radio stations, single Spotify tracks, etc.**
 - **`play_favourite_number <number>`** (or **`play_favorite_number`**, **`pfn`**): Play a Sonos favourite by its index number in the list of favourites.  
 - **`play_favourite_radio_station <station_name>`** (or **`play_favorite_radio_station`, `pfrs`**): Play a favourite radio station in TuneIn's 'My Stations' list.
+- **`remove_favourite <favourite_name>`** (or **`remove_favorite`**, **`rmf`**): Remove a favourite from the Sonos favourites list. An exact name match is used if there is one; otherwise a partial name match is used, but only if it matches a single favourite.
+- **`remove_favourite_number <number>`** (or **`remove_favorite_number`**, **`rmfn`**): Remove a favourite from the Sonos favourites list, using its index number in the list of favourites.
 - **`remove_from_playlist <playlist_name> <track_number>`** (or **`rfp`**): Remove a track from a Sonos playlist.
+- **`rename_favourite <favourite_name> <new_name>`** (or **`rename_favorite`**, **`rnf`**): Rename a Sonos favourite. Favourite names are matched in the same way as for `remove_favourite`.
+- **`rename_favourite_number <number> <new_name>`** (or **`rename_favorite_number`**, **`rnfn`**): Rename a Sonos favourite, using its index number in the list of favourites.
 
 ### TuneIn Radio Station Favourites
 

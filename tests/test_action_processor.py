@@ -29,7 +29,9 @@ from soco_cli.action_processor import (
     print_list_header,
     print_tracks,
     process_action,
+    remove_favourite,
     remove_from_queue,
+    rename_favourite,
     reorder_queue,
     repeat,
     set_queue_position,
@@ -872,6 +874,91 @@ class TestRemoveFromQueue:
         speaker = _make_speaker(queue_size=0)
         assert _call(remove_from_queue, speaker, ["1"]) is False
         assert "Queue is empty" in capsys.readouterr().err
+
+
+# ===========================================================================
+# remove_favourite / rename_favourite
+# ===========================================================================
+
+
+def _fav_speaker(titles):
+    speaker = MagicMock()
+    favs = []
+    for title in titles:
+        fav = MagicMock()
+        fav.title = title
+        favs.append(fav)
+    speaker.music_library.get_sonos_favorites.side_effect = lambda **kwargs: list(favs)
+    return speaker, {fav.title: fav for fav in favs}
+
+
+class TestRemoveFavourite:
+    def test_exact_match_preferred_over_fuzzy(self):
+        speaker, favs = _fav_speaker(["Radio 4 Extra", "Radio 4"])
+        assert _call(remove_favourite, speaker, ["Radio 4"]) is True
+        speaker.favorites.remove.assert_called_once_with(favs["Radio 4"])
+
+    def test_unique_fuzzy_match(self):
+        speaker, favs = _fav_speaker(["Jazz FM", "Radio 4"])
+        assert _call(remove_favourite, speaker, ["jazz"]) is True
+        speaker.favorites.remove.assert_called_once_with(favs["Jazz FM"])
+
+    def test_ambiguous_fuzzy_match(self, capsys):
+        speaker, _ = _fav_speaker(["Radio 3", "Radio 4"])
+        assert _call(remove_favourite, speaker, ["radio"]) is False
+        err = capsys.readouterr().err
+        assert "more than one favourite" in err
+        assert "'Radio 3'" in err and "'Radio 4'" in err
+        speaker.favorites.remove.assert_not_called()
+
+    def test_not_found(self, capsys):
+        speaker, _ = _fav_speaker(["Radio 4"])
+        assert _call(remove_favourite, speaker, ["Jazz"]) is False
+        assert "not found" in capsys.readouterr().err
+        speaker.favorites.remove.assert_not_called()
+
+    @pytest.mark.parametrize(
+        "action", ["remove_favourite_number", "remove_favorite_number", "rmfn"]
+    )
+    def test_by_number_uses_sorted_order(self, action):
+        speaker, favs = _fav_speaker(["Zed", "Alpha", "Mid"])
+        assert _call(remove_favourite, speaker, ["2"], action=action) is True
+        speaker.favorites.remove.assert_called_once_with(favs["Mid"])
+
+    @pytest.mark.parametrize("number", ["0", "4", "x"])
+    def test_bad_number(self, number, capsys):
+        speaker, _ = _fav_speaker(["Zed", "Alpha", "Mid"])
+        assert _call(remove_favourite, speaker, [number], action="rmfn") is False
+        assert "between 1 and 3" in capsys.readouterr().err
+        speaker.favorites.remove.assert_not_called()
+
+
+class TestRenameFavourite:
+    def test_rename_by_name(self):
+        speaker, favs = _fav_speaker(["Radio 4", "Jazz FM"])
+        assert _call(rename_favourite, speaker, ["jazz", "Smooth Jazz"]) is True
+        speaker.favorites.rename.assert_called_once_with(favs["Jazz FM"], "Smooth Jazz")
+
+    def test_rename_by_number(self):
+        speaker, favs = _fav_speaker(["Radio 4", "Jazz FM"])
+        assert _call(rename_favourite, speaker, ["1", "Jazz"], action="rnfn") is True
+        speaker.favorites.rename.assert_called_once_with(favs["Jazz FM"], "Jazz")
+
+    def test_empty_new_name(self, capsys):
+        speaker, _ = _fav_speaker(["Radio 4"])
+        assert _call(rename_favourite, speaker, ["Radio 4", ""]) is False
+        assert "cannot be empty" in capsys.readouterr().err
+        speaker.favorites.rename.assert_not_called()
+
+    def test_ambiguous_match(self, capsys):
+        speaker, _ = _fav_speaker(["Radio 3", "Radio 4"])
+        assert _call(rename_favourite, speaker, ["radio", "X"]) is False
+        speaker.favorites.rename.assert_not_called()
+
+    def test_wrong_parameter_count(self, capsys):
+        speaker, _ = _fav_speaker(["Radio 4"])
+        assert _call(rename_favourite, speaker, ["Radio 4"]) is False
+        speaker.favorites.rename.assert_not_called()
 
 
 # ===========================================================================
