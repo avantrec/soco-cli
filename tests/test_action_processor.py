@@ -26,6 +26,7 @@ from soco_cli.action_processor import (
     move_in_queue,
     on_off_action,
     play_favourite_core,
+    play_from_queue,
     play_uri,
     playback_mode,
     print_albums,
@@ -831,6 +832,33 @@ class TestSetQueuePosition:
         result = _call(set_queue_position, speaker, ["abc"])
         assert result is False
         speaker.stop.assert_not_called()
+
+
+# ===========================================================================
+# play_from_queue
+# ===========================================================================
+
+
+class TestPlayFromQueueLastAdded:
+    @pytest.fixture
+    def saved_position_dir(self, tmp_path):
+        directory = str(tmp_path) + "/"
+        with patch.object(utils, "path", directory):
+            with patch.object(utils, "queue_pathname", directory + "queue_position"):
+                yield
+
+    @pytest.mark.parametrize("arg", ["last_added", "la"])
+    def test_plays_saved_position(self, arg, saved_position_dir):
+        utils.save_queue_insertion_position(3)
+        speaker = _make_speaker(queue_size=10)
+        assert _call(play_from_queue, speaker, [arg]) is True
+        speaker.play_from_queue.assert_called_once_with(2)
+
+    def test_no_saved_position(self, saved_position_dir, capsys):
+        speaker = _make_speaker(queue_size=10)
+        assert _call(play_from_queue, speaker, ["last_added"]) is False
+        assert "No saved queue position" in capsys.readouterr().err
+        speaker.play_from_queue.assert_not_called()
 
 
 # ===========================================================================

@@ -30,7 +30,6 @@ from soco_cli.utils import (
     event_unsubscribe,
     find_by_name,
     forget_event_sub,
-    get_queue_insertion_position,
     get_right_hand_speaker,
     get_speaker,
     one_or_more_parameters,
@@ -40,6 +39,7 @@ from soco_cli.utils import (
     playback_state,
     pretty_print_values,
     queue_is_empty,
+    read_queue_insertion_position,
     read_search,
     remember_event_sub,
     rename_speaker_in_cache,
@@ -1132,7 +1132,7 @@ def play_from_queue(speaker, action, args, soco_function, use_local_speaker_list
         index = randint(1, len(speaker.get_queue(max_items=SONOS_MAX_ITEMS)))
     elif args[0] in ["last_added", "la"]:
         try:
-            index = get_queue_insertion_position()
+            index = read_queue_insertion_position()
         except Exception as e:
             error_report("No saved queue position: {}".format(e))
             return False

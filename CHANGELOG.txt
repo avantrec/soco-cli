@@ -7,6 +7,7 @@ v0.4.87   - Add 'move_in_queue' and 'reorder_queue' actions
           - Support players that share an IP address on different ports,
             such as the Sonos Amp Multi; speakers can be specified as
             'ip_address:port'
+          - Fix 'play_from_queue last_added', which always failed
           - Add requirement for SoCo v0.32.0
 v0.4.86   - Add 'async_' prefix support for HTTP API Server macros
           - Allow multiple sharelinks in a single 'add_sharelink_to_queue' action

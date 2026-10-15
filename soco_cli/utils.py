@@ -770,7 +770,7 @@ def save_queue_insertion_position(queue_position: int):
     return True
 
 
-def get_queue_insertion_position() -> int:
+def read_queue_insertion_position() -> int:
     if os.path.exists(queue_pathname):
         logging.info("Loading queue_position from {}".format(queue_pathname))
         try:
