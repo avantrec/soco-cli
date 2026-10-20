@@ -484,8 +484,9 @@ def track(speaker, action, args, soco_function, use_local_speaker_list):
         # Audio book
         elif (
             metadata
-            and "object.item.audioItem.audioBook"
-            in metadata["DIDL-Lite"]["item"]["upnp:class"]
+            and "object.item.audioItem.audioBook" in metadata["DIDL-Lite"]["item"][
+                "upnp:class"
+            ]
         ):
             logging.info("Track is an audio book")
             try:
