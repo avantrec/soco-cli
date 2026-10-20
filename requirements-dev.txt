@@ -7,3 +7,5 @@ isort
 pytest
 mypy
 build
+httpx2; python_version >= "3.11"
+httpx; python_version < "3.11"
