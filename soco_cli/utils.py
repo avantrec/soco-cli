@@ -273,12 +273,14 @@ def get_ctrl_c_interrupted():
     return _ctrl_c_interrupted
 
 
-# Stop a stream if playing a local file
+# Stop a stream if playing a local file, and remove its queue entry
 speaker_playing_local_file = None
+local_file_queue_index = None
+local_file_uri = None
 
 
-def set_speaker_playing_local_file(speaker):
-    global speaker_playing_local_file
+def set_speaker_playing_local_file(speaker, queue_index=None, uri=None):
+    global speaker_playing_local_file, local_file_queue_index, local_file_uri
     if speaker:
         logging.info(
             "Setting speaker playing local file to '{}'".format(speaker.player_name)
@@ -286,6 +288,38 @@ def set_speaker_playing_local_file(speaker):
     else:
         logging.info("No speaker playing local file")
     speaker_playing_local_file = speaker
+    local_file_queue_index = queue_index
+    local_file_uri = uri
+
+
+def _queue_entry_has_uri(speaker, index, uri):
+    queue = speaker.get_queue(start=index, max_items=1)
+    return len(queue) == 1 and queue[0].resources and queue[0].resources[0].uri == uri
+
+
+def remove_queue_entry(speaker, queue_index, uri):
+    """Remove the queue entry for 'uri'. It's expected at 'queue_index', but
+    the queue may have changed meanwhile, in which case search for it.
+    """
+    try:
+        if not _queue_entry_has_uri(speaker, queue_index, uri):
+            logging.info("Queue entry at index {} has changed".format(queue_index))
+            queue_index = None
+            start = 0
+            while queue_index is None:
+                queue = speaker.get_queue(start=start, max_items=100)
+                if len(queue) == 0:
+                    logging.info("No queue entry found for '{}'".format(uri))
+                    return
+                for offset, item in enumerate(queue):
+                    if item.resources and item.resources[0].uri == uri:
+                        queue_index = start + offset
+                        break
+                start += len(queue)
+        logging.info("Removing queue entry at index {}".format(queue_index))
+        speaker.remove_from_queue(queue_index)
+    except Exception as e:
+        logging.info("Exception ignored: {}".format(e))
 
 
 def sig_handler(signal_received, frame):
@@ -332,6 +366,10 @@ def sig_handler(signal_received, frame):
             )
         )
         speaker_playing_local_file.stop()
+        if local_file_queue_index is not None:
+            remove_queue_entry(
+                speaker_playing_local_file, local_file_queue_index, local_file_uri
+            )
 
     logging.info("Unsubscribing from event notifications")
     unsub_all_remembered_event_subs()

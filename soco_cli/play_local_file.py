@@ -13,16 +13,19 @@ from os import chdir, path
 from socketserver import ThreadingMixIn
 from threading import Thread
 from typing import List, Optional
+from xml.sax.saxutils import escape
 
 import ifaddr  # type: ignore
 from RangeHTTPServer import RangeRequestHandler  # type: ignore
 from soco import SoCo  # type: ignore
+from soco.data_structures_entry import from_didl_string  # type: ignore
 
 from soco_cli.utils import (
     error_report,
     event_unsubscribe,
     forget_event_sub,
     remember_event_sub,
+    remove_queue_entry,
     set_speaker_playing_local_file,
 )
 
@@ -31,6 +34,31 @@ PORT_START = 54000
 PORT_END = 54099
 
 SUPPORTED_TYPES = ["MP3", "M4A", "MP4", "FLAC", "OGG", "WMA", "WAV", "AIFF"]
+
+MIME_TYPES = {
+    "MP3": "audio/mpeg",
+    "M4A": "audio/mp4",
+    "MP4": "audio/mp4",
+    "FLAC": "audio/flac",
+    "OGG": "audio/ogg",
+    "WMA": "audio/x-ms-wma",
+    "WAV": "audio/wav",
+    "AIFF": "audio/aiff",
+}
+
+# Metadata for the file on S2 systems. Playing via the queue with this
+# metadata is required for the S2 app to display the track (with progress).
+DIDL_TEMPLATE = (
+    '<DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" '
+    'xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" '
+    'xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/" '
+    'xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">'
+    '<item id="-1" parentID="-1" restricted="true">'
+    '<res protocolInfo="http-get:*:{mime_type}:*">{uri}</res>'
+    "<dc:title>{title}</dc:title>"
+    "<upnp:class>object.item.audioItem.musicTrack</upnp:class>"
+    "</item></DIDL-Lite>"
+)
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -239,6 +267,27 @@ def is_supported_type(filename: str) -> bool:
     return False
 
 
+def build_metadata(uri: str, filename: str) -> str:
+    # Minimal DIDL-Lite metadata for the file, using the filename as the title.
+    # The speaker replaces this with the file's own tags, if it has any.
+    title, extension = path.splitext(filename)
+    mime_type = MIME_TYPES.get(extension[1:].upper(), "audio/mpeg")
+    return DIDL_TEMPLATE.format(
+        mime_type=mime_type, uri=escape(uri), title=escape(title)
+    )
+
+
+def is_s2(speaker: SoCo) -> bool:
+    # S1 systems use software versions 11.x and below; S2 uses 12.x and above
+    try:
+        display_version = speaker.get_speaker_info()["display_version"]
+        logging.info("Speaker display version is '{}'".format(display_version))
+        return int(display_version.split(".")[0]) >= 12
+    except Exception as e:
+        logging.info("Can't determine S1/S2 ({}) ... assuming S2".format(e))
+        return True
+
+
 def play_local_file(speaker: SoCo, pathname: str, end_on_pause: bool = False) -> bool:
     if not path.exists(pathname):
         error_report("File '{}' not found".format(pathname))
@@ -280,11 +329,22 @@ def play_local_file(speaker: SoCo, pathname: str, end_on_pause: bool = False) ->
     logging.info("Playing file '{}' from directory '{}'".format(filename, directory))
     logging.info("Playback URI: {}".format(uri))
 
-    logging.info("Send URI to '{}' for playback".format(speaker.player_name))
-    speaker.play_uri(uri)
+    queue_index = None
+    if is_s2(speaker):
+        # On S2, add the file to the end of the queue and play it from there.
+        # add_to_queue() returns a 1-based position; play/remove are 0-based.
+        metadata = build_metadata(uri, filename)
+        logging.info("Playback metadata: {}".format(metadata))
+        logging.info("Add URI to queue for '{}'".format(speaker.player_name))
+        queue_index = speaker.add_to_queue(from_didl_string(metadata)[0]) - 1
+        logging.info("Playing file from queue index {}".format(queue_index))
+        speaker.play_from_queue(queue_index)
+    else:
+        logging.info("Send URI to '{}' for playback".format(speaker.player_name))
+        speaker.play_uri(uri)
 
     logging.info("Setting flag to stop playback on CTRL-C")
-    set_speaker_playing_local_file(speaker)
+    set_speaker_playing_local_file(speaker, queue_index, uri)
 
     logging.info("Waiting 1s for playback to start")
     time.sleep(1.0)
@@ -293,6 +353,9 @@ def play_local_file(speaker: SoCo, pathname: str, end_on_pause: bool = False) ->
     logging.info("Playback stopped ... terminating web server")
     httpd.shutdown()
     logging.info("Web server terminated")
+
+    if queue_index is not None:
+        remove_queue_entry(speaker, queue_index, uri)
 
     set_speaker_playing_local_file(None)
 

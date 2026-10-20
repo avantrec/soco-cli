@@ -292,6 +292,8 @@ It's possible to play local audio files in **MP3, M4A, MP4, FLAC, OGG, WMA, WAV,
 
 SoCo-CLI establishes a temporary internal HTTP server from which the specified audio file can be streamed, and then instructs the speaker to play it. The `play_file` action will terminate once playback stops. Note that playback can be paused using a Sonos app (or SoCo-CLI), and the HTTP server will remain active so that playback can be resumed.
 
+On Sonos S2 systems, the file is temporarily added to the end of the speaker's queue and played from there, so that the S2 app can display the track details and playback progress. The queue entry is removed when playback stops. On S1 systems, the queue is not used.
+
 Unfortunately, one can pause but not fully stop playback when using the Sonos apps. Hence, stop playback by playing something else on Sonos, by issuing a 'CTRL-C' to the active `play_file` action, or by issuing `sonos <SPEAKER> stop` from another command line. Alternatively, use the `_end_on_pause_` option to terminate the `play_file` action if playback is paused.
 
 The host running SoCo-CLI must remain on and connected to the network during playback, in order to serve the file to the speaker. The internal HTTP server is active only for the duration of the `play_file` action. For security reasons, it will only serve the specified audio file, and only to the IP addresses of the Sonos speakers in the system.
@@ -308,7 +310,7 @@ There are options to print the track filenames as they are played, to shuffle th
 
 **Example**: `sonos Lounge play_m3u my_playlist.m3u`, or, to print filenames and invoke interactive mode: `sonos Lounge play_m3u my_playlist.m3u pi`.
 
-This feature works by invoking the `play_file` action for each file in the playlist in sequence, so the same rules apply as for `play_file`. Note that `play_m3u` does not create a Sonos queue on the speaker -- the 'queue' is managed locally by SoCo-CLI -- so it's not possible to skip forward or back using a Sonos app.
+This feature works by invoking the `play_file` action for each file in the playlist in sequence, so the same rules apply as for `play_file`. Note that `play_m3u` does not create a Sonos queue on the speaker -- the 'queue' is managed locally by SoCo-CLI, and on S2 systems only the current file is added to the speaker's queue -- so it's not possible to skip forward or back using a Sonos app.
 
 ### Directories of Audio Files
 

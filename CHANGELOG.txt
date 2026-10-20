@@ -1,4 +1,5 @@
-v0.4.88   -
+v0.4.88   - Show 'play_file' tracks (with progress) in the S2 app, by playing
+            them via the speaker's queue on S2 systems
 v0.4.87   - Add 'move_in_queue' and 'reorder_queue' actions
           - Use a single request per range in 'remove_from_queue', and
             accept 'all'
