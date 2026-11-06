@@ -21,7 +21,7 @@ from soco.plugins.sharelink import ShareLinkPlugin  # type: ignore
 from xmltodict import parse  # type: ignore
 
 from soco_cli import alarms
-from soco_cli.play_local_file import play_local_file
+from soco_cli.play_local_file import get_uri_title_and_mime_type, play_local_file
 from soco_cli.play_local_file_lists import play_directory_files, play_m3u_file
 from soco_cli.speaker_info import print_speaker_table
 from soco_cli.speakers import speaker_address
@@ -1514,7 +1514,8 @@ def playlist_operations(speaker, action, args, soco_function, use_local_speaker_
         getattr(speaker, soco_function)(name)
         return True
     if soco_function == "add_uri_to_queue":
-        getattr(speaker, soco_function)(name)
+        title, mime_type = get_uri_title_and_mime_type(name)
+        speaker.add_uri_to_queue(name, title=title, mime_type=mime_type)
         return True
 
     if soco_function == "remove_sonos_playlist":
@@ -2543,7 +2544,8 @@ def add_uri_to_queue(speaker, action, args, soco_function, use_local_speaker_lis
     else:
         position = speaker.queue_size + 1
 
-    speaker.add_uri_to_queue(uri, position=position)
+    title, mime_type = get_uri_title_and_mime_type(uri)
+    speaker.add_uri_to_queue(uri, position=position, title=title, mime_type=mime_type)
     save_queue_insertion_position(position)
     print(position)
     return True

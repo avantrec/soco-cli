@@ -468,7 +468,7 @@ The available actions are:
 - **`add_playlist_to_queue <playlist_name> [<position>]`** (or **`queue_playlist`, `add_pl_to_queue`, `apq`**): Add `<playlist_name>` to the queue. Name matching is case-insensitive, and will work on partial matches.
 - **`add_library_playlist_to_queue <playlist_name> [<position>]`** (or **`alpq`**): As above, but targets local library imported playlists instead of Sonos playlists.
 - **`add_sharelink_to_queue <sharelink> [<sharelink2> ...] [<position>]`** (or **`sharelink`**): Add one or more **Spotify**, **Tidal**, **Deezer**, or **Apple Music** links (for tracks, albums, playlists, etc.) to the queue. Returns the queue position of the first track added. Multiple sharelinks are added in order; an optional position applies to the first, and the rest are appended.
-- **`add_uri_to_queue <uri> [<position>]`** Adds a URI to the queue.
+- **`add_uri_to_queue <uri> [<position>]`** Adds a URI to the queue. If the URI is an HTTP(S) link to an audio file with a supported extension (MP3, M4A, MP4, FLAC, OGG, WMA, WAV, AIFF), it's queued as a track, using the filename as its title.
 - **`clear_queue`** (or **`cq`**): Clears the current queue
 - **`list_queue`** (or **`lq`, `q`**): List the tracks in the queue
 - **`list_queue <track_number>`** (or **`lq`, `q`**): List the track in the queue at position `<track_number>`

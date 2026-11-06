@@ -12,13 +12,11 @@ from ipaddress import IPv4Address, IPv4Network
 from os import chdir, path
 from socketserver import ThreadingMixIn
 from threading import Thread
-from typing import List, Optional
-from xml.sax.saxutils import escape
+from typing import List, Optional, Tuple
 
 import ifaddr  # type: ignore
 from RangeHTTPServer import RangeRequestHandler  # type: ignore
 from soco import SoCo  # type: ignore
-from soco.data_structures_entry import from_didl_string  # type: ignore
 
 from soco_cli.utils import (
     error_report,
@@ -45,20 +43,6 @@ MIME_TYPES = {
     "WAV": "audio/wav",
     "AIFF": "audio/aiff",
 }
-
-# Metadata for the file on S2 systems. Playing via the queue with this
-# metadata is required for the S2 app to display the track (with progress).
-DIDL_TEMPLATE = (
-    '<DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" '
-    'xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" '
-    'xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/" '
-    'xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">'
-    '<item id="-1" parentID="-1" restricted="true">'
-    '<res protocolInfo="http-get:*:{mime_type}:*">{uri}</res>'
-    "<dc:title>{title}</dc:title>"
-    "<upnp:class>object.item.audioItem.musicTrack</upnp:class>"
-    "</item></DIDL-Lite>"
-)
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -267,14 +251,24 @@ def is_supported_type(filename: str) -> bool:
     return False
 
 
-def build_metadata(uri: str, filename: str) -> str:
-    # Minimal DIDL-Lite metadata for the file, using the filename as the title.
-    # The speaker replaces this with the file's own tags, if it has any.
-    title, extension = path.splitext(filename)
-    mime_type = MIME_TYPES.get(extension[1:].upper(), "audio/mpeg")
-    return DIDL_TEMPLATE.format(
-        mime_type=mime_type, uri=escape(uri), title=escape(title)
-    )
+def get_mime_type(filename: str) -> Optional[str]:
+    # Return the MIME type for a supported audio filename, or None
+    extension = path.splitext(filename)[1]
+    return MIME_TYPES.get(extension[1:].upper())
+
+
+def get_uri_title_and_mime_type(uri: str) -> Tuple[str, Optional[str]]:
+    # For an HTTP(S) URI ending in a supported audio file extension, return
+    # a title derived from the filename and the file's MIME type. Otherwise,
+    # return an empty title and None.
+    parsed = urllib.parse.urlparse(uri)
+    if parsed.scheme.lower() not in ["http", "https"]:
+        return "", None
+    filename = path.basename(urllib.parse.unquote(parsed.path))
+    mime_type = get_mime_type(filename)
+    if mime_type is None:
+        return "", None
+    return path.splitext(filename)[0], mime_type
 
 
 def is_s2(speaker: SoCo) -> bool:
@@ -332,11 +326,19 @@ def play_local_file(speaker: SoCo, pathname: str, end_on_pause: bool = False) ->
     queue_index = None
     if is_s2(speaker):
         # On S2, add the file to the end of the queue and play it from there.
-        # add_to_queue() returns a 1-based position; play/remove are 0-based.
-        metadata = build_metadata(uri, filename)
-        logging.info("Playback metadata: {}".format(metadata))
-        logging.info("Add URI to queue for '{}'".format(speaker.player_name))
-        queue_index = speaker.add_to_queue(from_didl_string(metadata)[0]) - 1
+        # Supplying the MIME type causes SoCo to generate track metadata, which
+        # is required for the S2 app to display the track (with progress).
+        # add_uri_to_queue() returns a 1-based position; play/remove are 0-based.
+        title = path.splitext(filename)[0]
+        mime_type = get_mime_type(filename) or "audio/mpeg"
+        logging.info(
+            "Add URI to queue for '{}' with title '{}', MIME type '{}'".format(
+                speaker.player_name, title, mime_type
+            )
+        )
+        queue_index = (
+            speaker.add_uri_to_queue(uri, title=title, mime_type=mime_type) - 1
+        )
         logging.info("Playing file from queue index {}".format(queue_index))
         speaker.play_from_queue(queue_index)
     else:

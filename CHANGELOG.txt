@@ -1,4 +1,7 @@
-v0.4.89   -
+v0.4.89   - 'add_uri_to_queue': HTTP(S) URIs ending in a supported audio file
+            extension are queued as tracks, titled using the filename
+          - Requires SoCo v0.32.2 or later; use SoCo's MIME type support
+            for 'play_file' on S2 systems
 v0.4.88   - Show 'play_file' tracks (with progress) in the S2 app, by playing
             them via the speaker's queue on S2 systems
 v0.4.87   - Add 'move_in_queue' and 'reorder_queue' actions
