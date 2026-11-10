@@ -41,8 +41,13 @@ def parse_m3u(m3u_file: str) -> List[Track]:
             line = line.strip()
             if line.startswith("#EXTINF:"):
                 # pull length and title from #EXTINF line
-                length, title = line.split("#EXTINF:")[1].split(",", 1)
-                song = Track(length, title, None)
+                try:
+                    length, title = line.split("#EXTINF:")[1].split(",", 1)
+                except ValueError:
+                    error_report("Malformed '#EXTINF' line ignored: '{}'".format(line))
+                    song = Track(None, None, None)
+                else:
+                    song = Track(length, title, None)
             elif line.startswith("#"):
                 # Comment line
                 pass

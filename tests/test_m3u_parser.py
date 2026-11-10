@@ -175,3 +175,18 @@ class TestParseMp3u:
             os.unlink(path)
         assert tracks == []
         capsys.readouterr()  # suppress output
+
+    def test_malformed_extinf_line_does_not_raise(self, capsys):
+        # An #EXTINF line without a comma must not crash the parser;
+        # the line is reported and ignored, parsing continues
+        content = "#EXTM3U\n#EXTINF:60\n/music/track.mp3\n"
+        path = _write_tempfile(content)
+        try:
+            tracks = parse_m3u(path)
+        finally:
+            os.unlink(path)
+        assert len(tracks) == 1
+        assert tracks[0].path == "/music/track.mp3"
+        assert tracks[0].length is None
+        assert tracks[0].title is None
+        assert "Malformed" in capsys.readouterr().err
