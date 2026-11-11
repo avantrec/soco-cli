@@ -231,10 +231,12 @@ class TestSetActionsAndCommandsList:
     def test_list_contains_actions_with_trailing_space(self):
         mock_am = MagicMock()
         mock_am.alias_names.return_value = []
-        with (
-            patch("soco_cli.interactive.get_actions", return_value=["volume", "play"]),
-            patch("soco_cli.interactive._get_speaker_names", return_value=[]),
-            patch.object(interactive_mod, "am", mock_am),
+        with patch(
+            "soco_cli.interactive.get_actions", return_value=["volume", "play"]
+        ), patch(
+            "soco_cli.interactive._get_speaker_names", return_value=[]
+        ), patch.object(
+            interactive_mod, "am", mock_am
         ):
             _set_actions_and_commands_list()
         assert "volume " in interactive_mod.ACTIONS_LIST
@@ -243,14 +245,10 @@ class TestSetActionsAndCommandsList:
     def test_list_contains_speaker_names_with_trailing_space(self):
         mock_am = MagicMock()
         mock_am.alias_names.return_value = []
-        with (
-            patch("soco_cli.interactive.get_actions", return_value=[]),
-            patch(
-                "soco_cli.interactive._get_speaker_names",
-                return_value=["Kitchen", "Office"],
-            ),
-            patch.object(interactive_mod, "am", mock_am),
-        ):
+        with patch("soco_cli.interactive.get_actions", return_value=[]), patch(
+            "soco_cli.interactive._get_speaker_names",
+            return_value=["Kitchen", "Office"],
+        ), patch.object(interactive_mod, "am", mock_am):
             _set_actions_and_commands_list()
         assert "Kitchen " in interactive_mod.ACTIONS_LIST
         assert "Office " in interactive_mod.ACTIONS_LIST
@@ -258,11 +256,9 @@ class TestSetActionsAndCommandsList:
     def test_list_contains_shell_commands(self):
         mock_am = MagicMock()
         mock_am.alias_names.return_value = []
-        with (
-            patch("soco_cli.interactive.get_actions", return_value=[]),
-            patch("soco_cli.interactive._get_speaker_names", return_value=[]),
-            patch.object(interactive_mod, "am", mock_am),
-        ):
+        with patch("soco_cli.interactive.get_actions", return_value=[]), patch(
+            "soco_cli.interactive._get_speaker_names", return_value=[]
+        ), patch.object(interactive_mod, "am", mock_am):
             _set_actions_and_commands_list()
         assert "exit" in interactive_mod.ACTIONS_LIST
         assert "help" in interactive_mod.ACTIONS_LIST
@@ -270,11 +266,9 @@ class TestSetActionsAndCommandsList:
     def test_list_contains_alias_names(self):
         mock_am = MagicMock()
         mock_am.alias_names.return_value = ["myfav", "playjazz"]
-        with (
-            patch("soco_cli.interactive.get_actions", return_value=[]),
-            patch("soco_cli.interactive._get_speaker_names", return_value=[]),
-            patch.object(interactive_mod, "am", mock_am),
-        ):
+        with patch("soco_cli.interactive.get_actions", return_value=[]), patch(
+            "soco_cli.interactive._get_speaker_names", return_value=[]
+        ), patch.object(interactive_mod, "am", mock_am):
             _set_actions_and_commands_list()
         assert "myfav" in interactive_mod.ACTIONS_LIST
         assert "playjazz" in interactive_mod.ACTIONS_LIST

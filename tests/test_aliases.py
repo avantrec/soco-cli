@@ -170,9 +170,7 @@ class TestFileRoundTrip:
 
     def test_load_comment_lines_ignored(self):
         content = "# This is a comment\nvol = volume 50\n"
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".txt", delete=False, delete_on_close=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
             f.write(content)
             tmpfile = f.name
         try:
