@@ -2,6 +2,7 @@
 
 SRC = setup.py soco_cli/*.py
 TESTS = tests/*.py
+SCRIPTS = scripts/*.py
 MANIFEST = LICENSE README.md PYPI_README.md MANIFEST.in requirements.txt
 BUILD_DIST = build dist soco_cli.egg-info
 PYCACHE = soco_cli/__pycache__ tests/__pycache__ __pycache__
@@ -20,10 +21,10 @@ uninstall:
 	pip uninstall -y soco_cli
 
 black: $(SRC)
-	black --preview --target-version=py37 $(SRC) $(TESTS)
+	black --preview --target-version=py37 $(SRC) $(TESTS) $(SCRIPTS)
 
 isort: $(SRC)
-	isort --profile black $(SRC) $(TESTS)
+	isort --profile black $(SRC) $(TESTS) $(SCRIPTS)
 
 format: isort black
 
@@ -42,8 +43,14 @@ pypi_check: build
 toc:
 	./gh-md-toc --insert README.md
 
+release:
+	python scripts/release.py
+
+release_dry_run:
+	python scripts/release.py --dry-run
+
 update:
 	pip install -U -r requirements.txt -r requirements-dev.txt
 
 no_op:
-	# Available targets are: build, clean, install, uninstall, black, pypi_upload, pypi_check
+	# Available targets are: build, clean, install, uninstall, black, pypi_upload, pypi_check, release, release_dry_run

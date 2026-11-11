@@ -1,3 +1,12 @@
+Automated release: 'make release' (or 'python scripts/release.py')
+-----------------------------------------------------------------
+On 'next_version', with the CHANGELOG entry complete, committed, pushed and
+passing CI, run 'make release_dry_run' to check everything, then 'make release'.
+The script performs steps 1-7 below (fast-forwarding 'master' to
+'next_version' and tagging that commit). Options: --dry-run, --test-pypi, --yes.
+
+Manual release
+--------------
 0. Start on branch 'next_version'; when changes are ready to be released:
    Update the CHANGELOG (if required)
    make format  (if required)
