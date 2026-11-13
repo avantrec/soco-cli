@@ -1,4 +1,5 @@
-v0.4.90   -
+v0.4.90   - Use platform-appropriate config directory without breaking existing
+            installs
 v0.4.89   - 'add_uri_to_queue': HTTP(S) URIs ending in a supported audio file
             extension are queued as tracks, titled using the filename
           - Requires SoCo v0.32.2 or later; use SoCo's MIME type support

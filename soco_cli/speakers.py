@@ -9,6 +9,7 @@ from collections import namedtuple
 import soco  # type: ignore
 import tabulate  # type: ignore
 
+from soco_cli.config_dir import CONFIG_DIR, ensure_config_dir
 from soco_cli.match_speaker_names import speaker_name_matches
 
 # Type for holding speaker details
@@ -82,11 +83,7 @@ class Speakers:
         min_netmask=24,
         subnets=None,
     ):
-        self._save_directory = (
-            save_directory
-            if save_directory
-            else os.path.expanduser("~") + "/.soco-cli/"
-        )
+        self._save_directory = save_directory if save_directory else CONFIG_DIR
         self._save_file = save_file if save_file else "speakers_v2.pickle"
         self.remove_deprecated_pickle_files()
         self._network_threads = network_threads
@@ -98,7 +95,7 @@ class Speakers:
     def remove_deprecated_pickle_files(self):
         """Remove any older, incompatible versions of the pickle file"""
         for old_file in ["speakers.pickle"]:
-            pathname = self._save_directory + old_file
+            pathname = os.path.join(self._save_directory, old_file)
             if os.path.exists(pathname):
                 logging.info("Removing old local speaker cache {}".format(pathname))
                 # print("Removing deprecated local speaker file:", pathname)
@@ -134,7 +131,7 @@ class Speakers:
 
     @property
     def save_pathname(self):
-        return self._save_directory + self._save_file
+        return os.path.join(self._save_directory, self._save_file)
 
     @property
     def network_threads(self):
@@ -193,8 +190,7 @@ class Speakers:
     def save(self):
         """Saves the speaker list as a pickle file."""
         if self._speakers:
-            if not os.path.exists(self._save_directory):
-                os.mkdir(self._save_directory)
+            ensure_config_dir(self._save_directory)
             with open(self.save_pathname, "wb") as f:
                 pickle.dump(self._speakers, f)
             return True
