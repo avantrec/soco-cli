@@ -2,10 +2,11 @@
 
 import logging
 import pickle
-from os import mkdir, path
+from os import path
 from typing import List, Tuple, Union
 
-CONFIG_DIR = path.join(path.expanduser("~"), ".soco-cli")
+from soco_cli.config_dir import CONFIG_DIR, ensure_config_dir
+
 ALIAS_FILE = path.join(CONFIG_DIR, "aliases.pickle")
 
 
@@ -46,12 +47,7 @@ class AliasManager:
         return list(self._aliases.keys())
 
     def save_aliases(self) -> None:
-        if not path.exists(CONFIG_DIR):
-            try:
-                logging.info("Creating directory '{}'".format(CONFIG_DIR))
-                mkdir(CONFIG_DIR)
-            except:
-                pass
+        ensure_config_dir(CONFIG_DIR)
         with open(ALIAS_FILE, "wb") as f:
             logging.info("Saving aliases")
             pickle.dump(self._aliases, f)

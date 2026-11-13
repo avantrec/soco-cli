@@ -5,6 +5,7 @@
    * [Overview](#overview)
    * [Supported Environments](#supported-environments)
    * [Installation](#installation)
+      * [Configuration Directory](#configuration-directory)
    * [User Guide](#user-guide)
       * [The sonos Command](#the-sonos-command)
       * [Speaker Discovery by Name](#speaker-discovery-by-name)
@@ -121,6 +122,19 @@ Install the latest version from PyPI [2] using **`pip install -U soco-cli`**.
 Soco-CLI can also be easily installed as a self-contained application with [**pipx**](https://pypa.github.io/pipx/) using **`pipx install soco-cli`**.
 
 Please see the CHANGELOG.txt file for a list of the user-facing changes in each release.
+
+### Configuration Directory
+
+SoCo-CLI stores its persistent data (shell history, aliases, the cached speaker list, saved search results, etc.) in a configuration directory, chosen as follows:
+
+1. If the `SOCO_CLI_CONFIG_DIR` environment variable is set, its value is used.
+2. If the directory `.soco-cli` already exists in your home directory, it continues to be used. Existing installations are therefore unaffected.
+3. Otherwise, a platform-appropriate location is used:
+   - **Linux** (and other POSIX platforms): `$XDG_CONFIG_HOME/soco-cli`, or `~/.config/soco-cli` if `XDG_CONFIG_HOME` is not set, as per the [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/latest/).
+   - **Windows**: `%LOCALAPPDATA%\soco-cli`.
+   - **macOS**: `~/.soco-cli`.
+
+To move an existing installation to the platform-appropriate location, move the contents of `~/.soco-cli` to the new directory and remove `~/.soco-cli`.
 
 ## User Guide
 
@@ -831,7 +845,7 @@ Sonos [] >
 
 Commands in the shell history can be scrolled through by using the up/down arrows, and commands can be edited using the left/right arrows to position the cursor.
 
-(*Not available on Windows*) Shell commands can be auto-completed using the TAB key. The shell history is saved between shell sessions in `~/.soco-cli/shell-history.txt`.
+(*Not available on Windows*) Shell commands can be auto-completed using the TAB key. The shell history is saved between shell sessions in `shell-history.txt` in the [configuration directory](#configuration-directory).
 
 ### Shell Aliases
 
@@ -851,7 +865,7 @@ Aliases are included in **autocompletion** results, and they **override** built-
 - **Remove** an alias by using `alias <alias_name>` without additional parameters.
 - **Update** an alias by creating a new action sequence with the same alias name (the previous alias is overwritten).
 
-Aliases are **saved** between sessions, using a file in the `~/.soco-cli` directory.
+Aliases are **saved** between sessions, using a file in the [configuration directory](#configuration-directory).
 
 #### Push and Pop
 
@@ -941,7 +955,7 @@ It's often faster and more convenient to use the local cached speaker list. The 
 
 ### Usage
 
-To use the cached discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. A local speaker list is stored in `<your_home_directory>/.soco-cli/` for use with future invocations of the `sonos` command.
+To use the cached discovery mechanism with `sonos`, use the `--use-local-speaker-list` or `-l` flag. The first time this flag is used, the discovery process will be initiated. This will take a few seconds to complete, after which the `sonos` command will execute. A local speaker list is stored in the [configuration directory](#configuration-directory) for use with future invocations of the `sonos` command.
 
 **Example:** `sonos -l "living room" volume 50` uses the local speaker database to look up the "living room" speaker.
 
@@ -1328,7 +1342,7 @@ Please report any problems you find using GitHub Issues [3].
 
 1. Use the normal Pip approach to uninstall the SoCo-CLI package: `pip uninstall soco-cli`. 
 2. As usual, Pip will not remove dependencies. If you'd like to perform an exhaustive removal, inspect the `requirements.txt` files for `soco-cli`, and for `SoCo`. Take care not to remove packages that may also be required by other installed packages.
-3. You may also need to remove the directory `.soco-cli` and its contents from your home directory.
+3. You may also need to remove the [configuration directory](#configuration-directory) and its contents.
 
 ## Acknowledgments
 

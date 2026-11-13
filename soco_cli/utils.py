@@ -18,6 +18,7 @@ from time import sleep
 import soco  # type: ignore
 
 from soco_cli.__init__ import __version__  # type: ignore
+from soco_cli.config_dir import CONFIG_DIR, ensure_config_dir
 from soco_cli.match_speaker_names import speaker_name_matches
 from soco_cli.speakers import create_soco, parse_speaker_address, speaker_address
 
@@ -770,14 +771,11 @@ def check_args(args):
     return message
 
 
-path = os.path.expanduser("~") + "/.soco-cli/"
-filename = "saved_search.pickle"
-pathname = path + filename
+pathname = os.path.join(CONFIG_DIR, "saved_search.pickle")
 
 
 def save_search(result):
-    if not os.path.exists(path):
-        os.mkdir(path)
+    ensure_config_dir(os.path.dirname(pathname))
     with open(pathname, "wb") as f:
         pickle.dump(result, f)
     logging.info("Saved search results at {}".format(pathname))
@@ -795,13 +793,11 @@ def read_search():
     return None
 
 
-filename = "queue_insertion_position.pickle"
-queue_pathname = path + filename
+queue_pathname = os.path.join(CONFIG_DIR, "queue_insertion_position.pickle")
 
 
 def save_queue_insertion_position(queue_position: int):
-    if not os.path.exists(path):
-        os.mkdir(path)
+    ensure_config_dir(os.path.dirname(queue_pathname))
     with open(queue_pathname, "wb") as f:
         pickle.dump(queue_position, f)
     logging.info("Saved queue position at {}".format(queue_pathname))
@@ -823,7 +819,7 @@ def read_queue_insertion_position() -> int:
 
 
 # Interactive shell history file
-SOCO_CLI_DIR = os.path.join(os.path.expanduser("~"), ".soco-cli")
+SOCO_CLI_DIR = CONFIG_DIR
 HIST_FILE = os.path.join(SOCO_CLI_DIR, "shell-history.txt")
 HIST_LEN = 50
 
@@ -905,16 +901,10 @@ SUBS_LIST = set()
 
 
 def _confirm_soco_cli_dir() -> bool:
-    if not os.path.exists(SOCO_CLI_DIR):
-        logging.info("Creating directory '{}'".format(SOCO_CLI_DIR))
-        try:
-            os.mkdir(SOCO_CLI_DIR)
-            return True
-        except OSError:
-            error_report("Failed to create directory '{}'".format(SOCO_CLI_DIR))
-            return False
-    else:
+    if ensure_config_dir(SOCO_CLI_DIR):
         return True
+    error_report("Failed to create directory '{}'".format(SOCO_CLI_DIR))
+    return False
 
 
 def remember_event_sub(sub):

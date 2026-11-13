@@ -875,10 +875,8 @@ class TestInfo:
 class TestPlayFromQueueLastAdded:
     @pytest.fixture
     def saved_position_dir(self, tmp_path):
-        directory = str(tmp_path) + "/"
-        with patch.object(utils, "path", directory):
-            with patch.object(utils, "queue_pathname", directory + "queue_position"):
-                yield
+        with patch.object(utils, "queue_pathname", str(tmp_path / "queue_position")):
+            yield
 
     @pytest.mark.parametrize("arg", ["last_added", "la"])
     def test_plays_saved_position(self, arg, saved_position_dir):
