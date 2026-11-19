@@ -6,9 +6,10 @@ to be used in other programs.
 
 import logging
 import sys
+import threading
 from io import StringIO
 from signal import SIGINT, signal
-from typing import Tuple, Union
+from typing import Any, Optional, Tuple, Union
 
 from soco import SoCo  # type: ignore
 
@@ -23,6 +24,52 @@ from soco_cli.utils import (
     sig_handler,
     speaker_cache,
 )
+
+# Output capture for run_command() and get_soco_object(). Commands can run
+# concurrently in different threads (e.g., the HTTP API server runs requests on
+# a thread pool), so capturing must not swap the process-wide sys.stdout and
+# sys.stderr per command. Instead, they are replaced once by proxies that send
+# each write to the calling thread's capture buffer, if it has one.
+
+# Per-thread capture buffers, shared by all proxies: '_capture.stdout' and
+# '_capture.stderr' are set to a StringIO while that thread captures output.
+_capture = threading.local()
+
+
+class _ThreadLocalStream:
+    """Stands in for sys.stdout or sys.stderr.
+
+    Writes go to the calling thread's capture buffer if it has one, otherwise
+    to the stream that was in place when the proxy was installed. All other
+    attributes (isatty(), encoding, fileno(), ...) come from the same target.
+    """
+
+    def __init__(self, name: str, stream: Any) -> None:
+        self._name = name
+        self._stream = stream
+
+    def _target(self) -> Any:
+        buffer = getattr(_capture, self._name, None)
+        return buffer if buffer is not None else self._stream
+
+    def write(self, text: str) -> int:
+        return self._target().write(text)
+
+    def flush(self) -> None:
+        self._target().flush()
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._target(), name)
+
+
+def _install_capture_streams() -> None:
+    """Install the proxies if they are not in place. Checked on every capture,
+    since other code may assign to sys.stdout or sys.stderr, e.g., to restore
+    sys.__stdout__."""
+    if not isinstance(sys.stdout, _ThreadLocalStream):
+        sys.stdout = _ThreadLocalStream("stdout", sys.stdout)
+    if not isinstance(sys.stderr, _ThreadLocalStream):
+        sys.stderr = _ThreadLocalStream("stderr", sys.stderr)
 
 
 def run_command(
@@ -62,12 +109,35 @@ def run_command(
     # Prevent errors from causing exit
     set_api()
 
-    if redirect_io:
-        # Capture stdout and stderr for the duration of this command
-        output = StringIO()
-        sys.stdout = output
-        error = StringIO()
-        sys.stderr = error
+    if not redirect_io:
+        return _run_command(speaker_name, action, args, use_local_speaker_list)
+
+    # Capture this thread's stdout and stderr for the duration of this command
+    _install_capture_streams()
+    saved_stdout = getattr(_capture, "stdout", None)
+    saved_stderr = getattr(_capture, "stderr", None)
+    output = StringIO()
+    error = StringIO()
+    _capture.stdout, _capture.stderr = output, error
+    try:
+        return _run_command(
+            speaker_name, action, args, use_local_speaker_list, output, error
+        )
+    finally:
+        # Restore any capture that was already in progress on this thread
+        _capture.stdout, _capture.stderr = saved_stdout, saved_stderr
+
+
+def _run_command(
+    speaker_name: Union[str, SoCo],
+    action: str,
+    args: Tuple[str, ...],
+    use_local_speaker_list: bool,
+    output: Optional[StringIO] = None,
+    error: Optional[StringIO] = None,
+) -> Tuple[int, str, str]:
+    """Internal helper for run_command(): runs the command, with stdout and
+    stderr already redirected to 'output' and 'error' if these are supplied."""
 
     speaker = None
     exception_error = None
@@ -95,7 +165,7 @@ def run_command(
             logging.info("Exception: {}".format(e))
             exception_error = e
 
-        if redirect_io:
+        if output is not None and error is not None:
             output_msg = output.getvalue().rstrip()
             error_out = error.getvalue().rstrip()
         else:
@@ -128,11 +198,6 @@ def run_command(
             "",
             "Speaker '{}' not found: {}".format(speaker_name, exception_error),
         )
-
-    if redirect_io:
-        # Restore stdout and stderr
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
 
     logging.info("Return value: {}".format(return_tuple))
 
@@ -193,12 +258,14 @@ def get_soco_object(
     """
     set_api()
 
+    _install_capture_streams()
+    saved_stderr = getattr(_capture, "stderr", None)
     error = StringIO()
-    sys.stderr = error
-
-    speaker = _get_soco_object(speaker_name, use_local_speaker_list)
-
-    sys.stderr = sys.__stderr__
+    _capture.stderr = error
+    try:
+        speaker = _get_soco_object(speaker_name, use_local_speaker_list)
+    finally:
+        _capture.stderr = saved_stderr
 
     error_msg = error.getvalue().rstrip()
     if not speaker and error_msg == "":

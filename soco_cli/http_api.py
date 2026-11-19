@@ -157,22 +157,18 @@ def command_core(
         else:
             new_args.append(args[i])
 
-    # Print the equivalent 'sonos' command and exit code
+    # Print the equivalent 'sonos' command and exit code in one print() call,
+    # so that lines from concurrent requests don't mix
     if len(new_args) != 0:
         arguments = " ".join(new_args).rstrip()
-        print(
-            PREFIX
-            + "Command = 'sonos {} {} {}', ".format(quoted_speaker, action, arguments),
-            end="",
-        )
+        command = "sonos {} {} {}".format(quoted_speaker, action, arguments)
     else:
-        print(
-            PREFIX + "Command = 'sonos {} {}', ".format(quoted_speaker, action), end=""
-        )
+        command = "sonos {} {}".format(quoted_speaker, action)
     if exit_code == 0:
-        print("exit code = {}".format(exit_code))
+        status = "exit code = {}".format(exit_code)
     else:
-        print("exit code = {} [{}]".format(exit_code, error_msg))
+        status = "exit code = {} [{}]".format(exit_code, error_msg)
+    print(PREFIX + "Command = '{}', {}".format(command, status))
 
     return {
         "speaker": speaker,
