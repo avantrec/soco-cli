@@ -8,7 +8,7 @@ from datetime import datetime
 import soco  # type: ignore
 import soco.alarms  # type: ignore
 import tabulate  # type: ignore
-from soco.alarms import Alarm, get_alarms
+from soco.alarms import Alarm, Alarms, get_alarms
 from soco.core import SoCo
 from soco.exceptions import SoCoUPnPException  # type: ignore
 
@@ -25,9 +25,27 @@ from soco_cli.utils import (
 ALARM_OPERATION_DELAY = 1.0
 
 
+def _get_alarms(speaker):
+    """Return the set of alarms for the speaker's Sonos household.
+
+    Uses a separate SoCo alarm cache per household, so that operating on
+    speakers in more than one household within the same process (chained
+    commands, interactive mode, the HTTP API server) doesn't return or modify
+    another household's alarms. Requires SoCo >= 0.32.4; falls back to the
+    shared cache for older SoCo versions.
+    """
+    try:
+        alarms = Alarms(speaker.household_id)
+    except TypeError:
+        # Older SoCo: Alarms() takes no household ID
+        return get_alarms(speaker)
+    alarms.update(speaker)
+    return set(alarms)
+
+
 @zero_parameters
 def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
-    alarms = soco.alarms.get_alarms(speaker)
+    alarms = _get_alarms(speaker)
     if not alarms:
         return True
     details = []
@@ -94,7 +112,7 @@ def list_alarms(speaker, action, args, soco_function, use_local_speaker_list):
 @zero_parameters
 def list_alarms_spec(speaker, action, args, soco_function, use_local_speaker_list):
     """List alarms in 'alarm spec' format for easy copy/paste into modify_alarm or add_alarm."""
-    alarms = soco.alarms.get_alarms(speaker)
+    alarms = _get_alarms(speaker)
     if not alarms:
         return True
     # Sort before building rows so quoting doesn't corrupt time-based ordering.
@@ -153,7 +171,7 @@ def list_alarms_spec(speaker, action, args, soco_function, use_local_speaker_lis
 
 @one_parameter
 def remove_alarms(speaker, action, args, soco_function, use_local_speaker_list):
-    alarms = get_alarms(speaker)
+    alarms = _get_alarms(speaker)
 
     if args[0].lower() == "all":
         for alarm in alarms:
@@ -208,7 +226,7 @@ def add_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 @two_parameters
 def modify_alarm(speaker, action, args, soco_function, use_local_speaker_list):
     alarm_ids = args[0].lower().split(",")
-    all_alarms = get_alarms(speaker)
+    all_alarms = _get_alarms(speaker)
     if alarm_ids[0] == "all":
         alarms = set(all_alarms)
     else:
@@ -255,7 +273,7 @@ def move_alarm(speaker, action, args, soco_function, use_local_speaker_list):
 
 
 def move_or_copy_alarm(speaker, alarm_id, copy=True):
-    alarms = get_alarms(speaker)
+    alarms = _get_alarms(speaker)
     for alarm in alarms:
         if alarm_id == alarm.alarm_id:
             break
@@ -293,7 +311,7 @@ def disable_alarms(speaker, action, args, soco_function, use_local_speaker_list)
 
 
 def set_alarms(speaker, alarm_ids, enabled=True):
-    alarms = get_alarms(speaker)
+    alarms = _get_alarms(speaker)
     alarm_ids = set(alarm_ids.lower().split(","))
 
     all_alarms = False
@@ -397,7 +415,7 @@ def copy_modify_alarm(speaker, action, args, soco_function, use_local_speaker_li
     alarm_parms = args[1]
 
     # Find the alarm
-    alarms = get_alarms(speaker)
+    alarms = _get_alarms(speaker)
     for alarm in alarms:
         if alarm_id == alarm.alarm_id:
             break
