@@ -1,4 +1,5 @@
-v0.4.92   -
+v0.4.92   - Fix check of the last output line in the Python API's
+            'run_command()' (no change in behaviour)
 v0.4.91   - Fix alarm actions when speakers in more than one Sonos household
             are used in the same session (chained commands, interactive
             mode, HTTP API server): alarms are now cached per household

@@ -106,7 +106,7 @@ def run_command(
             lines = output_msg.splitlines()
             if len(lines) > 1 and lines[0] != "":
                 output_msg = "\n" + output_msg
-            if len(lines) > 1 and output_msg[len(lines) - 1] != "":
+            if len(lines) > 1 and lines[-1] != "":
                 output_msg = output_msg + "\n"
 
         if exception_error:
