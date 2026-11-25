@@ -1,3 +1,4 @@
+v0.4.93   -
 v0.4.92   - Fix check of the last output line in the Python API's
             'run_command()' (no change in behaviour)
           - Add 'speech_enhance_level' action (alias 'speech_level') for Ultra
