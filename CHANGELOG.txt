@@ -1,5 +1,8 @@
 v0.4.92   - Fix check of the last output line in the Python API's
             'run_command()' (no change in behaviour)
+          - Add 'speech_enhance_level' action (alias 'speech_level') for Ultra
+            soundbars (Arc Ultra, Beam Ultra): 0 (off) to 4 (max)
+          - Requires SoCo v0.32.5 or later
 v0.4.91   - Fix alarm actions when speakers in more than one Sonos household
             are used in the same session (chained commands, interactive
             mode, HTTP API server): alarms are now cached per household

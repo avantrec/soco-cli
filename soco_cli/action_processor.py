@@ -3039,6 +3039,30 @@ def sub_gain(speaker, action, args, soco_function, use_local_speaker_list):
         return False
 
 
+@zero_or_one_parameter
+def speech_enhance_level(speaker, action, args, soco_function, use_local_speaker_list):
+    level = speaker.speech_enhance_level
+    if level is None:
+        error_report(
+            "Speaker '{}' doesn't support speech enhancement levels".format(
+                speaker.player_name
+            )
+        )
+        return False
+    if len(args) == 0:
+        print(level)
+        return True
+    try:
+        level = int(args[0])
+        if not 0 <= level <= 4:
+            raise ValueError
+    except ValueError:
+        error_report("Speech enhancement level must be an integer between 0 and 4")
+        return False
+    speaker.speech_enhance_level = level
+    return True
+
+
 @one_parameter
 def set_queue_position(speaker, action, args, soco_function, use_local_speaker_list):
     try:
@@ -3555,6 +3579,8 @@ actions = {
     "ungroup_all_in_group": SonosFunction(ungroup_all_in_group, "", True),
     "ugaig": SonosFunction(ungroup_all_in_group, "", True),
     "sub_gain": SonosFunction(sub_gain, "", False),
+    "speech_enhance_level": SonosFunction(speech_enhance_level, "", False),
+    "speech_level": SonosFunction(speech_enhance_level, "", False),
     "relative_sub_gain": SonosFunction(eq_relative, "sub_gain", False),
     "rel_sub_gain": SonosFunction(eq_relative, "sub_gain", False),
     "rsg": SonosFunction(eq_relative, "sub_gain", False),

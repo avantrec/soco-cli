@@ -43,6 +43,7 @@ from soco_cli.action_processor import (
     set_queue_position,
     shuffle,
     sleep_timer,
+    speech_enhance_level,
     surround_volume,
     switch_to_tv,
     tv_audio_delay,
@@ -1519,6 +1520,57 @@ class TestSurroundVolume:
         speaker.sub_gain = 0
         result = surround_volume(speaker, "surround_volume", ["abc"], "sub_gain", False)
         assert result is False
+
+
+# ===========================================================================
+# speech_enhance_level
+# ===========================================================================
+
+
+class TestSpeechEnhanceLevel:
+    def _call(self, speaker, args):
+        return speech_enhance_level(speaker, "speech_enhance_level", args, "", False)
+
+    def test_not_supported(self, capsys):
+        speaker = _make_speaker(player_name="Kitchen")
+        speaker.speech_enhance_level = None
+        assert self._call(speaker, []) is False
+        assert "Kitchen" in capsys.readouterr().err
+
+    def test_not_supported_set(self, capsys):
+        speaker = _make_speaker()
+        speaker.speech_enhance_level = None
+        assert self._call(speaker, ["2"]) is False
+        assert speaker.speech_enhance_level is None
+
+    def test_get_level(self, capsys):
+        speaker = _make_speaker()
+        speaker.speech_enhance_level = 3
+        assert self._call(speaker, []) is True
+        assert capsys.readouterr().out.strip() == "3"
+
+    @pytest.mark.parametrize("level", [0, 1, 4])
+    def test_set_level(self, level):
+        speaker = _make_speaker()
+        speaker.speech_enhance_level = 2
+        assert self._call(speaker, [str(level)]) is True
+        assert speaker.speech_enhance_level == level
+
+    @pytest.mark.parametrize("arg", ["-1", "5", "abc", "1.5"])
+    def test_set_invalid(self, arg, capsys):
+        speaker = _make_speaker()
+        speaker.speech_enhance_level = 2
+        assert self._call(speaker, [arg]) is False
+        assert speaker.speech_enhance_level == 2
+        assert "between 0 and 4" in capsys.readouterr().err
+
+    def test_action_aliases_registered(self):
+        from soco_cli.action_processor import actions
+
+        assert (
+            actions["speech_enhance_level"].processing_function is speech_enhance_level
+        )
+        assert actions["speech_level"].processing_function is speech_enhance_level
 
 
 # ===========================================================================

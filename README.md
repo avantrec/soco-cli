@@ -394,6 +394,8 @@ sonos Kitchen sharelink "https://open.spotify.com/track/AAA" "https://open.spoti
 - **`relative_sub_gain <adjustment>` (or `rel_sub_gain`, `rsg`)**: Increase or reduce a Sub's gain setting by `<adjustment>`, a value between -15 and 15.
 - **`relative_treble <adjustment>` (or `rel_treble`, `rt`)**: Increase or reduce the treble setting by `<adjustment>`, a value between -10 and 10.
 - **`relative_volume <adjustment>` (or `rel_vol`, `rv`)**: Raises or lowers the volume by `<adjustment>`, which must be a number from -100 to 100.
+- **`speech_enhance_level`** (or **`speech_level`**): Returns the speech enhancement level of an Ultra soundbar (Arc Ultra, Beam Ultra), from `0` (off) to `4` (max).
+- **`speech_enhance_level <level>`** (or **`speech_level`**): Sets the speech enhancement level of an Ultra soundbar, from `0` (off) to `4` (max).
 - **`sub_enabled`**: Returns `on` if the zone's subwoofer is enabled, otherwise `off`.
 - **`sub_enabled <on|off>`**: Enables or disables a zone's subwoofer.
 - **`sub_gain`**: Reports the value of a Sub's gain (for speaker groups with a bonded Sub), from `-15` to `+15`.
