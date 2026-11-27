@@ -1,8 +1,9 @@
 """Tests for the thread safety of api.run_command().
 
-run_command() captures a command's output by redirecting the process-wide
-sys.stdout and sys.stderr. The HTTP API server runs requests on a thread
-pool, so concurrent calls must not lose or mix up each other's output.
+run_command() captures a command's output per thread: proxies replace
+sys.stdout and sys.stderr and send each write to the calling thread's capture
+buffer. The HTTP API server runs requests on a thread pool, so concurrent
+calls must not lose or mix up each other's output.
 No live Sonos network is required: the speaker and the action are mocked.
 """
 
