@@ -333,9 +333,11 @@ def sig_handler(signal_received, frame):
         return
 
     # Restore stdout and stderr ... these have been redirected if
-    # api.run_command() was used
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+    # api.run_command() was used. Only this thread's capture is ended.
+    # Imported here because the api module imports this one.
+    from soco_cli.api import _end_thread_capture
+
+    _end_thread_capture()
 
     # Prevent SIGINT (CTRL-C) exit: untidy exit from readline can leave
     # some terminals in a broken state

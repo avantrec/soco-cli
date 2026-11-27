@@ -7,6 +7,7 @@ No live Sonos network is required: the speaker and the action are mocked.
 """
 
 import os
+import signal
 import sys
 import threading
 import time
@@ -17,6 +18,8 @@ from soco import SoCo  # type: ignore
 
 import soco_cli.http_api as http_api
 from soco_cli.api import run_command
+from soco_cli.play_local_file_lists import play_file_list
+from soco_cli.utils import sig_handler
 
 THREADS = 16
 ROUNDS = 5
@@ -154,8 +157,8 @@ def test_stream_attributes_come_from_real_stream():
 
 
 def test_capture_survives_reset_of_sys_stdout():
-    """Code that resets sys.stdout to sys.__stdout__ (as the signal handler
-    and play_file_list() do) must not break later captures."""
+    """Code that resets sys.stdout to sys.__stdout__ must not break later
+    captures."""
     speaker = _make_speaker("Kitchen")
     with patch("soco_cli.api.process_action", side_effect=_slow_action):
         run_command(speaker, "test", "token")
@@ -181,3 +184,73 @@ def test_nested_capture_restores_outer_capture():
 
     with patch("soco_cli.api.process_action", side_effect=action):
         assert run_command(speaker, "outer") == (0, "\nbefore\nafter\n", "")
+
+
+def _capture_across(reset):
+    """Run a command on another thread that prints, waits while reset() runs
+    on this thread, then prints the rest of its line. Return the command's
+    result."""
+    speaker = _make_speaker("Kitchen")
+    started = threading.Event()
+    resumed = threading.Event()
+    result = []
+
+    def action(speaker, action, args, use_local_speaker_list=False):
+        print("before", end="")
+        started.set()
+        resumed.wait(5)
+        print("-after")
+        return True
+
+    with patch("soco_cli.api.process_action", side_effect=action):
+        thread = threading.Thread(
+            target=lambda: result.append(run_command(speaker, "test"))
+        )
+        thread.start()
+        assert started.wait(5)
+        reset()
+        resumed.set()
+        thread.join()
+    return result[0]
+
+
+def test_signal_handler_does_not_end_capture_on_other_threads(capfd):
+    """The signal handler ends only its own thread's capture. Its message
+    still reaches the console."""
+
+    def handle_sigint():
+        # INTERACTIVE makes the handler print a message and return, not exit
+        with patch("soco_cli.utils.INTERACTIVE", True):
+            sig_handler(signal.SIGINT, None)
+
+    assert _capture_across(handle_sigint) == (0, "before-after", "")
+    assert "Please use 'exit'" in capfd.readouterr().out
+
+
+def test_play_file_list_does_not_end_capture_on_other_threads():
+    """play_file_list() ends only its own thread's capture."""
+    speaker = _make_speaker("Kitchen")
+
+    def play_with_options():
+        play_file_list(speaker, [], "p")
+
+    assert _capture_across(play_with_options) == (0, "before-after", "")
+
+
+def test_play_file_list_progress_goes_to_console(tmp_path, capfd):
+    """When run as a command, play_file_list() with options still prints its
+    progress on the console, not into the command's result."""
+    speaker = _make_speaker("Kitchen")
+    track = tmp_path / "track.mp3"
+    track.write_bytes(b"")
+
+    def action(speaker, action, args, use_local_speaker_list=False):
+        print("before")
+        play_file_list(speaker, [str(track)], "p")
+        return True
+
+    with patch("soco_cli.api.process_action", side_effect=action):
+        with patch("soco_cli.play_local_file_lists.play_local_file"):
+            assert run_command(speaker, "test") == (0, "before", "")
+    sys.__stdout__.flush()  # In case the output went to sys.__stdout__
+    assert "Playing 1 of 1: {}".format(track) in capfd.readouterr().out

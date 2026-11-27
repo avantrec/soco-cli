@@ -75,8 +75,11 @@ def play_file_list(speaker: SoCo, tracks: List[str], options: str = "") -> bool:
         return False
 
     if options != "":
-        # Grab back stdout from api.run_command()
-        sys.stdout = sys.__stdout__
+        # Grab back stdout from api.run_command(), for this thread only.
+        # Imported here because the api module imports this one, indirectly.
+        from soco_cli.api import _end_thread_capture
+
+        _end_thread_capture(stderr=False)
 
     if "r" in options:
         # Choose a single random track

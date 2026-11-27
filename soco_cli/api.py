@@ -72,6 +72,17 @@ def _install_capture_streams() -> None:
         sys.stderr = _ThreadLocalStream("stderr", sys.stderr)
 
 
+def _end_thread_capture(stdout: bool = True, stderr: bool = True) -> None:
+    """Stop capturing output on the calling thread only. Its writes then go to
+    the streams that were in place when the proxies were installed. Captures
+    on other threads continue. Use this instead of assigning sys.__stdout__
+    to sys.stdout, which would end the captures on all threads."""
+    if stdout:
+        _capture.stdout = None
+    if stderr:
+        _capture.stderr = None
+
+
 def run_command(
     speaker_name: Union[str, SoCo],
     action: str,
