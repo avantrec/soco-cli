@@ -93,11 +93,14 @@ def test_concurrent_http_commands_get_their_own_results():
 def test_fast_command_is_not_held_up_by_slow_command():
     """A long-running action (e.g., wait_stop) must not block other requests,
     such as the 'pause' that would end it."""
+    # The 'pause' starts 0.2 s into a 2 s 'wait_stop'. If commands were
+    # serialized, it would wait about 1.8 s, well over the 1 s limit, which
+    # leaves room for a slow CI runner.
     speaker = _make_speaker("Kitchen")
 
     def actions(speaker, action, args, use_local_speaker_list=False):
         if action == "wait_stop":
-            time.sleep(3)
+            time.sleep(2)
         print("ok")
         return True
 
@@ -113,7 +116,7 @@ def test_fast_command_is_not_held_up_by_slow_command():
             elapsed = time.monotonic() - start
             slow.join()
     assert result["result"] == "ok"
-    assert elapsed < 0.5
+    assert elapsed < 1
 
 
 def test_run_command_restores_previous_streams(capsys):

@@ -104,6 +104,15 @@ def run_command(
     Returns:
         (int, str, str): a three-tuple of exit_code, output_string and
         error_msg. If redirect_io is false, output_string will be empty.
+
+    Note:
+        To capture output per thread, the first call with redirect_io=True
+        (the default) replaces sys.stdout and sys.stderr with proxy objects,
+        which stay installed afterwards. Writes from threads that are not
+        capturing output still go to the streams that were in place when the
+        proxies were installed, which may be a caller's own redirection. Code
+        that checks 'sys.stdout is sys.__stdout__', or the type of sys.stdout
+        or sys.stderr, will see the proxy.
     """
 
     # Prevent errors from causing exit
@@ -255,6 +264,15 @@ def get_soco_object(
     Returns:
         (SoCo, str): Tuple of SoCo object, or None if no speaker is found,
         and an error message.
+
+    Note:
+        As with run_command(), the first call replaces sys.stdout and
+        sys.stderr with proxy objects, which stay installed afterwards.
+        Writes from threads that are not capturing output still go to the
+        streams that were in place when the proxies were installed, which may
+        be a caller's own redirection. Code that checks
+        'sys.stdout is sys.__stdout__', or the type of sys.stdout or
+        sys.stderr, will see the proxy.
     """
     set_api()
 
