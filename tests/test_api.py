@@ -1,24 +1,27 @@
 """Tests for the thread safety of api.run_command().
 
-run_command() captures a command's output per thread: proxies replace
-sys.stdout and sys.stderr and send each write to the calling thread's capture
-buffer. The HTTP API server runs requests on a thread pool, so concurrent
-calls must not lose or mix up each other's output.
+run_command() captures a command's output per thread: while any command
+runs, proxies replace sys.stdout and sys.stderr and send each write to the
+calling thread's capture buffer. The HTTP API server runs requests on a
+thread pool, so concurrent calls must not lose or mix up each other's output.
 No live Sonos network is required: the speaker and the action are mocked.
 """
 
+import logging
 import os
 import signal
+import subprocess
 import sys
 import threading
 import time
+from io import StringIO
 from unittest.mock import MagicMock, patch
 
 import pytest
 from soco import SoCo  # type: ignore
 
 import soco_cli.http_api as http_api
-from soco_cli.api import run_command
+from soco_cli.api import _ThreadLocalStream, get_soco_object, run_command
 from soco_cli.play_local_file_lists import play_file_list
 from soco_cli.utils import sig_handler
 
@@ -229,18 +232,93 @@ def test_output_after_command_reaches_file_descriptors(capfd):
     assert capfd.readouterr().out == "after-out\n"
 
 
-def test_stream_attributes_come_from_real_stream():
-    """Code that checks isatty(), encoding or fileno() still sees the real
-    stream outside a capture."""
+def test_original_streams_are_put_back_after_command():
     speaker = _make_speaker("Kitchen")
+    stdout, stderr = sys.stdout, sys.stderr
+
+    def fail(speaker, action, args, use_local_speaker_list=False):
+        raise RuntimeError("failed")
+
+    with patch("soco_cli.api.process_action", side_effect=_slow_action):
+        run_command(speaker, "test", "token")
+    assert (sys.stdout, sys.stderr) == (stdout, stderr)
+    with patch("soco_cli.api.process_action", side_effect=fail):
+        assert run_command(speaker, "test") == (1, "", "Error: failed")
+    assert (sys.stdout, sys.stderr) == (stdout, stderr)
+    with patch("soco_cli.api.get_speaker", side_effect=RuntimeError("failed")):
+        with pytest.raises(RuntimeError):
+            get_soco_object("Kitchen")
+    assert (sys.stdout, sys.stderr) == (stdout, stderr)
+
+
+def test_failure_before_capture_leaves_no_proxies():
+    """If setting up a capture fails, a later command still puts the original
+    streams back."""
+    speaker = _make_speaker("Kitchen")
+    stdout, stderr = sys.stdout, sys.stderr
+    with patch("soco_cli.api.StringIO", side_effect=MemoryError):
+        with pytest.raises(MemoryError):
+            run_command(speaker, "test")
+        with pytest.raises(MemoryError):
+            get_soco_object("Kitchen")
+    with patch("soco_cli.api.process_action", side_effect=_slow_action):
+        assert run_command(speaker, "test", "token") == (0, "token-done", "")
+    assert (sys.stdout, sys.stderr) == (stdout, stderr)
+
+
+def test_failure_to_make_proxy_leaves_streams_in_place():
+    """If making the stderr proxy fails, the stdout proxy isn't installed
+    either."""
+    speaker = _make_speaker("Kitchen")
+    stdout, stderr = sys.stdout, sys.stderr
+    make_proxy = _ThreadLocalStream.__init__
+
+    def fail_for_stderr(self, name, stream):
+        if name == "stderr":
+            raise MemoryError
+        make_proxy(self, name, stream)
+
+    with patch.object(_ThreadLocalStream, "__init__", fail_for_stderr):
+        with pytest.raises(MemoryError):
+            run_command(speaker, "test")
+    assert (sys.stdout, sys.stderr) == (stdout, stderr)
+
+
+def test_stream_replaced_during_command_is_kept():
+    """If code replaces sys.stdout while a command runs, the replacement stays
+    in place after the command."""
+    speaker = _make_speaker("Kitchen")
+    replacement = StringIO()
+
+    def replace(speaker, action, args, use_local_speaker_list=False):
+        sys.stdout = replacement
+        return True
+
+    with patch("soco_cli.api.process_action", side_effect=replace):
+        run_command(speaker, "test")
+    assert sys.stdout is replacement
+
+
+def test_proxies_stay_while_another_thread_captures():
+    """The proxies are put back only when the last capture on any thread ends.
+    Meanwhile, code that checks isatty(), encoding or fileno() on a thread
+    that is not capturing still sees the real stream."""
     with open(os.devnull, "w") as real:
         sys.stdout = real
-        with patch("soco_cli.api.process_action", side_effect=_slow_action):
-            run_command(speaker, "test", "token")
-        assert sys.stdout is not real  # The proxy is in place
-        assert sys.stdout.fileno() == real.fileno()
-        assert sys.stdout.encoding == real.encoding
-        assert sys.stdout.isatty() == real.isatty()
+        during = {}
+
+        def check():
+            during["proxy"] = sys.stdout is not real
+            during["attributes"] = (
+                sys.stdout.fileno(),
+                sys.stdout.encoding,
+                sys.stdout.isatty(),
+            )
+
+        assert _capture_across(check) == (0, "before-after", "")
+        assert during["proxy"]
+        assert during["attributes"] == (real.fileno(), real.encoding, real.isatty())
+        assert sys.stdout is real
 
 
 def test_capture_survives_reset_of_sys_stdout():
@@ -341,3 +419,66 @@ def test_play_file_list_progress_goes_to_console(tmp_path, capfd):
             assert run_command(speaker, "test") == (0, "before", "")
     sys.__stdout__.flush()  # In case the output went to sys.__stdout__
     assert "Playing 1 of 1: {}".format(track) in capfd.readouterr().out
+
+
+def test_log_handler_created_between_commands_keeps_its_stream():
+    """A logging handler created between commands writes to the real stderr.
+    Records logged during a later command go to it, not into the command's
+    error_msg."""
+    speaker = _make_speaker("Kitchen")
+    logger = logging.getLogger("soco_cli.test_api")
+
+    def warn(speaker, action, args, use_local_speaker_list=False):
+        logger.warning("diagnostic")
+        print("ok")
+        return True
+
+    sink = StringIO()
+    sys.stderr = sink
+    with patch("soco_cli.api.process_action", side_effect=warn):
+        run_command(speaker, "first")
+        handler = logging.StreamHandler()  # Binds to the current sys.stderr
+        logger.addHandler(handler)
+        try:
+            assert run_command(speaker, "second") == (0, "ok", "")
+        finally:
+            logger.removeHandler(handler)
+    assert sink.getvalue() == "diagnostic\n"
+
+
+# Run in a fresh interpreter, because pytest attaches its own handlers to the
+# root logger, and then logging never creates a default handler
+_DEFAULT_LOG_HANDLER_SCRIPT = """
+import logging
+from unittest.mock import MagicMock, patch
+from soco import SoCo
+from soco_cli.api import run_command
+
+speaker = MagicMock(spec=SoCo)
+speaker.player_name = "Kitchen"
+
+def action(speaker, action, args, use_local_speaker_list=False):
+    print("ok")
+    if action == "warn":
+        logging.warning("diagnostic")
+    return True
+
+with patch("soco_cli.api.process_action", side_effect=action):
+    run_command(speaker, "first")
+    print(repr(run_command(speaker, "warn")))
+"""
+
+
+def test_default_log_handler_is_not_bound_to_capture():
+    """If logging is not configured, the first command creates the root log
+    handler. It must write to the real stderr, so that records logged during
+    later commands don't end up in their error_msg."""
+    completed = subprocess.run(
+        [sys.executable, "-c", _DEFAULT_LOG_HANDLER_SCRIPT],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert completed.stdout.strip() == repr((0, "ok", ""))
+    assert "WARNING:root:diagnostic" in completed.stderr
