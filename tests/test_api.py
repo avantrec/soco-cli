@@ -97,14 +97,15 @@ def test_concurrent_http_commands_get_their_own_results():
 def test_fast_command_is_not_held_up_by_slow_command():
     """A long-running action (e.g., wait_stop) must not block other requests,
     such as the 'pause' that would end it."""
-    # The 'pause' starts 0.2 s into a 2 s 'wait_stop'. If commands were
-    # serialized, it would wait about 1.8 s, well over the 1 s limit, which
-    # leaves room for a slow CI runner.
     speaker = _make_speaker("Kitchen")
+    entered = threading.Event()
+    release = threading.Event()
+    fast_result = []
 
     def actions(speaker, action, args, use_local_speaker_list=False):
         if action == "wait_stop":
-            time.sleep(2)
+            entered.set()
+            release.wait(10)
         print("ok")
         return True
 
@@ -113,14 +114,76 @@ def test_fast_command_is_not_held_up_by_slow_command():
             slow = threading.Thread(
                 target=http_api.command_core, args=("Kitchen", "wait_stop")
             )
+            fast = threading.Thread(
+                target=lambda: fast_result.append(
+                    http_api.command_core("Kitchen", "pause")
+                )
+            )
             slow.start()
-            time.sleep(0.2)
-            start = time.monotonic()
-            result = http_api.command_core("Kitchen", "pause")
-            elapsed = time.monotonic() - start
-            slow.join()
-    assert result["result"] == "ok"
-    assert elapsed < 1
+            try:
+                assert entered.wait(5)
+                # The 'pause' must finish while 'wait_stop' is still held
+                fast.start()
+                fast.join(5)
+                assert not fast.is_alive(), "'pause' was held up by 'wait_stop'"
+                assert slow.is_alive()
+            finally:
+                release.set()
+                slow.join(10)
+                if fast.is_alive():
+                    fast.join(10)
+    assert fast_result[0]["result"] == "ok"
+
+
+def test_concurrent_http_lookups_and_actions_keep_their_own_stderr():
+    """Requests that overlap in the speaker lookup (get_soco_object()) and in
+    the action each get back only their own stderr diagnostics. Discovery is
+    mocked below get_soco_object(): half of the lookups fail with a message
+    on stderr, the other half find a speaker whose action writes to both
+    streams."""
+
+    class Cache:
+        def find(self, name):
+            print("lookup-" + name, end="", file=sys.stderr)
+            time.sleep(0.001)
+            print("-done", file=sys.stderr)
+            return _make_speaker(name) if name.startswith("found") else None
+
+        def find_indirect(self, name):
+            return None
+
+        def discover(self):
+            pass
+
+        def scan(self):
+            pass
+
+    def action(speaker, action, args, use_local_speaker_list=False):
+        name = speaker.player_name
+        print("out-" + name, end="")
+        print("err-" + name, end="", file=sys.stderr)
+        time.sleep(0.001)
+        print("-done")
+        print("-done", file=sys.stderr)
+        return True
+
+    def request(i):
+        name = "found{}".format(i) if i % 2 else "missing{}".format(i)
+        return name, http_api.command_core(name, "test")
+
+    with patch("soco_cli.utils.SPKR_CACHE", Cache()):
+        with patch("soco_cli.api.process_action", side_effect=action):
+            for _ in range(ROUNDS):
+                for name, result in _run_concurrently(request):
+                    if name.startswith("found"):
+                        assert result["exit_code"] == 0
+                        assert result["result"] == "out-{}-done".format(name)
+                        assert result["error_msg"] == "err-{}-done".format(name)
+                    else:
+                        # The lookup tries the cache three times
+                        assert result["exit_code"] == 1
+                        lines = result["error_msg"].splitlines()
+                        assert lines == ["lookup-{}-done".format(name)] * 3
 
 
 def test_command_log_line_is_one_write():
