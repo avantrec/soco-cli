@@ -9,6 +9,7 @@ if version_info.major == 3 and version_info.minor < 7:
 import argparse
 import pprint
 import shlex
+import sys
 from os import kill, scandir
 from os.path import abspath
 from signal import SIGINT
@@ -157,8 +158,9 @@ def command_core(
         else:
             new_args.append(args[i])
 
-    # Print the equivalent 'sonos' command and exit code in one print() call,
-    # so that lines from concurrent requests don't mix
+    # Print the equivalent 'sonos' command and exit code in one write() call,
+    # including the newline, so that lines from concurrent requests don't mix.
+    # (print() writes the text and the newline in separate calls.)
     if len(new_args) != 0:
         arguments = " ".join(new_args).rstrip()
         command = "sonos {} {} {}".format(quoted_speaker, action, arguments)
@@ -168,7 +170,7 @@ def command_core(
         status = "exit code = {}".format(exit_code)
     else:
         status = "exit code = {} [{}]".format(exit_code, error_msg)
-    print(PREFIX + "Command = '{}', {}".format(command, status))
+    sys.stdout.write(PREFIX + "Command = '{}', {}\n".format(command, status))
 
     return {
         "speaker": speaker,

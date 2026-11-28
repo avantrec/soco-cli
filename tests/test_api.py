@@ -123,6 +123,29 @@ def test_fast_command_is_not_held_up_by_slow_command():
     assert elapsed < 1
 
 
+def test_command_log_line_is_one_write():
+    """command_core() writes its log line, newline included, in one write()
+    call, so lines from concurrent requests can't run together."""
+    writes = []
+
+    class Recorder:
+        def write(self, text):
+            writes.append(text)
+            return len(text)
+
+        def flush(self):
+            pass
+
+    speaker = _make_speaker("Kitchen")
+    with patch("soco_cli.http_api.get_speaker", return_value=(speaker, "")):
+        with patch("soco_cli.http_api.sc_run", return_value=(0, "20", "")):
+            sys.stdout = Recorder()
+            http_api.command_core("Kitchen", "volume")
+    assert writes == [
+        http_api.PREFIX + "Command = 'sonos Kitchen volume', exit code = 0\n"
+    ]
+
+
 def test_run_command_restores_previous_streams(capsys):
     """After a command, output goes to the streams in place before it."""
     speaker = _make_speaker("Kitchen")
